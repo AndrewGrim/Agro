@@ -78,12 +78,51 @@ class TreeIter {
         }
 };
 
+template <class T> class TreeNode {
+    public:
+        T item;
+        std::vector<TreeNode<T>> children;
+        TreeNode<T> *parent;
+        // is_visible: boolean = true;
+        // is_collapsed: boolean = false;
+        TreeIter iter = TreeIter(std::vector<int>());
+
+        TreeNode(T item) {
+            this->item = item;
+        }
+};
+
 template <class T> class Tree {
     public:
-        std::vector<T> tree;
+        std::vector<TreeNode<T>> tree;
 
-        void append(TreeIter iter, T item) {
-            this->tree.push_back(item);
+        TreeIter append(TreeIter tree_iter, TreeNode<T> item) {
+            if (!tree_iter.path.size()) {
+                item.iter = TreeIter(std::vector<int>(this->tree.size()));
+                item.parent = nullptr;
+                this->tree.push_back(item); 
+                
+                return item.iter;
+            } else {
+                TreeNode<T> root = this->tree[tree_iter.path[0]];
+                for (int i = 1; i < tree_iter.path.size(); i++) {
+                    if (root.children.size()) {
+                        root = root.children[tree_iter.path[i]];
+                    } else {
+                        break;
+                    }
+                }
+
+                root.children.push_back(item);
+                int last_index = root.children.size() - 1; // TODO not sure here
+                TreeIter new_iter = TreeIter(tree_iter.path);
+                new_iter.path.push_back(last_index);
+                TreeIter iter = TreeIter(new_iter.path);
+                item.iter = iter;
+                item.parent = &root;
+
+                return iter;
+            }
         }
 };
 
@@ -93,7 +132,7 @@ class Application {
         SDL_Renderer *ren;
         std::vector<int> events;
         Color bg = {155, 155, 155, 255};
-        Tree<Widget> model;
+        Tree<std::shared_ptr<Widget>> model;
         
 
         Application(const char* title = "Application", int width = 400, int height = 400) {
@@ -108,8 +147,8 @@ class Application {
             SDL_SetRenderDrawBlendMode(this->ren, SDL_BLENDMODE_BLEND);
         }
 
-        void append(Widget widget) {
-            this->model.tree.push_back(widget);
+        void append(std::shared_ptr<Widget> widget) {
+            this->model.tree.push_back(TreeNode<std::shared_ptr<Widget>>(widget));
         }
 
         void draw() {
@@ -118,7 +157,7 @@ class Application {
         }
 
         void draw_at(int index, int x, int y) {
-            this->model.tree[index].draw(this->ren, x, y);
+            this->model.tree[index].item->draw(this->ren, x, y);
 
             SDL_RenderPresent(this->ren);
         }
@@ -129,8 +168,8 @@ class Application {
             int x = 0;
             int y = 0;
             for (int i = 0; i < this->model.tree.size(); i++) {
-                this->model.tree[i].draw(this->ren, x, y);
-                Size size = this->model.tree[i].size_hint();
+                this->model.tree[i].item->draw(this->ren, x, y);
+                Size size = this->model.tree[i].item->size_hint();
                 x += size.width;
                 y += size.height;
             }
@@ -146,7 +185,7 @@ class Application {
                         case SDL_MOUSEBUTTONDOWN:
                             int x, y;
                             SDL_GetMouseState(&x, &y);
-                            this->append(Button());
+                            this->append(std::make_shared<Button>());
                             this->draw_at(this->model.tree.size() - 1, x, y);
                             break;
                         case SDL_QUIT:
@@ -168,8 +207,8 @@ class Application {
 
 int main() { 
     Application app = Application();
-        app.append(Button());
-        app.append(Button());
+        app.append(std::make_shared<Button>());
+        app.append(std::make_shared<Button>());
         app.show();
         app.run();
 
