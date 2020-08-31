@@ -39,16 +39,33 @@ typedef struct Color {
     int alpha;
 } Color;
 
-class Button {
+class Widget {
     public:
+        Color fg = {0, 0, 0, 255};
         Color bg = {200, 200, 200, 255};
 
-        Button() {
+        Widget() {}
+        virtual ~Widget() {}
+        virtual void draw(SDL_Renderer *ren, int x, int y) {}
+        virtual Size size_hint() { return Size{0, 0}; }
+};
+
+class Button : public Widget {
+    public:
+        Button() {}
+        ~Button() {}
+
+        void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
+            Size size = Button::size_hint();
+            SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
+            SDL_RenderFillRect(ren,  Rect(x, y, size.width, size.height).get());
         }
 
         Size size_hint() {
             return Size{40, 20};
         }
+};
+
 
         void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
             Size size = Button::size_hint();
