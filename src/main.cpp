@@ -1,7 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include <SDL2/SDL.h>
+
+#include "util.hpp"
 
 class Rect {
     public:
@@ -66,11 +69,21 @@ class Button : public Widget {
         }
 };
 
+class TreeIter {
+    public:
+        std::vector<int> path;
 
-        void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
-            Size size = Button::size_hint();
-            SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
-            SDL_RenderFillRect(ren,  Rect(x, y, size.width, size.height).get());
+        TreeIter(std::vector<int> path) {
+            this->path = path;
+        }
+};
+
+template <class T> class Tree {
+    public:
+        std::vector<T> tree;
+
+        void append(TreeIter iter, T item) {
+            this->tree.push_back(item);
         }
 };
 
@@ -80,7 +93,8 @@ class Application {
         SDL_Renderer *ren;
         std::vector<int> events;
         Color bg = {155, 155, 155, 255};
-        std::vector<Button> widgets;
+        Tree<Widget> model;
+        
 
         Application(const char* title = "Application", int width = 400, int height = 400) {
             SDL_Init(SDL_INIT_VIDEO);
@@ -94,8 +108,8 @@ class Application {
             SDL_SetRenderDrawBlendMode(this->ren, SDL_BLENDMODE_BLEND);
         }
 
-        void append(Button button) {
-            this->widgets.push_back(button);
+        void append(Widget widget) {
+            this->model.tree.push_back(widget);
         }
 
         void draw() {
@@ -104,7 +118,7 @@ class Application {
         }
 
         void draw_at(int index, int x, int y) {
-            this->widgets[index].draw(this->ren, x, y);
+            this->model.tree[index].draw(this->ren, x, y);
 
             SDL_RenderPresent(this->ren);
         }
@@ -114,9 +128,9 @@ class Application {
 
             int x = 0;
             int y = 0;
-            for (int i = 0; i < this->widgets.size(); i++) {
-                this->widgets[i].draw(this->ren, x, y);
-                Size size = this->widgets[i].size_hint();
+            for (int i = 0; i < this->model.tree.size(); i++) {
+                this->model.tree[i].draw(this->ren, x, y);
+                Size size = this->model.tree[i].size_hint();
                 x += size.width;
                 y += size.height;
             }
@@ -133,7 +147,7 @@ class Application {
                             int x, y;
                             SDL_GetMouseState(&x, &y);
                             this->append(Button());
-                            this->draw_at(this->widgets.size() - 1, x, y);
+                            this->draw_at(this->model.tree.size() - 1, x, y);
                             break;
                         case SDL_QUIT:
                             goto EXIT;
