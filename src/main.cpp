@@ -6,6 +6,11 @@
 
 #include "util.hpp"
 
+enum Gui {
+    GUI_WIDGET,
+    GUI_BUTTON,
+};
+
 class Rect {
     public:
         Rect(int x, int y, int w, int h) {
