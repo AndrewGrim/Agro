@@ -54,14 +54,29 @@ class Widget {
 
         Widget() {}
         virtual ~Widget() {}
+
+        virtual const Gui id() {
+            return this->_id;
+        }
+
         virtual void draw(SDL_Renderer *ren, int x, int y) {}
-        virtual Size size_hint() { return Size{0, 0}; }
+
+        virtual Size size_hint() {
+            return Size{0, 0}; 
+        }
+
+    private:
+        const Gui _id = GUI_WIDGET;
 };
 
 class Button : public Widget {
     public:
         Button() {}
         ~Button() {}
+
+        const Gui id() {
+            return this->_id;
+        }
 
         void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
             Size size = Button::size_hint();
@@ -72,6 +87,9 @@ class Button : public Widget {
         Size size_hint() {
             return Size{40, 20};
         }
+
+    private:
+        const Gui _id = GUI_BUTTON;
 };
 
 class TreeIter {
