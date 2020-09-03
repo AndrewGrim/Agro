@@ -15,7 +15,10 @@ enum GuiElement {
 enum GuiLayout {
 	GUI_LAYOUT_VERTICAL,
 	GUI_LAYOUT_HORIZONTAL,
-	GUI_LAYOUT_EXPAND,
+    GUI_LAYOUT_EXPAND_NONE,
+	GUI_LAYOUT_EXPAND_BOTH,
+    GUI_LAYOUT_EXPAND_VERTICAL,
+    GUI_LAYOUT_EXPAND_HORIZONTAL,
 };
 
 class Rect {
@@ -56,9 +59,8 @@ typedef struct Color {
 
 class Widget {
     public:
-        Color fg = {0, 0, 0, 255};
-        Color bg = {200, 200, 200, 255};
         std::vector<std::shared_ptr<Widget>> children;
+        GuiLayout expand = GUI_LAYOUT_EXPAND_NONE;
 
         Widget() {}
         virtual ~Widget() {}
@@ -69,16 +71,27 @@ class Widget {
 
         virtual void draw(SDL_Renderer *ren, int x, int y) {}
 
+        void append(std::shared_ptr<Widget> widget, GuiLayout expand) {
+            widget.get()->set_expand(expand);
+            this->children.push_back(widget);
+        }
+
         virtual Size size_hint() {
             return Size{0, 0}; 
         }
 
-        void append(std::shared_ptr<Widget> widget) {
-            this->children.push_back(widget);
+        virtual Color background() {
+            return this->bg;
+        }
+
+        void set_expand(GuiLayout expand) {
+            this->expand = expand;
         }
 
     private:
         const GuiElement _id = GUI_ELEMENT_WIDGET;
+        Color fg = {0, 0, 0, 255};
+        Color bg = {200, 200, 200, 255};
 };
 
 class Button : public Widget {
@@ -100,16 +113,21 @@ class Button : public Widget {
             return Size{40, 20};
         }
 
+        Color background() {
+            return this->bg;
+        }
+
     private:
         const GuiElement _id = GUI_ELEMENT_BUTTON;
+        Color fg = {0, 0, 0, 255};
+        Color bg = {200, 200, 200, 255};
 };
 
 class BoxLayout : public Widget {
     public:
         GuiLayout layout_direction;
-        bool expand;
 
-        BoxLayout(GuiLayout layout_direction, bool expand) {
+        BoxLayout(GuiLayout layout_direction) {
             this->layout_direction = layout_direction;
             this->expand = expand;
         }
@@ -120,9 +138,24 @@ class BoxLayout : public Widget {
             return this->_id;
         }
 
+        void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
+            Size size = BoxLayout::size_hint();
+            SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
+            SDL_RenderFillRect(ren,  Rect(x, y, size.width, size.height).get());
+        }
+
+        Size size_hint() {
+            return Size{200, 200};
+        }
+
+        Color background() {
+            return this->bg;
+        }
 
     private:
         const GuiElement _id = GUI_ELEMENT_LAYOUT;
+        Color fg = {0, 0, 0, 255};
+        Color bg = {255, 100, 100, 255};
 };
 
 class Application {
@@ -153,6 +186,8 @@ class Application {
         void draw() {
             SDL_SetRenderDrawColor(this->ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
             SDL_RenderClear(this->ren);
+
+            this->main_widget->draw(this->ren, 0, 0);
         }
 
         void set_main_widget(Widget *widget) {
@@ -161,18 +196,6 @@ class Application {
 
         void show() {
             this->draw();
-            this->main_widget->draw(this->ren, 0, 0);
-
-            int x = 0;
-            int y = 0;
-
-            for (int i = 0; i < this->main_widget->children.size(); i++) {
-                this->main_widget->children[i]->draw(this->ren, x, y);
-                Size size = this->main_widget->children[i]->size_hint();
-                x += size.width;
-                y += size.height;
-            }
-
             SDL_RenderPresent(this->ren);
         }
 
@@ -208,9 +231,8 @@ int main() {
     // for (std::shared_ptr<Widget> widget : app.model) {
     //     println(widget.get()->id());
     // }
-
-    auto sizer = new BoxLayout(GUI_LAYOUT_VERTICAL, GUI_LAYOUT_EXPAND);
-        sizer->append(std::make_shared<Widget>(Button()));
+    auto sizer = new BoxLayout(GUI_LAYOUT_VERTICAL);
+        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_BOTH);
 
     app.set_main_widget(sizer);
 	app.show();
