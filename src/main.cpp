@@ -84,8 +84,16 @@ class Widget {
             return this->bg;
         }
 
+        virtual void set_background(Color background) {
+            this->bg = background;
+        }
+
         void set_expand(GuiLayout expand) {
             this->expand = expand;
+        }
+
+        GuiLayout get_expand() {
+            return this->expand;
         }
 
     private:
@@ -117,6 +125,10 @@ class Button : public Widget {
             return this->bg;
         }
 
+        void set_background(Color background) {
+            this->bg = background;
+        }
+
     private:
         const GuiElement _id = GUI_ELEMENT_BUTTON;
         Color fg = {0, 0, 0, 255};
@@ -139,9 +151,43 @@ class BoxLayout : public Widget {
         }
 
         void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
-            Size size = BoxLayout::size_hint();
             SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
-            SDL_RenderFillRect(ren,  Rect(x, y, size.width, size.height).get());
+            SDL_RenderFillRect(ren,  Rect(0, 0, x, y).get());
+
+            int extra = 100;
+            Point pos = Point { 0, 0 };
+            for (std::shared_ptr<Widget> child : this->children) {
+                Size size;
+                child.get()->set_background(Color { extra, extra, extra, 255});
+                extra += 20;
+                switch (child.get()->get_expand()) {
+                    case GUI_LAYOUT_EXPAND_BOTH:
+                        size = Size { x, y / this->children.size() }; // TODO wrong?
+                        break;
+                    case GUI_LAYOUT_EXPAND_VERTICAL:
+                        size = Size { child.get()->size_hint().width, y / this->children.size() };
+                        break;
+                    case GUI_LAYOUT_EXPAND_HORIZONTAL:
+                        size = Size { x, child.get()->size_hint().height }; // TODO wrong?
+                        break;
+                    case GUI_LAYOUT_EXPAND_NONE:
+                    default:
+                        size = child.get()->size_hint();
+                }
+                Color bg = child.get()->background();
+                SDL_SetRenderDrawColor(ren, bg.red , bg.green , bg.blue , bg.alpha);
+                SDL_RenderFillRect(ren,  Rect(pos.x, pos.y, size.width, size.height).get());
+                printf("x: %d, y: %d, w: %d, h: %d\n", pos.x, pos.y, size.width, size.height);
+                switch (this->layout_direction) {
+                    case GUI_LAYOUT_VERTICAL:
+                        pos.y += size.height;
+                        break;
+                    case GUI_LAYOUT_HORIZONTAL:
+                        pos.x += size.width;
+                        break;
+                }
+            }
+            // SDL_RenderPresent(ren);
         }
 
         Size size_hint() {
@@ -152,10 +198,14 @@ class BoxLayout : public Widget {
             return this->bg;
         }
 
+        void set_background(Color background) {
+            this->bg = background;
+        }
+
     private:
         const GuiElement _id = GUI_ELEMENT_LAYOUT;
         Color fg = {0, 0, 0, 255};
-        Color bg = {255, 100, 100, 255};
+        Color bg = {220, 220, 220, 255};
 };
 
 class Application {
@@ -187,7 +237,7 @@ class Application {
             SDL_SetRenderDrawColor(this->ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
             SDL_RenderClear(this->ren);
 
-            this->main_widget->draw(this->ren, 0, 0);
+            this->main_widget->draw(this->ren, 400, 400);
         }
 
         void set_main_widget(Widget *widget) {
@@ -232,7 +282,10 @@ int main() {
     //     println(widget.get()->id());
     // }
     auto sizer = new BoxLayout(GUI_LAYOUT_VERTICAL);
+        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_VERTICAL);
         sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_BOTH);
+        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_BOTH);
+        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_HORIZONTAL);
 
     app.set_main_widget(sizer);
 	app.show();
