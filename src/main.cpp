@@ -6,9 +6,16 @@
 
 #include "util.hpp"
 
-enum Gui {
-    GUI_WIDGET,
-    GUI_BUTTON,
+enum GuiElement {
+    GUI_ELEMENT_WIDGET,
+    GUI_ELEMENT_BUTTON,
+    GUI_ELEMENT_LAYOUT,
+};
+
+enum GuiLayout {
+	GUI_LAYOUT_VERTICAL,
+	GUI_LAYOUT_HORIZONTAL,
+	GUI_LAYOUT_EXPAND,
 };
 
 class Rect {
