@@ -58,11 +58,12 @@ class Widget {
     public:
         Color fg = {0, 0, 0, 255};
         Color bg = {200, 200, 200, 255};
+        std::vector<std::shared_ptr<Widget>> children;
 
         Widget() {}
         virtual ~Widget() {}
 
-        virtual const Gui id() {
+        virtual const GuiElement id() {
             return this->_id;
         }
 
@@ -72,8 +73,12 @@ class Widget {
             return Size{0, 0}; 
         }
 
+        void append(std::shared_ptr<Widget> widget) {
+            this->children.push_back(widget);
+        }
+
     private:
-        const Gui _id = GUI_WIDGET;
+        const GuiElement _id = GUI_ELEMENT_WIDGET;
 };
 
 class Button : public Widget {
@@ -81,7 +86,7 @@ class Button : public Widget {
         Button() {}
         ~Button() {}
 
-        const Gui id() {
+        const GuiElement id() {
             return this->_id;
         }
 
@@ -96,64 +101,28 @@ class Button : public Widget {
         }
 
     private:
-        const Gui _id = GUI_BUTTON;
+        const GuiElement _id = GUI_ELEMENT_BUTTON;
 };
 
-class TreeIter {
+class BoxLayout : public Widget {
     public:
-        std::vector<int> path;
+        GuiLayout layout_direction;
+        bool expand;
 
-        TreeIter(std::vector<int> path) {
-            this->path = path;
+        BoxLayout(GuiLayout layout_direction, bool expand) {
+            this->layout_direction = layout_direction;
+            this->expand = expand;
         }
-};
 
-template <class T> class TreeNode {
-    public:
-        T item;
-        std::vector<TreeNode<T>> children;
-        TreeNode<T> *parent;
-        // is_visible: boolean = true;
-        // is_collapsed: boolean = false;
-        TreeIter iter = TreeIter(std::vector<int>());
+        ~BoxLayout() {}
 
-        TreeNode(T item) {
-            this->item = item;
+        const GuiElement id() {
+            return this->_id;
         }
-};
 
-template <class T> class Tree {
-    public:
-        std::vector<TreeNode<T>> tree;
 
-        TreeIter append(TreeIter tree_iter, TreeNode<T> item) {
-            if (!tree_iter.path.size()) {
-                item.iter = TreeIter(std::vector<int>(this->tree.size()));
-                item.parent = nullptr;
-                this->tree.push_back(item); 
-                
-                return item.iter;
-            } else {
-                TreeNode<T> root = this->tree[tree_iter.path[0]];
-                for (int i = 1; i < tree_iter.path.size(); i++) {
-                    if (root.children.size()) {
-                        root = root.children[tree_iter.path[i]];
-                    } else {
-                        break;
-                    }
-                }
-
-                root.children.push_back(item);
-                int last_index = root.children.size() - 1; // TODO not sure here
-                TreeIter new_iter = TreeIter(tree_iter.path);
-                new_iter.path.push_back(last_index);
-                TreeIter iter = TreeIter(new_iter.path);
-                item.iter = iter;
-                item.parent = &root;
-
-                return iter;
-            }
-        }
+    private:
+        const GuiElement _id = GUI_ELEMENT_LAYOUT;
 };
 
 class Application {
@@ -162,8 +131,7 @@ class Application {
         SDL_Renderer *ren;
         std::vector<int> events;
         Color bg = {155, 155, 155, 255};
-        Tree<std::shared_ptr<Widget>> model;
-        
+        Widget *main_widget;
 
         Application(const char* title = "Application", int width = 400, int height = 400) {
             SDL_Init(SDL_INIT_VIDEO);
@@ -177,8 +145,9 @@ class Application {
             SDL_SetRenderDrawBlendMode(this->ren, SDL_BLENDMODE_BLEND);
         }
 
-        void append(std::shared_ptr<Widget> widget) {
-            this->model.tree.push_back(TreeNode<std::shared_ptr<Widget>>(widget));
+        ~Application() {
+            // TODO recursively delete
+            delete main_widget;
         }
 
         void draw() {
@@ -186,20 +155,20 @@ class Application {
             SDL_RenderClear(this->ren);
         }
 
-        void draw_at(int index, int x, int y) {
-            this->model.tree[index].item->draw(this->ren, x, y);
-
-            SDL_RenderPresent(this->ren);
+        void set_main_widget(Widget *widget) {
+            this->main_widget = widget;
         }
 
         void show() {
             this->draw();
+            this->main_widget->draw(this->ren, 0, 0);
 
             int x = 0;
             int y = 0;
-            for (int i = 0; i < this->model.tree.size(); i++) {
-                this->model.tree[i].item->draw(this->ren, x, y);
-                Size size = this->model.tree[i].item->size_hint();
+
+            for (int i = 0; i < this->main_widget->children.size(); i++) {
+                this->main_widget->children[i]->draw(this->ren, x, y);
+                Size size = this->main_widget->children[i]->size_hint();
                 x += size.width;
                 y += size.height;
             }
@@ -215,8 +184,7 @@ class Application {
                         case SDL_MOUSEBUTTONDOWN:
                             int x, y;
                             SDL_GetMouseState(&x, &y);
-                            this->append(std::make_shared<Button>());
-                            this->draw_at(this->model.tree.size() - 1, x, y);
+                            std::cout << "Mouse(" << x << ", " << y << ")\n"; 
                             break;
                         case SDL_QUIT:
                             goto EXIT;
@@ -236,11 +204,17 @@ class Application {
 };
 
 int main() { 
-    Application app = Application();
-        app.append(std::make_shared<Button>());
-        app.append(std::make_shared<Button>());
-        app.show();
-        app.run();
+    auto app = Application();
+    // for (std::shared_ptr<Widget> widget : app.model) {
+    //     println(widget.get()->id());
+    // }
+
+    auto sizer = new BoxLayout(GUI_LAYOUT_VERTICAL, GUI_LAYOUT_EXPAND);
+        sizer->append(std::make_shared<Widget>(Button()));
+
+    app.set_main_widget(sizer);
+	app.show();
+    app.run();
 
     return 0; 
 } 
