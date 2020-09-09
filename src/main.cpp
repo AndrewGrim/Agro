@@ -163,25 +163,45 @@ class BoxLayout : public Widget {
             return this->_id;
         }
 
-        void draw(SDL_Renderer* ren, int x = 0, int y = 0) {
+        void draw(SDL_Renderer* ren, int x = 0, int y = 0) { // TODO change from x and y to rect
             SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
             SDL_RenderFillRect(ren,  Rect(0, 0, x, y).get());
 
+            int non_expandable_widgets = 0;
+            int reserved_size = 0;
+            for (std::shared_ptr<Widget> child : this->children) {
+                switch (child.get()->get_expand()) {
+                    case GUI_LAYOUT_EXPAND_BOTH:
+                    case GUI_LAYOUT_EXPAND_VERTICAL:
+                        break;
+                    case GUI_LAYOUT_EXPAND_HORIZONTAL:
+                    case GUI_LAYOUT_EXPAND_NONE:
+                    default:
+                        non_expandable_widgets += 1;
+                        reserved_size += child.get()->size_hint().height;
+                        break;
+                }
+            }
+
+            int child_count = this->children.size() - non_expandable_widgets;
+            y = y - reserved_size;
             int extra = 100;
             Point pos = Point { 0, 0 };
+            // TODO go over all the widgets first and get the total remaining size
+            // of either x or y to be used for calculating expand
             for (std::shared_ptr<Widget> child : this->children) {
                 Size size;
                 child.get()->set_background(Color { extra, extra, extra, 255});
                 extra += 20;
                 switch (child.get()->get_expand()) {
                     case GUI_LAYOUT_EXPAND_BOTH:
-                        size = Size { x, y / this->children.size() }; // TODO wrong?
+                        size = Size { x, y / child_count };
                         break;
                     case GUI_LAYOUT_EXPAND_VERTICAL:
-                        size = Size { child.get()->size_hint().width, y / this->children.size() };
+                        size = Size { child.get()->size_hint().width, y / child_count };
                         break;
                     case GUI_LAYOUT_EXPAND_HORIZONTAL:
-                        size = Size { x, child.get()->size_hint().height }; // TODO wrong?
+                        size = Size { x, child.get()->size_hint().height };
                         break;
                     case GUI_LAYOUT_EXPAND_NONE:
                     default:
@@ -235,7 +255,8 @@ class Application {
                 title, 
                 SDL_WINDOWPOS_CENTERED, 
                 SDL_WINDOWPOS_CENTERED, 
-                width, height, 0
+                width, height,
+                SDL_WINDOW_RESIZABLE
             ); 
             this->ren = SDL_CreateRenderer(this->win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             SDL_SetRenderDrawBlendMode(this->ren, SDL_BLENDMODE_BLEND);
@@ -250,7 +271,7 @@ class Application {
             SDL_SetRenderDrawColor(this->ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
             SDL_RenderClear(this->ren);
 
-            this->main_widget->draw(this->ren, 400, 400);
+            this->main_widget->draw(this->ren, 400, 400); // TODO this need the window size
         }
 
         void set_main_widget(Widget *widget) {
@@ -270,7 +291,8 @@ class Application {
                         case SDL_MOUSEBUTTONDOWN:
                             int x, y;
                             SDL_GetMouseState(&x, &y);
-                            std::cout << "Mouse(" << x << ", " << y << ")\n"; 
+                            std::cout << "Mouse(" << x << ", " << y << ")\n";
+                            this->show(); // TODO probably some sort of update function instead of using show manually
                             break;
                         case SDL_QUIT:
                             goto EXIT;
