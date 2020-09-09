@@ -96,10 +96,23 @@ class Widget {
             return this->expand;
         }
 
+        void show() {
+            this->m_is_visible = true;
+        }
+
+        void hide() {
+            this->m_is_visible = false;
+        }
+        
+        bool is_visible() {
+            return this->m_is_visible;
+        }
+
     private:
         const GuiElement _id = GUI_ELEMENT_WIDGET;
         Color fg = {0, 0, 0, 255};
         Color bg = {200, 200, 200, 255};
+        bool m_is_visible = false;
 };
 
 class Button : public Widget {
