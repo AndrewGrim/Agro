@@ -23,17 +23,27 @@ enum GuiLayout {
 
 class Rect {
     public:
+        int x;
+        int y;
+        int w;
+        int h;
+
         Rect(int x, int y, int w, int h) {
-            this->sdl_rect = SDL_Rect {
-                x,
-                y,
-                w,
-                h
-            };
+            this->x = x;
+            this->y = y;
+            this->w = w;
+            this->h = h;
         }
 
-        SDL_Rect* get() {
-            return &this->sdl_rect;
+        SDL_Rect* to_SDL_Rect() {
+            this->sdl_rect = SDL_Rect {
+                this->x,
+                this->y,
+                this->w,
+                this->h
+            };
+
+            return &(this->sdl_rect);
         }
 
     private:
