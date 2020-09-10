@@ -81,9 +81,11 @@ class Widget {
 
         virtual void draw(SDL_Renderer *ren, Rect rect) {}
 
-        void append(Widget* widget, GuiLayout expand) {
+        Widget* append(Widget* widget, GuiLayout expand) {
             widget->set_expand(expand);
             this->children.push_back(widget);
+
+            return this;
         }
 
         virtual Size size_hint() { // TODO instances of overriden size_hint will need to return non static values, based on the widget contents
