@@ -1,7 +1,7 @@
 #ifndef BOX_HPP
     #define BOX_HPP
 
-    #include "../common/rect.h"
+    #include "../common/rect.hpp"
     #include "../common/size.h"
     #include "../common/color.h"
     #include "../common/fill.h"
