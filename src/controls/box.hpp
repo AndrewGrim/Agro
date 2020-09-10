@@ -18,7 +18,6 @@
             void draw(SDL_Renderer* ren, Rect rect) {
                 SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
                 SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
-                printf("x: %d, y: %d, w: %d, h: %d\n", rect.x, rect.y, rect.w, rect.h);
 
                 layout_children(ren, rect);
             }
@@ -66,7 +65,6 @@
                                     size = child->size_hint();
                             }
                             child->draw(ren, Rect { pos.x, pos.y, size.width, size.height });
-                            printf("x: %d, y: %d, w: %d, h: %d\n", pos.x, pos.y, size.width, size.height);
                             pos.y += size.height;
                         }
                         break;
@@ -88,7 +86,6 @@
                                     size = child->size_hint();
                             }
                             child->draw(ren, Rect { pos.x, pos.y, size.width, size.height });
-                            printf("x: %d, y: %d, w: %d, h: %d\n", pos.x, pos.y, size.width, size.height);
                             pos.x += size.width;
                         }
                         break;
