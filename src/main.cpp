@@ -184,6 +184,7 @@ class BoxLayout : public Widget {
         void draw(SDL_Renderer* ren, Rect rect) {
             SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
             SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
+            printf("x: %d, y: %d, w: %d, h: %d\n", rect.x, rect.y, rect.w, rect.h);
 
             layout_children(ren, rect);
         }
@@ -261,7 +262,16 @@ class BoxLayout : public Widget {
         }
 
         Size size_hint() {
-            return Size{200, 200};
+            Size size = Size { 0, 0 };
+            for (Widget* child : this->children) {
+                Size s = child->size_hint();
+                size.width += s.width;
+                if (s.height > size.height) {
+                    size.height = s.height;
+                }
+            }
+
+            return size;
         }
 
         Color background() {
@@ -348,7 +358,13 @@ class Application {
 int main() { 
     auto app = Application();
     auto sizer = new BoxLayout(GUI_LAYOUT_VERTICAL);
-        sizer->append((new Button())->set_background(Color{255, 0, 0, 255}), GUI_LAYOUT_EXPAND_VERTICAL);
+        BoxLayout *inner = new BoxLayout(GUI_LAYOUT_HORIZONTAL);
+            inner->append((new Button())->set_background(Color{50, 0, 0, 255}), GUI_LAYOUT_EXPAND_BOTH);
+            inner->append((new Button())->set_background(Color{100, 0, 0, 255}), GUI_LAYOUT_EXPAND_BOTH);
+            inner->append((new Button())->set_background(Color{150, 0, 0, 255}), GUI_LAYOUT_EXPAND_BOTH);
+            inner->append((new Button())->set_background(Color{200, 0, 0, 255}), GUI_LAYOUT_EXPAND_BOTH);
+            inner->append((new Button())->set_background(Color{255, 0, 0, 255}), GUI_LAYOUT_EXPAND_BOTH);
+        sizer->append(inner, GUI_LAYOUT_EXPAND_VERTICAL);
         sizer->append((new Button())->set_background(Color{0, 255, 0, 255}), GUI_LAYOUT_EXPAND_HORIZONTAL);
         sizer->append((new Button())->set_background(Color{0, 0, 255, 255}), GUI_LAYOUT_EXPAND_BOTH);
         sizer->append((new Button())->set_background(Color{255, 0, 255, 255}), GUI_LAYOUT_EXPAND_NONE);
