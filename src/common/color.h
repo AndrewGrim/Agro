@@ -1,5 +1,5 @@
-#ifndef COLOR_HPP
-    #define COLOR_HPP
+#ifndef COLOR_H
+    #define COLOR_H
 
     typedef struct Color {
         int red;

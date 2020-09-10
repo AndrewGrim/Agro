@@ -1,5 +1,5 @@
-#ifndef SIZE_HPP
-    #define SIZE_HPP
+#ifndef SIZE_H
+    #define SIZE_H
 
     typedef struct Size {
         int width;
