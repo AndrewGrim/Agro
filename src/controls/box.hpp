@@ -14,8 +14,8 @@
 
             ~Box() {}
 
-            const GuiElement id() {
-                return this->_id;
+            const char* name() {
+                return this->m_name;
             }
 
             void draw(SDL_Renderer* ren, Rect rect) {
@@ -122,7 +122,7 @@
             }
 
         private:
-            const GuiElement _id = GUI_ELEMENT_LAYOUT;
+            const char *m_name = "Box";
             Color fg = {0, 0, 0, 255};
             Color bg = {220, 220, 220, 255};
     };

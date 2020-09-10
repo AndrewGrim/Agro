@@ -8,21 +8,6 @@
 #include "controls/box.hpp"
 #include "controls/button.hpp"
 
-enum GuiElement {
-    GUI_ELEMENT_WIDGET,
-    GUI_ELEMENT_BUTTON,
-    GUI_ELEMENT_LAYOUT,
-};
-
-enum GuiLayout {
-	GUI_LAYOUT_VERTICAL,
-	GUI_LAYOUT_HORIZONTAL,
-    GUI_LAYOUT_EXPAND_NONE,
-	GUI_LAYOUT_EXPAND_BOTH,
-    GUI_LAYOUT_EXPAND_VERTICAL,
-    GUI_LAYOUT_EXPAND_HORIZONTAL,
-};
-
 class Application {
     public:
         SDL_Window *win;

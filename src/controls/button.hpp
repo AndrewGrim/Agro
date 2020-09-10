@@ -8,8 +8,8 @@
             Button() {}
             ~Button() {}
 
-            const GuiElement id() {
-                return this->_id;
+            const char* name() {
+                return this->m_name;
             }
 
             void draw(SDL_Renderer* ren, Rect rect) {
@@ -32,7 +32,7 @@
             }
 
         private:
-            const GuiElement _id = GUI_ELEMENT_BUTTON;
+            const char *m_name = "Button";
             Color fg = {0, 0, 0, 255};
             Color bg = {200, 200, 200, 255};
     };

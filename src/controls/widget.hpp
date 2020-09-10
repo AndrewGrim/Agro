@@ -7,6 +7,15 @@
     #include "../common/size.h"
     #include "../common/color.h"
 
+    enum GuiLayout {
+        GUI_LAYOUT_VERTICAL,
+        GUI_LAYOUT_HORIZONTAL,
+        GUI_LAYOUT_EXPAND_NONE,
+        GUI_LAYOUT_EXPAND_BOTH,
+        GUI_LAYOUT_EXPAND_VERTICAL,
+        GUI_LAYOUT_EXPAND_HORIZONTAL,
+    };
+
     class Widget {
         public:
             std::vector<Widget*> children;
@@ -15,8 +24,8 @@
             Widget() {}
             virtual ~Widget() {}
 
-            virtual const GuiElement id() {
-                return this->_id;
+            virtual const char* name() {
+                return this->m_name;
             }
 
             virtual void draw(SDL_Renderer *ren, Rect rect) {}
@@ -65,7 +74,7 @@
             }
 
         private:
-            const GuiElement _id = GUI_ELEMENT_WIDGET;
+            const char *m_name = "Widget";
             Color fg = { 0, 0, 0, 255 };
             Color bg = { 200, 200, 200, 255 };
             bool m_is_visible = false;
