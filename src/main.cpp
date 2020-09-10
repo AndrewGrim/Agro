@@ -270,7 +270,6 @@ class Application {
     public:
         SDL_Window *win;
         SDL_Renderer *ren;
-        std::vector<int> events;
         Color bg = {155, 155, 155, 255};
         Widget *main_widget;
 
@@ -322,10 +321,6 @@ class Application {
                         case SDL_QUIT:
                             goto EXIT;
                     }
-                }
-
-                if (this->events.size()) {
-                    std::cout << this->events.size() << "\n";
                 }
             }
 
