@@ -4,7 +4,7 @@
     #include "../common/rect.hpp"
     #include "../common/size.h"
     #include "../common/color.h"
-    #include "../common/fill.h"
+    #include "../common/fill.hpp"
 
     #include "widget.hpp"
 
