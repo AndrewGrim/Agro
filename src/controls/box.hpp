@@ -1,11 +1,6 @@
 #ifndef BOX_HPP
     #define BOX_HPP
 
-    #include "../common/rect.hpp"
-    #include "../common/size.h"
-    #include "../common/color.h"
-    #include "../common/fill.hpp"
-
     #include "widget.hpp"
 
     class Box : public Widget {
@@ -120,7 +115,7 @@
                 return this->bg;
             }
 
-            BoxLayout* set_background(Color background) {
+            Box* set_background(Color background) {
                 this->bg = background;
 
                 return this;

@@ -2,9 +2,10 @@
     #define WIDGET_HPP
 
     #include "../common/rect.hpp"
+    #include "../common/fill.hpp"
+    #include "../common/point.h"
     #include "../common/size.h"
     #include "../common/color.h"
-    #include "../common/fill.hpp"
 
     class Widget {
         public:

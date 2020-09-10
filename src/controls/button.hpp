@@ -1,11 +1,6 @@
 #ifndef BUTTON_HPP
     #define BUTTON_HPP
 
-    #include "../common/rect.hpp"
-    #include "../common/size.h"
-    #include "../common/color.h"
-    #include "../common/fill.hpp"
-
     #include "widget.hpp"
 
     class Button : public Widget {
