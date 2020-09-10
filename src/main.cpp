@@ -76,7 +76,8 @@ class Widget {
             this->children.push_back(widget);
         }
 
-        virtual Size size_hint() {
+        virtual Size size_hint() { // TODO instances of overriden size_hint will need to return non static values, based on the widget contents
+        // so a button that says "ok" and a button that says "click here for a suprise" should return different sizes, depeneding on the font as well etc.
             return Size{0, 0}; 
         }
 
@@ -163,64 +164,88 @@ class BoxLayout : public Widget {
             return this->_id;
         }
 
-        void draw(SDL_Renderer* ren, int x = 0, int y = 0) { // TODO change from x and y to rect
+        void draw(SDL_Renderer* ren, int x, int y) { // TODO change from x and y to rect
             SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
             SDL_RenderFillRect(ren,  Rect(0, 0, x, y).get());
 
             int non_expandable_widgets = 0;
-            int reserved_size = 0;
+            int reserved_x = 0;
+            int reserved_y = 0;
+            GuiLayout parent_layout = this->layout_direction;
             for (std::shared_ptr<Widget> child : this->children) {
-                switch (child.get()->get_expand()) {
-                    case GUI_LAYOUT_EXPAND_BOTH:
-                    case GUI_LAYOUT_EXPAND_VERTICAL:
-                        break;
-                    case GUI_LAYOUT_EXPAND_HORIZONTAL:
-                    case GUI_LAYOUT_EXPAND_NONE:
-                    default:
-                        non_expandable_widgets += 1;
-                        reserved_size += child.get()->size_hint().height;
-                        break;
+                GuiLayout child_layout = child.get()->get_expand();
+                if (child_layout == GUI_LAYOUT_EXPAND_HORIZONTAL && parent_layout == GUI_LAYOUT_VERTICAL) {
+                    non_expandable_widgets += 1;
+                    reserved_y += child.get()->size_hint().height;
+                } else if (child_layout == GUI_LAYOUT_EXPAND_VERTICAL && parent_layout == GUI_LAYOUT_HORIZONTAL) {
+                    non_expandable_widgets += 1;
+                    reserved_x += child.get()->size_hint().width;
+                } else if (child_layout == GUI_LAYOUT_EXPAND_NONE) {
+                    non_expandable_widgets += 1;
+                    if (parent_layout == GUI_LAYOUT_HORIZONTAL) reserved_x += child.get()->size_hint().width;
+                    else if (parent_layout == GUI_LAYOUT_VERTICAL) reserved_y += child.get()->size_hint().height;
                 }
             }
 
             int child_count = this->children.size() - non_expandable_widgets;
-            y = y - reserved_size;
+            x = x - reserved_x;
+            y = y - reserved_y;
             int extra = 100;
             Point pos = Point { 0, 0 };
-            // TODO go over all the widgets first and get the total remaining size
-            // of either x or y to be used for calculating expand
-            for (std::shared_ptr<Widget> child : this->children) {
-                Size size;
-                child.get()->set_background(Color { extra, extra, extra, 255});
-                extra += 20;
-                switch (child.get()->get_expand()) {
-                    case GUI_LAYOUT_EXPAND_BOTH:
-                        size = Size { x, y / child_count };
-                        break;
-                    case GUI_LAYOUT_EXPAND_VERTICAL:
-                        size = Size { child.get()->size_hint().width, y / child_count };
-                        break;
-                    case GUI_LAYOUT_EXPAND_HORIZONTAL:
-                        size = Size { x, child.get()->size_hint().height };
-                        break;
-                    case GUI_LAYOUT_EXPAND_NONE:
-                    default:
-                        size = child.get()->size_hint();
-                }
-                Color bg = child.get()->background();
-                SDL_SetRenderDrawColor(ren, bg.red , bg.green , bg.blue , bg.alpha);
-                SDL_RenderFillRect(ren,  Rect(pos.x, pos.y, size.width, size.height).get());
-                printf("x: %d, y: %d, w: %d, h: %d\n", pos.x, pos.y, size.width, size.height);
-                switch (this->layout_direction) {
-                    case GUI_LAYOUT_VERTICAL:
+            switch (this->layout_direction) {
+                case GUI_LAYOUT_VERTICAL:
+                    for (std::shared_ptr<Widget> child : this->children) {
+                        Size size;
+                        child.get()->set_background(Color { extra, extra, extra, 255});
+                        extra += 20;
+                        switch (child.get()->get_expand()) {
+                            case GUI_LAYOUT_EXPAND_BOTH:
+                                size = Size { x, y / child_count };
+                                break;
+                            case GUI_LAYOUT_EXPAND_VERTICAL:
+                                size = Size { child.get()->size_hint().width, y / child_count };
+                                break;
+                            case GUI_LAYOUT_EXPAND_HORIZONTAL:
+                                size = Size { x, child.get()->size_hint().height };
+                                break;
+                            case GUI_LAYOUT_EXPAND_NONE:
+                            default:
+                                size = child.get()->size_hint();
+                        }
+                        Color bg = child.get()->background();
+                        SDL_SetRenderDrawColor(ren, bg.red , bg.green , bg.blue , bg.alpha);
+                        SDL_RenderFillRect(ren,  Rect(pos.x, pos.y, size.width, size.height).get());
+                        printf("x: %d, y: %d, w: %d, h: %d\n", pos.x, pos.y, size.width, size.height);
                         pos.y += size.height;
-                        break;
-                    case GUI_LAYOUT_HORIZONTAL:
+                    }
+                    break;
+                case GUI_LAYOUT_HORIZONTAL:
+                    for (std::shared_ptr<Widget> child : this->children) {
+                        Size size;
+                        child.get()->set_background(Color { extra, extra, extra, 255});
+                        extra += 20;
+                        switch (child.get()->get_expand()) {
+                            case GUI_LAYOUT_EXPAND_BOTH:
+                                size = Size { x / child_count, y };
+                                break;
+                            case GUI_LAYOUT_EXPAND_VERTICAL:
+                                size = Size { child.get()->size_hint().width, y };
+                                break;
+                            case GUI_LAYOUT_EXPAND_HORIZONTAL:
+                                size = Size { x / child_count, child.get()->size_hint().height };
+                                break;
+                            case GUI_LAYOUT_EXPAND_NONE:
+                            default:
+                                size = child.get()->size_hint();
+                        }
+                        Color bg = child.get()->background();
+                        SDL_SetRenderDrawColor(ren, bg.red , bg.green , bg.blue , bg.alpha);
+                        SDL_RenderFillRect(ren,  Rect(pos.x, pos.y, size.width, size.height).get());
+                        printf("x: %d, y: %d, w: %d, h: %d\n", pos.x, pos.y, size.width, size.height);
                         pos.x += size.width;
-                        break;
-                }
+                    }
+                    break;
             }
-            // SDL_RenderPresent(ren);
         }
 
         Size size_hint() {
@@ -313,14 +338,11 @@ class Application {
 
 int main() { 
     auto app = Application();
-    // for (std::shared_ptr<Widget> widget : app.model) {
-    //     println(widget.get()->id());
-    // }
     auto sizer = new BoxLayout(GUI_LAYOUT_VERTICAL);
         sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_VERTICAL);
-        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_BOTH);
-        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_BOTH);
         sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_HORIZONTAL);
+        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_BOTH);
+        sizer->append(std::make_shared<Button>(), GUI_LAYOUT_EXPAND_NONE);
 
     app.set_main_widget(sizer);
 	app.show();
