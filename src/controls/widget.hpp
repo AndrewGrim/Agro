@@ -3,23 +3,14 @@
 
     #include "../common/rect.hpp"
     #include "../common/fill.hpp"
+    #include "../common/align.hpp"
     #include "../common/point.h"
     #include "../common/size.h"
     #include "../common/color.h"
 
-    enum GuiLayout {
-        GUI_LAYOUT_VERTICAL,
-        GUI_LAYOUT_HORIZONTAL,
-        GUI_LAYOUT_EXPAND_NONE,
-        GUI_LAYOUT_EXPAND_BOTH,
-        GUI_LAYOUT_EXPAND_VERTICAL,
-        GUI_LAYOUT_EXPAND_HORIZONTAL,
-    };
-
     class Widget {
         public:
             std::vector<Widget*> children;
-            GuiLayout expand = GUI_LAYOUT_EXPAND_NONE;
 
             Widget() {}
             virtual ~Widget() {}
@@ -30,8 +21,8 @@
 
             virtual void draw(SDL_Renderer *ren, Rect rect) {}
 
-            Widget* append(Widget* widget, GuiLayout expand) {
-                widget->set_expand(expand);
+            Widget* append(Widget* widget, Fill fill_policy) {
+                widget->set_fill_policy(fill_policy);
                 this->children.push_back(widget);
 
                 return this;
@@ -51,14 +42,14 @@
                 return this;
             }
 
-            Widget* set_expand(GuiLayout expand) {
-                this->expand = expand;
+            Widget* set_fill_policy(Fill fill_policy) {
+                this->m_fill_policy = fill_policy;
 
                 return this;
             }
 
-            GuiLayout get_expand() {
-                return this->expand;
+            Fill fill_policy() {
+                return this->m_fill_policy;
             }
 
             void show() {
@@ -78,5 +69,6 @@
             Color fg = { 0, 0, 0, 255 };
             Color bg = { 200, 200, 200, 255 };
             bool m_is_visible = false;
+            Fill m_fill_policy = Fill::None;
     };
 #endif

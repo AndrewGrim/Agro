@@ -5,11 +5,8 @@
 
     class Box : public Widget {
         public:
-            GuiLayout layout_direction;
-
-            Box(GuiLayout layout_direction) {
-                this->layout_direction = layout_direction;
-                this->expand = expand;
+            Box(Align align_policy) {
+                this->m_align_policy = align_policy;
             }
 
             ~Box() {}
@@ -30,19 +27,19 @@
                 int non_expandable_widgets = 0;
                 int reserved_x = 0;
                 int reserved_y = 0;
-                GuiLayout parent_layout = this->layout_direction;
+                Align parent_layout = this->m_align_policy;
                 for (Widget* child : this->children) {
-                    GuiLayout child_layout = child->get_expand();
-                    if (child_layout == GUI_LAYOUT_EXPAND_HORIZONTAL && parent_layout == GUI_LAYOUT_VERTICAL) {
+                    Fill child_layout = child->fill_policy();
+                    if (child_layout == Fill::Horizontal && parent_layout == Align::Vertical) {
                         non_expandable_widgets += 1;
                         reserved_y += child->size_hint().height;
-                    } else if (child_layout == GUI_LAYOUT_EXPAND_VERTICAL && parent_layout == GUI_LAYOUT_HORIZONTAL) {
+                    } else if (child_layout == Fill::Vertical && parent_layout == Align::Horizontal) {
                         non_expandable_widgets += 1;
                         reserved_x += child->size_hint().width;
-                    } else if (child_layout == GUI_LAYOUT_EXPAND_NONE) {
+                    } else if (child_layout == Fill::None) {
                         non_expandable_widgets += 1;
-                        if (parent_layout == GUI_LAYOUT_HORIZONTAL) reserved_x += child->size_hint().width;
-                        else if (parent_layout == GUI_LAYOUT_VERTICAL) reserved_y += child->size_hint().height;
+                        if (parent_layout == Align::Horizontal) reserved_x += child->size_hint().width;
+                        else if (parent_layout == Align::Vertical) reserved_y += child->size_hint().height;
                     }
                 }
 
@@ -50,21 +47,21 @@
                 rect.w -= reserved_x;
                 rect.h -= reserved_y;
                 Point pos = Point { rect.x, rect.y };
-                switch (this->layout_direction) {
-                    case GUI_LAYOUT_VERTICAL:
+                switch (this->m_align_policy) {
+                    case Align::Vertical:
                         for (Widget* child : this->children) {
                             Size size;
-                            switch (child->get_expand()) {
-                                case GUI_LAYOUT_EXPAND_BOTH:
+                            switch (child->fill_policy()) {
+                                case Fill::Both:
                                     size = Size { rect.w, rect.h / child_count };
                                     break;
-                                case GUI_LAYOUT_EXPAND_VERTICAL:
+                                case Fill::Vertical:
                                     size = Size { child->size_hint().width, rect.h / child_count };
                                     break;
-                                case GUI_LAYOUT_EXPAND_HORIZONTAL:
+                                case Fill::Horizontal:
                                     size = Size { rect.w, child->size_hint().height };
                                     break;
-                                case GUI_LAYOUT_EXPAND_NONE:
+                                case Fill::None:
                                 default:
                                     size = child->size_hint();
                             }
@@ -73,20 +70,20 @@
                             pos.y += size.height;
                         }
                         break;
-                    case GUI_LAYOUT_HORIZONTAL:
+                    case Align::Horizontal:
                         for (Widget* child : this->children) {
                             Size size;
-                            switch (child->get_expand()) {
-                                case GUI_LAYOUT_EXPAND_BOTH:
+                            switch (child->fill_policy()) {
+                                case Fill::Both:
                                     size = Size { rect.w / child_count, rect.h };
                                     break;
-                                case GUI_LAYOUT_EXPAND_VERTICAL:
+                                case Fill::Vertical:
                                     size = Size { child->size_hint().width, rect.h };
                                     break;
-                                case GUI_LAYOUT_EXPAND_HORIZONTAL:
+                                case Fill::Horizontal:
                                     size = Size { rect.w / child_count, child->size_hint().height };
                                     break;
-                                case GUI_LAYOUT_EXPAND_NONE:
+                                case Fill::None:
                                 default:
                                     size = child->size_hint();
                             }
@@ -125,5 +122,6 @@
             const char *m_name = "Box";
             Color fg = {0, 0, 0, 255};
             Color bg = {220, 220, 220, 255};
+            Align m_align_policy;
     };
 #endif
