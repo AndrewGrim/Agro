@@ -10,6 +10,7 @@
 
     class Widget {
         public:
+            Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
 
             Widget() {}
@@ -19,7 +20,9 @@
                 return this->m_name;
             }
 
-            virtual void draw(SDL_Renderer *ren, Rect rect) {}
+            virtual void draw(SDL_Renderer *ren, Rect rect) {
+                this->rect = rect;
+            }
 
             Widget* append(Widget* widget, Fill fill_policy) {
                 widget->set_fill_policy(fill_policy);

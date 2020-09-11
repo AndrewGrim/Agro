@@ -16,6 +16,7 @@
             }
 
             void draw(SDL_Renderer* ren, Rect rect) {
+                this->rect = rect;
                 SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
                 SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
 
