@@ -26,6 +26,7 @@
             enum class Type {
                 Down,
                 Up,
+                Motion,
             };
 
             enum class State {
@@ -34,11 +35,13 @@
             };
 
             enum class Click {
+                None,
                 Single,
                 Double,
             };
 
             enum class Button {
+                None,
                 Left,
                 Middle,
                 Right,
@@ -52,15 +55,29 @@
             Button button;
             int x;
             int y;
+            int xrel;
+            int yrel;
 
             MouseEvent(SDL_MouseButtonEvent event) {
-                // TODO this will need clean up, there are more types to account for
                 this->type = event.type == SDL_MOUSEBUTTONDOWN ? Type::Down : Type::Up;
                 this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
-                this->click = event.clicks == 1 ? Click::Single : Click::Double;
-                this->button = event.button == SDL_BUTTON_LEFT ? Button::Left : Button::Right;
+                this->click = event.clicks == 1 ? Click::Single : Click::Double; // TODO handle all cases
+                this->button = event.button == SDL_BUTTON_LEFT ? Button::Left : Button::Right; // TODO handle all cases
                 this->x = event.x;
                 this->y = event.y;
+                this->xrel = 0;
+                this->yrel = 0;
             }
+
+            MouseEvent(SDL_MouseMotionEvent event) {
+                this->type = Type::Motion;
+                this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
+                this->click = Click::None;
+                this->button = Button::None;
+                this->x = event.x;
+                this->y = event.y;
+                this->xrel = event.xrel;
+                this->yrel = event.yrel;
+        }
     };
 #endif

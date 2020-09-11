@@ -59,6 +59,9 @@
                             case SDL_MOUSEBUTTONUP:
                                 this->main_widget->propagate_mouse_event(MouseEvent(event.button));
                                 break;
+                            case SDL_MOUSEMOTION:
+                                this->main_widget->propagate_mouse_event(MouseEvent(event.motion));
+                                break;
                             case SDL_WINDOWEVENT:
                                 switch (event.window.event) {
                                     case SDL_WINDOWEVENT_RESIZED:
