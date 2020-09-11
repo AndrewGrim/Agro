@@ -7,11 +7,22 @@
 #include "controls/box.hpp"
 #include "controls/button.hpp"
 
+void onMouseDown(MouseEvent event) {
+    println("MOUSEDOWN");
+}
+
+void onMouseUp(MouseEvent event) {
+    println("MOUSEUP");
+}
+
 int main() { 
     auto app = Application();
     auto sizer = new Box(Align::Vertical);
         Box *inner = new Box(Align::Horizontal);
-            inner->append((new Button())->set_background(Color{50, 0, 0, 255}), Fill::Both);
+            Button *test_button = (new Button())->set_background(Color{50, 0, 0, 255});
+                test_button->mouse_down_callback = &onMouseDown;
+                test_button->mouse_up_callback = &onMouseUp;
+            inner->append(test_button, Fill::Both);
             inner->append((new Button())->set_background(Color{100, 0, 0, 255}), Fill::Both);
             inner->append((new Button())->set_background(Color{150, 0, 0, 255}), Fill::Both);
             inner->append((new Button())->set_background(Color{200, 0, 0, 255}), Fill::Both);
@@ -26,4 +37,4 @@ int main() {
     app.run();
 
     return 0; 
-} 
+}

@@ -32,6 +32,10 @@
                 return this;
             }
 
+            bool is_layout() {
+                return false;
+            }
+
         private:
             const char *m_name = "Button";
             Color fg = {0, 0, 0, 255};

@@ -116,6 +116,10 @@
                 return this;
             }
 
+            bool is_layout() {
+                return true;
+            }
+
         private:
             const char *m_name = "Box";
             Color fg = {0, 0, 0, 255};

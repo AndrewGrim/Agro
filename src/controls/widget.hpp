@@ -12,6 +12,8 @@
         public:
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
+            void (*mouse_down_callback)(MouseEvent) = nullptr;
+            void (*mouse_up_callback)(MouseEvent) = nullptr;
 
             Widget() {}
             virtual ~Widget() {}
@@ -65,6 +67,35 @@
             
             bool is_visible() {
                 return this->m_is_visible;
+            }
+
+            virtual bool is_layout() {
+                return false;
+            }
+
+            void propagate_mouse_event(MouseEvent event) {
+                for (Widget *child : this->children) {
+                    if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                        (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                        if (child->is_layout()) {
+                            child->propagate_mouse_event(event);
+                        } else {
+                            child->mouse_event(event);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            void mouse_event(MouseEvent event) {
+                switch (event.type) {
+                    case MouseEvent::Type::Down:
+                        if (mouse_down_callback) mouse_down_callback(event);
+                        break;
+                    case MouseEvent::Type::Up:
+                        if (mouse_up_callback) mouse_up_callback(event);
+                        break;
+                }
             }
 
         private:
