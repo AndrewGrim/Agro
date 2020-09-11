@@ -3,6 +3,7 @@
 
     #include <iostream>
 
+    #include "event.hpp"
     #include "controls/widget.hpp"
     
     class Application {
@@ -49,15 +50,24 @@
                 SDL_RenderPresent(this->ren);
             }
 
+            void fire_mouse_event(MouseEvent event) {
+                for (Widget *child : this->main_widget->children) {
+                    if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                        (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                        printf("mouse x:%d y:%d :: rect x:%d, y:%d, w:%d, h:%d\n", event.x, event.y, child->rect.x, child->rect.y, child->rect.w, child->rect.h);
+                        // TODO check if widgets has children an propagate the even through them
+                    }
+                }
+            }
+
             void run() {
                 while (true) {
                     SDL_Event event;
                     if (SDL_WaitEvent(&event)) {
                         switch (event.type) {
                             case SDL_MOUSEBUTTONDOWN:
-                                int x, y;
-                                SDL_GetMouseState(&x, &y);
-                                std::cout << "Mouse(" << x << ", " << y << ")\n";
+                            case SDL_MOUSEBUTTONUP:
+                                this->fire_mouse_event(MouseEvent(event.button));
                                 break;
                             case SDL_WINDOWEVENT:
                                 switch (event.window.event) {
