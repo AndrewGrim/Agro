@@ -112,8 +112,13 @@
 
             Box* set_background(Color background) {
                 this->bg = background;
+                if (this->ren) this->update();
 
                 return this;
+            }
+
+            virtual void update() {
+                this->draw(this->ren, this->rect);
             }
 
             bool is_layout() {

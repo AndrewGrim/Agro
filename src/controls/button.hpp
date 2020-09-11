@@ -14,6 +14,7 @@
 
             void draw(SDL_Renderer* ren, Rect rect) {
                 this->rect = rect;
+                this->ren = ren;
                 SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
                 SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
             }
@@ -28,8 +29,14 @@
 
             Button* set_background(Color background) {
                 this->bg = background;
+                if (this->ren) this->update();
 
                 return this;
+            }
+
+            void update() {
+                this->draw(this->ren, this->rect);
+                SDL_RenderPresent(this->ren);
             }
 
             bool is_layout() {

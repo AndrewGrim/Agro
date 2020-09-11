@@ -10,10 +10,11 @@
 
     class Widget {
         public:
+            SDL_Renderer *ren = nullptr;
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
-            void (*mouse_down_callback)(MouseEvent) = nullptr;
-            void (*mouse_up_callback)(MouseEvent) = nullptr;
+            void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
+            void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;
 
             Widget() {}
             virtual ~Widget() {}
@@ -23,6 +24,7 @@
             }
 
             virtual void draw(SDL_Renderer *ren, Rect rect) {
+                this->ren = ren;
                 this->rect = rect;
             }
 
@@ -43,6 +45,7 @@
 
             virtual Widget* set_background(Color background) {
                 this->bg = background;
+                if (this->ren) this->update();
 
                 return this;
             }
@@ -80,20 +83,24 @@
                         if (child->is_layout()) {
                             child->propagate_mouse_event(event);
                         } else {
-                            child->mouse_event(event);
+                            child->mouse_event(child, event);
                         }
                         break;
                     }
                 }
             }
 
-            void mouse_event(MouseEvent event) {
+            virtual void update() {
+                this->draw(this->ren, this->rect);
+            }
+
+            void mouse_event(Widget *child, MouseEvent event) {
                 switch (event.type) {
                     case MouseEvent::Type::Down:
-                        if (mouse_down_callback) mouse_down_callback(event);
+                        if (mouse_down_callback) mouse_down_callback(child, event);
                         break;
                     case MouseEvent::Type::Up:
-                        if (mouse_up_callback) mouse_up_callback(event);
+                        if (mouse_up_callback) mouse_up_callback(child, event);
                         break;
                 }
             }
