@@ -131,7 +131,7 @@
             }
 
             virtual void update() {
-                this->draw(this->ren, this->rect);
+                // this->draw(this->ren, this->rect);
             }
 
             void mouse_event(Widget *last_mouse_widget, Widget *child, MouseEvent event) {

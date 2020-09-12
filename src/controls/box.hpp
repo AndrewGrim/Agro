@@ -67,7 +67,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(ren, Rect { pos.x, pos.y, size.width, size.height });
-                            pos.y += size.height;
+                            pos.y += size.height + 2;
                         }
                         break;
                     case Align::Horizontal:
@@ -88,7 +88,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(ren, Rect { pos.x, pos.y, size.width, size.height });
-                            pos.x += size.width;
+                            pos.x += size.width + 2;
                         }
                         break;
                 }
@@ -119,7 +119,7 @@
             }
 
             virtual void update() {
-                this->draw(this->ren, this->rect);
+                // this->draw(this->ren, this->rect);
             }
 
             bool is_layout() {
