@@ -10,13 +10,18 @@
 
     class Widget {
         public:
+            int m_id = -1;
             SDL_Renderer *ren = nullptr;
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;
+            void (*mouse_left_callback)(Widget*, MouseEvent) = nullptr;
+            void (*mouse_entered_callback)(Widget*, MouseEvent) = nullptr;
+            void (*mouse_motion_callback)(Widget*, MouseEvent) = nullptr;
 
             Widget() {}
+
             virtual ~Widget() {}
 
             virtual const char* name() {
@@ -76,31 +81,46 @@
                 return false;
             }
 
-            void propagate_mouse_event(MouseEvent event) {
+            Widget* propagate_mouse_event(Widget *last_mouse_widget, MouseEvent event) {
                 for (Widget *child : this->children) {
                     if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
                         (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                        Widget *last;
                         if (child->is_layout()) {
-                            child->propagate_mouse_event(event);
+                            last = child->propagate_mouse_event(last_mouse_widget, event);
                         } else {
-                            child->mouse_event(child, event);
+                            child->mouse_event(last_mouse_widget, child, event);
+                            last = child;
                         }
-                        break;
+                        return last;
                     }
                 }
+
+                return nullptr;
             }
 
             virtual void update() {
                 this->draw(this->ren, this->rect);
             }
 
-            void mouse_event(Widget *child, MouseEvent event) {
+            void mouse_event(Widget *last_mouse_widget, Widget *child, MouseEvent event) {
                 switch (event.type) {
                     case MouseEvent::Type::Down:
-                        if (mouse_down_callback) mouse_down_callback(child, event);
+                        if (this->mouse_down_callback) this->mouse_down_callback(child, event);
                         break;
                     case MouseEvent::Type::Up:
-                        if (mouse_up_callback) mouse_up_callback(child, event);
+                        if (this->mouse_up_callback) this->mouse_up_callback(child, event);
+                        break;
+                    case MouseEvent::Type::Motion:
+                        if (last_mouse_widget) {
+                            if (child->m_id != last_mouse_widget->m_id) {
+                                if (last_mouse_widget->mouse_left_callback) last_mouse_widget->mouse_left_callback(last_mouse_widget, event);
+                                if (this->mouse_entered_callback) this->mouse_entered_callback(child, event);
+                            }
+                        } else {
+                            if (this->mouse_entered_callback) this->mouse_entered_callback(child, event);
+                        }
+                        if (this->mouse_motion_callback) this->mouse_motion_callback(child, event);
                         break;
                 }
             }

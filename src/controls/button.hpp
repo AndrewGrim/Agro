@@ -5,7 +5,10 @@
 
     class Button : public Widget {
         public:
-            Button() {}
+            Button(Application *app) {
+                this->m_id = app->next_id();
+            }
+            
             ~Button() {}
 
             const char* name() {

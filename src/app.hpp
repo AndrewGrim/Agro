@@ -8,11 +8,13 @@
     
     class Application {
         public:
+            int id_counter = 0;
             SDL_Window *win;
             SDL_Renderer *ren;
             Color bg = {155, 155, 155, 255};
             Widget *main_widget;
             Size m_size;
+            Widget *last_widget_with_mouse = nullptr;
 
             Application(const char* title = "Application", Size size = Size { 400, 400 }) {
                 this->m_size = size;
@@ -50,6 +52,10 @@
                 SDL_RenderPresent(this->ren);
             }
 
+            int next_id() {
+                return this->id_counter++;
+            }
+
             void run() {
                 while (true) {
                     SDL_Event event;
@@ -57,10 +63,10 @@
                         switch (event.type) {
                             case SDL_MOUSEBUTTONDOWN:
                             case SDL_MOUSEBUTTONUP:
-                                this->main_widget->propagate_mouse_event(MouseEvent(event.button));
+                                this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.button));
                                 break;
                             case SDL_MOUSEMOTION:
-                                this->main_widget->propagate_mouse_event(MouseEvent(event.motion));
+                                this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.motion));
                                 break;
                             case SDL_WINDOWEVENT:
                                 switch (event.window.event) {

@@ -5,7 +5,8 @@
 
     class Box : public Widget {
         public:
-            Box(Align align_policy) {
+            Box(Application *app, Align align_policy) {
+                this->m_id = app->next_id();
                 this->m_align_policy = align_policy;
             }
 
