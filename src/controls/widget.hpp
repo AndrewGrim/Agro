@@ -10,7 +10,14 @@
 
     class Widget {
         public:
+            enum class State {
+                Disabled,
+                Active,
+                Focused,
+            };
+
             int m_id = -1;
+            bool m_is_hovered = false;
             SDL_Renderer *ren = nullptr;
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
@@ -55,6 +62,17 @@
                 return this;
             }
 
+            virtual Color hover_background() {
+                return this->hover_bg;
+            }
+
+            virtual Widget* set_hover_background(Color background) {
+                this->hover_bg = background;
+                if (this->ren) this->update();
+
+                return this;
+            }
+
             Widget* set_fill_policy(Fill fill_policy) {
                 this->m_fill_policy = fill_policy;
 
@@ -81,6 +99,16 @@
                 return false;
             }
 
+            bool is_hovered() {
+                return this->m_is_hovered;
+            }
+            
+            void set_hovered(bool hover) {
+                this->m_is_hovered = hover;
+
+                this->update();
+            }
+
             Widget* propagate_mouse_event(Widget *last_mouse_widget, MouseEvent event) {
                 for (Widget *child : this->children) {
                     if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
@@ -96,6 +124,9 @@
                     }
                 }
 
+                if (last_mouse_widget) {
+                    last_mouse_widget->set_hovered(false);
+                }
                 return nullptr;
             }
 
@@ -114,11 +145,20 @@
                     case MouseEvent::Type::Motion:
                         if (last_mouse_widget) {
                             if (child->m_id != last_mouse_widget->m_id) {
-                                if (last_mouse_widget->mouse_left_callback) last_mouse_widget->mouse_left_callback(last_mouse_widget, event);
-                                if (this->mouse_entered_callback) this->mouse_entered_callback(child, event);
+                                last_mouse_widget->set_hovered(false);
+                                if (last_mouse_widget->mouse_left_callback) {
+                                    last_mouse_widget->mouse_left_callback(last_mouse_widget, event);
+                                }
+                                this->set_hovered(true);
+                                if (this->mouse_entered_callback) {
+                                    this->mouse_entered_callback(child, event);
+                                }
                             }
                         } else {
-                            if (this->mouse_entered_callback) this->mouse_entered_callback(child, event);
+                            this->set_hovered(true);
+                            if (this->mouse_entered_callback) {
+                                this->mouse_entered_callback(child, event);
+                            }
                         }
                         if (this->mouse_motion_callback) this->mouse_motion_callback(child, event);
                         break;
@@ -129,6 +169,7 @@
             const char *m_name = "Widget";
             Color fg = { 0, 0, 0, 255 };
             Color bg = { 200, 200, 200, 255 };
+            Color hover_bg = { 150, 150, 150, 255 };
             bool m_is_visible = false;
             Fill m_fill_policy = Fill::None;
     };

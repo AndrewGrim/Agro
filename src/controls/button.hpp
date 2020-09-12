@@ -5,8 +5,10 @@
 
     class Button : public Widget {
         public:
+            Application *m_app = nullptr;
             Button(Application *app) {
                 this->m_id = app->next_id();
+                m_app = app;
             }
             
             ~Button() {}
@@ -18,7 +20,8 @@
             void draw(SDL_Renderer* ren, Rect rect) {
                 this->rect = rect;
                 this->ren = ren;
-                SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
+                Color color = this->is_hovered() ? this->hover_background() : this->background();
+                SDL_SetRenderDrawColor(ren, color.red, color.green, color.blue, color.alpha);
                 SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
             }
 
@@ -38,8 +41,10 @@
             }
 
             void update() {
-                this->draw(this->ren, this->rect);
-                SDL_RenderPresent(this->ren);
+                // TODO we might be able to just copy the previous render to a texture
+                // then use that as the base and only redraw the dirty area
+                this->m_app->show();
+                // SDL_RenderPresent(this->ren);
             }
 
             bool is_layout() {

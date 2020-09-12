@@ -8,19 +8,19 @@
 #include "controls/button.hpp"
 
 void onMouseDown(Widget *self, MouseEvent event) {
-    self->set_background(Color { 255, 0, 0, 255 });
+    // self->set_background(Color { 255, 0, 0, 255 });
 }
 
 void onMouseUp(Widget *self, MouseEvent event) {
-    self->set_background(Color { 0, 255, 0, 255 });
+    // self->set_background(Color { 0, 255, 0, 255 });
 }
 
 void onMouseLeft(Widget *self, MouseEvent event) {
-    self->set_background(Color { 50, 0, 0, 255 });
+    // self->set_background(Color { 50, 0, 0, 255 });
 }
 
 void onMouseEntered(Widget *self, MouseEvent event) {
-    self->set_background(Color { 0, 0, 255, 255 });
+    // self->set_background(Color { 0, 0, 255, 255 });
 }
 
 void onMouseMotion(Widget *self, MouseEvent event) {
