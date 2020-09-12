@@ -20,7 +20,15 @@
             void draw(SDL_Renderer* ren, Rect rect) {
                 this->rect = rect;
                 this->ren = ren;
-                Color color = this->is_hovered() ? this->hover_background() : this->background();
+                Color color; 
+                if (this->is_pressed() && this->is_hovered()) {
+                    color = this->pressed_background(); 
+                } else if (this->is_hovered()) {
+                    color = this->hover_background();
+                } else {
+                    color = this->background();
+                }
+                
                 SDL_SetRenderDrawColor(ren, color.red, color.green, color.blue, color.alpha);
                 SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
 

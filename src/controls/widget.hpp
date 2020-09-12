@@ -18,6 +18,7 @@
 
             int m_id = -1;
             bool m_is_hovered = false;
+            bool m_is_pressed = false;
             SDL_Renderer *ren = nullptr;
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
@@ -73,6 +74,17 @@
                 return this;
             }
 
+            virtual Color pressed_background() {
+                return this->pressed_bg;
+            }
+
+            virtual Widget* set_pressed_background(Color background) {
+                this->pressed_bg = background;
+                if (this->ren) this->update();
+
+                return this;
+            }
+
             Widget* set_fill_policy(Fill fill_policy) {
                 this->m_fill_policy = fill_policy;
 
@@ -109,6 +121,16 @@
                 this->update();
             }
 
+            bool is_pressed() {
+                return this->m_is_pressed;
+            }
+            
+            void set_pressed(bool pressed) {
+                this->m_is_pressed = pressed;
+
+                this->update();
+            }
+
             Widget* propagate_mouse_event(Widget *last_mouse_widget, MouseEvent event) {
                 for (Widget *child : this->children) {
                     if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
@@ -125,6 +147,7 @@
                 }
 
                 if (last_mouse_widget) {
+                    last_mouse_widget->set_pressed(false);
                     last_mouse_widget->set_hovered(false);
                 }
                 return nullptr;
@@ -135,16 +158,26 @@
             }
 
             void mouse_event(Widget *last_mouse_widget, Widget *child, MouseEvent event) {
+                // TODO we dont need the child since "this" is the child!
+                // TODO warning both set_pressed and set_hovered issue an update
+                // TODO the button pressed behaviour is almost there but there is one more thing:
+                // when you press down on a button while the button is not released every hover
+                // over said button should show it as pressed
+                // and even when the mouse is released elsewhere the button should changed to released
+                // will probably need to track the pressed button in app
                 switch (event.type) {
                     case MouseEvent::Type::Down:
+                        this->set_pressed(true);
                         if (this->mouse_down_callback) this->mouse_down_callback(child, event);
                         break;
                     case MouseEvent::Type::Up:
+                        this->set_pressed(false);
                         if (this->mouse_up_callback) this->mouse_up_callback(child, event);
                         break;
                     case MouseEvent::Type::Motion:
                         if (last_mouse_widget) {
                             if (child->m_id != last_mouse_widget->m_id) {
+                                last_mouse_widget->set_pressed(false);
                                 last_mouse_widget->set_hovered(false);
                                 if (last_mouse_widget->mouse_left_callback) {
                                     last_mouse_widget->mouse_left_callback(last_mouse_widget, event);
@@ -169,7 +202,8 @@
             const char *m_name = "Widget";
             Color fg = { 0, 0, 0, 255 };
             Color bg = { 200, 200, 200, 255 };
-            Color hover_bg = { 150, 150, 150, 255 };
+            Color hover_bg = { 175, 175, 175, 255 };
+            Color pressed_bg = { 125, 125, 125, 255 };
             bool m_is_visible = false;
             Fill m_fill_policy = Fill::None;
     };
