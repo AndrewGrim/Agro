@@ -139,7 +139,7 @@
                         if (child->is_layout()) {
                             last = child->propagate_mouse_event(last_mouse_widget, event);
                         } else {
-                            child->mouse_event(last_mouse_widget, child, event);
+                            child->mouse_event(last_mouse_widget, event);
                             last = child;
                         }
                         return last;
@@ -157,8 +157,7 @@
                 // this->draw(this->ren, this->rect);
             }
 
-            void mouse_event(Widget *last_mouse_widget, Widget *child, MouseEvent event) {
-                // TODO we dont need the child since "this" is the child!
+            void mouse_event(Widget *last_mouse_widget, MouseEvent event) {
                 // TODO warning both set_pressed and set_hovered issue an update
                 // TODO the button pressed behaviour is almost there but there is one more thing:
                 // when you press down on a button while the button is not released every hover
@@ -168,15 +167,15 @@
                 switch (event.type) {
                     case MouseEvent::Type::Down:
                         this->set_pressed(true);
-                        if (this->mouse_down_callback) this->mouse_down_callback(child, event);
+                        if (this->mouse_down_callback) this->mouse_down_callback(this, event);
                         break;
                     case MouseEvent::Type::Up:
                         this->set_pressed(false);
-                        if (this->mouse_up_callback) this->mouse_up_callback(child, event);
+                        if (this->mouse_up_callback) this->mouse_up_callback(this, event);
                         break;
                     case MouseEvent::Type::Motion:
                         if (last_mouse_widget) {
-                            if (child->m_id != last_mouse_widget->m_id) {
+                            if (this->m_id != last_mouse_widget->m_id) {
                                 last_mouse_widget->set_pressed(false);
                                 last_mouse_widget->set_hovered(false);
                                 if (last_mouse_widget->mouse_left_callback) {
@@ -184,16 +183,16 @@
                                 }
                                 this->set_hovered(true);
                                 if (this->mouse_entered_callback) {
-                                    this->mouse_entered_callback(child, event);
+                                    this->mouse_entered_callback(this, event);
                                 }
                             }
                         } else {
                             this->set_hovered(true);
                             if (this->mouse_entered_callback) {
-                                this->mouse_entered_callback(child, event);
+                                this->mouse_entered_callback(this, event);
                             }
                         }
-                        if (this->mouse_motion_callback) this->mouse_motion_callback(child, event);
+                        if (this->mouse_motion_callback) this->mouse_motion_callback(this, event);
                         break;
                 }
             }
