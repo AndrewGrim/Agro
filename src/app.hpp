@@ -27,7 +27,7 @@
                     size.width, size.height,
                     SDL_WINDOW_RESIZABLE
                 ); 
-                this->ren = SDL_CreateRenderer(this->win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+                this->ren = SDL_CreateRenderer(this->win, -1, SDL_RENDERER_ACCELERATED);
                 SDL_SetRenderDrawBlendMode(this->ren, SDL_BLENDMODE_BLEND);
             }
 
