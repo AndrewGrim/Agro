@@ -1,14 +1,14 @@
 #ifndef RECT_HPP
     #define RECT_HPP
 
-    class Rect {
+    template <class T> class Rect {
         public:
-            int x;
-            int y;
-            int w;
-            int h;
+            T x;
+            T y;
+            T w;
+            T h;
 
-            Rect(int x, int y, int w, int h) {
+            Rect(T x = 0.0f, T y = 0.0f, T w = 0.0f, T h = 0.0f) {
                 this->x = x;
                 this->y = y;
                 this->w = w;
