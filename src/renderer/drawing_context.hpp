@@ -24,7 +24,7 @@
 
             }
 
-            void fillRect(Rect rect, Color color, float rotation = 0.0f) {
+            void fillRect(Rect<float> rect, Color color, float rotation = 0.0f) {
                 geometry_shader.use();
                 Quad quad = Quad();
 

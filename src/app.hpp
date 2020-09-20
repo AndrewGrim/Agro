@@ -28,10 +28,10 @@
             DrawingContext *dc; // TODO change to drawing context
             Color bg = {155, 155, 155, 255};
             Widget *main_widget;
-            Size m_size;
+            Size<float> m_size;
             Widget *last_widget_with_mouse = nullptr;
 
-            Application(const char* title = "Application", Size size = Size { 400, 400 }) {
+            Application(const char* title = "Application", Size<float> size = Size<float>(400, 400)) {
                 this->m_size = size;
 
                 glfwInit();
@@ -42,7 +42,7 @@
                     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
                 #endif
 
-                win = glfwCreateWindow(size.width, size.height, title, NULL, NULL);
+                win = glfwCreateWindow(size.w, size.h, title, NULL, NULL);
                 if (!this->win) {
                     println("Failed to create GLFW window");
                     glfwTerminate();
@@ -63,7 +63,7 @@
             }
 
             void draw() {
-                this->main_widget->draw(this->dc, Rect { 0, 0, this->m_size.width, this->m_size.height });
+                this->main_widget->draw(this->dc, Rect<float>(0, 0, this->m_size.w, this->m_size.h));
             }
 
             void set_main_widget(Widget *widget) {
@@ -87,7 +87,7 @@
                     
                     int width, height;
                     glfwGetWindowSize(this->win, &width, &height);
-                    this->m_size = Size { width, height };
+                    this->m_size = Size<float>(width, height);
             
                     this->dc->set_projection(glm::ortho(
                         0.0f, static_cast<float>(width),

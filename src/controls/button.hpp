@@ -19,7 +19,7 @@
                 return this->m_name;
             }
 
-            void draw(DrawingContext *dc, Rect rect) {
+            void draw(DrawingContext *dc, Rect<float> rect) {
                 this->dc = dc;
                 this->rect = rect;
                 Color color = Color(0, 0, 0, 0); 
@@ -32,7 +32,7 @@
                 }
                 
                 this->dc->fillRect(this->rect, Color(0, 0, 0, 1.0f));
-                this->rect = Rect(rect.x, rect.y, rect.w - 1, rect.h - 1);
+                this->rect = Rect<float>(rect.x, rect.y, rect.w - 1, rect.h - 1);
                 this->dc->fillRect(this->rect, color);
 
                 /// 3D BORDER
@@ -45,8 +45,8 @@
                 // SDL_RenderDrawLines(dc, dark_border, 3);
             }
 
-            Size size_hint() {
-                return Size{40, 20};
+            Size<float> size_hint() {
+                return Size<float>(40, 20);
             }
 
             Color background() {

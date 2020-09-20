@@ -6,8 +6,8 @@
     #include "../common/rect.hpp"
     #include "../common/fill.hpp"
     #include "../common/align.hpp"
-    #include "../common/point.h"
-    #include "../common/size.h"
+    #include "../common/point.hpp"
+    #include "../common/size.hpp"
     #include "../common/color.hpp"
 
     #include "../renderer/drawing_context.hpp"
@@ -24,7 +24,7 @@
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             DrawingContext *dc = nullptr;
-            Rect rect = Rect { 0, 0, 0, 0 };
+            Rect<float> rect = Rect<float>(0, 0, 0, 0);
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;
@@ -40,7 +40,7 @@
                 return this->m_name;
             }
 
-            virtual void draw(DrawingContext *dc, Rect rect) {
+            virtual void draw(DrawingContext *dc, Rect<float> rect) {
                 this->dc = dc;
                 this->rect = rect;
             }
@@ -52,8 +52,8 @@
                 return this;
             }
 
-            virtual Size size_hint() {
-                return Size { 0, 0 }; 
+            virtual Size<float> size_hint() {
+                return Size<float>(0, 0); 
             }
 
             virtual Color background() {

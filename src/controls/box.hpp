@@ -17,7 +17,7 @@
                 return this->m_name;
             }
 
-            void draw(DrawingContext *dc, Rect rect) {
+            void draw(DrawingContext *dc, Rect<float> rect) {
                 this->dc = dc;
                 this->rect = rect;
                 this->dc->fillRect(this->rect, Color(bg.red, bg.green, bg.blue, bg.alpha));
@@ -25,7 +25,7 @@
                 layout_children(dc, rect);
             }
 
-            void layout_children(DrawingContext *dc, Rect rect) {
+            void layout_children(DrawingContext *dc, Rect<float> rect) {
                 int non_expandable_widgets = 0;
                 int reserved_x = 0;
                 int reserved_y = 0;
@@ -34,69 +34,69 @@
                     Fill child_layout = child->fill_policy();
                     if (child_layout == Fill::Horizontal && parent_layout == Align::Vertical) {
                         non_expandable_widgets += 1;
-                        reserved_y += child->size_hint().height;
+                        reserved_y += child->size_hint().h;
                     } else if (child_layout == Fill::Vertical && parent_layout == Align::Horizontal) {
                         non_expandable_widgets += 1;
-                        reserved_x += child->size_hint().width;
+                        reserved_x += child->size_hint().w;
                     } else if (child_layout == Fill::None) {
                         non_expandable_widgets += 1;
-                        if (parent_layout == Align::Horizontal) reserved_x += child->size_hint().width;
-                        else if (parent_layout == Align::Vertical) reserved_y += child->size_hint().height;
+                        if (parent_layout == Align::Horizontal) reserved_x += child->size_hint().w;
+                        else if (parent_layout == Align::Vertical) reserved_y += child->size_hint().h;
                     }
                 }
 
                 int child_count = this->children.size() - non_expandable_widgets;
                 rect.w -= reserved_x;
                 rect.h -= reserved_y;
-                Point pos = Point { rect.x, rect.y };
+                Point<float> pos = Point<float>(rect.x, rect.y);
                 switch (this->m_align_policy) {
                     case Align::Vertical:
                         for (Widget* child : this->children) {
-                            Size size;
-                            Size child_hint = child->size_hint();
-                            int expandable_height = rect.h / child_count;
+                            Size<float> size;
+                            Size<float> child_hint = child->size_hint();
+                            float expandable_height = rect.h / child_count;
                             switch (child->fill_policy()) {
                                 case Fill::Both:
-                                    size = Size { 
+                                    size = Size<float> { 
                                         rect.w, 
-                                        expandable_height > child_hint.height ? expandable_height : child_hint.height
+                                        expandable_height > child_hint.h ? expandable_height : child_hint.h
                                     };
                                     break;
                                 case Fill::Vertical:
-                                    size = Size { 
-                                        child_hint.width, 
-                                        expandable_height > child_hint.height ? expandable_height : child_hint.height
+                                    size = Size<float> { 
+                                        child_hint.w, 
+                                        expandable_height > child_hint.h ? expandable_height : child_hint.h
                                     };
                                     break;
                                 case Fill::Horizontal:
-                                    size = Size { rect.w, child->size_hint().height };
+                                    size = Size<float> { rect.w, child->size_hint().h };
                                     break;
                                 case Fill::None:
                                 default:
                                     size = child->size_hint();
                             }
-                            child->draw(dc, Rect { pos.x, pos.y, size.width, size.height });
-                            pos.y += size.height;
+                            child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
+                            pos.y += size.h;
                         }
                         break;
                     case Align::Horizontal:
                         for (Widget* child : this->children) {
-                            Size size;
-                            Size child_hint = child->size_hint();
-                            int expandable_width = rect.w / child_count;
+                            Size<float> size;
+                            Size<float> child_hint = child->size_hint();
+                            float expandable_width = rect.w / child_count;
                             switch (child->fill_policy()) {
                                 case Fill::Both:
-                                    size = Size { 
-                                        expandable_width > child_hint.width ? expandable_width : child_hint.width, 
+                                    size = Size<float> { 
+                                        expandable_width > child_hint.w ? expandable_width : child_hint.w, 
                                         rect.h
                                     };
                                     break;
                                 case Fill::Vertical:
-                                    size = Size { child->size_hint().width, rect.h };
+                                    size = Size<float> { child->size_hint().w, rect.h };
                                     break;
                                 case Fill::Horizontal:
-                                    size = Size { 
-                                        expandable_width > child_hint.width ? expandable_width : child_hint.width, 
+                                    size = Size<float> { 
+                                        expandable_width > child_hint.w ? expandable_width : child_hint.w, 
                                         rect.h
                                     };
                                     break;
@@ -104,20 +104,20 @@
                                 default:
                                     size = child->size_hint();
                             }
-                            child->draw(dc, Rect { pos.x, pos.y, size.width, size.height });
-                            pos.x += size.width;
+                            child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
+                            pos.x += size.w;
                         }
                         break;
                 }
             }
 
-            Size size_hint() {
-                Size size = Size { 0, 0 };
+            Size<float> size_hint() {
+                Size<float> size = Size<float> { 0, 0 };
                 for (Widget* child : this->children) {
-                    Size s = child->size_hint();
-                    size.width += s.width;
-                    if (s.height > size.height) {
-                        size.height = s.height;
+                    Size<float> s = child->size_hint();
+                    size.w += s.w;
+                    if (s.h > size.h) {
+                        size.h = s.h;
                     }
                 }
 
