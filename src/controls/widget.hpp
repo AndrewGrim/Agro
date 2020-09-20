@@ -1,12 +1,16 @@
 #ifndef WIDGET_HPP
     #define WIDGET_HPP
 
+    #include <vector>
+
     #include "../common/rect.hpp"
     #include "../common/fill.hpp"
     #include "../common/align.hpp"
     #include "../common/point.h"
     #include "../common/size.h"
-    #include "../common/color.h"
+    #include "../common/color.hpp"
+
+    #include "../renderer/drawing_context.hpp"
 
     class Widget {
         public:
@@ -19,7 +23,7 @@
             int m_id = -1;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
-            SDL_Renderer *ren = nullptr;
+            DrawingContext *ren = nullptr;
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
@@ -36,7 +40,7 @@
                 return this->m_name;
             }
 
-            virtual void draw(SDL_Renderer *ren, Rect rect) {
+            virtual void draw(DrawingContext *ren, Rect rect) {
                 this->ren = ren;
                 this->rect = rect;
             }
