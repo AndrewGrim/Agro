@@ -68,7 +68,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(dc, Rect { pos.x, pos.y, size.width, size.height });
-                            pos.y += size.height + 2;
+                            pos.y += size.height;
                         }
                         break;
                     case Align::Horizontal:
@@ -89,7 +89,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(dc, Rect { pos.x, pos.y, size.width, size.height });
-                            pos.x += size.width + 2;
+                            pos.x += size.width;
                         }
                         break;
                 }

@@ -31,8 +31,11 @@
                     color = this->background();
                 }
                 
+                this->dc->fillRect(this->rect, Color(0, 0, 0, 1.0f));
+                this->rect = Rect(rect.x, rect.y, rect.w - 1, rect.h - 1);
                 this->dc->fillRect(this->rect, color);
 
+                /// 3D BORDER
                 // SDL_SetRenderDrawColor(dc, 255, 255, 255, 255);
                 // SDL_Point light_border[] = { SDL_Point { rect.x, rect.y + rect.h }, SDL_Point { rect.x, rect.y }, SDL_Point { rect.x + rect.w, rect.y } };
                 // SDL_RenderDrawLines(dc, light_border, 3);
