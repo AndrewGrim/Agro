@@ -53,25 +53,21 @@
                     case Align::Vertical:
                         for (Widget* child : this->children) {
                             Size size;
+                            Size child_hint = child->size_hint();
+                            int expandable_height = rect.h / child_count;
                             switch (child->fill_policy()) {
-                                case Fill::Both: {
-                                    Size child_hint = child->size_hint();
-                                    int expandable_height = rect.h / child_count;
+                                case Fill::Both:
                                     size = Size { 
                                         rect.w, 
                                         expandable_height > child_hint.height ? expandable_height : child_hint.height
                                     };
                                     break;
-                                }
-                                case Fill::Vertical: {
-                                    Size child_hint = child->size_hint();
-                                    int expandable_height = rect.h / child_count;
+                                case Fill::Vertical:
                                     size = Size { 
                                         child_hint.width, 
                                         expandable_height > child_hint.height ? expandable_height : child_hint.height
                                     };
                                     break;
-                                }
                                 case Fill::Horizontal:
                                     size = Size { rect.w, child->size_hint().height };
                                     break;
@@ -86,15 +82,23 @@
                     case Align::Horizontal:
                         for (Widget* child : this->children) {
                             Size size;
+                            Size child_hint = child->size_hint();
+                            int expandable_width = rect.w / child_count;
                             switch (child->fill_policy()) {
                                 case Fill::Both:
-                                    size = Size { rect.w / child_count, rect.h };
+                                    size = Size { 
+                                        expandable_width > child_hint.width ? expandable_width : child_hint.width, 
+                                        rect.h
+                                    };
                                     break;
                                 case Fill::Vertical:
                                     size = Size { child->size_hint().width, rect.h };
                                     break;
                                 case Fill::Horizontal:
-                                    size = Size { rect.w / child_count, child->size_hint().height };
+                                    size = Size { 
+                                        expandable_width > child_hint.width ? expandable_width : child_hint.width, 
+                                        rect.h
+                                    };
                                     break;
                                 case Fill::None:
                                 default:
