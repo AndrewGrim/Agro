@@ -3,14 +3,29 @@
 
     #include <iostream>
 
+    #include <glad/glad.h>
+    #include <GLFW/glfw3.h>
+
     #include "event.hpp"
     #include "controls/widget.hpp"
+
+    #include "renderer/drawing_context.hpp"
+
+    void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+        glViewport(0, 0, width, height);
+    }
+
+    void processInput(GLFWwindow *window) {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
+    }
     
     class Application {
         public:
             int id_counter = 0;
-            SDL_Window *win;
-            SDL_Renderer *ren;
+            GLFWwindow *win;
+            DrawingContext *dc; // TODO change to drawing context
             Color bg = {155, 155, 155, 255};
             Widget *main_widget;
             Size m_size;
@@ -19,16 +34,29 @@
             Application(const char* title = "Application", Size size = Size { 400, 400 }) {
                 this->m_size = size;
 
-                SDL_Init(SDL_INIT_VIDEO);
-                this->win = SDL_CreateWindow(
-                    title, 
-                    SDL_WINDOWPOS_CENTERED, 
-                    SDL_WINDOWPOS_CENTERED, 
-                    size.width, size.height,
-                    SDL_WINDOW_RESIZABLE
-                ); 
-                this->ren = SDL_CreateRenderer(this->win, -1, SDL_RENDERER_ACCELERATED);
-                SDL_SetRenderDrawBlendMode(this->ren, SDL_BLENDMODE_BLEND);
+                glfwInit();
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+                glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+                #ifdef __APPLE__
+                    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+                #endif
+
+                win = glfwCreateWindow(800, 600, "suck my balls", NULL, NULL);
+                if (!this->win) {
+                    println("Failed to create GLFW window");
+                    glfwTerminate();
+                }
+                glfwMakeContextCurrent(this->win);
+                glfwSetFramebufferSizeCallback(this->win, framebuffer_size_callback);
+
+                if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+                    println("Failed to initialize GLAD");
+                }
+
+                glEnable(GL_BLEND); // TODO move to drawingcontext
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                dc = new DrawingContext();
             }
 
             ~Application() {
@@ -37,10 +65,7 @@
             }
 
             void draw() {
-                SDL_SetRenderDrawColor(this->ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
-                SDL_RenderClear(this->ren);
-
-                this->main_widget->draw(this->ren, Rect { 0, 0, this->m_size.width, this->m_size.height });
+                // this->main_widget->draw(this->dc, Rect { 0, 0, this->m_size.width, this->m_size.height });
             }
 
             void set_main_widget(Widget *widget) {
@@ -49,7 +74,7 @@
 
             void show() {
                 this->draw();
-                SDL_RenderPresent(this->ren);
+                // SDL_RenderPresent(this->dc);
             }
 
             int next_id() {
@@ -57,35 +82,13 @@
             }
 
             void run() {
-                while (true) {
-                    SDL_Event event;
-                    if (SDL_WaitEvent(&event)) {
-                        switch (event.type) {
-                            case SDL_MOUSEBUTTONDOWN:
-                            case SDL_MOUSEBUTTONUP:
-                                this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.button));
-                                break;
-                            case SDL_MOUSEMOTION:
-                                this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.motion));
-                                break;
-                            case SDL_WINDOWEVENT:
-                                switch (event.window.event) {
-                                    case SDL_WINDOWEVENT_RESIZED:
-                                        this->m_size = Size { event.window.data1, event.window.data2 };
-                                        this->show(); // TODO probably some sort of update function instead of using show manually
-                                        break;
-                                }
-                                break;
-                            case SDL_QUIT:
-                                goto EXIT;
-                        }
-                    }
+                while (!glfwWindowShouldClose(this->win)) {
+                    // this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.button));
+                    processInput(this->win);
+                    this->show();
+                    glfwWaitEvents();
                 }
-
-                EXIT:
-                    SDL_DestroyWindow(this->win);
-                    SDL_DestroyRenderer(this->ren);
-                    SDL_Quit();
+                glfwTerminate();
             }
     };
 #endif
