@@ -87,6 +87,7 @@
                     
                     int width, height;
                     glfwGetWindowSize(this->win, &width, &height);
+                    this->m_size = Size { width, height };
             
                     this->dc->set_projection(glm::ortho(
                         0.0f, static_cast<float>(width),

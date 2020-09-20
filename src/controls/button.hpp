@@ -1,7 +1,9 @@
 #ifndef BUTTON_HPP
     #define BUTTON_HPP
 
+    #include "../app.hpp"
     #include "widget.hpp"
+    #include "../renderer/drawing_context.hpp"
 
     class Button : public Widget {
         public:
@@ -17,10 +19,10 @@
                 return this->m_name;
             }
 
-            void draw(SDL_Renderer* ren, Rect rect) {
+            void draw(DrawingContext *dc, Rect rect) {
+                this->dc = dc;
                 this->rect = rect;
-                this->ren = ren;
-                Color color; 
+                Color color = Color(0, 0, 0, 0); 
                 if (this->is_pressed() && this->is_hovered()) {
                     color = this->pressed_background(); 
                 } else if (this->is_hovered()) {
@@ -29,16 +31,15 @@
                     color = this->background();
                 }
                 
-                SDL_SetRenderDrawColor(ren, color.red, color.green, color.blue, color.alpha);
-                SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
+                this->dc->fillRect(this->rect, color);
 
-                SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-                SDL_Point light_border[] = { SDL_Point { rect.x, rect.y + rect.h }, SDL_Point { rect.x, rect.y }, SDL_Point { rect.x + rect.w, rect.y } };
-                SDL_RenderDrawLines(ren, light_border, 3);
+                // SDL_SetRenderDrawColor(dc, 255, 255, 255, 255);
+                // SDL_Point light_border[] = { SDL_Point { rect.x, rect.y + rect.h }, SDL_Point { rect.x, rect.y }, SDL_Point { rect.x + rect.w, rect.y } };
+                // SDL_RenderDrawLines(dc, light_border, 3);
 
-                SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-                SDL_Point dark_border[] = { SDL_Point { rect.x + rect.w, rect.y }, SDL_Point { rect.x + rect.w, rect.y + rect.h }, SDL_Point { rect.x, rect.y + rect.h } };
-                SDL_RenderDrawLines(ren, dark_border, 3);
+                // SDL_SetRenderDrawColor(dc, 0, 0, 0, 255);
+                // SDL_Point dark_border[] = { SDL_Point { rect.x + rect.w, rect.y }, SDL_Point { rect.x + rect.w, rect.y + rect.h }, SDL_Point { rect.x, rect.y + rect.h } };
+                // SDL_RenderDrawLines(dc, dark_border, 3);
             }
 
             Size size_hint() {
@@ -51,7 +52,7 @@
 
             Button* set_background(Color background) {
                 this->bg = background;
-                if (this->ren) this->update();
+                if (this->dc) this->update();
 
                 return this;
             }
@@ -60,13 +61,13 @@
                 // TODO we might be able to just copy the previous render to a texture
                 // then use that as the base and only redraw the dirty area
                 // this->m_app->show();
-                // SDL_Texture *texture = SDL_CreateTexture(this->ren, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 400, 400);
-                // SDL_SetRenderTarget(this->ren, texture);
+                // SDL_Texture *texture = SDL_CreateTexture(this->dc, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 400, 400);
+                // SDL_SetRenderTarget(this->dc, texture);
 
-                // SDL_SetRenderTarget(this->ren, NULL);
-                // SDL_RenderCopy(this->ren, texture, NULL, NULL);
-                // this->draw(this->ren, this->rect);
-                // SDL_RenderPresent(this->ren);
+                // SDL_SetRenderTarget(this->dc, NULL);
+                // SDL_RenderCopy(this->dc, texture, NULL, NULL);
+                // this->draw(this->dc, this->rect);
+                // SDL_RenderPresent(this->dc);
                 this->m_app->show();
             }
 

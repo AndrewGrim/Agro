@@ -43,8 +43,6 @@
             virtual void draw(DrawingContext *dc, Rect rect) {
                 this->dc = dc;
                 this->rect = rect;
-
-                this->dc->fillRect(Rect(0, 0, 200, 200), Color(1.0f, 0.0f, 1.0f, 1.0f));
             }
 
             Widget* append(Widget* widget, Fill fill_policy) {

@@ -2,6 +2,7 @@
     #define BOX_HPP
 
     #include "widget.hpp"
+    #include "../renderer/drawing_context.hpp"
 
     class Box : public Widget {
         public:
@@ -16,15 +17,15 @@
                 return this->m_name;
             }
 
-            void draw(SDL_Renderer* ren, Rect rect) {
+            void draw(DrawingContext *dc, Rect rect) {
+                this->dc = dc;
                 this->rect = rect;
-                SDL_SetRenderDrawColor(ren, this->bg.red, this->bg.green, this->bg.blue, this->bg.alpha);
-                SDL_RenderFillRect(ren,  rect.to_SDL_Rect());
+                this->dc->fillRect(this->rect, Color(bg.red, bg.green, bg.blue, bg.alpha));
 
-                layout_children(ren, rect);
+                layout_children(dc, rect);
             }
 
-            void layout_children(SDL_Renderer *ren, Rect rect) {
+            void layout_children(DrawingContext *dc, Rect rect) {
                 int non_expandable_widgets = 0;
                 int reserved_x = 0;
                 int reserved_y = 0;
@@ -66,7 +67,7 @@
                                 default:
                                     size = child->size_hint();
                             }
-                            child->draw(ren, Rect { pos.x, pos.y, size.width, size.height });
+                            child->draw(dc, Rect { pos.x, pos.y, size.width, size.height });
                             pos.y += size.height + 2;
                         }
                         break;
@@ -87,7 +88,7 @@
                                 default:
                                     size = child->size_hint();
                             }
-                            child->draw(ren, Rect { pos.x, pos.y, size.width, size.height });
+                            child->draw(dc, Rect { pos.x, pos.y, size.width, size.height });
                             pos.x += size.width + 2;
                         }
                         break;
@@ -113,13 +114,13 @@
 
             Box* set_background(Color background) {
                 this->bg = background;
-                if (this->ren) this->update();
+                if (this->dc) this->update();
 
                 return this;
             }
 
             virtual void update() {
-                // this->draw(this->ren, this->rect);
+                // this->draw(this->dc, this->rect);
             }
 
             bool is_layout() {
