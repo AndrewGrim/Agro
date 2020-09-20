@@ -6,12 +6,13 @@
 
 #include "text_renderer.h"
 #include "resource_manager.h"
+#include "../common/size.hpp"
 
 
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
     // load and configure shader
-    this->TextShader = ResourceManager::LoadShader("src/text_2d.vs", "src/text_2d.fs", nullptr, "text");
+    this->TextShader = ResourceManager::LoadShader("shaders/text_2d.vs", "shaders/text_2d.fs", nullptr, "text");
     this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     this->TextShader.SetInteger("text", 0);
     // configure VAO/VBO for texture quads
@@ -130,4 +131,20 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+Size<float> TextRenderer::MeasureText(std::string text, float scale) {
+    std::string::const_iterator c;
+    Size<float> size = Size<float>();
+    float x = 0.0f;
+    for (c = text.begin(); c != text.end(); c++) {
+        Character ch = Characters[*c];
+        float xpos = x + ch.Bearing.x * scale;
+        float w = ch.Size.x * scale;
+        size.w = xpos + w;
+        size.h = ch.Size.y > size.h ? ch.Size.y : size.h;
+        x += (ch.Advance >> 6) * scale;
+    }
+
+    return size;
 }

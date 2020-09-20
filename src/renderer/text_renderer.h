@@ -16,6 +16,7 @@
 
 #include "texture.h"
 #include "shader.h"
+#include "../common/size.hpp"
 
 
 /// Holds all state information relevant to a character as loaded using FreeType
@@ -43,6 +44,8 @@ public:
     void Load(std::string font, unsigned int fontSize);
     // renders a string of text using the precompiled list of characters
     void RenderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f), int width = 800, int height = 600);
+    // Measures the dimensions of the text as if rendered. Returns Size<float>(w, h).
+    Size<float> MeasureText(std::string text, float scale = 1.0f);
 private:
     // render state
     unsigned int VAO, VBO;
