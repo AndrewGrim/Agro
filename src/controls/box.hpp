@@ -54,12 +54,24 @@
                         for (Widget* child : this->children) {
                             Size size;
                             switch (child->fill_policy()) {
-                                case Fill::Both:
-                                    size = Size { rect.w, rect.h / child_count };
+                                case Fill::Both: {
+                                    Size child_hint = child->size_hint();
+                                    int expandable_height = rect.h / child_count;
+                                    size = Size { 
+                                        rect.w, 
+                                        expandable_height > child_hint.height ? expandable_height : child_hint.height
+                                    };
                                     break;
-                                case Fill::Vertical:
-                                    size = Size { child->size_hint().width, rect.h / child_count };
+                                }
+                                case Fill::Vertical: {
+                                    Size child_hint = child->size_hint();
+                                    int expandable_height = rect.h / child_count;
+                                    size = Size { 
+                                        child_hint.width, 
+                                        expandable_height > child_hint.height ? expandable_height : child_hint.height
+                                    };
                                     break;
+                                }
                                 case Fill::Horizontal:
                                     size = Size { rect.w, child->size_hint().height };
                                     break;
