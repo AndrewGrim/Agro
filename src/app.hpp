@@ -42,7 +42,7 @@
                     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
                 #endif
 
-                win = glfwCreateWindow(800, 600, "suck my balls", NULL, NULL);
+                win = glfwCreateWindow(size.width, size.height, title, NULL, NULL);
                 if (!this->win) {
                     println("Failed to create GLFW window");
                     glfwTerminate();
@@ -54,8 +54,6 @@
                     println("Failed to initialize GLAD");
                 }
 
-                glEnable(GL_BLEND); // TODO move to drawingcontext
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                 dc = new DrawingContext();
             }
 
@@ -65,7 +63,7 @@
             }
 
             void draw() {
-                // this->main_widget->draw(this->dc, Rect { 0, 0, this->m_size.width, this->m_size.height });
+                this->main_widget->draw(this->dc, Rect { 0, 0, this->m_size.width, this->m_size.height });
             }
 
             void set_main_widget(Widget *widget) {
@@ -74,7 +72,7 @@
 
             void show() {
                 this->draw();
-                // SDL_RenderPresent(this->dc);
+                this->dc->swap_buffer(this->win);
             }
 
             int next_id() {
@@ -85,6 +83,17 @@
                 while (!glfwWindowShouldClose(this->win)) {
                     // this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.button));
                     processInput(this->win);
+                    this->dc->clear(this->win);
+                    
+                    int width, height;
+                    glfwGetWindowSize(this->win, &width, &height);
+            
+                    this->dc->set_projection(glm::ortho(
+                        0.0f, static_cast<float>(width),
+                        static_cast<float>(height), 0.0f,
+                        -1.0f, 1.0f
+                    ));
+                    
                     this->show();
                     glfwWaitEvents();
                 }

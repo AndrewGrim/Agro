@@ -47,9 +47,9 @@ int main() {
     //     sizer->append((new Button(app))->set_background(Color {255, 0, 255, 255}), Fill::None);
 
     // app->set_main_widget(sizer);
+    app->set_main_widget(new Widget());
 	app->show();
     app->run();
-    println("IT WORKS!");
 
     return 0; 
 }

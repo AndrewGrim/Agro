@@ -23,7 +23,7 @@
             int m_id = -1;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
-            DrawingContext *ren = nullptr;
+            DrawingContext *dc = nullptr;
             Rect rect = Rect { 0, 0, 0, 0 };
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
@@ -40,9 +40,11 @@
                 return this->m_name;
             }
 
-            virtual void draw(DrawingContext *ren, Rect rect) {
-                this->ren = ren;
+            virtual void draw(DrawingContext *dc, Rect rect) {
+                this->dc = dc;
                 this->rect = rect;
+
+                this->dc->fillRect(Rect(0, 0, 200, 200), Color(1.0f, 0.0f, 1.0f, 1.0f));
             }
 
             Widget* append(Widget* widget, Fill fill_policy) {
@@ -62,7 +64,7 @@
 
             virtual Widget* set_background(Color background) {
                 this->bg = background;
-                if (this->ren) this->update();
+                if (this->dc) this->update();
 
                 return this;
             }
@@ -73,7 +75,7 @@
 
             virtual Widget* set_hover_background(Color background) {
                 this->hover_bg = background;
-                if (this->ren) this->update();
+                if (this->dc) this->update();
 
                 return this;
             }
@@ -84,7 +86,7 @@
 
             virtual Widget* set_pressed_background(Color background) {
                 this->pressed_bg = background;
-                if (this->ren) this->update();
+                if (this->dc) this->update();
 
                 return this;
             }
@@ -158,7 +160,7 @@
             }
 
             virtual void update() {
-                // this->draw(this->ren, this->rect);
+                // this->draw(this->dc, this->rect);
             }
 
             void mouse_event(Widget *last_mouse_widget, MouseEvent event) {
