@@ -96,8 +96,7 @@
                         -1.0f, 1.0f
                     ));
                     
-                    this->draw();
-                    this->dc->swap_buffer(this->win);
+                    this->show();
                     glfwWaitEvents();
                 }
                 glfwTerminate();

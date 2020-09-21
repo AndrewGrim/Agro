@@ -8,9 +8,10 @@
     class Button : public Widget {
         public:
             Application *m_app = nullptr;
-            Button(Application *app) {
+            Button(Application *app, std::string text) {
                 this->m_id = app->next_id();
-                m_app = app;
+                this->m_app = app;
+                this->set_text(text);
             }
             
             ~Button() {}
@@ -20,8 +21,10 @@
             }
 
             void draw(DrawingContext *dc, Rect<float> rect) {
+                // TODO get rid of app, and init with dc, this could be done by messing with the widget in append.
                 this->dc = dc;
                 this->rect = rect;
+                this->set_size(this->dc->measureText(text()));
                 Color color = Color(0, 0, 0, 0); 
                 if (this->is_pressed() && this->is_hovered()) {
                     color = this->pressed_background(); 
@@ -31,26 +34,25 @@
                     color = this->background();
                 }
                 
-                this->dc->fillRect(this->rect, Color(0, 0, 0, 1.0f));
+                // shadow rectangle
+                dc->fillRect(this->rect, Color(0, 0, 0, 1.0f));
                 this->rect = Rect<float>(rect.x, rect.y, rect.w - 1, rect.h - 1);
-                this->dc->fillRect(this->rect, color);
-
-                Size<float> measure_test = dc->measureText("B");
-                this->dc->fillRect(Rect<float>(rect.x, rect.y, measure_test.w, measure_test.h), Color(1.0f, 0.0f, 1.0f, 1.0f));
-                dc->drawText("B", rect.x, rect.y);
-
-                /// 3D BORDER
-                // SDL_SetRenderDrawColor(dc, 255, 255, 255, 255);
-                // SDL_Point light_border[] = { SDL_Point { rect.x, rect.y + rect.h }, SDL_Point { rect.x, rect.y }, SDL_Point { rect.x + rect.w, rect.y } };
-                // SDL_RenderDrawLines(dc, light_border, 3);
-
-                // SDL_SetRenderDrawColor(dc, 0, 0, 0, 255);
-                // SDL_Point dark_border[] = { SDL_Point { rect.x + rect.w, rect.y }, SDL_Point { rect.x + rect.w, rect.y + rect.h }, SDL_Point { rect.x, rect.y + rect.h } };
-                // SDL_RenderDrawLines(dc, dark_border, 3);
+                // actual rectangle
+                dc->fillRect(this->rect, color);
+                // centered text
+                dc->drawText(
+                    this->m_text,
+                    rect.x + (rect.w / 2) - (this->dc->measureText(this->m_text).w / 2),
+                    rect.y + (rect.h / 2) - (this->dc->measureText(this->m_text).h / 2)
+                );
             }
 
             Size<float> size_hint() {
-                return Size<float>(40, 20);
+                Size<float> size = this->m_size;
+                    if (this->m_text_align == TextAlignment::Center) size.w *= 1.5;
+                    size.w += this->m_padding * 2;
+                    size.h += this->m_padding * 2;
+                return size;
             }
 
             Color background() {
@@ -60,6 +62,17 @@
             Button* set_background(Color background) {
                 this->bg = background;
                 if (this->dc) this->update();
+
+                return this;
+            }
+
+            std::string text() {
+                return this->m_text;
+            }
+
+            Button* set_text(std::string text) {
+                this->m_text = text;
+                // if (this->dc) this->update();
 
                 return this;
             }
@@ -84,7 +97,17 @@
 
         private:
             const char *m_name = "Button";
+            std::string m_text;
+            Size<float> m_size;
+            TextAlignment m_text_align = TextAlignment::Center;
+            unsigned int m_padding = 10;
             Color fg = {0, 0, 0, 255};
             Color bg = {200, 200, 200, 255};
+
+            Button* set_size(Size<float> size) {
+                this->m_size = size;
+
+                return this;
+            }
     };
 #endif

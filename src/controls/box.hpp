@@ -42,6 +42,11 @@
                         non_expandable_widgets += 1;
                         if (parent_layout == Align::Horizontal) reserved_x += child->size_hint().w;
                         else if (parent_layout == Align::Vertical) reserved_y += child->size_hint().h;
+                    } else if (child_layout == Fill::Both) {
+                        if (this->fill_policy() == Fill::Vertical) {
+                            non_expandable_widgets += 1;
+                            reserved_x += child->size_hint().w;
+                        }
                     }
                 }
 
@@ -58,7 +63,7 @@
                             switch (child->fill_policy()) {
                                 case Fill::Both:
                                     size = Size<float> { 
-                                        rect.w, 
+                                        rect.w > child_hint.w ? rect.w : child_hint.w, 
                                         expandable_height > child_hint.h ? expandable_height : child_hint.h
                                     };
                                     break;
@@ -69,7 +74,7 @@
                                     };
                                     break;
                                 case Fill::Horizontal:
-                                    size = Size<float> { rect.w, child->size_hint().h };
+                                    size = Size<float> { rect.w > child_hint.w ? rect.w : child_hint.w, child->size_hint().h };
                                     break;
                                 case Fill::None:
                                 default:
