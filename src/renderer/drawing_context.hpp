@@ -6,6 +6,7 @@
     #include "../common/rect.hpp"
     #include "my_shader.hpp"
     #include "quad.hpp"
+    #include "line.hpp"
     #include <glm/glm.hpp>
     #include <glm/gtc/matrix_transform.hpp>
     #include <glm/gtc/type_ptr.hpp>
@@ -32,20 +33,35 @@
                 Quad quad = Quad();
 
                 glm::mat4 model = glm::mat4(1.0f);
-                model = glm::translate(model, glm::vec3(rect.x, rect.y, 0.0f));
 
+                model = glm::translate(model, glm::vec3(rect.x, rect.y, 0.0f));
                 model = glm::translate(model, glm::vec3(0.5f * rect.w, 0.5f * rect.h, 0.0f)); 
                 model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
                 model = glm::translate(model, glm::vec3(-0.5f * rect.w, -0.5f * rect.h, 0.0f));
-
                 model = glm::scale(model, glm::vec3(rect.w, rect.h, 1.0f));
 
                 this->geometry_shader.setMatrix4("model", model, true);
-
-                // TODO this should probably be a vec4 so that we support transparency
                 this->geometry_shader.setVector3f("spriteColor", glm::vec3(color.red, color.green, color.blue), true);
 
                 quad.draw();
+            }
+
+            // TODO this is not nice to use
+            void drawLine(Rect<float> rect, Color color, float line_width = 1.0f, float rotation = 0.0f) {
+                geometry_shader.use();
+                glLineWidth(line_width);
+                Line line = Line();
+
+                glm::mat4 model = glm::mat4(1.0f);
+
+                model = glm::translate(model, glm::vec3(rect.x, rect.y, 0.0f));
+                model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 0.0f, 1.0f));
+                model = glm::scale(model, glm::vec3(rect.w, rect.h, 1.0f));
+
+                this->geometry_shader.setMatrix4("model", model, true);
+                this->geometry_shader.setVector3f("spriteColor", glm::vec3(color.red, color.green, color.blue), true);
+
+                line.draw();
             }
 
             void loadFont(std::string path, unsigned int font_size) {
