@@ -101,8 +101,8 @@
             Size<float> m_size;
             TextAlignment m_text_align = TextAlignment::Center;
             unsigned int m_padding = 10;
-            Color fg = {0, 0, 0, 255};
-            Color bg = {200, 200, 200, 255};
+            Color fg = Color();
+            Color bg = Color(0.90f, 0.90f, 0.90f);
 
             Button* set_size(Size<float> size) {
                 this->m_size = size;

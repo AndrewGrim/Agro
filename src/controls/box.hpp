@@ -20,7 +20,7 @@
             void draw(DrawingContext *dc, Rect<float> rect) {
                 this->dc = dc;
                 this->rect = rect;
-                this->dc->fillRect(this->rect, Color(bg.red, bg.green, bg.blue, bg.alpha));
+                this->dc->fillRect(this->rect, this->bg);
 
                 layout_children(dc, rect);
             }
@@ -150,8 +150,8 @@
 
         private:
             const char *m_name = "Box";
-            Color fg = {0, 0, 0, 255};
-            Color bg = {220, 220, 220, 255};
+            Color fg = Color();
+            Color bg = Color(1.0f, 1.0f, 1.0f);
             Align m_align_policy;
     };
 #endif

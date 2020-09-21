@@ -26,7 +26,7 @@
             int id_counter = 0;
             GLFWwindow *win;
             DrawingContext *dc; // TODO change to drawing context
-            Color bg = {155, 155, 155, 255};
+            Color bg = Color(1.0f, 1.0f, 1.0f);
             Widget *main_widget;
             Size<float> m_size;
             Widget *last_widget_with_mouse = nullptr;
