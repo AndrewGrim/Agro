@@ -38,14 +38,18 @@ public:
     std::map<char, Character> Characters; 
     // shader used for text rendering
     Shader TextShader;
+    // Projection used for rendering
+    glm::mat4 projection;
     // constructor
-    TextRenderer(unsigned int width, unsigned int height);
+    TextRenderer();
     // pre-compiles a list of characters from the given font
     void Load(std::string font, unsigned int fontSize);
     // renders a string of text using the precompiled list of characters
-    void RenderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f), int width = 800, int height = 600);
+    void RenderText(std::string text, float x, float y, float scale, glm::vec3 color = glm::vec3(1.0f));
     // Measures the dimensions of the text as if rendered. Returns Size<float>(w, h).
     Size<float> MeasureText(std::string text, float scale = 1.0f);
+    // Set the projection to be used for rendering.
+    void set_projection(glm::mat4 projection);
 private:
     // render state
     unsigned int VAO, VBO;

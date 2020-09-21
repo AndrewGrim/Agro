@@ -35,6 +35,10 @@
                 this->rect = Rect<float>(rect.x, rect.y, rect.w - 1, rect.h - 1);
                 this->dc->fillRect(this->rect, color);
 
+                Size<float> measure_test = dc->measureText("B");
+                this->dc->fillRect(Rect<float>(rect.x, rect.y, measure_test.w, measure_test.h), Color(1.0f, 0.0f, 1.0f, 1.0f));
+                dc->drawText("B", rect.x, rect.y);
+
                 /// 3D BORDER
                 // SDL_SetRenderDrawColor(dc, 255, 255, 255, 255);
                 // SDL_Point light_border[] = { SDL_Point { rect.x, rect.y + rect.h }, SDL_Point { rect.x, rect.y }, SDL_Point { rect.x + rect.w, rect.y } };

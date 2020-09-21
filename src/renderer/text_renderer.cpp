@@ -9,11 +9,11 @@
 #include "../common/size.hpp"
 
 
-TextRenderer::TextRenderer(unsigned int width, unsigned int height)
+TextRenderer::TextRenderer()
 {
     // load and configure shader
     this->TextShader = ResourceManager::LoadShader("shaders/text_2d.vs", "shaders/text_2d.fs", nullptr, "text");
-    this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
+    this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(400), static_cast<float>(400), 0.0f), true);
     this->TextShader.SetInteger("text", 0);
     // configure VAO/VBO for texture quads
     glGenVertexArrays(1, &this->VAO);
@@ -88,11 +88,11 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color, int width, int height)
+void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
 {
     // activate corresponding render state	
     this->TextShader.Use();
-    this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
+    this->TextShader.SetMatrix4("projection", this->projection, true);
     this->TextShader.SetVector3f("textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
@@ -147,4 +147,8 @@ Size<float> TextRenderer::MeasureText(std::string text, float scale) {
     }
 
     return size;
+}
+
+void TextRenderer::set_projection(glm::mat4 projection) {
+    this->projection = projection;
 }

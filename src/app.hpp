@@ -80,8 +80,7 @@
             }
 
             void run() {
-                TextRenderer text = TextRenderer(400, 400);
-                text.Load("fonts/FreeSans.ttf", 36);
+                this->dc->loadFont("fonts/FreeSans.ttf", 14);
                 while (!glfwWindowShouldClose(this->win)) {
                     // this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.button));
                     processInput(this->win);
@@ -98,10 +97,6 @@
                     ));
                     
                     this->draw();
-
-                    Size<float> measure_test = text.MeasureText("Hello World!");
-                    this->dc->fillRect(Rect<float>(0, 0, measure_test.w, measure_test.h), Color(1.0f, 0.0f, 1.0f, 1.0f));
-                    text.RenderText("Hello World!", 0.0f, 0.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f), width, height);
                     this->dc->swap_buffer(this->win);
                     glfwWaitEvents();
                 }
