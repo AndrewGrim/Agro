@@ -5,4 +5,10 @@
         Horizontal,
         Vertical,
     };
+
+    enum class TextAlignment {
+        Left,
+        Right,
+        Center,
+    };
 #endif
