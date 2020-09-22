@@ -26,6 +26,9 @@
             }
 
             void layout_children(DrawingContext *dc, Rect<float> rect) {
+                // TODO Align::Horizontal needs more work!
+                // the problem can be seen when changing the main sizer
+                // in the test app in main.
                 int non_expandable_widgets = 0;
                 int reserved_x = 0;
                 int reserved_y = 0;
@@ -48,6 +51,11 @@
                             reserved_x += child->size_hint().w;
                         }
                     }
+                }
+                if (parent_layout == Align::Vertical) {
+                    reserved_y += this->m_widget_spacing * this->children.size() - 1;
+                } else if (parent_layout == Align::Horizontal) {
+                    reserved_x += this->m_widget_spacing * this->children.size() - 1;
                 }
 
                 int child_count = this->children.size() - non_expandable_widgets;
@@ -81,7 +89,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
-                            pos.y += size.h;
+                            pos.y += size.h + this->m_widget_spacing;
                         }
                         break;
                     case Align::Horizontal:
@@ -110,7 +118,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
-                            pos.x += size.w;
+                            pos.x += size.w + this->m_widget_spacing;
                         }
                         break;
                 }
@@ -151,7 +159,8 @@
         private:
             const char *m_name = "Box";
             Color fg = Color();
-            Color bg = Color(1.0f, 1.0f, 1.0f);
+            Color bg = Color(0.50f, 0.50f, 0.50f);
             Align m_align_policy;
+            int m_widget_spacing = 2;
     };
 #endif
