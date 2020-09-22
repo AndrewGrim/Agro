@@ -22,6 +22,7 @@
 
             void draw(DrawingContext *dc, Rect<float> rect) {
                 // TODO get rid of app, and init with dc, this could be done by messing with the widget in append.
+                // TODO left and bottom borders of the window will need to be offset by 1.
                 this->dc = dc;
                 this->rect = rect;
                 this->set_size(this->dc->measureText(text()));
@@ -34,11 +35,23 @@
                     color = this->background();
                 }
                 
-                // shadow rectangle
-                dc->fillRect(this->rect, Color(0, 0, 0, 1.0f));
-                this->rect = Rect<float>(rect.x, rect.y, rect.w - 1, rect.h - 1);
+                // light border
+                dc->fillRect(Rect<float>(rect.x, rect.y, rect.w, this->m_border_width), Color(1.0f, 1.0f, 1.0f));
+                dc->fillRect(Rect<float>(rect.x, rect.y, this->m_border_width, rect.h), Color(1.0f, 1.0f, 1.0f));
+                // dark border
+                dc->fillRect(Rect<float>(rect.x, rect.y + rect.h - this->m_border_width / 2, rect.w, this->m_border_width), Color(0.0f, 0.0f, 0.0f));
+                dc->fillRect(Rect<float>(rect.x + rect.w - this->m_border_width / 2, rect.y, this->m_border_width, rect.h), Color(0.0f, 0.0f, 0.0f));
+
+                // resize rectangle to account for border
+                this->rect = Rect<float>(
+                    rect.x + this->m_border_width / 2, 
+                    rect.y + this->m_border_width / 2, 
+                    rect.w - this->m_border_width, 
+                    rect.h - this->m_border_width
+                );
                 // actual rectangle
                 dc->fillRect(this->rect, color);
+
                 // centered text
                 dc->drawText(
                     this->m_text,
@@ -78,16 +91,6 @@
             }
 
             void update() {
-                // TODO we might be able to just copy the previous render to a texture
-                // then use that as the base and only redraw the dirty area
-                // this->m_app->show();
-                // SDL_Texture *texture = SDL_CreateTexture(this->dc, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 400, 400);
-                // SDL_SetRenderTarget(this->dc, texture);
-
-                // SDL_SetRenderTarget(this->dc, NULL);
-                // SDL_RenderCopy(this->dc, texture, NULL, NULL);
-                // this->draw(this->dc, this->rect);
-                // SDL_RenderPresent(this->dc);
                 this->m_app->show();
             }
 
@@ -101,6 +104,7 @@
             Size<float> m_size;
             TextAlignment m_text_align = TextAlignment::Center;
             unsigned int m_padding = 10;
+            unsigned int m_border_width = 2;
             Color fg = Color();
             Color bg = Color(0.90f, 0.90f, 0.90f);
 
