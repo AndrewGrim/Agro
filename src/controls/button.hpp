@@ -52,17 +52,33 @@
                 // actual rectangle
                 dc->fillRect(this->rect, color);
 
-                // centered text
-                dc->drawText(
-                    this->m_text,
-                    rect.x + (rect.w / 2) - (this->dc->measureText(this->m_text).w / 2),
-                    rect.y + (rect.h / 2) - (this->dc->measureText(this->m_text).h / 2)
-                );
+                // draw text
+                switch (this->m_text_align) {
+                    case TextAlignment::Center:
+                        dc->drawText(
+                            this->m_text,
+                            rect.x + (rect.w / 2) - (this->dc->measureText(this->m_text).w / 2),
+                            rect.y + (rect.h / 2) - (this->dc->measureText(this->m_text).h / 2)
+                        );
+                        break;
+                    case TextAlignment::Right:
+                        dc->drawText(
+                            this->m_text, 
+                            (rect.x + rect.w) - (this->dc->measureText(this->m_text).w + this->m_padding), 
+                            rect.y + (rect.h / 2) - (this->dc->measureText(this->m_text).h / 2)
+                        );
+                        break;
+                    default:
+                        dc->drawText(
+                            this->m_text, 
+                            rect.x + this->m_padding, 
+                            rect.y + (rect.h / 2) - (this->dc->measureText(this->m_text).h / 2)
+                        );
+                }
             }
 
             Size<float> size_hint() {
                 Size<float> size = this->m_size;
-                    if (this->m_text_align == TextAlignment::Center) size.w *= 1.5;
                     size.w += this->m_padding * 2;
                     size.h += this->m_padding * 2;
                 return size;
