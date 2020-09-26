@@ -22,7 +22,6 @@
 
             void draw(DrawingContext *dc, Rect<float> rect) {
                 // TODO get rid of app, and init with dc, this could be done by messing with the widget in append.
-                // TODO left and bottom borders of the window will need to be offset by 1.
                 this->dc = dc;
                 this->rect = rect;
                 this->set_size(this->dc->measureText(text()));
@@ -36,24 +35,84 @@
                 }
                 
                 // light border
-                dc->fillRect(Rect<float>(rect.x, rect.y, rect.w, this->m_border_width), Color(1.0f, 1.0f, 1.0f));
-                dc->fillRect(Rect<float>(rect.x, rect.y, this->m_border_width, rect.h), Color(1.0f, 1.0f, 1.0f));
+                {
+                    // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here
+                    dc->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y + this->m_border_width / 2,
+                            rect.w,
+                            this->m_border_width / 2
+                        ), Color(1.0f, 1.0f, 1.0f)
+                    );
+                    dc->fillRect(
+                        Rect<float>(rect.x + this->m_border_width / 2,
+                            rect.y,
+                            this->m_border_width / 2,
+                            rect.h
+                        ), Color(1.0f, 1.0f, 1.0f)
+                    );
+                    // top layer of the top & left border : background
+                    dc->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y,
+                            rect.w,
+                            this->m_border_width / 2
+                        ), this->background()
+                    );
+                    dc->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y,
+                            this->m_border_width / 2,
+                            rect.h
+                        ), this->background()
+                    );
+                }
                 // dark border
-                dc->fillRect(Rect<float>(rect.x, rect.y + rect.h - this->m_border_width / 2, rect.w, this->m_border_width), Color(0.0f, 0.0f, 0.0f));
-                dc->fillRect(Rect<float>(rect.x + rect.w - this->m_border_width / 2, rect.y, this->m_border_width, rect.h), Color(0.0f, 0.0f, 0.0f));
+                {
+                    // top layer of the bottom & right border : dark grey, drawn first so that the bottom layer will paint over some extra pixels from here
+                    dc->fillRect(
+                        Rect<float>(rect.x + this->m_border_width / 2,
+                            rect.y + rect.h - this->m_border_width,
+                            rect.w - this->m_border_width / 2,
+                            this->m_border_width / 2
+                        ), Color(0.4f, 0.4f, 0.4f)
+                    );
+                    dc->fillRect(
+                        Rect<float>(rect.x + rect.w - this->m_border_width,
+                            rect.y + this->m_border_width / 2,
+                            this->m_border_width / 2,
+                            rect.h - this->m_border_width / 2
+                        ), Color(0.4f, 0.4f, 0.4f)
+                    );
+                    // bottom layer of the bottom & right border : black
+                    dc->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y + rect.h - this->m_border_width / 2,
+                            rect.w,
+                            this->m_border_width / 2
+                        ), Color(0.0f, 0.0f, 0.0f)
+                    );
+                    dc->fillRect(
+                        Rect<float>(rect.x + rect.w - this->m_border_width / 2,
+                            rect.y,
+                            this->m_border_width / 2,
+                            rect.h
+                        ), Color(0.0f, 0.0f, 0.0f)
+                    );
+                }
 
                 // resize rectangle to account for border
                 this->rect = Rect<float>(
-                    rect.x + this->m_border_width / 2, 
-                    rect.y + this->m_border_width / 2, 
-                    rect.w - this->m_border_width, 
-                    rect.h - this->m_border_width
+                    rect.x + this->m_border_width, 
+                    rect.y + this->m_border_width, 
+                    rect.w - this->m_border_width * 2, 
+                    rect.h - this->m_border_width * 2
                 );
                 // actual rectangle
                 dc->fillRect(this->rect, color);
 
                 // draw text
-                dc->drawTextAligned(this->m_text, this->m_text_align, rect, this->m_padding);
+                dc->drawTextAligned(this->m_text, this->m_text_align, rect, this->m_padding + this->m_border_width / 2);
             }
 
             Size<float> size_hint() {
@@ -99,7 +158,7 @@
             Size<float> m_size;
             TextAlignment m_text_align = TextAlignment::Center;
             unsigned int m_padding = 10;
-            unsigned int m_border_width = 2;
+            unsigned int m_border_width = 4;
             Color fg = Color();
             Color bg = Color(0.90f, 0.90f, 0.90f);
 
