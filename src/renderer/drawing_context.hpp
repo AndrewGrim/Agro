@@ -76,6 +76,31 @@
                 this->text_renderer.RenderText(text, x, y, scale, glm::vec3(color.red, color.green, color.blue));
             }
 
+            void drawTextAligned(std::string text, TextAlignment alignment, Rect<float> rect, int padding) {
+                switch (alignment) {
+                    case TextAlignment::Center:
+                        this->drawText(
+                            text,
+                            rect.x + (rect.w / 2) - (this->measureText(text).w / 2),
+                            rect.y + (rect.h / 2) - (this->measureText(text).h / 2)
+                        );
+                        break;
+                    case TextAlignment::Right:
+                        this->drawText(
+                            text, 
+                            (rect.x + rect.w) - (this->measureText(text).w + padding), 
+                            rect.y + (rect.h / 2) - (this->measureText(text).h / 2)
+                        );
+                        break;
+                    default:
+                        this->drawText(
+                            text, 
+                            rect.x + padding, 
+                            rect.y + (rect.h / 2) - (this->measureText(text).h / 2)
+                        );
+                }
+            }
+
             void clear() {
                 glClearColor(0, 0, 0, 1);
                 glClear(GL_COLOR_BUFFER_BIT);
