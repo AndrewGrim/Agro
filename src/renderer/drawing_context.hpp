@@ -76,7 +76,7 @@
                 this->text_renderer.RenderText(text, x, y, scale, glm::vec3(color.red, color.green, color.blue));
             }
 
-            void clear(GLFWwindow *win) {
+            void clear() {
                 glClearColor(0, 0, 0, 1);
                 glClear(GL_COLOR_BUFFER_BIT);
             }
@@ -87,8 +87,8 @@
                 this->text_renderer.set_projection(projection);
             }
 
-            void swap_buffer(GLFWwindow *win) {
-                glfwSwapBuffers(win);
+            void swap_buffer(SDL_Window *win) {
+                SDL_GL_SwapWindow(win);
             }
     };
 #endif

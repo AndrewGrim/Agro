@@ -5,8 +5,7 @@
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
     #include <glm/glm.hpp>
-    #include <glad/glad.h>
-    #include <GLFW/glfw3.h>
+    #include<glad/glad.h>
 
     class Line {
         public:

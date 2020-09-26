@@ -85,13 +85,13 @@
 
             Button* set_text(std::string text) {
                 this->m_text = text;
-                // if (this->dc) this->update();
+                if (this->dc) this->update();
 
                 return this;
             }
 
             void update() {
-                this->m_app->show();
+                this->m_app->m_needs_update = true;
             }
 
             bool is_layout() {

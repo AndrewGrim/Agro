@@ -12,11 +12,10 @@
 #include <map>
 #include <string>
 
-#include <glad/glad.h>
+#include<glad/glad.h>
 
 #include "texture.h"
 #include "shader.h"
-
 
 // A static singleton ResourceManager class that hosts several
 // functions to load Textures and Shaders. Each loaded texture
