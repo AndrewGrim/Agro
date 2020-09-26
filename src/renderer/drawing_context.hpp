@@ -101,6 +101,85 @@
                 }
             }
 
+            Rect<float> drawBorder(Rect<float> rect, int border_width, Color rect_color) {
+                // light border
+                {
+                    // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here
+                    this->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y + border_width / 2,
+                            rect.w,
+                            border_width / 2
+                        ), Color(1.0f, 1.0f, 1.0f)
+                    );
+                    this->fillRect(
+                        Rect<float>(rect.x + border_width / 2,
+                            rect.y,
+                            border_width / 2,
+                            rect.h
+                        ), Color(1.0f, 1.0f, 1.0f)
+                    );
+                    // top layer of the top & left border : background
+                    this->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y,
+                            rect.w,
+                            border_width / 2
+                        ), rect_color
+                    );
+                    this->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y,
+                            border_width / 2,
+                            rect.h
+                        ), rect_color
+                    );
+                }
+                // dark border
+                {
+                    // top layer of the bottom & right border : dark grey, drawn first so that the bottom layer will paint over some extra pixels from here
+                    this->fillRect(
+                        Rect<float>(rect.x + border_width / 2,
+                            rect.y + rect.h - border_width,
+                            rect.w - border_width / 2,
+                            border_width / 2
+                        ), Color(0.4f, 0.4f, 0.4f)
+                    );
+                    this->fillRect(
+                        Rect<float>(rect.x + rect.w - border_width,
+                            rect.y + border_width / 2,
+                            border_width / 2,
+                            rect.h - border_width / 2
+                        ), Color(0.4f, 0.4f, 0.4f)
+                    );
+                    // bottom layer of the bottom & right border : black
+                    this->fillRect(
+                        Rect<float>(rect.x,
+                            rect.y + rect.h - border_width / 2,
+                            rect.w,
+                            border_width / 2
+                        ), Color(0.0f, 0.0f, 0.0f)
+                    );
+                    this->fillRect(
+                        Rect<float>(rect.x + rect.w - border_width / 2,
+                            rect.y,
+                            border_width / 2,
+                            rect.h
+                        ), Color(0.0f, 0.0f, 0.0f)
+                    );
+                }
+
+                // resize rectangle to account for border
+                rect = Rect<float>(
+                    rect.x + border_width, 
+                    rect.y + border_width, 
+                    rect.w - border_width * 2, 
+                    rect.h - border_width * 2
+                );
+
+                return rect;
+            }
+
             void clear() {
                 glClearColor(0, 0, 0, 1);
                 glClear(GL_COLOR_BUFFER_BIT);
