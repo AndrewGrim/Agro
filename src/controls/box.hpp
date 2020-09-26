@@ -52,11 +52,6 @@
                         }
                     }
                 }
-                if (parent_layout == Align::Vertical) {
-                    reserved_y += this->m_widget_spacing * this->children.size() - 1;
-                } else if (parent_layout == Align::Horizontal) {
-                    reserved_x += this->m_widget_spacing * this->children.size() - 1;
-                }
 
                 int child_count = this->children.size() - non_expandable_widgets;
                 rect.w -= reserved_x;
@@ -89,7 +84,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
-                            pos.y += size.h + this->m_widget_spacing;
+                            pos.y += size.h;
                         }
                         break;
                     case Align::Horizontal:
@@ -118,7 +113,7 @@
                                     size = child->size_hint();
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
-                            pos.x += size.w + this->m_widget_spacing;
+                            pos.x += size.w;
                         }
                         break;
                 }
@@ -161,6 +156,5 @@
             Color fg = Color();
             Color bg = Color(0.50f, 0.50f, 0.50f);
             Align m_align_policy;
-            int m_widget_spacing = 2;
     };
 #endif
