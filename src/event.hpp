@@ -61,8 +61,8 @@
             MouseEvent(SDL_MouseButtonEvent event) {
                 this->type = event.type == SDL_MOUSEBUTTONDOWN ? Type::Down : Type::Up;
                 this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
-                this->click = event.clicks == 1 ? Click::Single : Click::Double; // TODO handle all cases
-                this->button = event.button == SDL_BUTTON_LEFT ? Button::Left : Button::Right; // TODO handle all cases
+                this->click = event.clicks == 1 ? Click::Single : Click::Double; // Note: this only cover single and double click
+                this->button = this->handle_button(event.button);
                 this->x = event.x;
                 this->y = event.y;
                 this->xrel = 0;
@@ -78,6 +78,23 @@
                 this->y = event.y;
                 this->xrel = event.xrel;
                 this->yrel = event.yrel;
-        }
+            }
+
+            Button handle_button(int button) {
+                switch (button) {
+                    case SDL_BUTTON_LEFT:
+                        return Button::Left;
+                    case SDL_BUTTON_MIDDLE:
+                        return Button::Middle;
+                    case SDL_BUTTON_RIGHT:
+                        return Button::Right;
+                    case SDL_BUTTON_X1:
+                        return Button::X1;
+                    case SDL_BUTTON_X2:
+                        return Button::X2;
+                }
+
+                return Button::None;
+            }
     };
 #endif
