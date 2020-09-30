@@ -85,7 +85,7 @@
             unsigned int m_padding = 10;
             unsigned int m_border_width = 4;
             Color fg = Color();
-            Color bg = Color(0.90f, 0.90f, 0.90f);
+            Color bg = Color(0.9f, 0.9f, 0.9f);
 
             Button* set_size(Size<float> size) {
                 this->m_size = size;

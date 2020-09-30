@@ -3,7 +3,10 @@
 
     #include <vector>
 
+    #include <glad/glad.h>
+
     #include "../app.hpp"
+    #include "../state.hpp"
 
     #include "../common/rect.hpp"
     #include "../common/fill.hpp"
@@ -16,12 +19,6 @@
 
     class Widget {
         public:
-            enum class State {
-                Disabled,
-                Active,
-                Focused,
-            };
-
             int m_id = -1;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
@@ -141,64 +138,80 @@
                 // this->draw(this->dc, this->rect);
             }
 
-            Widget* propagate_mouse_event(Widget *last_mouse_widget, MouseEvent event) {
+            void* propagate_mouse_event(State *state, MouseEvent event) {
                 for (Widget *child : this->children) {
                     if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
                         (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
-                        Widget *last;
+                        void *last;
                         if (child->is_layout()) {
-                            last = child->propagate_mouse_event(last_mouse_widget, event);
+                            last = (void*)child->propagate_mouse_event(state, event);
                         } else {
-                            child->mouse_event(last_mouse_widget, event);
-                            last = child;
+                            child->mouse_event(state, event);
+                            last = (void*)child;
                         }
                         return last;
                     }
                 }
 
-                if (last_mouse_widget) {
-                    last_mouse_widget->set_pressed(false);
-                    last_mouse_widget->set_hovered(false);
+                if (event.type == MouseEvent::Type::Up && state->pressed) {
+                    ((Widget*)state->pressed)->set_pressed(false);
+                    ((Widget*)state->pressed)->set_hovered(false);
+                    state->hovered = nullptr;
+                    state->pressed = nullptr;
+                }
+                if (event.type == MouseEvent::Type::Motion && state->hovered) {
+                    ((Widget*)state->hovered)->set_hovered(false);
+                    state->hovered = nullptr;
                 }
                 return nullptr;
             }
 
-            void mouse_event(Widget *last_mouse_widget, MouseEvent event) {
-                // TODO warning both set_pressed and set_hovered issue an update
-                // TODO the button pressed behaviour is almost there but there is one more thing:
-                // when you press down on a button while the button is not released every hover
-                // over said button should show it as pressed
-                // and even when the mouse is released elsewhere the button should changed to released
-                // will probably need to track the pressed button in app
+            void mouse_event(State *state, MouseEvent event) {
+                // TODO when the user clicks outside the window
+                // hovered and pressed should be reset
                 switch (event.type) {
                     case MouseEvent::Type::Down:
                         this->set_pressed(true);
                         if (this->mouse_down_callback) this->mouse_down_callback(this, event);
                         break;
                     case MouseEvent::Type::Up:
-                        this->set_pressed(false);
+                        ((Widget*)state->pressed)->set_pressed(false);
+                        ((Widget*)state->pressed)->set_hovered(false);
+                        this->set_hovered(true);
+                        state->hovered = this;
+                        state->pressed = nullptr;
                         if (this->mouse_up_callback) this->mouse_up_callback(this, event);
+                        // TODO we could add a click event here
+                        // simply check if pressed and this are the same
+                        // then we know that both the down and up events were on the same target
                         break;
                     case MouseEvent::Type::Motion:
-                        if (last_mouse_widget) {
-                            if (this->m_id != last_mouse_widget->m_id) {
-                                last_mouse_widget->set_pressed(false);
-                                last_mouse_widget->set_hovered(false);
-                                if (last_mouse_widget->mouse_left_callback) {
-                                    last_mouse_widget->mouse_left_callback(last_mouse_widget, event);
+                        if (!state->pressed) {
+                            if (state->hovered) {
+                                if (this->m_id != ((Widget*)state->hovered)->m_id) {
+                                    ((Widget*)state->hovered)->set_hovered(false);
+                                    if (((Widget*)state->hovered)->mouse_left_callback) {
+                                        ((Widget*)state->hovered)->mouse_left_callback((Widget*)state->hovered, event);
+                                    }
+                                    this->set_hovered(true);
+                                    if (this->mouse_entered_callback) {
+                                        this->mouse_entered_callback(this, event);
+                                    }
                                 }
+                            } else {
                                 this->set_hovered(true);
                                 if (this->mouse_entered_callback) {
                                     this->mouse_entered_callback(this, event);
                                 }
                             }
+                            if (this->mouse_motion_callback) this->mouse_motion_callback(this, event);
                         } else {
-                            this->set_hovered(true);
-                            if (this->mouse_entered_callback) {
-                                this->mouse_entered_callback(this, event);
+                            if (state->pressed == state->hovered) {
+                                ((Widget*)state->pressed)->set_hovered(true);
+                            } else {
+                                ((Widget*)state->pressed)->set_hovered(false);
                             }
                         }
-                        if (this->mouse_motion_callback) this->mouse_motion_callback(this, event);
                         break;
                 }
             }
@@ -208,7 +221,7 @@
             Color fg = Color();
             Color bg = Color();
             Color hover_bg = Color(0.8f, 0.8f, 0.8f);
-            Color pressed_bg = Color(0.9f, 0.9f, 0.9f);
+            Color pressed_bg = Color(0.6f, 0.6f, 0.6f);
             bool m_is_visible = false;
             Fill m_fill_policy = Fill::None;
     };

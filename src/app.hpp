@@ -3,11 +3,11 @@
 
     #include <iostream>
 
-    #define GL3_PROTOTYPES 1
-    #include<glad/glad.h>
+    #include <glad/glad.h>
     #include <SDL2/SDL.h>
 
     #include "event.hpp"
+    #include "state.hpp"
     #include "controls/widget.hpp"
     #include "renderer/drawing_context.hpp"
     #include "renderer/text_renderer.h"
@@ -21,7 +21,7 @@
             Color bg = Color(1.0f, 1.0f, 1.0f);
             Widget *main_widget;
             Size<int> m_size;
-            Widget *last_widget_with_mouse = nullptr;
+            State *state = new State();
             bool m_needs_update = true;
 
             Application(const char* title = "Application", Size<int> size = Size<int>(400, 400)) {
@@ -90,11 +90,12 @@
                     if (SDL_WaitEvent(&event)) {
                         switch (event.type) {
                             case SDL_MOUSEBUTTONDOWN:
+                                this->state->pressed = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button));
                             case SDL_MOUSEBUTTONUP:
-                                this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.button));
+                                this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button));
                                 break;
                             case SDL_MOUSEMOTION:
-                                this->last_widget_with_mouse = this->main_widget->propagate_mouse_event(this->last_widget_with_mouse, MouseEvent(event.motion));
+                                this->state->hovered = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.motion));
                                 break;
                             case SDL_WINDOWEVENT:
                                 switch (event.window.event) {
