@@ -6,8 +6,7 @@
 
     class Box : public Widget {
         public:
-            Box(Application *app, Align align_policy) {
-                this->m_id = app->next_id();
+            Box(Align align_policy) {
                 this->m_align_policy = align_policy;
             }
 
@@ -132,6 +131,16 @@
                 return size;
             }
 
+            Widget* append(Widget* widget, Fill fill_policy) {
+                widget->set_fill_policy(fill_policy);
+                this->children.push_back(widget);
+                widget->m_app = this->m_app;
+                widget->dc = this->dc;
+                widget->m_id = ((Application*)this->m_app)->next_id();
+
+                return this;
+            }
+
             Color background() {
                 return this->bg;
             }
@@ -141,10 +150,6 @@
                 if (this->dc) this->update();
 
                 return this;
-            }
-
-            virtual void update() {
-                // this->draw(this->dc, this->rect);
             }
 
             bool is_layout() {

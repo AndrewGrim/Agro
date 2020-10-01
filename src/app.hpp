@@ -71,6 +71,9 @@
 
             void set_main_widget(Widget *widget) {
                 this->main_widget = widget;
+                widget->m_app = (void*)this;
+                widget->dc = this->dc;
+                widget->m_id = this->next_id();
             }
 
             void show() {

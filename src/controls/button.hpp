@@ -7,10 +7,7 @@
 
     class Button : public Widget {
         public:
-            Application *m_app = nullptr;
-            Button(Application *app, std::string text) {
-                this->m_id = app->next_id();
-                this->m_app = app;
+            Button(std::string text) {
                 this->set_text(text);
             }
             
@@ -47,6 +44,16 @@
                 return size;
             }
 
+            Widget* append(Widget* widget, Fill fill_policy) {
+                widget->set_fill_policy(fill_policy);
+                this->children.push_back(widget);
+                widget->m_app = this->m_app;
+                widget->dc = this->dc;
+                widget->m_id = ((Application*)this->m_app)->next_id();
+
+                return this;
+            }
+
             Color background() {
                 return this->bg;
             }
@@ -70,7 +77,7 @@
             }
 
             void update() {
-                this->m_app->m_needs_update = true;
+                ((Application*)this->m_app)->m_needs_update = true;
             }
 
             bool is_layout() {
