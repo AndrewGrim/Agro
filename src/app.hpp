@@ -84,12 +84,6 @@
 
             void run() {
                 this->dc->loadFont("fonts/FreeSans.ttf", 14);
-                this->main_widget->m_app = (void*)this;
-                this->main_widget->dc = this->dc;
-                this->main_widget->m_id = this->next_id();
-                for (Widget *child : this->main_widget->children) {
-                    child->init((void*)this, this->dc);
-                }
                 this->show();
                 while (true) {
                     SDL_Event event;

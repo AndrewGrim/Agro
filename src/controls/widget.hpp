@@ -19,12 +19,8 @@
 
     class Widget {
         public:
-            int m_id = -1;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
-            void *m_app = nullptr;
-            Widget *parent = nullptr;
-            DrawingContext *dc = nullptr;
             Rect<float> rect = Rect<float>(0, 0, 0, 0);
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
@@ -41,16 +37,11 @@
                 return this->m_name;
             }
 
-            virtual void draw(DrawingContext *dc, Rect<float> rect) {
-                this->dc = dc;
-                this->rect = rect;
-            }
+            virtual void draw(DrawingContext *dc, Rect<float> rect) {}
 
-            virtual Widget* append(Widget* widget, Fill fill_policy) {
+            Widget* append(Widget* widget, Fill fill_policy) {
                 widget->set_fill_policy(fill_policy);
                 this->children.push_back(widget);
-                if (this->m_app) widget->m_app = this->m_app;
-                if (this->dc) widget->dc = this->dc;
 
                 return this;
             }
@@ -65,7 +56,7 @@
 
             virtual Widget* set_background(Color background) {
                 this->bg = background;
-                if (this->dc) this->update();
+                this->update();
 
                 return this;
             }
@@ -76,7 +67,7 @@
 
             virtual Widget* set_hover_background(Color background) {
                 this->hover_bg = background;
-                if (this->dc) this->update();
+                this->update();
 
                 return this;
             }
@@ -87,7 +78,7 @@
 
             virtual Widget* set_pressed_background(Color background) {
                 this->pressed_bg = background;
-                if (this->dc) this->update();
+                this->update();
 
                 return this;
             }
@@ -138,17 +129,14 @@
                 this->update();
             }
 
-            virtual void init(void *app, DrawingContext *dc) {
-                this->m_app = (void*)app;
-                this->dc = dc;
-                for (Widget *child : this->children) {
-                    child->m_app = (void*)m_app;
-                    child->dc = dc;
-                    child->init((void*)app, dc);
-                }
+            void update() {
+                // TODO this wont work since we need to cast it to Application*
+                // we will likely need to split widget and application into implementation and header files!
+                // TODO change this so that the update event moves up through the tree until
+                // it gets to the main widget which will have access to the app which can then
+                // set the needs update variable
+                // ((Application*)this->m_app)->m_needs_update = true;
             }
-
-            virtual void update() {}
 
             void* propagate_mouse_event(State *state, MouseEvent event) {
                 for (Widget *child : this->children) {

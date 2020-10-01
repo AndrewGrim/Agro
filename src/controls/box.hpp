@@ -17,22 +17,10 @@
             }
 
             void draw(DrawingContext *dc, Rect<float> rect) {
-                this->dc = dc;
                 this->rect = rect;
-                this->dc->fillRect(this->rect, this->bg);
+                dc->fillRect(this->rect, this->bg);
 
                 layout_children(dc, rect);
-            }
-
-            void init(void *app, DrawingContext *dc) {
-                this->m_app = (void*)app;
-                this->dc = dc;
-                for (Widget *child : this->children) {
-                    child->m_app = (void*)app;
-                    child->dc = dc;
-                    child->m_id = ((Application*)app)->next_id();
-                    child->init((void*)app, dc);
-                }
             }
 
             void layout_children(DrawingContext *dc, Rect<float> rect) {
@@ -142,23 +130,13 @@
                 return size;
             }
 
-            Widget* append(Widget* widget, Fill fill_policy) {
-                widget->set_fill_policy(fill_policy);
-                this->children.push_back(widget);
-                if (this->m_app) widget->m_app = this->m_app;
-                if (this->dc) widget->dc = this->dc;
-                if (this->m_app) widget->m_id = ((Application*)this->m_app)->next_id();
-
-                return this;
-            }
-
             Color background() {
                 return this->bg;
             }
 
             Box* set_background(Color background) {
                 this->bg = background;
-                if (this->dc) this->update();
+                this->update();
 
                 return this;
             }
