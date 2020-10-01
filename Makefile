@@ -4,4 +4,4 @@ LINKER = $(OPENGL)
 OPENGL = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
 
 debug:
-	g++ src/*.cpp src/renderer/glad.c src/renderer/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o main.out && ./main.out
+	g++ src/*.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o main.out && ./main.out
