@@ -200,7 +200,7 @@
                     case MouseEvent::Type::Motion:
                         if (!state->pressed) {
                             if (state->hovered) {
-                                if (this->m_id != ((Widget*)state->hovered)->m_id) {
+                                if (this != state->hovered) {
                                     ((Widget*)state->hovered)->set_hovered(false);
                                     if (((Widget*)state->hovered)->mouse_left_callback) {
                                         ((Widget*)state->hovered)->mouse_left_callback((Widget*)state->hovered, event);
