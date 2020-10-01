@@ -23,6 +23,7 @@
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             void *m_app = nullptr;
+            Widget *parent = nullptr;
             DrawingContext *dc = nullptr;
             Rect<float> rect = Rect<float>(0, 0, 0, 0);
             std::vector<Widget*> children;
@@ -48,8 +49,8 @@
             virtual Widget* append(Widget* widget, Fill fill_policy) {
                 widget->set_fill_policy(fill_policy);
                 this->children.push_back(widget);
-                widget->m_app = this->m_app;
-                widget->dc = this->dc;
+                if (this->m_app) widget->m_app = this->m_app;
+                if (this->dc) widget->dc = this->dc;
 
                 return this;
             }
@@ -135,6 +136,16 @@
                 this->m_is_pressed = pressed;
 
                 this->update();
+            }
+
+            virtual void init(void *app, DrawingContext *dc) {
+                this->m_app = (void*)app;
+                this->dc = dc;
+                for (Widget *child : this->children) {
+                    child->m_app = (void*)m_app;
+                    child->dc = dc;
+                    child->init((void*)app, dc);
+                }
             }
 
             virtual void update() {}

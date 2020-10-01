@@ -24,6 +24,17 @@
                 layout_children(dc, rect);
             }
 
+            void init(void *app, DrawingContext *dc) {
+                this->m_app = (void*)app;
+                this->dc = dc;
+                for (Widget *child : this->children) {
+                    child->m_app = (void*)app;
+                    child->dc = dc;
+                    child->m_id = ((Application*)app)->next_id();
+                    child->init((void*)app, dc);
+                }
+            }
+
             void layout_children(DrawingContext *dc, Rect<float> rect) {
                 // TODO Align::Horizontal needs more work!
                 // the problem can be seen when changing the main sizer
@@ -134,9 +145,9 @@
             Widget* append(Widget* widget, Fill fill_policy) {
                 widget->set_fill_policy(fill_policy);
                 this->children.push_back(widget);
-                widget->m_app = this->m_app;
-                widget->dc = this->dc;
-                widget->m_id = ((Application*)this->m_app)->next_id();
+                if (this->m_app) widget->m_app = this->m_app;
+                if (this->dc) widget->dc = this->dc;
+                if (this->m_app) widget->m_id = ((Application*)this->m_app)->next_id();
 
                 return this;
             }
