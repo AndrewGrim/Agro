@@ -104,3 +104,11 @@ void Application::run() {
         SDL_DestroyWindow(this->win);
         SDL_Quit();
 }
+
+Widget* Application::append(Widget* widget, Fill fill_policy) {
+    widget->set_fill_policy(fill_policy);
+    this->main_widget->children.push_back(widget);
+    widget->m_app = this;
+
+    return this->main_widget;
+}

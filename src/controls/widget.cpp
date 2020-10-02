@@ -129,6 +129,9 @@ void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
     }
     if (event.type == MouseEvent::Type::Motion && state->hovered) {
         ((Widget*)state->hovered)->set_hovered(false);
+        if (((Widget*)state->hovered)->mouse_left_callback) {
+            ((Widget*)state->hovered)->mouse_left_callback((Widget*)state->hovered, event);
+        }
         state->hovered = nullptr;
     }
     return nullptr;

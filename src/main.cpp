@@ -24,7 +24,6 @@
 
 int main() { 
     auto app = new Application();
-    auto sizer = new Box(Align::Vertical);
         Box *inner = new Box(Align::Horizontal);
             Button *test_button = new Button("My first button !");
                 // test_button->mouse_down_callback = onMouseDown;
@@ -37,12 +36,10 @@ int main() {
             inner->append(new Button("3"), Fill::Both);
             inner->append(new Button("4"), Fill::Both);
             inner->append(new Button("5"), Fill::Both);
-        sizer->append(inner, Fill::Vertical);
-        sizer->append(new Button("Alright, should be ready now."), Fill::Horizontal);
-        sizer->append(new Button("Centered text for everyone"), Fill::Both);
-        sizer->append(new Button("Test"), Fill::None);
-
-    app->set_main_widget(sizer);
+        app->append(inner, Fill::Vertical);
+        app->append(new Button("Alright, should be ready now."), Fill::Horizontal);
+        app->append(new Button("Centered text for everyone"), Fill::Both);
+        app->append(new Button("Test"), Fill::None);
     app->run();
 
     return 0; 
