@@ -1,5 +1,8 @@
 #ifndef RECT_HPP
     #define RECT_HPP
+    
+    #include <iostream>
+    #include <stdio.h>
 
     template <class T> class Rect {
         public:
@@ -13,6 +16,23 @@
                 this->y = y;
                 this->w = w;
                 this->h = h;
+            }
+
+            friend bool operator== (const Rect<float> &lhs, const Rect<float> &rhs) {
+                if (lhs.x == rhs.x &&
+                    lhs.y == rhs.y &&
+                    lhs.w == rhs.w &&
+                    lhs.h == rhs.h
+                ) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            friend std::ostream& operator<<(std::ostream &os, const Rect<float> &rect) {
+                printf("Rect { x: %f, y: %f, w: %f, h: %f }", rect.x, rect.y, rect.w, rect.h);
+                return os;
             }
     };
 #endif
