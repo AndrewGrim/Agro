@@ -25,10 +25,23 @@ void onMouseMotion(Widget *self, MouseEvent event) {
 void onApplicationReady(Application *self) {
     for (Widget *child : self->main_widget->children) {
         println(child->rect);
+        for (Widget *child : child->children) {
+            pprint(4, child->rect);
+        }
     }
+    // Root: Align::Vertical, Fill::Both
+    // [0]: Align::Horizontal, Fill::Vertical
     assert(self->main_widget->children[0]->rect == Rect<float>(0, 0, 234, 169));
+        assert(self->main_widget->children[0]->children[0]->rect == Rect<float>(0, 0, 122, 169));
+        assert(self->main_widget->children[0]->children[1]->rect == Rect<float>(122, 0, 28, 169));
+        assert(self->main_widget->children[0]->children[2]->rect == Rect<float>(150, 0, 28, 169));
+        assert(self->main_widget->children[0]->children[3]->rect == Rect<float>(178, 0, 28, 169));
+        assert(self->main_widget->children[0]->children[4]->rect == Rect<float>(206, 0, 28, 169));
+    // [1]: Fill::Horizontal
     assert(self->main_widget->children[1]->rect == Rect<float>(0, 169, 400, 31));
+    // [2]: Fill::Both
     assert(self->main_widget->children[2]->rect == Rect<float>(0, 200, 400, 169));
+    // [3]: Fill::None
     assert(self->main_widget->children[3]->rect == Rect<float>(0, 369, 50, 31));
 }
 
