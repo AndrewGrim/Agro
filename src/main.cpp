@@ -23,6 +23,13 @@ void onMouseMotion(Widget *self, MouseEvent event) {
 }
 
 void onApplicationReady(Application *self) {
+    for (Widget *child : self->main_widget->children) {
+        println(child->rect);
+    }
+    assert(self->main_widget->children[0]->rect == Rect<float>(0, 0, 234, 169));
+    assert(self->main_widget->children[1]->rect == Rect<float>(0, 169, 400, 31));
+    assert(self->main_widget->children[2]->rect == Rect<float>(0, 200, 400, 169));
+    assert(self->main_widget->children[3]->rect == Rect<float>(0, 369, 50, 31));
 }
 
 int main() { 
