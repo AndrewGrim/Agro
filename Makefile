@@ -5,5 +5,5 @@ OPENGL = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
 
 debug:
 	g++ src/main.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o main.out && ./main.out
-test_layout:
-	g++ test/layout.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o layout.out && ./layout.out
+test_box_vertical:
+	g++ test/box_vertical.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o box_vertical.out && ./box_vertical.out

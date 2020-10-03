@@ -33,22 +33,22 @@ void onApplicationReady(Application *self) {
         assert(self->main_widget->children[1]->children[3]->rect == Rect<float>(0, 217, 400, 31));
 
     // [2]: Align::Vertical, Fill::Vertical
-    assert(self->main_widget->children[2]->rect == Rect<float>(0, 248, 227, 124));
+    assert(self->main_widget->children[2]->rect == Rect<float>(0, 248, 227, 176));
         assert(self->main_widget->children[2]->children[0]->rect == Rect<float>(0, 248, 195, 31));
         assert(self->main_widget->children[2]->children[1]->rect == Rect<float>(0, 279, 227, 31));
-        assert(self->main_widget->children[2]->children[2]->rect == Rect<float>(0, 310, 209, 31));
-        assert(self->main_widget->children[2]->children[3]->rect == Rect<float>(0, 341, 227, 31));
+        assert(self->main_widget->children[2]->children[2]->rect == Rect<float>(0, 310, 209, 57));
+        assert(self->main_widget->children[2]->children[3]->rect == Rect<float>(0, 367, 227, 57));
 
     // [3]: Align::Vertical, Fill::Both
-    assert(self->main_widget->children[3]->rect == Rect<float>(0, 372, 400, 124));
-        assert(self->main_widget->children[3]->children[0]->rect == Rect<float>(0, 372, 177, 31));
-        assert(self->main_widget->children[3]->children[1]->rect == Rect<float>(0, 403, 400, 31));
-        assert(self->main_widget->children[3]->children[2]->rect == Rect<float>(0, 434, 191, 31));
-        assert(self->main_widget->children[3]->children[3]->rect == Rect<float>(0, 465, 400, 31));
+    assert(self->main_widget->children[3]->rect == Rect<float>(0, 424, 400, 176));
+        assert(self->main_widget->children[3]->children[0]->rect == Rect<float>(0, 424, 177, 31));
+        assert(self->main_widget->children[3]->children[1]->rect == Rect<float>(0, 455, 400, 31));
+        assert(self->main_widget->children[3]->children[2]->rect == Rect<float>(0, 486, 191, 57));
+        assert(self->main_widget->children[3]->children[3]->rect == Rect<float>(0, 543, 400, 57));
 }
 
 int main() { 
-    Application *app = new Application();
+    Application *app = new Application("Layout Test", Size<int>(400, 600));
         app->ready_callback = onApplicationReady;
 
         // [0]: Align::Vertical, Fill::None
