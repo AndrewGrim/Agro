@@ -8,15 +8,18 @@
 #include "../src/controls/button.hpp"
 
 void onApplicationReady(Application *self) {
-    for (Widget *child : self->main_widget->children) {
-        println(child->rect);
-        for (Widget *child : child->children) {
-            pprint(4, child->rect);
+    #ifndef TEST
+        for (Widget *child : self->main_widget->children) {
+            println(child->rect);
             for (Widget *child : child->children) {
-                pprint(8, child->rect);
+                pprint(4, child->rect);
+                for (Widget *child : child->children) {
+                    pprint(8, child->rect);
+                }
             }
         }
-    }
+    #endif
+
     // Root: Align::Vertical, Fill::Both
     // [0]: Align::Vertical, Fill::None
     assert(self->main_widget->children[0]->rect == Rect<float>(0, 0, 213, 124));
@@ -83,7 +86,20 @@ int main() {
             av_fb->append((new Button("P: Fill::Both, C: Fill::Both"))->set_background(Color(0.7, 0.7, 0.2)), Fill::Both);
         app->append(av_fb, Fill::Both);
 
-    app->run();
+    #ifdef TEST
+        app->dc->loadFont("fonts/FreeSans.ttf", 14);
+        app->main_widget->m_app = (void*)app;
+        for (Widget *child : app->main_widget->children) {
+            child->m_app = (void*)app;
+            child->attach_app((void*)app);
+        }
+        app->show();
+        if (app->ready_callback) {
+            app->ready_callback(app);
+        }
+    #else
+        app->run();
+    #endif
 
     return 0; 
 }
