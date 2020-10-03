@@ -60,11 +60,14 @@ int Application::next_id() {
 
 void Application::run() {
     this->dc->loadFont("fonts/FreeSans.ttf", 14);
-    this->show();
     this->main_widget->m_app = (void*)this;
     for (Widget *child : this->main_widget->children) {
         child->m_app = (void*)this;
         child->attach_app((void*)this);
+    }
+    this->show();
+    if (this->ready_callback) {
+        this->ready_callback(this);
     }
     while (true) {
         SDL_Event event;

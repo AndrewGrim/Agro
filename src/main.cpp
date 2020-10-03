@@ -7,30 +7,34 @@
 #include "controls/box.hpp"
 #include "controls/button.hpp"
 
-// void onMouseDown(Widget *self, MouseEvent event) {
-// }
+void onMouseDown(Widget *self, MouseEvent event) {
+}
 
-// void onMouseUp(Widget *self, MouseEvent event) {
-// }
+void onMouseUp(Widget *self, MouseEvent event) {
+}
 
-// void onMouseLeft(Widget *self, MouseEvent event) {
-// }
+void onMouseLeft(Widget *self, MouseEvent event) {
+}
 
-// void onMouseEntered(Widget *self, MouseEvent event) {
-// }
+void onMouseEntered(Widget *self, MouseEvent event) {
+}
 
-// void onMouseMotion(Widget *self, MouseEvent event) {
-// }
+void onMouseMotion(Widget *self, MouseEvent event) {
+}
+
+void onApplicationReady(Application *self) {
+}
 
 int main() { 
-    auto app = new Application();
+    Application *app = new Application();
+        app->ready_callback = onApplicationReady;
         Box *inner = new Box(Align::Horizontal);
             Button *test_button = new Button("My first button !");
-                // test_button->mouse_down_callback = onMouseDown;
-                // test_button->mouse_up_callback = onMouseUp;
-                // test_button->mouse_left_callback = onMouseLeft;
-                // test_button->mouse_entered_callback = onMouseEntered;
-                // test_button->mouse_motion_callback = onMouseMotion;
+                test_button->mouse_down_callback = onMouseDown;
+                test_button->mouse_up_callback = onMouseUp;
+                test_button->mouse_left_callback = onMouseLeft;
+                test_button->mouse_entered_callback = onMouseEntered;
+                test_button->mouse_motion_callback = onMouseMotion;
             inner->append(test_button, Fill::Both);
             inner->append(new Button("2"), Fill::Both);
             inner->append(new Button("3"), Fill::Both);
