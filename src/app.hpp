@@ -23,7 +23,7 @@
             Widget *main_widget = new Box(Align::Vertical);
             Size<int> m_size;
             State *state = new State();
-            bool m_needs_update = true;
+            bool m_needs_update = false;
 
             Application(const char* title = "Application", Size<int> size = Size<int>(400, 400));
             ~Application();

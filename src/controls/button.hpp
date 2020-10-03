@@ -19,7 +19,6 @@
 
             void draw(DrawingContext *dc, Rect<float> rect) {
                 this->rect = rect;
-                this->set_size(dc->measureText(text()));
                 Color color = Color(0, 0, 0, 0); 
                 if (this->is_pressed() && this->is_hovered()) {
                     color = this->pressed_background(); 
@@ -35,8 +34,8 @@
                 dc->drawTextAligned(this->m_text, this->m_text_align, rect, this->m_padding + this->m_border_width / 2);
             }
 
-            Size<float> size_hint() {
-                Size<float> size = this->m_size;
+            Size<float> size_hint(DrawingContext *dc) {
+                Size<float> size = dc->measureText(text());
                     size.w += this->m_padding * 2;
                     size.h += this->m_padding * 2;
                 return size;
@@ -71,17 +70,10 @@
         private:
             const char *m_name = "Button";
             std::string m_text;
-            Size<float> m_size;
             TextAlignment m_text_align = TextAlignment::Center;
             unsigned int m_padding = 10;
             unsigned int m_border_width = 4;
             Color fg = Color();
             Color bg = Color(0.9f, 0.9f, 0.9f);
-
-            Button* set_size(Size<float> size) {
-                this->m_size = size;
-
-                return this;
-            }
     };
 #endif

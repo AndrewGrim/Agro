@@ -32,7 +32,7 @@
             virtual const char* name();
             virtual void draw(DrawingContext *dc, Rect<float> rect);
             Widget* append(Widget* widget, Fill fill_policy);
-            virtual Size<float> size_hint();
+            virtual Size<float> size_hint(DrawingContext *dc);
             virtual Color background();
             virtual Widget* set_background(Color background);
             virtual Color hover_background();

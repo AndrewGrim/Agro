@@ -19,7 +19,7 @@ Widget* Widget::append(Widget* widget, Fill fill_policy) {
     return this;
 }
 
-Size<float> Widget::size_hint() {
+Size<float> Widget::size_hint(DrawingContext *dc) {
     return Size<float>(0, 0); 
 }
 
