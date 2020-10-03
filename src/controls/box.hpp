@@ -24,9 +24,6 @@
             }
 
             void layout_children(DrawingContext *dc, Rect<float> rect) {
-                // TODO Align::Horizontal needs more work!
-                // the problem can be seen when changing the main sizer
-                // in the test app in main.
                 int non_expandable_widgets = 0;
                 int reserved_x = 0;
                 int reserved_y = 0;
@@ -86,11 +83,11 @@
                                     break;
                                 }
                                 case Fill::Horizontal:
-                                    size = Size<float> { rect.w > child_hint.w ? rect.w : child_hint.w, child->size_hint(dc).h };
+                                    size = Size<float> { rect.w > child_hint.w ? rect.w : child_hint.w, child_hint.h };
                                     break;
                                 case Fill::None:
                                 default:
-                                    size = child->size_hint(dc);
+                                    size = child_hint;
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
                             pos.y += size.h;
@@ -118,7 +115,7 @@
                                     break;
                                 }
                                 case Fill::Vertical:
-                                    size = Size<float> { child->size_hint(dc).w, rect.h };
+                                    size = Size<float> { child_hint.w, rect.h > child_hint.h ? rect.h : child_hint.h };
                                     break;
                                 case Fill::Horizontal: {
                                     float width = expandable_width;
@@ -129,13 +126,13 @@
                                     }
                                     size = Size<float> { 
                                         width, 
-                                        rect.h
+                                        child_hint.h
                                     };
                                     break;
                                 }
                                 case Fill::None:
                                 default:
-                                    size = child->size_hint(dc);
+                                    size = child_hint;
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
                             pos.x += size.w;
