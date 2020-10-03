@@ -48,7 +48,7 @@ void onApplicationReady(Application *self) {
 }
 
 int main() { 
-    Application *app = new Application("Layout Test", Size<int>(400, 600));
+    Application *app = new Application("Box Vertical Test", Size<int>(400, 600));
         app->ready_callback = onApplicationReady;
 
         // [0]: Align::Vertical, Fill::None
