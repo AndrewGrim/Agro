@@ -160,11 +160,11 @@ void Widget::mouse_event(State *state, MouseEvent event) {
             }
             this->set_hovered(true);
             state->hovered = this;
-            state->pressed = nullptr;
             if (this->mouse_up_callback) this->mouse_up_callback(this, event);
-            // TODO we could add a click event here
-            // simply check if pressed and this are the same
-            // then we know that both the down and up events were on the same target
+            if (this == state->pressed) {
+                if (this->mouse_click_callback) this->mouse_click_callback(this, event);
+            }
+            state->pressed = nullptr;
             break;
         case MouseEvent::Type::Motion:
             if (!state->pressed) {

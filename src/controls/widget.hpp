@@ -24,6 +24,7 @@
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;
+            void (*mouse_click_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_left_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_entered_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_motion_callback)(Widget*, MouseEvent) = nullptr;
