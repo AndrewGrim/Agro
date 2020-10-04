@@ -6,6 +6,8 @@
 
     class Box : public Widget {
         public:
+            Align m_align_policy;
+
             Box(Align align_policy) {
                 this->m_align_policy = align_policy;
             }
@@ -184,6 +186,5 @@
             const char *m_name = "Box";
             Color fg = Color();
             Color bg = Color(0.50f, 0.50f, 0.50f);
-            Align m_align_policy;
     };
 #endif

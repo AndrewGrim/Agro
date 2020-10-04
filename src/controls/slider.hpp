@@ -7,11 +7,19 @@
     #include "button.hpp"
     #include "../renderer/drawing_context.hpp"
 
+    void onMouseMove(Widget *button, MouseEvent event);
+
     class Slider : public Box {
         public:
+            float m_min = 0.0f;
+            float m_max = 1.0f;
+            float m_value = 0.5f;
+
             Slider(Align alignment) : Box(alignment) {
                 this->m_slider_button = new Button("Slider");
                 this->append(this->m_slider_button, Fill::None);
+                this->m_slider_button->m_parent = this;
+                this->m_slider_button->mouse_motion_callback = onMouseMove;
             }
             
             ~Slider() {}
@@ -79,8 +87,20 @@
         private:
             const char *m_name = "Slider";
             Button *m_slider_button = nullptr;
-            float m_min = 0.0f;
-            float m_max = 1.0f;
-            float m_value = 0.5f;
     };
+
+    void onMouseMove(Widget *button, MouseEvent event) {
+        if (button && button->is_pressed()) {
+            if (button->m_parent && button->m_parent->name() == "Slider") {
+                Slider *parent = (Slider*)button->m_parent;
+                Rect<float> rect = parent->rect;
+                if (parent->m_align_policy == Align::Horizontal) {
+                    parent->m_value = 1.0 - ((rect.x + rect.w - event.x) / (rect.x + rect.w));
+                } else {
+                    parent->m_value = 1.0 - ((rect.y + rect.h - event.y) / (rect.y + rect.h));
+                }
+                if (button->m_app) ((Application*)button->m_app)->m_needs_update = true;
+            }
+        }
+    }
 #endif

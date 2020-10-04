@@ -19,6 +19,7 @@
             void *m_app = nullptr;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
+            Widget *m_parent = nullptr;
             Rect<float> rect = Rect<float>(0, 0, 0, 0);
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;

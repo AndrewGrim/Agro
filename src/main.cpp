@@ -36,7 +36,7 @@ int main() {
                 test_button->mouse_left_callback = onMouseLeft;
                 test_button->mouse_entered_callback = onMouseEntered;
                 test_button->mouse_motion_callback = onMouseMotion;
-            top_sizer->append(new Slider(Align::Vertical), Fill::Vertical);
+            top_sizer->append(new Slider(Align::Horizontal), Fill::Horizontal);
             top_sizer->append(test_button, Fill::Both);
             top_sizer->append(new Button("T 2"), Fill::Both);
             top_sizer->append(new Button("T 3"), Fill::Both);
