@@ -1,0 +1,86 @@
+#ifndef SLIDER_HPP
+    #define SLIDER_HPP
+
+    #include "../app.hpp"
+    #include "widget.hpp"
+    #include "box.hpp"
+    #include "button.hpp"
+    #include "../renderer/drawing_context.hpp"
+
+    class Slider : public Box {
+        public:
+            Slider(Align alignment) : Box(alignment) {
+                this->m_slider_button = new Button("Slider");
+                this->append(this->m_slider_button, Fill::None);
+            }
+            
+            ~Slider() {}
+
+            const char* name() {
+                return this->m_name;
+            }
+
+            void draw(DrawingContext *dc, Rect<float> rect) {
+                this->rect = rect;
+                Color color = Color(0, 0, 0, 0); 
+                if (this->is_pressed() && this->is_hovered()) {
+                    color = this->pressed_background(); 
+                } else if (this->is_hovered()) {
+                    color = this->hover_background();
+                } else {
+                    color = this->background();
+                }
+                
+                dc->fillRect(rect, color);
+                Size<float> sizehint = this->m_slider_button->size_hint(dc);
+                float size;
+                if (this->m_align_policy == Align::Horizontal) size = sizehint.w;
+                else size = sizehint.h;
+                float *align_rect[2] = {};
+                if (this->m_align_policy == Align::Horizontal) {
+                    align_rect[0] = &rect.x;
+                    align_rect[1] = &rect.w;
+                } else {
+                    align_rect[0] = &rect.y;
+                    align_rect[1] = &rect.h;
+                }
+
+                float result = (*align_rect[1] * this->m_value) - (size / 2);
+                if (result < 0) {
+                } else if (result > (*align_rect[1] - size)) {
+                    *align_rect[0] += (*align_rect[1] - size);
+                } else {
+                    *align_rect[0] += result;
+                }
+                this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, sizehint.w, sizehint.h));
+            }
+
+            Size<float> size_hint(DrawingContext *dc) {
+                Size<float> size = this->m_slider_button->size_hint(dc);
+                    if (this->m_align_policy == Align::Horizontal) size.w *= 2;
+                    else size.h *= 2;
+                return size;
+            }
+
+            Slider* set_foreground(Color foreground) {
+                this->bg = foreground;
+                this->update();
+
+                return this;
+            }
+
+            Slider* set_background(Color background) {
+                this->bg = background;
+                this->update();
+
+                return this;
+            }
+
+        private:
+            const char *m_name = "Slider";
+            Button *m_slider_button = nullptr;
+            float m_min = 0.0f;
+            float m_max = 1.0f;
+            float m_value = 0.5f;
+    };
+#endif

@@ -180,7 +180,7 @@
                 return true;
             }
 
-        private:
+        protected:
             const char *m_name = "Box";
             Color fg = Color();
             Color bg = Color(0.50f, 0.50f, 0.50f);

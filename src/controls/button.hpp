@@ -63,10 +63,6 @@
                 return this;
             }
 
-            bool is_layout() {
-                return false;
-            }
-
         private:
             const char *m_name = "Button";
             std::string m_text;
