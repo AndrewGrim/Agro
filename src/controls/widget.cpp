@@ -187,7 +187,9 @@ void Widget::mouse_event(State *state, MouseEvent event) {
                 } else {
                     ((Widget*)state->pressed)->set_hovered(false);
                 }
-                if (this->mouse_motion_callback) this->mouse_motion_callback(this, event);
+                if (((Widget*)state->pressed)->mouse_motion_callback) {
+                    ((Widget*)state->pressed)->mouse_motion_callback(((Widget*)state->pressed), event);
+                }
             }
             break;
     }
