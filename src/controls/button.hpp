@@ -13,11 +13,11 @@
             
             ~Button() {}
 
-            const char* name() {
+            virtual const char* name() {
                 return this->m_name;
             }
 
-            void draw(DrawingContext *dc, Rect<float> rect) {
+            virtual void draw(DrawingContext *dc, Rect<float> rect) {
                 this->rect = rect;
                 Color color = Color(0, 0, 0, 0); 
                 if (this->is_pressed() && this->is_hovered()) {
@@ -63,7 +63,7 @@
                 return this;
             }
 
-        private:
+        protected:
             const char *m_name = "Button";
             std::string m_text;
             TextAlignment m_text_align = TextAlignment::Center;

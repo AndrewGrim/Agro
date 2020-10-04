@@ -9,6 +9,35 @@
 
     void onMouseMove(Widget *button, MouseEvent event);
 
+    class SliderButton : public Button {
+        public:
+            SliderButton(std::string text) : Button(text) {
+                this->set_background(Color(0.7f, 0.7f, 0.7f));
+            }
+
+            virtual const char* name() {
+                return this->m_name;
+            }
+
+            void draw(DrawingContext *dc, Rect<float> rect) {
+                this->rect = rect;
+                Color color = Color(0, 0, 0, 0); 
+                if (this->is_pressed()) {
+                    color = this->pressed_background(); 
+                } else if (this->is_hovered()) {
+                    color = this->hover_background();
+                } else {
+                    color = this->background();
+                }
+                
+                dc->fillRect(rect, color);
+                dc->drawTextAligned(this->m_text, this->m_text_align, rect, this->m_padding + this->m_border_width / 2);
+            }
+
+        protected:
+            const char *m_name = "SliderButton";
+    };
+
     class Slider : public Box {
         public:
             float m_min = 0.0f;
@@ -16,8 +45,8 @@
             float m_value = 0.5f;
             void (*value_changed_callback)(Slider*) = nullptr;
 
-            Slider(Align alignment) : Box(alignment) {
-                this->m_slider_button = new Button("Slider");
+            Slider(Align alignment, std::string text = "") : Box(alignment) {
+                this->m_slider_button = new SliderButton(text);
                 this->append(this->m_slider_button, Fill::None);
                 this->m_slider_button->m_parent = this;
                 this->m_slider_button->mouse_motion_callback = onMouseMove;
@@ -87,13 +116,13 @@
 
         private:
             const char *m_name = "Slider";
-            Button *m_slider_button = nullptr;
+            SliderButton *m_slider_button = nullptr;
     };
 
-    void onMouseMove(Widget *button, MouseEvent event) {
-        if (button && button->is_pressed()) {
-            if (button->m_parent && button->m_parent->name() == "Slider") {
-                Slider *parent = (Slider*)button->m_parent;
+    void onMouseMove(Widget *slider_button, MouseEvent event) {
+        if (slider_button && slider_button->is_pressed()) {
+            if (slider_button->m_parent && slider_button->m_parent->name() == "Slider") {
+                Slider *parent = (Slider*)slider_button->m_parent;
                 Rect<float> rect = parent->rect;
                 if (parent->m_align_policy == Align::Horizontal) {
                     float value = parent->m_max - ((rect.x + rect.w - event.x) / (rect.x + rect.w));
@@ -107,7 +136,7 @@
                     parent->m_value = value;
                 }
                 if (parent->value_changed_callback) parent->value_changed_callback(parent);
-                if (button->m_app) ((Application*)button->m_app)->m_needs_update = true;
+                if (slider_button->m_app) ((Application*)slider_button->m_app)->m_needs_update = true;
             }
         }
     }

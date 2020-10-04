@@ -40,7 +40,7 @@ int main() {
                 test_button->mouse_left_callback = onMouseLeft;
                 test_button->mouse_entered_callback = onMouseEntered;
                 test_button->mouse_motion_callback = onMouseMotion;
-            Slider *test_slider = new Slider(Align::Vertical);
+            Slider *test_slider = new Slider(Align::Vertical, "Slider");
                 test_slider->value_changed_callback = onValueChanged;
             top_sizer->append(test_slider, Fill::Vertical);
             top_sizer->append(test_button, Fill::Both);

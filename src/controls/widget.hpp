@@ -55,7 +55,7 @@
             void mouse_event(State *state, MouseEvent event);
             void attach_app(void *app);
 
-        private:
+        protected:
             const char *m_name = "Widget";
             Color fg = Color();
             Color bg = Color();
