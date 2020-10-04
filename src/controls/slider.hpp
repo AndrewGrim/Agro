@@ -7,7 +7,7 @@
     #include "button.hpp"
     #include "../renderer/drawing_context.hpp"
 
-    void onMouseMove(Widget *button, MouseEvent event);
+    void _onMouseMove(Widget *button, MouseEvent event);
 
     class SliderButton : public Button {
         public:
@@ -50,7 +50,7 @@
                 this->m_slider_button = new SliderButton(text);
                 this->append(this->m_slider_button, Fill::None);
                 this->m_slider_button->m_parent = this;
-                this->m_slider_button->mouse_motion_callback = onMouseMove;
+                this->m_slider_button->mouse_motion_callback = _onMouseMove;
             }
             
             ~Slider() {}
@@ -119,7 +119,7 @@
             const char *m_name = "Slider";
     };
 
-    void onMouseMove(Widget *slider_button, MouseEvent event) {
+    void _onMouseMove(Widget *slider_button, MouseEvent event) {
         if (slider_button && slider_button->is_pressed()) {
             if (slider_button->m_parent) {
                 Slider *parent = (Slider*)slider_button->m_parent;
