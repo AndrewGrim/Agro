@@ -43,6 +43,7 @@
             float m_min = 0.0f;
             float m_max = 1.0f;
             float m_value = 0.5f;
+            SliderButton *m_slider_button = nullptr;
             void (*value_changed_callback)(Slider*) = nullptr;
 
             Slider(Align alignment, std::string text = "") : Box(alignment) {
@@ -116,7 +117,6 @@
 
         protected:
             const char *m_name = "Slider";
-            SliderButton *m_slider_button = nullptr;
     };
 
     void onMouseMove(Widget *slider_button, MouseEvent event) {

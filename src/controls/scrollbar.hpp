@@ -8,16 +8,26 @@
     #include "slider.hpp"
     #include "../renderer/drawing_context.hpp"
 
-    class ScrollBar : public Slider {
+    class ScrollBar : public Widget {
         public:
-            ScrollBar(Align alignment, std::string text = "") : Slider(alignment, text) {
+            Button *m_begin_button = nullptr;
+            Slider *m_slider = nullptr;
+            Button *m_end_button = nullptr;
+            Align m_align_policy;
+            std::string m_text;
+
+            ScrollBar(Align alignment, std::string text = "") {
+                this->m_align_policy = alignment;
+                this->m_text = text;
+
                 m_begin_button = new Button("<");
-                this->children.insert(this->children.begin(), m_begin_button);
-                if (this->m_app) m_begin_button->m_app = this->m_app;
+                this->append(m_begin_button, Fill::None);
+
+                m_slider = new Slider(alignment, text);
+                this->append(m_slider, Fill::Vertical);
 
                 m_end_button = new Button(">");
-                this->children.push_back(m_end_button);
-                if (this->m_app) m_end_button->m_app = this->m_app;
+                this->append(m_end_button, Fill::None);
             }
             
             ~ScrollBar() {}
@@ -29,15 +39,15 @@
             void draw(DrawingContext *dc, Rect<float> rect) {
                 this->rect = rect;
                 Size<float> button_size = this->m_begin_button->size_hint(dc);
-                this->children[0]->draw(dc, Rect<float>(rect.x, rect.y, button_size.w, button_size.h));
+                this->m_begin_button->draw(dc, Rect<float>(rect.x, rect.y, button_size.w, button_size.h));
                 rect.y += button_size.h;
                 rect.h -= button_size.h * 2;
-                Slider::draw(dc, rect);
-                this->children[2]->draw(dc, Rect<float>(rect.x, rect.y + rect.h, button_size.w, button_size.h));
+                this->m_slider->draw(dc, rect);
+                this->m_end_button->draw(dc, Rect<float>(rect.x, rect.y + rect.h, button_size.w, button_size.h));
             }
 
             Size<float> size_hint(DrawingContext *dc) {
-                Size<float> size = this->m_slider_button->size_hint(dc);
+                Size<float> size = this->m_slider->m_slider_button->size_hint(dc);
                 Size<float> button_size = this->m_begin_button->size_hint(dc);
                     if (this->m_align_policy == Align::Horizontal) {
                         size.w *= 2 * 2;
@@ -52,9 +62,11 @@
                 return size;
             }
 
+            bool is_layout() {
+                return true;
+            }
+
         protected:
             const char *m_name = "ScrollBar";
-            Button *m_begin_button = nullptr;
-            Button *m_end_button = nullptr;
     };
 #endif
