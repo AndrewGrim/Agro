@@ -14,6 +14,7 @@
             float m_min = 0.0f;
             float m_max = 1.0f;
             float m_value = 0.5f;
+            void (*value_changed_callback)(Slider*) = nullptr;
 
             Slider(Align alignment) : Box(alignment) {
                 this->m_slider_button = new Button("Slider");
@@ -99,6 +100,7 @@
                 } else {
                     parent->m_value = 1.0 - ((rect.y + rect.h - event.y) / (rect.y + rect.h));
                 }
+                if (parent->value_changed_callback) parent->value_changed_callback(parent);
                 if (button->m_app) ((Application*)button->m_app)->m_needs_update = true;
             }
         }

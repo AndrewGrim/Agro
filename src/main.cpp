@@ -26,6 +26,10 @@ void onMouseMotion(Widget *self, MouseEvent event) {
 void onApplicationReady(Application *self) {
 }
 
+void onValueChanged(Slider *self) {
+    println(self->m_value);
+}
+
 int main() { 
     Application *app = new Application();
         app->ready_callback = onApplicationReady;
@@ -36,7 +40,9 @@ int main() {
                 test_button->mouse_left_callback = onMouseLeft;
                 test_button->mouse_entered_callback = onMouseEntered;
                 test_button->mouse_motion_callback = onMouseMotion;
-            top_sizer->append(new Slider(Align::Horizontal), Fill::Horizontal);
+            Slider *test_slider = new Slider(Align::Vertical);
+                test_slider->value_changed_callback = onValueChanged;
+            top_sizer->append(test_slider, Fill::Vertical);
             top_sizer->append(test_button, Fill::Both);
             top_sizer->append(new Button("T 2"), Fill::Both);
             top_sizer->append(new Button("T 3"), Fill::Both);
