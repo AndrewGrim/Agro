@@ -10,5 +10,18 @@
                 this->w = w;
                 this->h = h;
             }
+
+            friend bool operator==(const Size<T> &lhs, const Size<T> &rhs) {
+                if (lhs.w == rhs.w && lhs.h == rhs.h) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            friend std::ostream& operator<<(std::ostream &os, const Size<T> &size) {
+                printf("Size { w: %f, h: %f }", size.w, size.h);
+                return os;
+            }
     };
 #endif

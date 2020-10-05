@@ -18,7 +18,7 @@
                 this->h = h;
             }
 
-            friend bool operator== (const Rect<float> &lhs, const Rect<float> &rhs) {
+            friend bool operator==(const Rect<T> &lhs, const Rect<T> &rhs) {
                 if (lhs.x == rhs.x &&
                     lhs.y == rhs.y &&
                     lhs.w == rhs.w &&
@@ -30,7 +30,7 @@
                 return false;
             }
 
-            friend std::ostream& operator<<(std::ostream &os, const Rect<float> &rect) {
+            friend std::ostream& operator<<(std::ostream &os, const Rect<T> &rect) {
                 printf("Rect { x: %f, y: %f, w: %f, h: %f }", rect.x, rect.y, rect.w, rect.h);
                 return os;
             }
