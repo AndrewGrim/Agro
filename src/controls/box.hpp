@@ -27,60 +27,47 @@
 
             void layout_children(DrawingContext *dc, Rect<float> rect) {
                 int non_expandable_widgets = 0;
-                int reserved_x = 0;
-                int reserved_y = 0;
+                Size<float> total_children_size;
                 Align parent_layout = this->m_align_policy;
                 for (Widget* child : this->children) {
+                    Size<float> child_size = child->size_hint(dc);
                     Fill child_layout = child->fill_policy();
                     if (parent_layout == Align::Vertical) {
                         if (child_layout == Fill::Horizontal || child_layout == Fill::None) {
                             non_expandable_widgets += 1;
-                            reserved_y += child->size_hint(dc).h;
                         }
                     } else if (parent_layout == Align::Horizontal) {
                         if (child_layout == Fill::Vertical || child_layout == Fill::None) {
                             non_expandable_widgets += 1;
-                            reserved_x += child->size_hint(dc).w;
                         }
                     }
+                    total_children_size.w += child_size.w;
+                    total_children_size.h += child_size.h;
                 }
 
                 int child_count = this->children.size() - non_expandable_widgets;
                 if (!child_count) child_count = 1; // Protects from division by zero
-                rect.w -= reserved_x;
-                rect.h -= reserved_y;
                 Point<float> pos = Point<float>(rect.x, rect.y);
                 switch (parent_layout) {
                     case Align::Vertical: {
                         float available_height = rect.h;
-                        float expandable_height = available_height / child_count;
+                        float expandable_height = (available_height - total_children_size.h) / child_count;
+                        if (expandable_height < 0) expandable_height = 0;
                         for (Widget* child : this->children) {
                             Size<float> size;
                             Size<float> child_hint = child->size_hint(dc);
                             switch (child->fill_policy()) {
                                 case Fill::Both: {
-                                    float height = expandable_height;
-                                    if (expandable_height < child_hint.h) {
-                                        height = child_hint.h;
-                                        available_height -= child_hint.h;
-                                        expandable_height = available_height / --child_count;
-                                    }
                                     size = Size<float> { 
                                         rect.w > child_hint.w ? rect.w : child_hint.w, 
-                                        height
+                                        child_hint.h + expandable_height
                                     };
                                     break;
                                 }
                                 case Fill::Vertical: {
-                                    float height = expandable_height;
-                                    if (expandable_height < child_hint.h) {
-                                        height = child_hint.h;
-                                        available_height -= child_hint.h;
-                                        expandable_height = available_height / --child_count;
-                                    }
                                     size = Size<float> { 
                                         child_hint.w, 
-                                        height
+                                        child_hint.h + expandable_height
                                     };
                                     break;
                                 }
@@ -98,20 +85,15 @@
                     }
                     case Align::Horizontal: {
                         float available_width = rect.w;
-                        float expandable_width = available_width / child_count;
+                        float expandable_width = (available_width - total_children_size.w) / child_count;
+                        if (expandable_width < 0) expandable_width = 0;
                         for (Widget* child : this->children) {
                             Size<float> size;
                             Size<float> child_hint = child->size_hint(dc);
                             switch (child->fill_policy()) {
                                 case Fill::Both: {
-                                    float width = expandable_width;
-                                    if (expandable_width < child_hint.w) {
-                                        width = child_hint.w;
-                                        available_width -= child_hint.w;
-                                        expandable_width = available_width / --child_count;
-                                    }
                                     size = Size<float> { 
-                                        width, 
+                                        child_hint.w + expandable_width, 
                                         rect.h
                                     };
                                     break;
@@ -120,14 +102,8 @@
                                     size = Size<float> { child_hint.w, rect.h > child_hint.h ? rect.h : child_hint.h };
                                     break;
                                 case Fill::Horizontal: {
-                                    float width = expandable_width;
-                                    if (expandable_width < child_hint.w) {
-                                        width = child_hint.w;
-                                        available_width -= child_hint.w;
-                                        expandable_width = available_width / --child_count;
-                                    }
                                     size = Size<float> { 
-                                        width, 
+                                        child_hint.w + expandable_width, 
                                         child_hint.h
                                     };
                                     break;

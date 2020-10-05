@@ -31,9 +31,9 @@ void onApplicationReady(Application *self) {
     // [1]: Align::Horizontal, Fill::Horizontal
     assert(self->main_widget->children[1]->rect == Rect<float>(0, 31, 1000, 31));
         assert(self->main_widget->children[1]->children[0]->rect == Rect<float>(0, 31, 213, 31));
-        assert(self->main_widget->children[1]->children[1]->rect == Rect<float>(213, 31, 280, 31));
-        assert(self->main_widget->children[1]->children[2]->rect == Rect<float>(493, 31, 227, 31));
-        assert(self->main_widget->children[1]->children[3]->rect == Rect<float>(720, 31, 280, 31));
+        assert(self->main_widget->children[1]->children[1]->rect == Rect<float>(213, 31, 298, 31));
+        assert(self->main_widget->children[1]->children[2]->rect == Rect<float>(511, 31, 227, 31));
+        assert(self->main_widget->children[1]->children[3]->rect == Rect<float>(738, 31, 262, 31));
 
     // [2]: Align::Horizontal, Fill::Vertical
     assert(self->main_widget->children[2]->rect == Rect<float>(0, 62, 822, 169));
@@ -45,9 +45,9 @@ void onApplicationReady(Application *self) {
     // [3]: Align::Horizontal, Fill::Both
     assert(self->main_widget->children[3]->rect == Rect<float>(0, 231, 1000, 169));
         assert(self->main_widget->children[3]->children[0]->rect == Rect<float>(0, 231, 177, 31));
-        assert(self->main_widget->children[3]->children[1]->rect == Rect<float>(177, 231, 316, 31));
-        assert(self->main_widget->children[3]->children[2]->rect == Rect<float>(493, 231, 191, 169));
-        assert(self->main_widget->children[3]->children[3]->rect == Rect<float>(684, 231, 316, 169));
+        assert(self->main_widget->children[3]->children[1]->rect == Rect<float>(177, 231, 334, 31));
+        assert(self->main_widget->children[3]->children[2]->rect == Rect<float>(511, 231, 191, 169));
+        assert(self->main_widget->children[3]->children[3]->rect == Rect<float>(702, 231, 298, 169));
 }
 
 int main() { 
