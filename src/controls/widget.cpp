@@ -1,5 +1,5 @@
-#include "widget.hpp"
 #include "../app.hpp"
+#include "widget.hpp"
 
 Widget::Widget() {}
 
@@ -82,6 +82,10 @@ bool Widget::is_layout() {
     return false;
 }
 
+bool Widget::is_scrollable() {
+    return false;
+}
+
 bool Widget::is_hovered() {
     return this->m_is_hovered;
 }
@@ -107,18 +111,37 @@ void Widget::update() {
 }
 
 void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
-    for (Widget *child : this->children) {
-        if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
-            (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
-            void *last = nullptr;
-            if (child->is_layout()) {
-                last = (void*)child->propagate_mouse_event(state, event);
-            } else {
-                child->mouse_event(state, event);
-                last = (void*)child;
-            }
-            return last;
+    if (this->is_scrollable()) {
+        ScrolledBox *self = (ScrolledBox*)this;
+        ScrollBar *scroll = nullptr;
+        // TODO we might need to check both of them though
+        if (self->m_align_policy == Align::Horizontal) {
+            if (self->m_horizontal_scrollbar) scroll = self->m_horizontal_scrollbar;
+        } else {
+            if (self->m_vertical_scrollbar) scroll = self->m_vertical_scrollbar;
         }
+        if (scroll) {
+            if ((event.x >= scroll->rect.x && event.x <= scroll->rect.x + scroll->rect.w) &&
+                (event.y >= scroll->rect.y && event.y <= scroll->rect.y + scroll->rect.h)) {
+                return (void*)scroll->propagate_mouse_event(state, event);
+            }
+        }
+        goto CHILDREN;
+    } else {
+        CHILDREN:
+            for (Widget *child : this->children) {
+                if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                    (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                    void *last = nullptr;
+                    if (child->is_layout()) {
+                        last = (void*)child->propagate_mouse_event(state, event);
+                    } else {
+                        child->mouse_event(state, event);
+                        last = (void*)child;
+                    }
+                    return last;
+                }
+            }
     }
 
     if (event.type == MouseEvent::Type::Up && state->pressed) {

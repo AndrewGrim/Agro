@@ -47,6 +47,7 @@
             void hide();
             bool is_visible();
             virtual bool is_layout();
+            virtual bool is_scrollable();
             bool is_hovered();
             void set_hovered(bool hover);
             bool is_pressed();

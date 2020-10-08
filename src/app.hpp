@@ -10,6 +10,7 @@
     #include "state.hpp"
     #include "controls/widget.hpp"
     #include "controls/box.hpp"
+    #include "controls/scrolledbox.hpp"
     #include "renderer/drawing_context.hpp"
     #include "renderer/text_renderer.h"
     
@@ -20,7 +21,7 @@
             SDL_GLContext sdl_context;
             DrawingContext *dc;
             Color bg = Color(1.0f, 1.0f, 1.0f);
-            Widget *main_widget = new Box(Align::Vertical);
+            Widget *main_widget = new ScrolledBox(Align::Vertical);
             Size<int> m_size;
             State *state = new State();
             bool m_needs_update = false;
