@@ -46,20 +46,25 @@
                     total_children_size.w += child_size.w;
                     total_children_size.h += child_size.h;
                 }
+
+                float content_x = rect.x;
+                float content_y = rect.y;
                 if (rect.w < total_children_size.w) {
                     this->add_scrollbar(Align::Horizontal);
+                    content_x -= this->m_horizontal_scrollbar->m_slider->m_value * (total_children_size.w - rect.w);
                 } else {
                     this->remove_scrollbar(Align::Horizontal);
                 }
                 if (rect.h < total_children_size.h) {
                     this->add_scrollbar(Align::Vertical);
+                    content_y -= this->m_vertical_scrollbar->m_slider->m_value * (total_children_size.h - rect.h);
                 } else {
                     this->remove_scrollbar(Align::Vertical);
                 }
 
                 int child_count = this->children.size() - non_expandable_widgets;
                 if (!child_count) child_count = 1; // Protects from division by zero
-                Point<float> pos = Point<float>(rect.x, rect.y);
+                Point<float> pos = Point<float>(content_x, content_y);
                 switch (parent_layout) {
                     case Align::Vertical: {
                         float available_height = rect.h;
@@ -131,6 +136,10 @@
                             }
                             child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
                             pos.x += size.w;
+                            if (m_horizontal_scrollbar) {
+                                Size<float> size = m_horizontal_scrollbar->size_hint(dc);
+                                m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h));
+                            }
                         }
                         break;
                     }   
@@ -169,7 +178,8 @@
             void add_scrollbar(Align alignment) {
                 if (alignment == Align::Horizontal) {
                     if (!this->m_horizontal_scrollbar) {
-                        this->m_horizontal_scrollbar = new ScrollBar(alignment, "HORIZ");
+                        this->m_horizontal_scrollbar = new ScrollBar(alignment, "  ");
+                        this->m_horizontal_scrollbar->m_slider->m_value = 0.0; 
                     }
                     if (this->m_horizontal_scrollbar) {
                         this->m_horizontal_scrollbar->m_app = this->m_app;
@@ -181,7 +191,8 @@
                 }
                 else {
                     if (!this->m_vertical_scrollbar) {
-                        this->m_vertical_scrollbar = new ScrollBar(alignment, "VERTI");
+                        this->m_vertical_scrollbar = new ScrollBar(alignment, "  ");
+                        this->m_vertical_scrollbar->m_slider->m_value = 0.0; 
                     }
                     if (this->m_vertical_scrollbar) {
                         this->m_vertical_scrollbar->m_app = this->m_app;
