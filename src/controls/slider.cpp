@@ -8,12 +8,12 @@ void _onMouseMove(Widget *slider_button, MouseEvent event) {
             Slider *parent = (Slider*)slider_button->m_parent;
             Rect<float> rect = parent->rect;
             if (parent->m_align_policy == Align::Horizontal) {
-                float value = parent->m_max - ((rect.x + rect.w - event.x) / (rect.w));
+                float value = parent->m_value + (event.xrel / (rect.w - parent->m_slider_button_size));
                 if (value > parent->m_max) value = parent->m_max;
                 else if (value < parent->m_min) value = parent->m_min;
                 parent->m_value = value;
             } else {
-                float value = parent->m_max - ((rect.y + rect.h - event.y) / (rect.h));
+                float value = parent->m_value + (event.yrel / (rect.h - parent->m_slider_button_size));
                 if (value > parent->m_max) value = parent->m_max;
                 else if (value < parent->m_min) value = parent->m_min;
                 parent->m_value = value;

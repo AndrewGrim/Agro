@@ -29,7 +29,8 @@
                 this->append(m_begin_button, Fill::None);
 
                 m_slider = new Slider(alignment, text);
-                this->append(m_slider, Fill::Vertical);
+                if (alignment == Align::Horizontal) this->append(m_slider, Fill::Horizontal);
+                else this->append(m_slider, Fill::Vertical);
 
                 m_end_button = new Button(">");
                 m_end_button->m_parent = this;

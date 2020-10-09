@@ -71,6 +71,7 @@
                         float expandable_height = (available_height - total_children_size.h) / child_count;
                         if (expandable_height < 0) expandable_height = 0;
                         if (this->has_scrollbar(Align::Vertical)) rect.w -= m_vertical_scrollbar->size_hint(dc).w;
+                        // TODO we could check if widget is visible and if not then dont draw it
                         for (Widget* child : this->children) {
                             Size<float> size;
                             Size<float> child_hint = child->size_hint(dc);
@@ -101,6 +102,7 @@
                         }
                         if (m_vertical_scrollbar) {
                             Size<float> size = m_vertical_scrollbar->size_hint(dc);
+                            m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h);
                             m_vertical_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h));
                         }
                         break;
@@ -138,7 +140,8 @@
                             pos.x += size.w;
                             if (m_horizontal_scrollbar) {
                                 Size<float> size = m_horizontal_scrollbar->size_hint(dc);
-                                m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h));
+                                m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w);
+                                m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w, size.h));
                             }
                         }
                         break;
@@ -179,7 +182,7 @@
                 if (alignment == Align::Horizontal) {
                     if (!this->m_horizontal_scrollbar) {
                         this->m_horizontal_scrollbar = new ScrollBar(alignment, "  ");
-                        this->m_horizontal_scrollbar->m_slider->m_value = 0.0; 
+                        this->m_horizontal_scrollbar->m_slider->m_value = 0.0;
                     }
                     if (this->m_horizontal_scrollbar) {
                         this->m_horizontal_scrollbar->m_app = this->m_app;
@@ -192,7 +195,7 @@
                 else {
                     if (!this->m_vertical_scrollbar) {
                         this->m_vertical_scrollbar = new ScrollBar(alignment, "  ");
-                        this->m_vertical_scrollbar->m_slider->m_value = 0.0; 
+                        this->m_vertical_scrollbar->m_slider->m_value = 0.0;
                     }
                     if (this->m_vertical_scrollbar) {
                         this->m_vertical_scrollbar->m_app = this->m_app;

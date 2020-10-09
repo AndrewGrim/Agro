@@ -29,7 +29,7 @@ int main() {
         Box *top_sizer = new Box(Align::Vertical);
             // top_sizer->append(new Slider(Align::Vertical, "S"), Fill::Vertical);
             // top_sizer->append(new ScrollBar(Align::Vertical, "SB"), Fill::Vertical);
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 25; i++) {
                 top_sizer->append(new Button(std::to_string(i)), Fill::Both);
             }
             top_sizer->append(new Button("Nick is a homosexual."), Fill::Both);

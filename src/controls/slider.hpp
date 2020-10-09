@@ -42,13 +42,16 @@
         public:
             float m_min = 0.0f;
             float m_max = 1.0f;
-            float m_value = 0.5f;
+            float m_value;
+            float m_slider_button_size;
             SliderButton *m_slider_button = nullptr;
             void (*value_changed_callback)(Slider*) = nullptr;
 
-            Slider(Align alignment, std::string text = "") : Box(alignment) {
+            Slider(Align alignment, std::string text = "", float value = 0.0) : Box(alignment) {
+                this->m_value = value;
                 this->m_slider_button = new SliderButton(text);
-                this->append(this->m_slider_button, Fill::None);
+                if (alignment == Align::Horizontal) this->append(this->m_slider_button, Fill::Horizontal);
+                else this->append(this->m_slider_button, Fill::Vertical);
                 this->m_slider_button->m_parent = this;
                 this->m_slider_button->mouse_motion_callback = _onMouseMove;
             }
@@ -59,7 +62,7 @@
                 return this->m_name;
             }
 
-            void draw(DrawingContext *dc, Rect<float> rect) {
+            virtual void draw(DrawingContext *dc, Rect<float> rect) {
                 this->rect = rect;
                 Color color = Color(0, 0, 0, 0); 
                 if (this->is_pressed() && this->is_hovered()) {
@@ -73,8 +76,12 @@
                 dc->fillRect(rect, color);
                 Size<float> sizehint = this->m_slider_button->size_hint(dc);
                 float size;
-                if (this->m_align_policy == Align::Horizontal) size = sizehint.w;
-                else size = sizehint.h;
+                if (!this->m_slider_button_size) {
+                    if (this->m_align_policy == Align::Horizontal) size = sizehint.w;
+                    else size = sizehint.h;
+                } else {
+                    size = this->m_slider_button_size;
+                }
                 float *align_rect[2] = {};
                 if (this->m_align_policy == Align::Horizontal) {
                     align_rect[0] = &rect.x;
@@ -84,14 +91,18 @@
                     align_rect[1] = &rect.h;
                 }
 
-                float result = (*align_rect[1] * this->m_value) - (size / 2);
+                float result = ((*align_rect[1] - size) * this->m_value);
                 if (result < 0) {
                 } else if (result > (*align_rect[1] - size)) {
                     *align_rect[0] += (*align_rect[1] - size);
                 } else {
                     *align_rect[0] += result;
                 }
-                this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, sizehint.w, sizehint.h));
+                if (this->m_align_policy == Align::Horizontal) {
+                    this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, this->m_slider_button_size, sizehint.h));
+                } else {
+                    this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, sizehint.w, this->m_slider_button_size));
+                }
             }
 
             Size<float> size_hint(DrawingContext *dc) {
