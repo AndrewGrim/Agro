@@ -71,7 +71,6 @@
                         float expandable_height = (available_height - total_children_size.h) / child_count;
                         if (expandable_height < 0) expandable_height = 0;
                         if (this->has_scrollbar(Align::Vertical)) rect.w -= m_vertical_scrollbar->size_hint(dc).w;
-                        // TODO we could check if widget is visible and if not then dont draw it
                         for (Widget* child : this->children) {
                             Size<float> size;
                             Size<float> child_hint = child->size_hint(dc);
@@ -97,7 +96,17 @@
                                 default:
                                     size = child_hint;
                             }
-                            child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
+                            Rect<float> widget_rect = Rect<float>(pos.x, pos.y, size.w, size.h);
+                            if (pos.y < 0) {
+                                if (pos.y + size.h < 0) {
+                                    child->rect = widget_rect;
+                                }
+                                else goto DRAW_VERTICAL;
+                            } else {
+                                DRAW_VERTICAL:
+                                    child->draw(dc, widget_rect);
+                                    if (pos.y > available_height) break;
+                            }
                             pos.y += size.h;
                         }
                         if (m_vertical_scrollbar) {
@@ -111,6 +120,7 @@
                         float available_width = rect.w;
                         float expandable_width = (available_width - total_children_size.w) / child_count;
                         if (expandable_width < 0) expandable_width = 0;
+                        if (this->has_scrollbar(Align::Horizontal)) rect.h -= m_horizontal_scrollbar->size_hint(dc).h;
                         for (Widget* child : this->children) {
                             Size<float> size;
                             Size<float> child_hint = child->size_hint(dc);
@@ -136,13 +146,23 @@
                                 default:
                                     size = child_hint;
                             }
-                            child->draw(dc, Rect<float>(pos.x, pos.y, size.w, size.h));
-                            pos.x += size.w;
-                            if (m_horizontal_scrollbar) {
-                                Size<float> size = m_horizontal_scrollbar->size_hint(dc);
-                                m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w);
-                                m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w, size.h));
+                            Rect<float> widget_rect = Rect<float>(pos.x, pos.y, size.w, size.h);
+                            if (pos.x < 0) {
+                                if (pos.x + size.w < 0) {
+                                    child->rect = widget_rect;
+                                }
+                                else goto DRAW_HORIZONTAL;
+                            } else {
+                                DRAW_HORIZONTAL:
+                                    child->draw(dc, widget_rect);
+                                    if (pos.x > available_width) break;
                             }
+                            pos.x += size.w;
+                        }
+                        if (m_horizontal_scrollbar) {
+                            Size<float> size = m_horizontal_scrollbar->size_hint(dc);
+                            m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w);
+                            m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w, size.h));
                         }
                         break;
                     }   
