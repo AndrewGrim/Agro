@@ -126,7 +126,7 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
                         child->draw(dc, widget_rect);
                         if (pos.x > ((Application*)this->m_app)->m_size.w) break;
                 }
-                pos.x += size.h;
+                pos.x += size.w;
             }
             break;
         }   
