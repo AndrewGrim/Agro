@@ -169,35 +169,6 @@
                 }
             }
 
-            Size<float> size_hint(DrawingContext *dc) {
-                Size<float> size = Size<float> { 0, 0 };
-                if (this->m_align_policy == Align::Horizontal) {
-                    for (Widget* child : this->children) {
-                        Size<float> s = child->size_hint(dc);
-                        size.w += s.w;
-                        if (s.h > size.h) {
-                            size.h = s.h;
-                        }
-                    }
-                    if (this->has_scrollbar(Align::Horizontal)) {
-                        size.h += m_horizontal_scrollbar->size_hint(dc).h;
-                    }
-                } else {
-                    for (Widget* child : this->children) {
-                        Size<float> s = child->size_hint(dc);
-                        size.h += s.h;
-                        if (s.w > size.w) {
-                            size.w = s.w;
-                        }
-                    }
-                    if (this->has_scrollbar(Align::Vertical)) {
-                        size.w += m_vertical_scrollbar->size_hint(dc).w;
-                    }
-                }
-
-                return size;
-            }
-
             void add_scrollbar(Align alignment) {
                 if (alignment == Align::Horizontal) {
                     if (!this->m_horizontal_scrollbar) {
