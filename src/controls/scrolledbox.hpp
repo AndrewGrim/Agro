@@ -96,9 +96,14 @@
                     }
                 }
 
+                int child_count = this->children.size() - non_expandable_widgets;
+                if (!child_count) child_count = 1; // Protects from division by zero
                 Point<float> pos = Point<float>(content_x, content_y);
                 switch (parent_layout) {
                     case Align::Vertical: {
+                        float available_height = rect.h;
+                        float expandable_height = (available_height - total_children_size.h) / child_count;
+                        if (expandable_height < 0) expandable_height = 0;
                         if (this->has_scrollbar(Align::Vertical)) rect.w -= m_vertical_scrollbar->size_hint(dc).w;
                         if (this->has_scrollbar(Align::Horizontal)) rect.h -= m_horizontal_scrollbar->size_hint(dc).h;
                         for (Widget* child : this->children) {
@@ -108,7 +113,14 @@
                                 case Fill::Both: {
                                     size = Size<float> { 
                                         rect.w > child_hint.w ? rect.w : child_hint.w,
-                                        child_hint.h
+                                        child_hint.h + expandable_height
+                                    };
+                                    break;
+                                }
+                                case Fill::Vertical: {
+                                    size = Size<float> { 
+                                        child_hint.w, 
+                                        child_hint.h + expandable_height
                                     };
                                     break;
                                 }
@@ -116,7 +128,6 @@
                                     size = Size<float> { rect.w > child_hint.w ? rect.w : child_hint.w, child_hint.h };
                                     break;
                                 case Fill::None:
-                                case Fill::Vertical:
                                 default:
                                     size = child_hint;
                             }
@@ -146,6 +157,9 @@
                         break;
                     }
                     case Align::Horizontal: {
+                        float available_width = rect.w;
+                        float expandable_width = (available_width - total_children_size.w) / child_count;
+                        if (expandable_width < 0) expandable_width = 0;
                         if (this->has_scrollbar(Align::Vertical)) rect.w -= m_vertical_scrollbar->size_hint(dc).w;
                         if (this->has_scrollbar(Align::Horizontal)) rect.h -= m_horizontal_scrollbar->size_hint(dc).h;
                         for (Widget* child : this->children) {
@@ -153,8 +167,9 @@
                             Size<float> child_hint = child->size_hint(dc);
                             switch (child->fill_policy()) {
                                 case Fill::Both: {
+                                    // TODO surely rect.h should be check if > than child.h?, same in box.cpp
                                     size = Size<float> { 
-                                        child_hint.w, 
+                                        child_hint.w + expandable_width, 
                                         rect.h
                                     };
                                     break;
@@ -162,8 +177,14 @@
                                 case Fill::Vertical:
                                     size = Size<float> { child_hint.w, rect.h > child_hint.h ? rect.h : child_hint.h };
                                     break;
+                                case Fill::Horizontal: {
+                                    size = Size<float> { 
+                                        child_hint.w + expandable_width, 
+                                        child_hint.h
+                                    };
+                                    break;
+                                }
                                 case Fill::None:
-                                case Fill::Horizontal:
                                 default:
                                     size = child_hint;
                             }
