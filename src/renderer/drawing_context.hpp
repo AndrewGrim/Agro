@@ -102,6 +102,7 @@
             }
 
             Rect<float> drawBorder(Rect<float> rect, int border_width, Color rect_color) {
+                // TODO this is slow as shit
                 // light border
                 {
                     // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here
