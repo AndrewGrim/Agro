@@ -12,9 +12,11 @@
 
 int main() { 
     Application *app = new Application();
+        Box *sizer = new Box(Align::Vertical);
         for (int i = 0; i < 1001; i++) {
-            app->append(new Button(std::to_string(i)), Fill::Both);
+            sizer->append(new Button(std::to_string(i)), Fill::Both);
         }
+        app->append(sizer, Fill::Both);
     app->run();
 
     return 0; 
