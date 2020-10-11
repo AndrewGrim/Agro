@@ -48,10 +48,17 @@
                 this->rect = rect;
                 Size<float> button_size = this->m_begin_button->size_hint(dc);
                 this->m_begin_button->draw(dc, Rect<float>(rect.x, rect.y, button_size.w, button_size.h));
-                rect.y += button_size.h;
-                rect.h -= button_size.h * 2;
-                this->m_slider->draw(dc, rect);
-                this->m_end_button->draw(dc, Rect<float>(rect.x, rect.y + rect.h, button_size.w, button_size.h));
+                if (this->m_align_policy == Align::Horizontal) {
+                    rect.x += button_size.w;
+                    rect.w -= button_size.w * 2;
+                    this->m_slider->draw(dc, rect);
+                    this->m_end_button->draw(dc, Rect<float>(rect.x + rect.w, rect.y, button_size.w, button_size.h));
+                } else {
+                    rect.y += button_size.h;
+                    rect.h -= button_size.h * 2;
+                    this->m_slider->draw(dc, rect);
+                    this->m_end_button->draw(dc, Rect<float>(rect.x, rect.y + rect.h, button_size.w, button_size.h));
+                }
             }
 
             Size<float> size_hint(DrawingContext *dc) {

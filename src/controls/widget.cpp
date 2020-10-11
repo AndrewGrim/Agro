@@ -114,17 +114,15 @@ void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
     if (this->is_scrollable()) {
         ScrolledBox *self = (ScrolledBox*)this;
         ScrollBar *scroll = nullptr;
-        // TODO we might need to check both of them though
-        if (self->m_align_policy == Align::Horizontal) {
-            if (self->m_horizontal_scrollbar) scroll = self->m_horizontal_scrollbar;
-        } else {
-            if (self->m_vertical_scrollbar) scroll = self->m_vertical_scrollbar;
+        if (self->m_vertical_scrollbar) scroll = self->m_vertical_scrollbar;
+        if ((event.x >= scroll->rect.x && event.x <= scroll->rect.x + scroll->rect.w) &&
+            (event.y >= scroll->rect.y && event.y <= scroll->rect.y + scroll->rect.h)) {
+            return (void*)scroll->propagate_mouse_event(state, event);
         }
-        if (scroll) {
-            if ((event.x >= scroll->rect.x && event.x <= scroll->rect.x + scroll->rect.w) &&
-                (event.y >= scroll->rect.y && event.y <= scroll->rect.y + scroll->rect.h)) {
-                return (void*)scroll->propagate_mouse_event(state, event);
-            }
+        if (self->m_horizontal_scrollbar) scroll = self->m_horizontal_scrollbar;
+        if ((event.x >= scroll->rect.x && event.x <= scroll->rect.x + scroll->rect.w) &&
+            (event.y >= scroll->rect.y && event.y <= scroll->rect.y + scroll->rect.h)) {
+            return (void*)scroll->propagate_mouse_event(state, event);
         }
         goto CHILDREN;
     } else {

@@ -30,6 +30,7 @@
             void layout_children(DrawingContext *dc, Rect<float> rect) {
                 int non_expandable_widgets = 0;
                 Size<float> total_children_size;
+                Size<float> max_children_size;
                 Align parent_layout = this->m_align_policy;
                 for (Widget* child : this->children) {
                     Size<float> child_size = child->size_hint(dc);
@@ -45,27 +46,45 @@
                     }
                     total_children_size.w += child_size.w;
                     total_children_size.h += child_size.h;
+                    if (child_size.w > max_children_size.w) max_children_size.w = child_size.w;
+                    if (child_size.h > max_children_size.h) max_children_size.h = child_size.h;
                 }
 
                 float content_x = rect.x;
                 float content_y = rect.y;
-                if (rect.w < total_children_size.w) {
-                    this->add_scrollbar(Align::Horizontal);
-                    content_x -= this->m_horizontal_scrollbar->m_slider->m_value * (total_children_size.w - rect.w);
+                if (this->m_align_policy == Align::Horizontal) {
+                    if (rect.w < total_children_size.w) {
+                        this->add_scrollbar(Align::Horizontal);
+                        content_x -= this->m_horizontal_scrollbar->m_slider->m_value * (total_children_size.w - rect.w);
+                    } else {
+                        this->remove_scrollbar(Align::Horizontal);
+                    }
+                    if (rect.h < max_children_size.h) {
+                        this->add_scrollbar(Align::Vertical);
+                        content_y -= this->m_vertical_scrollbar->m_slider->m_value * (max_children_size.h - rect.h);
+                    } else {
+                        this->remove_scrollbar(Align::Vertical);
+                    }
                 } else {
-                    this->remove_scrollbar(Align::Horizontal);
-                }
-                if (rect.h < total_children_size.h) {
-                    this->add_scrollbar(Align::Vertical);
-                    content_y -= this->m_vertical_scrollbar->m_slider->m_value * (total_children_size.h - rect.h);
-                } else {
-                    this->remove_scrollbar(Align::Vertical);
+                    if (rect.h < total_children_size.h) {
+                        this->add_scrollbar(Align::Vertical);
+                        content_y -= this->m_vertical_scrollbar->m_slider->m_value * (total_children_size.h - rect.h);
+                    } else {
+                        this->remove_scrollbar(Align::Vertical);
+                    }
+                    if (rect.w < max_children_size.w) {
+                        this->add_scrollbar(Align::Horizontal);
+                        content_x -= this->m_horizontal_scrollbar->m_slider->m_value * (max_children_size.w - rect.w);
+                    } else {
+                        this->remove_scrollbar(Align::Horizontal);
+                    }
                 }
 
                 Point<float> pos = Point<float>(content_x, content_y);
                 switch (parent_layout) {
                     case Align::Vertical: {
                         if (this->has_scrollbar(Align::Vertical)) rect.w -= m_vertical_scrollbar->size_hint(dc).w;
+                        if (this->has_scrollbar(Align::Horizontal)) rect.h -= m_horizontal_scrollbar->size_hint(dc).h;
                         for (Widget* child : this->children) {
                             Size<float> size;
                             Size<float> child_hint = child->size_hint(dc);
@@ -103,9 +122,15 @@
                             m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h) < 20 ? 20 : rect.h * ((rect.h - size.h / 2) / total_children_size.h);
                             m_vertical_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h));
                         }
+                        if (m_horizontal_scrollbar) {
+                            Size<float> size = m_horizontal_scrollbar->size_hint(dc);
+                            m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / max_children_size.w) < 20 ? 20 : rect.w * ((rect.w - size.w / 2) / max_children_size.w);
+                            m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w, size.h));
+                        }
                         break;
                     }
                     case Align::Horizontal: {
+                        if (this->has_scrollbar(Align::Vertical)) rect.w -= m_vertical_scrollbar->size_hint(dc).w;
                         if (this->has_scrollbar(Align::Horizontal)) rect.h -= m_horizontal_scrollbar->size_hint(dc).h;
                         for (Widget* child : this->children) {
                             Size<float> size;
@@ -139,9 +164,14 @@
                             }
                             pos.x += size.w;
                         }
+                        if (m_vertical_scrollbar) {
+                            Size<float> size = m_vertical_scrollbar->size_hint(dc);
+                            m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h) < 20 ? 20 : rect.h * ((rect.h - size.h / 2) / total_children_size.h);
+                            m_vertical_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h));
+                        }
                         if (m_horizontal_scrollbar) {
                             Size<float> size = m_horizontal_scrollbar->size_hint(dc);
-                            m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w) ? 20 : rect.w * ((rect.w - size.w / 2) / total_children_size.w);
+                            m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w) < 20 ? 20 : rect.w * ((rect.w - size.w / 2) / total_children_size.w);
                             m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w, size.h));
                         }
                         break;
