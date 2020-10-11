@@ -68,16 +68,24 @@
                 } else {
                     if (rect.h < total_children_size.h) {
                         this->add_scrollbar(Align::Vertical);
-                        content_y -= this->m_vertical_scrollbar->m_slider->m_value * (total_children_size.h - rect.h);
                     } else {
                         this->remove_scrollbar(Align::Vertical);
                     }
                     if (rect.w < max_children_size.w) {
                         this->add_scrollbar(Align::Horizontal);
-                        content_x -= this->m_horizontal_scrollbar->m_slider->m_value * (max_children_size.w - rect.w);
                     } else {
                         this->remove_scrollbar(Align::Horizontal);
                     }
+                }
+                if (this->has_scrollbar(Align::Vertical)) {
+                    float vscroll = 0;
+                    if (this->has_scrollbar(Align::Horizontal)) vscroll += this->m_horizontal_scrollbar->size_hint(dc).h;
+                    content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((total_children_size.h + vscroll) - rect.h);
+                }
+                if (this->has_scrollbar(Align::Horizontal)) {
+                    float hscroll = 0;
+                    if (this->has_scrollbar(Align::Vertical)) hscroll += this->m_vertical_scrollbar->size_hint(dc).w;
+                    content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((max_children_size.w + hscroll) - rect.w);
                 }
 
                 Point<float> pos = Point<float>(content_x, content_y);
@@ -235,6 +243,8 @@
             bool is_scrollable() {
                 return true;
             }
+
+            Size<float> size_hint(DrawingContext *dc) override;
 
         protected:
             const char *m_name = "ScrolledBox";
