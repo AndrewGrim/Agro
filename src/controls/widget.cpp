@@ -113,16 +113,17 @@ void Widget::update() {
 void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
     if (this->is_scrollable()) {
         ScrolledBox *self = (ScrolledBox*)this;
-        ScrollBar *scroll = nullptr;
-        if (self->m_vertical_scrollbar) scroll = self->m_vertical_scrollbar;
-        if ((event.x >= scroll->rect.x && event.x <= scroll->rect.x + scroll->rect.w) &&
-            (event.y >= scroll->rect.y && event.y <= scroll->rect.y + scroll->rect.h)) {
-            return (void*)scroll->propagate_mouse_event(state, event);
+        if (self->m_vertical_scrollbar) {
+            if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
+                (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
+                return (void*)self->m_vertical_scrollbar->propagate_mouse_event(state, event);
+            }
         }
-        if (self->m_horizontal_scrollbar) scroll = self->m_horizontal_scrollbar;
-        if ((event.x >= scroll->rect.x && event.x <= scroll->rect.x + scroll->rect.w) &&
-            (event.y >= scroll->rect.y && event.y <= scroll->rect.y + scroll->rect.h)) {
-            return (void*)scroll->propagate_mouse_event(state, event);
+        if (self->m_horizontal_scrollbar) {
+            if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
+                (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
+                return (void*)self->m_horizontal_scrollbar->propagate_mouse_event(state, event);
+            }
         }
         goto CHILDREN;
     } else {
