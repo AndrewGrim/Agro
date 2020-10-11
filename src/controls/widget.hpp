@@ -21,6 +21,8 @@
             bool m_is_pressed = false;
             Widget *m_parent = nullptr;
             Rect<float> rect = Rect<float>(0, 0, 0, 0);
+            Size<float> m_size;
+            bool size_changed = true;
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;

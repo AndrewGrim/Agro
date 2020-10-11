@@ -25,6 +25,7 @@
             Size<int> m_size;
             State *state = new State();
             bool m_needs_update = false;
+            bool m_layout_changed = true;
             void (*ready_callback)(Application*) = nullptr;
 
             Application(const char* title = "Application", Size<int> size = Size<int>(400, 400));

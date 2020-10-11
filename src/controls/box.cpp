@@ -134,26 +134,32 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
 }
 
 Size<float> Box::size_hint(DrawingContext *dc) {
-    Size<float> size = Size<float> { 0, 0 };
-    if (this->m_align_policy == Align::Horizontal) {
-        for (Widget* child : this->children) {
-            Size<float> s = child->size_hint(dc);
-            size.w += s.w;
-            if (s.h > size.h) {
-                size.h = s.h;
+    if (this->size_changed || ((Application*)this->m_app)->m_layout_changed) {
+        Size<float> size = Size<float> { 0, 0 };
+        if (this->m_align_policy == Align::Horizontal) {
+            for (Widget* child : this->children) {
+                Size<float> s = child->size_hint(dc);
+                size.w += s.w;
+                if (s.h > size.h) {
+                    size.h = s.h;
+                }
+            }
+        } else {
+            for (Widget* child : this->children) {
+                Size<float> s = child->size_hint(dc);
+                size.h += s.h;
+                if (s.w > size.w) {
+                    size.w = s.w;
+                }
             }
         }
-    } else {
-        for (Widget* child : this->children) {
-            Size<float> s = child->size_hint(dc);
-            size.h += s.h;
-            if (s.w > size.w) {
-                size.w = s.w;
-            }
-        }
-    }
+        this->m_size = size;
+        this->size_changed = false;
 
-    return size;
+        return size;
+    } else {
+        return this->m_size;
+    }
 }
 
 Color Box::background() {

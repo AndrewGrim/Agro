@@ -89,6 +89,7 @@ void Application::run() {
                             SDL_GL_GetDrawableSize(this->win, &w, &h);
                             glViewport(0, 0, w, h);
                             this->m_needs_update = true;
+                            this->m_layout_changed = true;
                             break;
                     }
                     break;
@@ -99,6 +100,7 @@ void Application::run() {
         if (this->m_needs_update) {
             this->show();
             this->m_needs_update = false;
+            this->m_layout_changed = false;
         }
     }
 
