@@ -97,7 +97,7 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
                     case Fill::Both: {
                         size = Size<float> { 
                             child_hint.w + expandable_width, 
-                            rect.h
+                            rect.h > child_hint.h ? rect.h : child_hint.h
                         };
                         break;
                     }

@@ -187,10 +187,9 @@
                             Size<float> child_hint = child->size_hint(dc);
                             switch (child->fill_policy()) {
                                 case Fill::Both: {
-                                    // TODO surely rect.h should be check if > than child.h?, same in box.cpp
                                     size = Size<float> { 
                                         child_hint.w + expandable_width, 
-                                        rect.h
+                                        rect.h > child_hint.h ? rect.h : child_hint.h
                                     };
                                     break;
                                 }
