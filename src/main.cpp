@@ -12,11 +12,16 @@
 
 int main() { 
     Application *app = new Application();
-        // Box *sizer = new Box(Align::Vertical);
-        for (int i = 0; i < 51; i++) {
-            app->append(new Button(std::to_string(i) + " This is a really long string so that we can test the horizontal scrollbar!"), Fill::Both);
-        }
-        // app->append(sizer, Fill::Both);
+        Box *top = new Box(Align::Vertical);
+            for (int i = 1; i < 6; i++) {
+                top->append(new Button(std::to_string(i)), Fill::Both);
+            }
+        app->append(top, Fill::Both);
+        ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size<float>(200, 200));
+            for (int i = 1; i < 51; i++) {
+                bottom->append(new Button(std::to_string(i)), Fill::Both);
+            }
+        app->append(bottom, Fill::Both);
     app->run();
 
     return 0; 

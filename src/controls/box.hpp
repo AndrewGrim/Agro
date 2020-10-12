@@ -13,7 +13,7 @@
             const char* name();
             void draw(DrawingContext *dc, Rect<float> rect);
             void layout_children(DrawingContext *dc, Rect<float> rect);
-            Size<float> size_hint(DrawingContext *dc);
+            virtual Size<float> size_hint(DrawingContext *dc) override;
             Color background();
             Box* set_background(Color background);
             bool is_layout();
