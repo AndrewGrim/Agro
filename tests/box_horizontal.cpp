@@ -6,6 +6,7 @@
 #include "../src/app.hpp"
 #include "../src/controls/box.hpp"
 #include "../src/controls/button.hpp"
+#include "../src/controls/scrolledbox.hpp"
 
 void onApplicationReady(Application *self) {
     #ifndef TEST

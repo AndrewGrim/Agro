@@ -33,7 +33,7 @@ for test in test_files:
         "src/renderer/glad.c",
         "src/renderer/shader.cpp", "src/renderer/texture.cpp", "src/renderer/resource_manager.cpp",
         "src/renderer/text_renderer.cpp", "src/renderer/stb_image.cpp",
-        "src/controls/widget.cpp", "src/controls/scrollbar.cpp", "src/controls/slider.cpp", "src/controls/box.cpp", "src/controls/scrolledbox.hpp",
+        "src/controls/widget.cpp", "src/controls/scrollbar.cpp", "src/controls/slider.cpp", "src/controls/box.cpp", "src/controls/scrolledbox.cpp",
         "-DTEST",
         "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
         "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
