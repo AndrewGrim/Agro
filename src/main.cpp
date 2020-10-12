@@ -12,14 +12,14 @@
 
 int main() { 
     Application *app = new Application();
-        Box *top = new Box(Align::Vertical);
-            for (int i = 1; i < 6; i++) {
-                top->append(new Button(std::to_string(i)), Fill::Both);
+        ScrolledBox *top = new ScrolledBox(Align::Vertical, Size<float>(200, 200));
+            for (char i = 'a'; i <= 'z'; i++) {
+                top->append((new Button(std::string(1, i)))->set_background(Color(0.6, 0.0, 0.6)), Fill::Both);
             }
         app->append(top, Fill::Both);
         ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size<float>(200, 200));
             for (int i = 1; i < 51; i++) {
-                bottom->append(new Button(std::to_string(i)), Fill::Both);
+                bottom->append((new Button(std::to_string(i)))->set_background(Color(0.0, 0.6, 0.6)), Fill::Both);
             }
         app->append(bottom, Fill::Both);
     app->run();

@@ -127,8 +127,8 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
                         size = child_hint;
                 }
                 Rect<float> widget_rect = Rect<float>(pos.x, pos.y, size.w, size.h);
-                if (pos.y < 0) {
-                    if (pos.y + size.h < 0) {
+                if (pos.y < rect.y) {
+                    if (pos.y + size.h < rect.y) {
                         child->rect = widget_rect;
                     }
                     else goto DRAW_VERTICAL;
@@ -203,8 +203,8 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
                         size = child_hint;
                 }
                 Rect<float> widget_rect = Rect<float>(pos.x, pos.y, size.w, size.h);
-                if (pos.x < 0) {
-                    if (pos.x + size.w < 0) {
+                if (pos.x < rect.x) {
+                    if (pos.x + size.w < rect.x) {
                         child->rect = widget_rect;
                     }
                     else goto DRAW_HORIZONTAL;
