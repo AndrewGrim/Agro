@@ -147,12 +147,32 @@
                         if (m_vertical_scrollbar) {
                             Size<float> size = m_vertical_scrollbar->size_hint(dc);
                             m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h) < 20 ? 20 : rect.h * ((rect.h - size.h / 2) / total_children_size.h);
-                            m_vertical_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h > size.h ? rect.h : size.h));
+                            m_vertical_scrollbar->draw(dc, Rect<float>(
+                                rect.x + rect.w, 
+                                rect.y, 
+                                size.w, 
+                                rect.h > size.h ? rect.h : size.h
+                            ));
+                            pos.x = rect.x + rect.w;
                         }
                         if (m_horizontal_scrollbar) {
                             Size<float> size = m_horizontal_scrollbar->size_hint(dc);
                             m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / max_children_size.w) < 20 ? 20 : rect.w * ((rect.w - size.w / 2) / max_children_size.w);
-                            m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w > size.w ? rect.w : size.w, size.h));
+                            m_horizontal_scrollbar->draw(dc, Rect<float>(
+                                rect.x, 
+                                rect.y + rect.h, 
+                                rect.w > size.w ? rect.w : size.w, 
+                                size.h
+                            ));
+                            pos.y = rect.y + rect.h;
+                        }
+                        if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+                            dc->fillRect(Rect<float>(
+                                pos.x, 
+                                pos.y, 
+                                m_vertical_scrollbar->size_hint(dc).w, 
+                                m_horizontal_scrollbar->size_hint(dc).h), 
+                                m_vertical_scrollbar->m_begin_button->background());
                         }
                         break;
                     }
@@ -204,12 +224,32 @@
                         if (m_vertical_scrollbar) {
                             Size<float> size = m_vertical_scrollbar->size_hint(dc);
                             m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h) < 20 ? 20 : rect.h * ((rect.h - size.h / 2) / total_children_size.h);
-                            m_vertical_scrollbar->draw(dc, Rect<float>(rect.x + rect.w, rect.y, size.w, rect.h > size.h ? rect.h : size.h));
+                            m_vertical_scrollbar->draw(dc, Rect<float>(
+                                rect.x + rect.w, 
+                                rect.y, 
+                                size.w, 
+                                rect.h > size.h ? rect.h : size.h
+                            ));
+                            pos.x = rect.x + rect.w;
                         }
                         if (m_horizontal_scrollbar) {
                             Size<float> size = m_horizontal_scrollbar->size_hint(dc);
                             m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w) < 20 ? 20 : rect.w * ((rect.w - size.w / 2) / total_children_size.w);
-                            m_horizontal_scrollbar->draw(dc, Rect<float>(rect.x, rect.y + rect.h, rect.w > size.w ? rect.w : size.w, size.h));
+                            m_horizontal_scrollbar->draw(dc, Rect<float>(
+                                rect.x, 
+                                rect.y + rect.h, 
+                                rect.w > size.w ? rect.w : size.w, 
+                                size.h
+                            ));
+                            pos.y = rect.y + rect.h;
+                        }
+                        if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+                            dc->fillRect(Rect<float>(
+                                pos.x, 
+                                pos.y, 
+                                m_vertical_scrollbar->size_hint(dc).w, 
+                                m_horizontal_scrollbar->size_hint(dc).h), 
+                                m_vertical_scrollbar->m_begin_button->background());
                         }
                         break;
                     }   
