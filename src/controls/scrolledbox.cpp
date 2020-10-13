@@ -310,3 +310,10 @@ bool ScrolledBox::is_scrollable() {
 Size<float> ScrolledBox::size_hint(DrawingContext *dc) {
     return this->m_min_size;
 }
+
+ScrolledBox* ScrolledBox::set_background(Color background) {
+    this->bg = background;
+    this->update();
+
+    return this;
+}

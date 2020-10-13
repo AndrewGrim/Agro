@@ -15,7 +15,7 @@
             void layout_children(DrawingContext *dc, Rect<float> rect);
             virtual Size<float> size_hint(DrawingContext *dc) override;
             Color background();
-            Box* set_background(Color background);
+            virtual Box* set_background(Color background);
             bool is_layout();
 
         protected:

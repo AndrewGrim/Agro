@@ -21,6 +21,7 @@
             bool has_scrollbar(Align alignment);
             bool is_scrollable();
             Size<float> size_hint(DrawingContext *dc) override;
+            ScrolledBox* set_background(Color background) override;
 
         protected:
             const char *m_name = "ScrolledBox";
