@@ -1,11 +1,12 @@
 #ifndef QUAD_HPP
     #define QUAD_HPP
 
+    #include <glm/glm.hpp>
+    #include <glad/glad.h>
+    
     #include "../util.hpp"
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
-    #include <glm/glm.hpp>
-    #include<glad/glad.h>
 
     class Quad {
         public:
