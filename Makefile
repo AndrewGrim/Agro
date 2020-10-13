@@ -11,3 +11,9 @@ test_box_vertical:
 	g++ tests/box_vertical.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o box_vertical.out && ./box_vertical.out
 test_box_horizontal:
 	g++ tests/box_horizontal.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o box_horizontal.out && ./box_horizontal.out
+test_scrolledbox_outer:
+	g++ tests/scrolledbox_outer.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_outer.out && ./scrolledbox_outer.out
+test_scrolledbox_inner:
+	g++ tests/scrolledbox_inner.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_inner.out && ./scrolledbox_inner.out
+test_scrolledbox_both:
+	g++ tests/scrolledbox_both.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_both.out && ./scrolledbox_both.out

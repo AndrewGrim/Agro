@@ -18,6 +18,9 @@ def warn(message):
 test_files = [
     "tests/box_vertical.cpp",
     "tests/box_horizontal.cpp",
+    "tests/scrolledbox_outer.cpp",
+    "tests/scrolledbox_inner.cpp",
+    "tests/scrolledbox_both.cpp",
 ]
 
 passed = 0
