@@ -141,7 +141,14 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
             }
             if (m_vertical_scrollbar) {
                 Size<float> size = m_vertical_scrollbar->size_hint(dc);
-                m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h) < 20 ? 20 : rect.h * ((rect.h - size.h / 2) / total_children_size.h);
+                float slider_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h);
+                float buttons_size = m_vertical_scrollbar->m_begin_button->size_hint(dc).h + m_vertical_scrollbar->m_end_button->size_hint(dc).h;
+                if (slider_size < 20) {
+                    slider_size = 20;
+                } else if (slider_size > (rect.h - buttons_size - 10)) {
+                    slider_size = rect.h - buttons_size - 10;
+                }
+                m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
                 m_vertical_scrollbar->draw(dc, Rect<float>(
                     rect.x + rect.w, 
                     rect.y, 
@@ -152,7 +159,14 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
             }
             if (m_horizontal_scrollbar) {
                 Size<float> size = m_horizontal_scrollbar->size_hint(dc);
-                m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / max_children_size.w) < 20 ? 20 : rect.w * ((rect.w - size.w / 2) / max_children_size.w);
+                float slider_size = rect.w * ((rect.w - size.w / 2) / max_children_size.w);
+                float buttons_size = m_horizontal_scrollbar->m_begin_button->size_hint(dc).w + m_horizontal_scrollbar->m_end_button->size_hint(dc).w;
+                if (slider_size < 20) {
+                    slider_size = 20;
+                } else if (slider_size > (rect.w - buttons_size - 10)) {
+                    slider_size = rect.w - buttons_size - 10;
+                }
+                m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
                 m_horizontal_scrollbar->draw(dc, Rect<float>(
                     rect.x, 
                     rect.y + rect.h, 
@@ -217,7 +231,14 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
             }
             if (m_vertical_scrollbar) {
                 Size<float> size = m_vertical_scrollbar->size_hint(dc);
-                m_vertical_scrollbar->m_slider->m_slider_button_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h) < 20 ? 20 : rect.h * ((rect.h - size.h / 2) / total_children_size.h);
+                float slider_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h);
+                float buttons_size = m_vertical_scrollbar->m_begin_button->size_hint(dc).h + m_vertical_scrollbar->m_end_button->size_hint(dc).h;
+                if (slider_size < 20) {
+                    slider_size = 20;
+                } else if (slider_size > (rect.h - buttons_size - 10)) {
+                    slider_size = rect.h - buttons_size - 10;
+                }
+                m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
                 m_vertical_scrollbar->draw(dc, Rect<float>(
                     rect.x + rect.w, 
                     rect.y, 
@@ -228,7 +249,14 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
             }
             if (m_horizontal_scrollbar) {
                 Size<float> size = m_horizontal_scrollbar->size_hint(dc);
-                m_horizontal_scrollbar->m_slider->m_slider_button_size = rect.w * ((rect.w - size.w / 2) / total_children_size.w) < 20 ? 20 : rect.w * ((rect.w - size.w / 2) / total_children_size.w);
+                float slider_size = rect.w * ((rect.w - size.w / 2) / max_children_size.w);
+                float buttons_size = m_horizontal_scrollbar->m_begin_button->size_hint(dc).w + m_horizontal_scrollbar->m_end_button->size_hint(dc).w;
+                if (slider_size < 20) {
+                    slider_size = 20;
+                } else if (slider_size > (rect.w - buttons_size - 10)) {
+                    slider_size = rect.w - buttons_size - 10;
+                }
+                m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
                 m_horizontal_scrollbar->draw(dc, Rect<float>(
                     rect.x, 
                     rect.y + rect.h, 
@@ -254,7 +282,6 @@ void ScrolledBox::add_scrollbar(Align alignment) {
     if (alignment == Align::Horizontal) {
         if (!this->m_horizontal_scrollbar) {
             this->m_horizontal_scrollbar = new ScrollBar(alignment, "  ");
-            this->m_horizontal_scrollbar->m_slider->m_value = 0.0;
         }
         if (this->m_horizontal_scrollbar) {
             this->m_horizontal_scrollbar->m_app = this->m_app;
@@ -267,7 +294,6 @@ void ScrolledBox::add_scrollbar(Align alignment) {
     else {
         if (!this->m_vertical_scrollbar) {
             this->m_vertical_scrollbar = new ScrollBar(alignment, "  ");
-            this->m_vertical_scrollbar->m_slider->m_value = 0.0;
         }
         if (this->m_vertical_scrollbar) {
             this->m_vertical_scrollbar->m_app = this->m_app;
