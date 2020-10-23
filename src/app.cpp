@@ -23,11 +23,20 @@ Application::Application(const char* title, Size<int> size) {
     }
 
     dc = new DrawingContext();
-    this->dc->set_projection(glm::ortho(
-        0.0f, static_cast<float>(size.w),
-        static_cast<float>(size.h), 0.0f,
-        -1.0f, 1.0f
-    ));
+    dc->quadRenderer->shader.setMatrix4("projection", glm::ortho(
+            0.0f, static_cast<float>(size.w),
+            static_cast<float>(size.h), 0.0f,
+            -1.0f, 1.0f
+        ), 
+        true
+    );
+    dc->textRenderer->shader.setMatrix4("projection", glm::ortho(
+            0.0f, static_cast<float>(size.w),
+            static_cast<float>(size.h), 0.0f,
+            -1.0f, 1.0f
+        ), 
+        true
+    );
 }
 
 Application::~Application() {
@@ -36,13 +45,23 @@ Application::~Application() {
 }
 
 void Application::draw() {
-    this->dc->set_projection(glm::ortho(
-        0.0f, static_cast<float>(this->m_size.w),
-        static_cast<float>(this->m_size.h), 0.0f,
-        -1.0f, 1.0f
-    ));
+    dc->quadRenderer->shader.setMatrix4("projection", glm::ortho(
+            0.0f, static_cast<float>(this->m_size.w),
+            static_cast<float>(this->m_size.h), 0.0f,
+            -1.0f, 1.0f
+        ), 
+        true
+    );
+    dc->textRenderer->shader.setMatrix4("projection", glm::ortho(
+            0.0f, static_cast<float>(this->m_size.w),
+            static_cast<float>(this->m_size.h), 0.0f,
+            -1.0f, 1.0f
+        ), 
+        true
+    );
     this->dc->clear();
     this->main_widget->draw(this->dc, Rect<float>(0, 0, this->m_size.w, this->m_size.h));
+    this->dc->render();
 }
 
 void Application::set_main_widget(Widget *widget) {
@@ -59,7 +78,9 @@ int Application::next_id() {
 }
 
 void Application::run() {
-    this->dc->loadFont("fonts/FreeSans.ttf", 14);
+    dc->textRenderer->load("fonts/FreeSans.ttf", 14);
+    dc->textRenderer->shader.use();
+    dc->textRenderer->shader.setInt("text", 0);
     this->main_widget->m_app = (void*)this;
     for (Widget *child : this->main_widget->children) {
         child->m_app = (void*)this;

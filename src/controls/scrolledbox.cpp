@@ -19,6 +19,7 @@ void ScrolledBox::draw(DrawingContext *dc, Rect<float> rect) {
         Size<int> window = ((Application*)this->m_app)->m_size;
         glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
         layout_children(dc, rect);
+        dc->render();
     glDisable(GL_SCISSOR_TEST);
 }
 

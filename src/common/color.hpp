@@ -3,16 +3,16 @@
 
     class Color {
         public:
-            float red;
-            float green;
-            float blue;
-            float alpha;
+            float r;
+            float g;
+            float b;
+            float a;
 
-            Color(float red = 0.0f, float green = 0.0f, float blue = 0.0f, float aplha = 1.0f) {
-                this->red = red;
-                this->green = green;
-                this->blue = blue;
-                this->alpha = alpha;
+            Color(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) {
+                this->r = r;
+                this->g = g;
+                this->b = b;
+                this->a = a;
             }
     };
 #endif

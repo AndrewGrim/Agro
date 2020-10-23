@@ -12,7 +12,6 @@
     #include "controls/box.hpp"
     #include "controls/scrolledbox.hpp"
     #include "renderer/drawing_context.hpp"
-    #include "renderer/text_renderer.h"
     
     class Application {
         public:

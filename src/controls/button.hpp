@@ -31,7 +31,7 @@
                 // draw border and shrink rectangle to prevent drawing over the border
                 rect = dc->drawBorder(rect, this->m_border_width, color);
                 dc->fillRect(rect, color);
-                dc->drawTextAligned(this->m_text, this->m_text_align, rect, this->m_padding + this->m_border_width / 2);
+                dc->fillTextAligned(this->m_text, this->m_text_align, rect, this->m_padding + this->m_border_width / 2);
             }
 
             Size<float> size_hint(DrawingContext *dc) {
