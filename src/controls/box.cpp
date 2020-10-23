@@ -15,7 +15,13 @@ void Box::draw(DrawingContext *dc, Rect<float> rect) {
     this->rect = rect;
     dc->fillRect(rect, this->bg);
 
-    layout_children(dc, rect);
+    dc->render();
+    glEnable(GL_SCISSOR_TEST);
+        Size<int> window = ((Application*)this->m_app)->m_size;
+        glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
+        layout_children(dc, rect);
+        dc->render();
+    glDisable(GL_SCISSOR_TEST);
 }
 
 void Box::layout_children(DrawingContext *dc, Rect<float> rect) {

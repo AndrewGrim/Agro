@@ -15,11 +15,11 @@ void ScrolledBox::draw(DrawingContext *dc, Rect<float> rect) {
     this->rect = rect;
     dc->fillRect(rect, this->bg);
 
+    dc->render();
     glEnable(GL_SCISSOR_TEST);
         Size<int> window = ((Application*)this->m_app)->m_size;
         glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
         layout_children(dc, rect);
-        dc->render();
     glDisable(GL_SCISSOR_TEST);
 }
 
@@ -140,6 +140,7 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
                 }
                 pos.y += size.h;
             }
+            dc->render();
             if (m_vertical_scrollbar) {
                 Size<float> size = m_vertical_scrollbar->size_hint(dc);
                 float slider_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h);
@@ -230,6 +231,7 @@ void ScrolledBox::layout_children(DrawingContext *dc, Rect<float> rect) {
                 }
                 pos.x += size.w;
             }
+            dc->render();
             if (m_vertical_scrollbar) {
                 Size<float> size = m_vertical_scrollbar->size_hint(dc);
                 float slider_size = rect.h * ((rect.h - size.h / 2) / total_children_size.h);
