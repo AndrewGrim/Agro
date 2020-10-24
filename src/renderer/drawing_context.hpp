@@ -19,6 +19,7 @@
         unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         QuadRenderer *quadRenderer;
         TextRenderer *textRenderer;
+        void *lastRenderer = (void*)quadRenderer;
 
         DrawingContext();
         ~DrawingContext();

@@ -24,10 +24,14 @@ DrawingContext::~DrawingContext() {
 }
 
 void DrawingContext::fillRect(Rect<float> rect, Color color) {
+    if (lastRenderer != (void*)quadRenderer) textRenderer->render();
+    lastRenderer = (void*)quadRenderer;
     quadRenderer->fillRect(rect, color);
 }
 
 void DrawingContext::fillGradientRect(Rect<float> rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation) {
+    if (lastRenderer != (void*)quadRenderer) textRenderer->render();
+    lastRenderer = (void*)quadRenderer;
     quadRenderer->fillGradientRect(rect, fromColor, toColor, orientation);
 }
 
@@ -37,6 +41,8 @@ void DrawingContext::render() {
 }
 
 void DrawingContext::fillText(std::string text, float x, float y, Color color, float scale) {
+    if (lastRenderer != (void*)textRenderer) quadRenderer->render();
+    lastRenderer = (void*)textRenderer;
     textRenderer->fillText(text, x, y, color, scale);
 }
 
