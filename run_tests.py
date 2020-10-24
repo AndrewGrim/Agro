@@ -34,7 +34,7 @@ for test in test_files:
         f"{test}",
         "src/app.cpp",
         "src/renderer/glad.c",
-        "src/renderer/shader.cpp", "src/renderer/texture.cpp", "src/renderer/resource_manager.cpp",
+        "src/renderer/quad_renderer.cpp", "src/renderer/drawing_context.cpp",
         "src/renderer/text_renderer.cpp", "src/renderer/stb_image.cpp",
         "src/controls/widget.cpp", "src/controls/scrollbar.cpp", "src/controls/slider.cpp", "src/controls/box.cpp", "src/controls/scrolledbox.cpp",
         "-DTEST",
