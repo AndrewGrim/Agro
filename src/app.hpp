@@ -2,6 +2,8 @@
     #define APP_HPP
 
     #include <iostream>
+    #include <chrono>
+    #include <utility>
 
     #include <glad/glad.h>
     #include <SDL2/SDL.h>
@@ -26,6 +28,11 @@
                 Scroll,
             };
 
+            enum class EventHandler {
+                Ignored,
+                Accepted,
+            };
+
             int id_counter = 0;
             SDL_Window *win;
             SDL_GLContext sdl_context;
@@ -36,7 +43,8 @@
             State *state = new State();
             bool m_needs_update = false;
             bool m_layout_changed = true;
-            Event m_last_event = Event::None;
+            std::pair<Event, EventHandler> m_last_event = std::make_pair<Event, EventHandler>(Event::None, EventHandler::Accepted);
+            std::chrono::time_point<std::chrono::steady_clock> m_last_event_time = std::chrono::steady_clock::now();
             void (*ready_callback)(Application*) = nullptr;
 
             Application(const char* title = "Application", Size<int> size = Size<int>(400, 400));

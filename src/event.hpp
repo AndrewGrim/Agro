@@ -3,24 +3,6 @@
 
     #include <SDL2/SDL.h>
 
-    class Event {
-        public:
-            enum class Type {
-                MouseDown,
-            };
-
-            Event(Type type) {
-                this->m_type = type;
-            }
-
-            Type type() {
-                return this->m_type;
-            }
-
-        private:
-            Type m_type;
-    };
-
     class MouseEvent {
         public:
             enum class Type {
@@ -57,8 +39,9 @@
             int y;
             int xrel;
             int yrel;
+            int64_t time_since_last_event;
 
-            MouseEvent(SDL_MouseButtonEvent event) {
+            MouseEvent(SDL_MouseButtonEvent event, int64_t time_since_last_event) {
                 this->type = event.type == SDL_MOUSEBUTTONDOWN ? Type::Down : Type::Up;
                 this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
                 this->click = event.clicks == 1 ? Click::Single : Click::Double; // Note: this only cover single and double click
@@ -67,9 +50,10 @@
                 this->y = event.y;
                 this->xrel = 0;
                 this->yrel = 0;
+                this->time_since_last_event = time_since_last_event;
             }
 
-            MouseEvent(SDL_MouseMotionEvent event) {
+            MouseEvent(SDL_MouseMotionEvent event, int64_t time_since_last_event) {
                 this->type = Type::Motion;
                 this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
                 this->click = Click::None;
@@ -78,6 +62,7 @@
                 this->y = event.y;
                 this->xrel = event.xrel;
                 this->yrel = event.yrel;
+                this->time_since_last_event = time_since_last_event;
             }
 
             Button handle_button(int button) {

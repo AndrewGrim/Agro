@@ -93,16 +93,15 @@ void Application::run() {
     while (true) {
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
-            // TODO check time here, compare against previous time, pass time difference to event handler
-            println((int)m_last_event);
+            int64_t time_since_last_event = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - this->m_last_event_time).count();
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
-                    this->state->pressed = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button));
+                    this->state->pressed = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button, time_since_last_event));
                 case SDL_MOUSEBUTTONUP:
-                    this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button));
+                    this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button, time_since_last_event));
                     break;
                 case SDL_MOUSEMOTION:
-                    this->state->hovered = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.motion));
+                    this->state->hovered = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.motion, time_since_last_event));
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
@@ -119,7 +118,9 @@ void Application::run() {
                 case SDL_QUIT:
                     goto EXIT;
             }
-            // TODO check time once again and store it in app
+            if (this->m_last_event.second == EventHandler::Accepted) {
+                this->m_last_event_time = std::chrono::steady_clock::now();
+            }
         }
         if (this->m_needs_update) {
             this->show();
