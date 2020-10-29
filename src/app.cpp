@@ -93,6 +93,8 @@ void Application::run() {
     while (true) {
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
+            // TODO check time here, compare against previous time, pass time difference to event handler
+            println((int)m_last_event);
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
                     this->state->pressed = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button));
@@ -117,6 +119,7 @@ void Application::run() {
                 case SDL_QUIT:
                     goto EXIT;
             }
+            // TODO check time once again and store it in app
         }
         if (this->m_needs_update) {
             this->show();

@@ -2,6 +2,7 @@
 #include "widget.hpp"
 #include "slider.hpp"
 
+// TODO at some point it would be better if slider and scrollbar were entirely separate
 void _onMouseMove(Widget *slider_button, MouseEvent event) {
     if (slider_button && slider_button->is_pressed()) {
         if (slider_button->m_parent) {
@@ -20,6 +21,7 @@ void _onMouseMove(Widget *slider_button, MouseEvent event) {
             }
             if (parent->value_changed_callback) parent->value_changed_callback(parent);
             if (slider_button->m_app) ((Application*)slider_button->m_app)->m_needs_update = true;
+            ((Application*)slider_button->m_app)->m_last_event = Application::Event::Scroll;
         }
     }
 }

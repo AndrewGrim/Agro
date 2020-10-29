@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "../app.hpp"
 #include "widget.hpp"
 
@@ -126,7 +128,7 @@ void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
             }
         }
         goto CHILDREN;
-    } else {
+    } else { // TODO this probably doesnt need a goto leave the if but remove the else
         CHILDREN:
             for (Widget *child : this->children) {
                 if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
@@ -161,12 +163,14 @@ void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
             ((Widget*)state->pressed)->mouse_motion_callback(((Widget*)state->pressed), event);
         }
     }
+    ((Application*)this->m_app)->m_last_event = Application::Event::None;
     return nullptr;
 }
 
 void Widget::mouse_event(State *state, MouseEvent event) {
     // TODO when the user clicks outside the window
     // hovered and pressed should be reset
+    Application *app = (Application*)this->m_app;
     switch (event.type) {
         case MouseEvent::Type::Down:
             if (state->pressed) {
@@ -174,6 +178,7 @@ void Widget::mouse_event(State *state, MouseEvent event) {
             }
             this->set_pressed(true);
             if (this->mouse_down_callback) this->mouse_down_callback(this, event);
+            app->m_last_event = Application::Event::MouseDown;
             break;
         case MouseEvent::Type::Up:
             if (state->pressed) {
@@ -183,8 +188,10 @@ void Widget::mouse_event(State *state, MouseEvent event) {
             this->set_hovered(true);
             state->hovered = this;
             if (this->mouse_up_callback) this->mouse_up_callback(this, event);
+            app->m_last_event = Application::Event::MouseUp;
             if (this == state->pressed) {
                 if (this->mouse_click_callback) this->mouse_click_callback(this, event);
+                app->m_last_event = Application::Event::MouseClick;
             }
             state->pressed = nullptr;
             break;
@@ -218,6 +225,7 @@ void Widget::mouse_event(State *state, MouseEvent event) {
                     ((Widget*)state->pressed)->mouse_motion_callback(((Widget*)state->pressed), event);
                 }
             }
+            app->m_last_event = Application::Event::MouseMotion;
             break;
     }
 }

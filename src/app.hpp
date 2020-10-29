@@ -15,6 +15,17 @@
     
     class Application {
         public:
+            enum class Event {
+                None,
+                MouseUp,
+                MouseDown,
+                MouseClick,
+                MouseLeft,
+                MouseEntered,
+                MouseMotion,
+                Scroll,
+            };
+
             int id_counter = 0;
             SDL_Window *win;
             SDL_GLContext sdl_context;
@@ -25,6 +36,7 @@
             State *state = new State();
             bool m_needs_update = false;
             bool m_layout_changed = true;
+            Event m_last_event = Event::None;
             void (*ready_callback)(Application*) = nullptr;
 
             Application(const char* title = "Application", Size<int> size = Size<int>(400, 400));
