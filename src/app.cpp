@@ -22,7 +22,7 @@ Application::Application(const char* title, Size<int> size) {
         println("Failed to initialize GLAD");
     }
 
-    dc = new DrawingContext();
+    dc = new DrawingContext(this);
     dc->quadRenderer->shader.setMatrix4("projection", glm::ortho(
             0.0f, static_cast<float>(size.w),
             static_cast<float>(size.h), 0.0f,

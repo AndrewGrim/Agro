@@ -30,6 +30,7 @@
         };
         
         std::map<char, TextCharacter> characters;
+        void *m_app = nullptr;
         int atlasWidth = 0;
         int atlasHeight = 0;
         unsigned int atlasID;
@@ -39,10 +40,10 @@
         Vertex vertices[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
 
-        TextRenderer(unsigned int *indices);
+        TextRenderer(unsigned int *indices, void *app);
         ~TextRenderer();
         void load(std::string font, unsigned int fontSize);
-        void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        void fillText(std::string text, float x, float y, Rect<float> rect, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size<float> measureText(std::string text, float scale = 1.0f);
         void reset();
         void check();

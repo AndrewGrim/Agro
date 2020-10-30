@@ -1,6 +1,6 @@
 #include "drawing_context.hpp"
 
-DrawingContext::DrawingContext() {
+DrawingContext::DrawingContext(void *app) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -17,7 +17,7 @@ DrawingContext::DrawingContext() {
     }
 
     quadRenderer = new QuadRenderer(indices);
-    textRenderer = new TextRenderer(indices);
+    textRenderer = new TextRenderer(indices, app);
 }
 
 DrawingContext::~DrawingContext() {
@@ -40,10 +40,10 @@ void DrawingContext::render() {
     textRenderer->render();
 }
 
-void DrawingContext::fillText(std::string text, float x, float y, Color color, float scale) {
+void DrawingContext::fillText(std::string text, float x, float y, Rect<float> rect, Color color, float scale) {
     if (lastRenderer != (void*)textRenderer) quadRenderer->render();
     lastRenderer = (void*)textRenderer;
-    textRenderer->fillText(text, x, y, color, scale);
+    textRenderer->fillText(text, x, y, rect, color, scale);
 }
 
 Size<float> DrawingContext::measureText(std::string text, float scale) {
@@ -57,6 +57,7 @@ void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, 
                 text,
                 rect.x + (rect.w / 2) - (this->measureText(text).w / 2),
                 rect.y + (rect.h / 2) - (this->measureText(text).h / 2),
+                rect,
                 color
             );
             break;
@@ -65,6 +66,7 @@ void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, 
                 text, 
                 (rect.x + rect.w) - (this->measureText(text).w + padding), 
                 rect.y + (rect.h / 2) - (this->measureText(text).h / 2),
+                rect,
                 color
             );
             break;
@@ -73,6 +75,7 @@ void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, 
                 text, 
                 rect.x + padding, 
                 rect.y + (rect.h / 2) - (this->measureText(text).h / 2),
+                rect,
                 color
             );
     }

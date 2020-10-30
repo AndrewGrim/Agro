@@ -1,6 +1,8 @@
 #include "text_renderer.hpp"
+#include "../app.hpp"
 
-TextRenderer::TextRenderer(unsigned int *indices) {
+TextRenderer::TextRenderer(unsigned int *indices, void *app) {
+    this->m_app = app;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -96,42 +98,45 @@ void TextRenderer::load(std::string font, unsigned int fontSize) {
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::fillText(std::string text, float x, float y, Color color, float scale) {
+void TextRenderer::fillText(std::string text, float x, float y, Rect<float> rect, Color color, float scale) {
     check();
 
+    Size<int> window = ((Application*)this->m_app)->m_size;
     std::string::const_iterator c;
-    for (c = text.begin(); c != text.end(); c++) {
+    for (c = text.begin(); c != text.end() && x <= window.w; c++) {
         TextCharacter ch = characters[*c];
+        float advance = ((ch.advance >> 6) * scale);
+        if (x + advance >= 0) {
+            float xpos = x + ch.bearing.x * scale;
+            float ypos = y + (characters['H'].bearing.y - ch.bearing.y) * scale;
 
-        float xpos = x + ch.bearing.x * scale;
-        float ypos = y + (characters['H'].bearing.y - ch.bearing.y) * scale;
+            float w = ch.size.x * scale;
+            float h = ch.size.y * scale;
+            
+            vertices[index++] = {
+                {xpos, ypos + h}, 
+                {ch.textureX, (h / atlasHeight)},
+                {color.r, color.g, color.b, color.a}
+            };
+            vertices[index++] = {
+                {xpos, ypos}, 
+                {ch.textureX, 0.0f},
+                {color.r, color.g, color.b, color.a}
+            };
+            vertices[index++] = {
+                {xpos + w, ypos}, 
+                {ch.textureX + (w / atlasWidth), 0.0f},
+                {color.r, color.g, color.b, color.a}
+            };
+            vertices[index++] = {
+                {xpos + w, ypos + h}, 
+                {ch.textureX + (w / atlasWidth), (h / atlasHeight)},
+                {color.r, color.g, color.b, color.a}
+            };
 
-        float w = ch.size.x * scale;
-        float h = ch.size.y * scale;
-        
-        vertices[index++] = {
-            {xpos, ypos + h}, 
-            {ch.textureX, (h / atlasHeight)},
-            {color.r, color.g, color.b, color.a}
-        };
-        vertices[index++] = {
-            {xpos, ypos}, 
-            {ch.textureX, 0.0f},
-            {color.r, color.g, color.b, color.a}
-        };
-        vertices[index++] = {
-            {xpos + w, ypos}, 
-            {ch.textureX + (w / atlasWidth), 0.0f},
-            {color.r, color.g, color.b, color.a}
-        };
-        vertices[index++] = {
-            {xpos + w, ypos + h}, 
-            {ch.textureX + (w / atlasWidth), (h / atlasHeight)},
-            {color.r, color.g, color.b, color.a}
-        };
-
-        x += (ch.advance >> 6) * scale;
-        count++;
+            count++;
+        }
+        x += advance;
     }
 }
 
