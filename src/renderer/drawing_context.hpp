@@ -25,7 +25,7 @@
         ~DrawingContext();
         void fillRect(Rect<float> rect, Color color);
         void fillGradientRect(Rect<float> rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation);
-        void fillText(std::string text, float x, float y, Rect<float> rect, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size<float> measureText(std::string text, float scale = 1.0f);
         void render();
         void fillTextAligned(std::string text, TextAlignment alignment, Rect<float> rect, int padding, Color color = Color());

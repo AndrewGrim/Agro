@@ -43,7 +43,7 @@
         TextRenderer(unsigned int *indices, void *app);
         ~TextRenderer();
         void load(std::string font, unsigned int fontSize);
-        void fillText(std::string text, float x, float y, Rect<float> rect, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size<float> measureText(std::string text, float scale = 1.0f);
         void reset();
         void check();

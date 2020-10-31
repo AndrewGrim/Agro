@@ -98,7 +98,7 @@ void TextRenderer::load(std::string font, unsigned int fontSize) {
     FT_Done_FreeType(ft);
 }
 
-void TextRenderer::fillText(std::string text, float x, float y, Rect<float> rect, Color color, float scale) {
+void TextRenderer::fillText(std::string text, float x, float y, Color color, float scale) {
     check();
 
     Size<int> window = ((Application*)this->m_app)->m_size;
