@@ -35,10 +35,19 @@
             }
 
             Size<float> size_hint(DrawingContext *dc) {
-                Size<float> size = dc->measureText(text());
+                // TODO we still probably need the if app layout changed condition
+                if (this->size_changed) {
+                    Size<float> size = dc->measureText(text());
                     size.w += this->m_padding * 2;
                     size.h += this->m_padding * 2;
-                return size;
+
+                    this->m_size = size;
+                    this->size_changed = false;
+
+                    return size;
+                } else {
+                    return this->m_size;
+                }
             }
 
             Color background() {
@@ -58,6 +67,7 @@
 
             Button* set_text(std::string text) {
                 this->m_text = text;
+                this->size_changed = true;
                 this->update();
 
                 return this;
