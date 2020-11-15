@@ -15,9 +15,9 @@ Application::Application(const char* title, Size<int> size) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetSwapInterval(0);
     sdl_context = SDL_GL_CreateContext(this->win);
     SDL_GL_MakeCurrent(this->win, this->sdl_context);
+    SDL_GL_SetSwapInterval(0);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         println("Failed to initialize GLAD");
     }
