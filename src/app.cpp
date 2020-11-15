@@ -11,13 +11,13 @@ Application::Application(const char* title, Size<int> size) {
         size.w, size.h,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
-    sdl_context = SDL_GL_CreateContext(this->win);
-    SDL_GL_MakeCurrent(this->win, this->sdl_context);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetSwapInterval(0);
+    sdl_context = SDL_GL_CreateContext(this->win);
+    SDL_GL_MakeCurrent(this->win, this->sdl_context);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         println("Failed to initialize GLAD");
     }
