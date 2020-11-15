@@ -31,7 +31,7 @@
                 // draw border and shrink rectangle to prevent drawing over the border
                 rect = dc->drawBorder(rect, this->m_border_width, color);
                 dc->fillRect(rect, color);
-                dc->fillTextAligned(this->m_text, this->m_text_align, rect, this->m_padding + this->m_border_width / 2);
+                dc->fillTextAligned(this->m_text, this->m_text_align, rect, this->m_padding);
             }
 
             Size<float> size_hint(DrawingContext *dc) {
@@ -54,7 +54,7 @@
                 return this->bg;
             }
 
-            Button* set_background(Color background) {
+            virtual Button* set_background(Color background) {
                 this->bg = background;
                 this->update();
 
@@ -65,7 +65,7 @@
                 return this->m_text;
             }
 
-            Button* set_text(std::string text) {
+            virtual Button* set_text(std::string text) {
                 this->m_text = text;
                 this->size_changed = true;
                 this->update();
