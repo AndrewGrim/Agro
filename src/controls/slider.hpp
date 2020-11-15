@@ -98,10 +98,11 @@
                 } else {
                     *align_rect[0] += result;
                 }
+                // TODO * 2 is a quick workaround, basically we want the slider button take up the same amount of space as the < > buttons
                 if (this->m_align_policy == Align::Horizontal) {
-                    this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, this->m_slider_button_size, sizehint.h));
+                    this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, this->m_slider_button_size, sizehint.h * 2));
                 } else {
-                    this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, sizehint.w, this->m_slider_button_size));
+                    this->m_slider_button->draw(dc, Rect<float>(rect.x, rect.y, sizehint.w * 2, this->m_slider_button_size));
                 }
             }
 
