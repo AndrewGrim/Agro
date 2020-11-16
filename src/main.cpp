@@ -13,9 +13,7 @@
 
 int main() { 
     Application *app = new Application("Application", Size<int>(500, 500));
-        ScrolledBox *top = new ScrolledBox(Align::Vertical, Size<float>(200, 200));
-            top->append(new LineEdit("this is a widget that has editable text but is always one line"), Fill::Horizontal);
-        app->append(top, Fill::Both);
+        app->append(new LineEdit("this is a widget that has editable text but is always one line"), Fill::Horizontal);
     app->run();
 
     return 0; 
