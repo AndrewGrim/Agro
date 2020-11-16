@@ -2,6 +2,7 @@
     #define WIDGET_HPP
 
     #include <vector>
+    #include <functional>
 
     #include "../state.hpp"
     #include "../event.hpp"
@@ -27,7 +28,8 @@
             std::vector<Widget*> children;
             void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;
-            void (*mouse_click_callback)(Widget*, MouseEvent) = nullptr;
+            std::function<void(Widget*, MouseEvent)> mouse_click_callback = nullptr; // TODO convert other callback to std::function
+            // because of std::function we should be able to get rid of the Widget* parameter and only leave the event one
             void (*mouse_left_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_entered_callback)(Widget*, MouseEvent) = nullptr;
             void (*mouse_motion_callback)(Widget*, MouseEvent) = nullptr;
