@@ -48,6 +48,7 @@
                 dc->fillTextAligned(this->text(), this->m_text_align, rect, this->m_padding);
 
                 if (this->m_process_mouse_event) {
+                    // TODO probably also want to store the index of text (ie where to insert the next character)
                     float x = this->padding() + this->border_width() / 2;
                     for (char c : this->text()) {
                         float w = dc->measureText(c).w;
@@ -60,8 +61,16 @@
                     this->m_process_mouse_event = false;
                     // TODO draw the cursor (this will happen within the draw method, based on whether the widget is focused or not and where)
                 }
-                // TODO draw x absolute not relative to scroll
-                dc->fillRect(Rect<float>(this->m_cursor_position, rect.y + 5, 1, 20), Color(1, 0, 1));
+                float text_height = this->m_size.h - this->m_padding;
+                dc->fillRect(
+                    Rect<float>(
+                        rect.x + this->m_cursor_position, 
+                        rect.y + (rect.h / 2) - (text_height / 2), 
+                        1, 
+                        text_height
+                    ), 
+                    Color(1, 0, 1)
+                );
             }
 
             LineEdit* set_foreground(Color foreground) {
