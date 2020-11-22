@@ -78,7 +78,7 @@ int Application::next_id() {
 }
 
 void Application::run() {
-    dc->textRenderer->load("fonts/OpenSans-Regular.ttf", 14);
+    dc->textRenderer->load("fonts/DejaVu/DejaVuSans.ttf", 14);
     dc->textRenderer->shader.use();
     dc->textRenderer->shader.setInt("text", 0);
     this->main_widget->m_app = (void*)this;
