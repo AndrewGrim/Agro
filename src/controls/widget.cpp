@@ -157,13 +157,13 @@ void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
     if (event.type == MouseEvent::Type::Motion && state->hovered) {
         ((Widget*)state->hovered)->set_hovered(false);
         if (((Widget*)state->hovered)->mouse_left_callback) {
-            ((Widget*)state->hovered)->mouse_left_callback((Widget*)state->hovered, event);
+            ((Widget*)state->hovered)->mouse_left_callback(event);
         }
         state->hovered = nullptr;
     }
     if (event.type == MouseEvent::Type::Motion && state->pressed) {
         if (((Widget*)state->pressed)->mouse_motion_callback) {
-            ((Widget*)state->pressed)->mouse_motion_callback(((Widget*)state->pressed), event);
+            ((Widget*)state->pressed)->mouse_motion_callback(event);
         }
     }
     ((Application*)this->m_app)->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted);
@@ -180,7 +180,7 @@ void Widget::mouse_event(State *state, MouseEvent event) {
                 ((Widget*)state->pressed)->set_pressed(false);
             }
             this->set_pressed(true);
-            if (this->mouse_down_callback) this->mouse_down_callback(this, event);
+            if (this->mouse_down_callback) this->mouse_down_callback(event);
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted);;
             break;
         case MouseEvent::Type::Up:
@@ -190,10 +190,10 @@ void Widget::mouse_event(State *state, MouseEvent event) {
             }
             this->set_hovered(true);
             state->hovered = this;
-            if (this->mouse_up_callback) this->mouse_up_callback(this, event);
+            if (this->mouse_up_callback) this->mouse_up_callback(event);
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseUp, Application::EventHandler::Accepted);
             if (this == state->pressed) {
-                if (this->mouse_click_callback) this->mouse_click_callback(this, event);
+                if (this->mouse_click_callback) this->mouse_click_callback(event);
                 app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseClick, Application::EventHandler::Accepted);
             }
             state->pressed = nullptr;
@@ -204,20 +204,20 @@ void Widget::mouse_event(State *state, MouseEvent event) {
                     if (this != state->hovered) {
                         ((Widget*)state->hovered)->set_hovered(false);
                         if (((Widget*)state->hovered)->mouse_left_callback) {
-                            ((Widget*)state->hovered)->mouse_left_callback((Widget*)state->hovered, event);
+                            ((Widget*)state->hovered)->mouse_left_callback(event);
                         }
                         this->set_hovered(true);
                         if (this->mouse_entered_callback) {
-                            this->mouse_entered_callback(this, event);
+                            this->mouse_entered_callback(event);
                         }
                     }
                 } else {
                     this->set_hovered(true);
                     if (this->mouse_entered_callback) {
-                        this->mouse_entered_callback(this, event);
+                        this->mouse_entered_callback(event);
                     }
                 }
-                if (this->mouse_motion_callback) this->mouse_motion_callback(this, event);
+                if (this->mouse_motion_callback) this->mouse_motion_callback(event);
             } else {
                 if (state->pressed == state->hovered) {
                     ((Widget*)state->pressed)->set_hovered(true);
@@ -225,7 +225,7 @@ void Widget::mouse_event(State *state, MouseEvent event) {
                     ((Widget*)state->pressed)->set_hovered(false);
                 }
                 if (((Widget*)state->pressed)->mouse_motion_callback) {
-                    ((Widget*)state->pressed)->mouse_motion_callback(((Widget*)state->pressed), event);
+                    ((Widget*)state->pressed)->mouse_motion_callback(event);
                 }
             }
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseMotion, Application::EventHandler::Accepted);;
