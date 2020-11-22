@@ -48,23 +48,19 @@
                 dc->fillTextAligned(this->text(), this->m_text_align, rect, this->m_padding);
 
                 if (this->m_process_mouse_event) {
-                    // TODO spaces are not factored into the width
                     float x = this->padding() + this->border_width() / 2;
-                    println(this->text());
-                    println(dc->measureText(this->text()).w);
                     for (char c : this->text()) {
-                        float w = dc->measureText(std::string(1, c)).w;
-                        printf("x: %f, w: %f, x + w = %f, last_m_x: %d\n", x, w, x + w, this->m_last_mouse_x);
+                        float w = dc->measureText(c).w;
                         if (x + w > this->m_last_mouse_x) {
                             break;
                         }
                         x += w;
                     }
                     this->set_cursor_position(x);
-                    println(this->m_cursor_position);
                     this->m_process_mouse_event = false;
                     // TODO draw the cursor (this will happen within the draw method, based on whether the widget is focused or not and where)
                 }
+                // TODO draw x absolute not relative to scroll
                 dc->fillRect(Rect<float>(this->m_cursor_position, rect.y + 5, 1, 20), Color(1, 0, 1));
             }
 
