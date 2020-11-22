@@ -45,6 +45,7 @@
         void load(std::string font, unsigned int fontSize);
         void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size<float> measureText(std::string text, float scale = 1.0f);
+        Size<float> measureText(char c, float scale = 1.0f);
         void reset();
         void check();
         void render();

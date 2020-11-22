@@ -50,6 +50,10 @@ Size<float> DrawingContext::measureText(std::string text, float scale) {
     return textRenderer->measureText(text, scale);
 }
 
+Size<float> DrawingContext::measureText(char c, float scale) {
+    return textRenderer->measureText(c, scale);
+}
+
 void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, Rect<float> rect, int padding, Color color) {
     switch (alignment) {
         case TextAlignment::Center:

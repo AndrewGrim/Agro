@@ -143,15 +143,20 @@ void TextRenderer::fillText(std::string text, float x, float y, Color color, flo
 Size<float> TextRenderer::measureText(std::string text, float scale) {
     std::string::const_iterator c;
     Size<float> size;
-    float x = 0.0f;
-    for (c = text.begin(); c != text.end(); c++) {
-        TextCharacter ch = characters[*c];
-        float xpos = x + ch.bearing.x * scale;
-        float w = ch.size.x * scale;
-        size.w = xpos + w;
+    for (char c : text) {
+        TextCharacter ch = characters[c];
+        size.w += (ch.advance >> 6) * scale;
         size.h = ch.size.y > size.h ? ch.size.y : size.h;
-        x += (ch.advance >> 6) * scale;
     }
+
+    return size;
+}
+
+Size<float> TextRenderer::measureText(char c, float scale) {
+    Size<float> size;
+    TextCharacter ch = characters[c];
+    size.w = ch.advance >> 6;
+    size.h = ch.size.y;
 
     return size;
 }
