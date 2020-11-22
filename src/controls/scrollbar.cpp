@@ -8,15 +8,10 @@ ScrollBar::ScrollBar(Align alignment, std::string text) {
 
     m_begin_button = new Button("<");
     m_begin_button->m_parent = this;
-    m_begin_button->mouse_click_callback = [&](Widget *scrollbar_begin_button, MouseEvent event) {
-        if (scrollbar_begin_button) {
-            if (scrollbar_begin_button->m_parent) {
-                ScrollBar *parent = (ScrollBar*)scrollbar_begin_button->m_parent;
-                parent->m_slider->m_value -= 0.05f; 
-                if (parent->m_slider->m_value < 0.0f) parent->m_slider->m_value = 0.0f;
-                if (scrollbar_begin_button->m_app) ((Application*)scrollbar_begin_button->m_app)->m_needs_update = true;
-            }
-        }
+    m_begin_button->mouse_click_callback = [&](MouseEvent event) {
+        this->m_slider->m_value -= 0.05f; 
+        if (this->m_slider->m_value < 0.0f) this->m_slider->m_value = 0.0f;
+        if (this->m_app) ((Application*)this->m_app)->m_needs_update = true;
     };
     this->append(m_begin_button, Fill::None);
 
@@ -26,15 +21,10 @@ ScrollBar::ScrollBar(Align alignment, std::string text) {
 
     m_end_button = new Button(">");
     m_end_button->m_parent = this;
-    m_end_button->mouse_click_callback = [&](Widget *scrollbar_end_button, MouseEvent event) {
-        if (scrollbar_end_button) {
-            if (scrollbar_end_button->m_parent) {
-                ScrollBar *parent = (ScrollBar*)scrollbar_end_button->m_parent;
-                parent->m_slider->m_value += 0.05f; 
-                if (parent->m_slider->m_value > 1.0f) parent->m_slider->m_value = 1.0f;
-                if (scrollbar_end_button->m_app) ((Application*)scrollbar_end_button->m_app)->m_needs_update = true;
-            }
-        }
+    m_end_button->mouse_click_callback = [&](MouseEvent event) {
+        this->m_slider->m_value += 0.05f; 
+        if (this->m_slider->m_value > 1.0f) this->m_slider->m_value = 1.0f;
+        if (this->m_app) ((Application*)this->m_app)->m_needs_update = true;
     };
     this->append(m_end_button, Fill::None);
 }

@@ -12,7 +12,7 @@
     class LineEdit : public Button {
         public:
             LineEdit(std::string text = "") : Button(text) {
-                this->mouse_click_callback = [&](Widget *lineedit, MouseEvent event) {
+                this->mouse_click_callback = [&](MouseEvent event) {
                     if (!this->text().length()) {
                         this->set_cursor_position(this->padding() + this->border_width() / 2);
                     } else {
