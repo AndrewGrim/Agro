@@ -26,13 +26,13 @@
             Size<float> m_min_size;
             bool size_changed = true;
             std::vector<Widget*> children;
-            void (*mouse_down_callback)(Widget*, MouseEvent) = nullptr;
-            void (*mouse_up_callback)(Widget*, MouseEvent) = nullptr;
-            std::function<void(Widget*, MouseEvent)> mouse_click_callback = nullptr; // TODO convert other callback to std::function
+            std::function<void(Widget*, MouseEvent)> mouse_down_callback = nullptr;
+            std::function<void(Widget*, MouseEvent)> mouse_up_callback = nullptr;
+            std::function<void(Widget*, MouseEvent)> mouse_click_callback = nullptr;
             // because of std::function we should be able to get rid of the Widget* parameter and only leave the event one
-            void (*mouse_left_callback)(Widget*, MouseEvent) = nullptr;
-            void (*mouse_entered_callback)(Widget*, MouseEvent) = nullptr;
-            void (*mouse_motion_callback)(Widget*, MouseEvent) = nullptr;
+            std::function<void(Widget*, MouseEvent)> mouse_left_callback = nullptr;
+            std::function<void(Widget*, MouseEvent)> mouse_entered_callback = nullptr;
+            std::function<void(Widget*, MouseEvent)> mouse_motion_callback = nullptr;
 
             Widget();
             virtual ~Widget();

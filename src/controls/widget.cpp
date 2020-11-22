@@ -115,6 +115,7 @@ void Widget::update() {
 }
 
 void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
+    // TODO make a widget focused if its clicked on, focus should call update
     if (this->is_scrollable()) {
         ScrolledBox *self = (ScrolledBox*)this;
         if (self->m_vertical_scrollbar) {
