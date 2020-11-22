@@ -48,17 +48,19 @@
                 dc->fillTextAligned(this->text(), this->m_text_align, rect, this->m_padding);
 
                 if (this->m_process_mouse_event) {
-                    // TODO probably also want to store the index of text (ie where to insert the next character)
                     float x = this->padding() + this->border_width() / 2;
+                    unsigned int index = 0;
                     for (char c : this->text()) {
                         float w = dc->measureText(c).w;
                         if (x + w > this->m_last_mouse_x) {
                             break;
                         }
                         x += w;
+                        index++;
                     }
                     this->set_cursor_position(x);
                     this->m_process_mouse_event = false;
+                    this->m_cursor_index = index;
                     // TODO draw the cursor (this will happen within the draw method, based on whether the widget is focused or not and where)
                 }
                 float text_height = this->m_size.h - this->m_padding;
@@ -123,6 +125,7 @@
             float m_cursor_position = this->padding() + this->border_width() / 2;
             Color bg = Color(1.0f, 1.0f, 1.0f);
             unsigned int m_last_mouse_x;
+            unsigned int m_cursor_index;
             bool m_process_mouse_event = false;
     };
 #endif
