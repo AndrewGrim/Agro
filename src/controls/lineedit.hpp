@@ -52,7 +52,7 @@
                     unsigned int index = 0;
                     for (char c : this->text()) {
                         float w = dc->measureText(c).w;
-                        if (x + w > this->m_last_mouse_x) {
+                        if (x + w > (rect.x * -1) + this->m_last_mouse_x) {
                             break;
                         }
                         x += w;
