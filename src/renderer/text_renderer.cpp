@@ -57,8 +57,8 @@ void TextRenderer::load(std::string font, unsigned int fontSize) {
 
     for (GLubyte c = 32; c < 128; c++)   {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) exit(1);
-        atlasWidth += g->bitmap.width + 1;
-        if (g->bitmap.rows > atlasHeight) atlasHeight = g->bitmap.rows + 1;
+        atlasWidth += g->bitmap.width;
+        if (g->bitmap.rows > atlasHeight) atlasHeight = g->bitmap.rows;
     }
     glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &atlasID);
@@ -100,7 +100,7 @@ void TextRenderer::load(std::string font, unsigned int fontSize) {
 
 void TextRenderer::fillText(std::string text, float x, float y, Color color, float scale) {
     check();
-
+    
     Size<int> window = ((Application*)this->m_app)->m_size;
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end() && x <= window.w; c++) {
