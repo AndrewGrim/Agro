@@ -55,28 +55,46 @@ Size<float> DrawingContext::measureText(char c, float scale) {
 }
 
 void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, Rect<float> rect, int padding, Color color) {
+    // The reason for the additional calculations here is because in order
+    // to avoid horrible texture wrapping issues on text we need to give it a
+    // nice even number to start from.
+    //
+    // Before: "rect.x + (rect.w * 0.5) - (this->measureText(text).w * 0.5)".
+    // After: "std::nearbyint((rect.x + (rect.w * 0.5) - (this->measureText(text).w * 0.5)) * 0.5) * 2.0".
+    // 
+    // This causes something that looks like dithering which is caused
+    // by the rounding of x and or y.
+    // This is only really noticeable when scrolling or resizing a window
+    // and doing it slowely, if you just resize the window as you would
+    // normally this isn't really perceptible.
+
+    auto normalize = [](float coordinate) {
+        int rounded = std::nearbyint(coordinate);
+        return !(rounded % 2) ? (rounded * 0.5) * 2.0 : rounded;
+    }; 
+    
     switch (alignment) {
         case TextAlignment::Center:
             this->fillText(
                 text,
-                rect.x + (rect.w / 2) - (this->measureText(text).w / 2),
-                rect.y + (rect.h / 2) - (this->measureText(text).h / 2),
+                normalize(rect.x + (rect.w * 0.5) - (this->measureText(text).w * 0.5)),
+                normalize(rect.y + (rect.h * 0.5) - (this->measureText(text).h * 0.5)),
                 color
             );
             break;
         case TextAlignment::Right:
             this->fillText(
                 text, 
-                (rect.x + rect.w) - (this->measureText(text).w + padding), 
-                rect.y + (rect.h / 2) - (this->measureText(text).h / 2),
+                normalize((rect.x + rect.w) - (this->measureText(text).w + padding)),
+                normalize(rect.y + (rect.h * 0.5) - (this->measureText(text).h * 0.5)),
                 color
             );
             break;
         default:
             this->fillText(
                 text, 
-                rect.x + padding, 
-                rect.y + (rect.h / 2) - (this->measureText(text).h / 2),
+                normalize(rect.x + padding),
+                normalize(rect.y + (rect.h * 0.5) - (this->measureText(text).h * 0.5)),
                 color
             );
     }
