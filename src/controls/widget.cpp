@@ -110,6 +110,17 @@ void Widget::set_pressed(bool pressed) {
     }
 }
 
+bool Widget::is_focused() {
+    return this->m_is_focused;
+}
+
+void Widget::set_focused(bool focused) {
+    if (focused != this->m_is_focused) {
+        this->m_is_focused = focused;
+        this->update();
+    }
+}
+
 void Widget::update() {
     if (this->m_app) ((Application*)this->m_app)->m_needs_update = true;
 }
@@ -180,6 +191,11 @@ void Widget::mouse_event(State *state, MouseEvent event) {
                 ((Widget*)state->pressed)->set_pressed(false);
             }
             this->set_pressed(true);
+            if (state->focused) {
+                ((Widget*)state->focused)->set_focused(false);
+            }
+            this->set_focused(true);
+            state->focused = (void*)this;
             if (this->mouse_down_callback) this->mouse_down_callback(event);
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted);;
             break;

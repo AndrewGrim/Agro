@@ -20,6 +20,7 @@
             void *m_app = nullptr;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
+            bool m_is_focused = false;
             Widget *m_parent = nullptr;
             Rect<float> rect = Rect<float>(0, 0, 0, 0);
             Size<float> m_size;
@@ -56,6 +57,8 @@
             void set_hovered(bool hover);
             bool is_pressed();
             void set_pressed(bool pressed);
+            bool is_focused();
+            void set_focused(bool focused);
             void update();
             void* propagate_mouse_event(State *state, MouseEvent event);
             void mouse_event(State *state, MouseEvent event);
