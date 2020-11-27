@@ -13,7 +13,8 @@
 
 int main() { 
     Application *app = new Application("Application", Size<int>(500, 500));
-        app->append(new LineEdit("this is a widget that has editable text but is always one line"), Fill::Horizontal);
+        app->append(new LineEdit("text 1"), Fill::Horizontal);
+        app->append(new LineEdit("text 2"), Fill::Horizontal);
     app->run();
 
     return 0; 
