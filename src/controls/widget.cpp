@@ -196,6 +196,7 @@ void Widget::mouse_event(State *state, MouseEvent event) {
             }
             this->set_focused(true);
             state->focused = (void*)this;
+            // TODO maybe add an on_focus callback?
             if (this->mouse_down_callback) this->mouse_down_callback(event);
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted);;
             break;
