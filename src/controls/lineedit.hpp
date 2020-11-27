@@ -12,7 +12,7 @@
     class LineEdit : public Button {
         public:
             LineEdit(std::string text = "") : Button(text) {
-                this->mouse_click_callback = [&](MouseEvent event) {
+                this->mouse_down_callback = [&](MouseEvent event) {
                     if (!this->text().length()) {
                         this->set_cursor_position(this->padding() + this->border_width() / 2);
                     } else {
@@ -63,16 +63,18 @@
                     this->m_cursor_index = index;
                     // TODO draw the cursor (this will happen within the draw method, based on whether the widget is focused or not and where)
                 }
-                float text_height = this->m_size.h - this->m_padding;
-                dc->fillRect(
-                    Rect<float>(
-                        rect.x + this->m_cursor_position, 
-                        rect.y + (rect.h / 2) - (text_height / 2), 
-                        1, 
-                        text_height
-                    ), 
-                    Color(1, 0, 1)
-                );
+                if (this->is_focused()) {
+                    float text_height = this->m_size.h - this->m_padding;
+                    dc->fillRect(
+                        Rect<float>(
+                            rect.x + this->m_cursor_position, 
+                            rect.y + (rect.h / 2) - (text_height / 2), 
+                            1, 
+                            text_height
+                        ), 
+                        Color(1, 0, 1)
+                    );
+                }
             }
 
             LineEdit* set_foreground(Color foreground) {
