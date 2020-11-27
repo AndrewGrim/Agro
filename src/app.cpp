@@ -91,6 +91,11 @@ void Application::run() {
         this->ready_callback(this);
     }
     while (true) {
+        if (this->state->focused) {
+            SDL_StartTextInput();
+        } else {
+            SDL_StopTextInput();
+        }
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
             int64_t time_since_last_event = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - this->m_last_event_time).count();
@@ -113,6 +118,11 @@ void Application::run() {
                             this->m_needs_update = true;
                             this->m_layout_changed = true;
                             break;
+                    }
+                    break;
+                case SDL_TEXTINPUT:
+                    if (state->focused) {
+                        ((Button*)state->focused)->set_text(((Button*)state->focused)->text() += event.text.text);
                     }
                     break;
                 case SDL_QUIT:
