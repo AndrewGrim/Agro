@@ -45,6 +45,10 @@
                 compile(vertex_shader.c_str(), fragment_shader.c_str());
             };
 
+            Shader(const char *vertext_shader, const char *fragment_shader) {
+                compile(vertext_shader, fragment_shader);
+            }
+
             void compile(const char *vertext_shader, const char *fragment_shader) {
                 unsigned int vertex, fragment;
 
