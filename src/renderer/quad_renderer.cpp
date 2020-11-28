@@ -36,7 +36,7 @@ void QuadRenderer::check() {
     if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE) render();
 }
 
-void QuadRenderer::fillRect(Rect<float> rect, Color color) {
+void QuadRenderer::fillRect(Rect rect, Color color) {
     check();
     
     vertices[index++] = {
@@ -63,7 +63,7 @@ void QuadRenderer::fillRect(Rect<float> rect, Color color) {
     count++;
 }
 
-void QuadRenderer::fillGradientRect(Rect<float> rect, Color fromColor, Color toColor, Gradient orientation) {
+void QuadRenderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
     check();
     
     switch (orientation) {

@@ -23,14 +23,14 @@
 
         DrawingContext(void *app);
         ~DrawingContext();
-        void fillRect(Rect<float> rect, Color color);
-        void fillGradientRect(Rect<float> rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation);
+        void fillRect(Rect rect, Color color);
+        void fillGradientRect(Rect rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation);
         void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
-        Size<float> measureText(std::string text, float scale = 1.0f);
-        Size<float> measureText(char c, float scale = 1.0f);
+        Size measureText(std::string text, float scale = 1.0f);
+        Size measureText(char c, float scale = 1.0f);
         void render();
-        void fillTextAligned(std::string text, TextAlignment alignment, Rect<float> rect, int padding, Color color = Color());
-        Rect<float> drawBorder(Rect<float> rect, int border_width, Color rect_color);
+        void fillTextAligned(std::string text, TextAlignment alignment, Rect rect, int padding, Color color = Color());
+        Rect drawBorder(Rect rect, int border_width, Color rect_color);
         void clear();
         void swap_buffer(SDL_Window *win);
     };

@@ -101,7 +101,7 @@ void TextRenderer::load(std::string font, unsigned int fontSize) {
 void TextRenderer::fillText(std::string text, float x, float y, Color color, float scale) {
     check();
     
-    Size<int> window = ((Application*)this->m_app)->m_size;
+    Size window = ((Application*)this->m_app)->m_size;
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end() && x <= window.w; c++) {
         TextCharacter ch = characters[*c];
@@ -140,9 +140,9 @@ void TextRenderer::fillText(std::string text, float x, float y, Color color, flo
     }
 }
 
-Size<float> TextRenderer::measureText(std::string text, float scale) {
+Size TextRenderer::measureText(std::string text, float scale) {
     std::string::const_iterator c;
-    Size<float> size;
+    Size size;
     for (char c : text) {
         TextCharacter ch = characters[c];
         size.w += (ch.advance >> 6) * scale;
@@ -152,8 +152,8 @@ Size<float> TextRenderer::measureText(std::string text, float scale) {
     return size;
 }
 
-Size<float> TextRenderer::measureText(char c, float scale) {
-    Size<float> size;
+Size TextRenderer::measureText(char c, float scale) {
+    Size size;
     TextCharacter ch = characters[c];
     size.w = ch.advance >> 6;
     size.h = ch.size.y;

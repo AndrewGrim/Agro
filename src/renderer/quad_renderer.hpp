@@ -33,8 +33,8 @@
         ~QuadRenderer();
         void reset();
         void check();
-        void fillRect(Rect<float> rect, Color color);
-        void fillGradientRect(Rect<float> rect, Color fromColor, Color toColor, Gradient orientation);
+        void fillRect(Rect rect, Color color);
+        void fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void render();
     };
 #endif

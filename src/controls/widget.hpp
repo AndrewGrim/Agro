@@ -22,9 +22,9 @@
             bool m_is_pressed = false;
             bool m_is_focused = false;
             Widget *m_parent = nullptr;
-            Rect<float> rect = Rect<float>(0, 0, 0, 0);
-            Size<float> m_size;
-            Size<float> m_min_size;
+            Rect rect = Rect(0, 0, 0, 0);
+            Size m_size;
+            Size m_min_size;
             bool size_changed = true;
             std::vector<Widget*> children;
             std::function<void(MouseEvent)> mouse_down_callback = nullptr;
@@ -37,9 +37,9 @@
             Widget();
             virtual ~Widget();
             virtual const char* name();
-            virtual void draw(DrawingContext *dc, Rect<float> rect);
+            virtual void draw(DrawingContext *dc, Rect rect);
             Widget* append(Widget* widget, Fill fill_policy);
-            virtual Size<float> size_hint(DrawingContext *dc);
+            virtual Size size_hint(DrawingContext *dc);
             virtual Color background();
             virtual Widget* set_background(Color background);
             virtual Color hover_background();

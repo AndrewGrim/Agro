@@ -1,6 +1,6 @@
 #include "app.hpp"
 
-Application::Application(const char* title, Size<int> size) {
+Application::Application(const char* title, Size size) {
     this->m_size = size;
 
     SDL_Init(SDL_INIT_VIDEO);
@@ -8,7 +8,7 @@ Application::Application(const char* title, Size<int> size) {
         title, 
         SDL_WINDOWPOS_CENTERED, 
         SDL_WINDOWPOS_CENTERED, 
-        size.w, size.h,
+        static_cast<int>(size.w), static_cast<int>(size.h),
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -60,7 +60,7 @@ void Application::draw() {
         true
     );
     this->dc->clear();
-    this->main_widget->draw(this->dc, Rect<float>(0, 0, this->m_size.w, this->m_size.h));
+    this->main_widget->draw(this->dc, Rect(0, 0, this->m_size.w, this->m_size.h));
     this->dc->render();
 }
 
@@ -111,7 +111,7 @@ void Application::run() {
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
                         case SDL_WINDOWEVENT_RESIZED:
-                            this->m_size = Size<int> { event.window.data1, event.window.data2 };
+                            this->m_size = Size(event.window.data1, event.window.data2);
                             int w, h;
                             SDL_GL_GetDrawableSize(this->win, &w, &h);
                             glViewport(0, 0, w, h);
@@ -122,7 +122,7 @@ void Application::run() {
                     break;
                 case SDL_TEXTINPUT:
                     if (state->focused) {
-                        ((Button*)state->focused)->set_text(((Button*)state->focused)->text() += event.text.text);
+                        // ((Button*)state->focused)->set_text(((Button*)state->focused)->text() += event.text.text);
                     }
                     break;
                 case SDL_QUIT:

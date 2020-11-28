@@ -23,13 +23,13 @@ DrawingContext::DrawingContext(void *app) {
 DrawingContext::~DrawingContext() {
 }
 
-void DrawingContext::fillRect(Rect<float> rect, Color color) {
+void DrawingContext::fillRect(Rect rect, Color color) {
     if (lastRenderer != (void*)quadRenderer) textRenderer->render();
     lastRenderer = (void*)quadRenderer;
     quadRenderer->fillRect(rect, color);
 }
 
-void DrawingContext::fillGradientRect(Rect<float> rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation) {
+void DrawingContext::fillGradientRect(Rect rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation) {
     if (lastRenderer != (void*)quadRenderer) textRenderer->render();
     lastRenderer = (void*)quadRenderer;
     quadRenderer->fillGradientRect(rect, fromColor, toColor, orientation);
@@ -46,15 +46,15 @@ void DrawingContext::fillText(std::string text, float x, float y, Color color, f
     textRenderer->fillText(text, x, y, color, scale);
 }
 
-Size<float> DrawingContext::measureText(std::string text, float scale) {
+Size DrawingContext::measureText(std::string text, float scale) {
     return textRenderer->measureText(text, scale);
 }
 
-Size<float> DrawingContext::measureText(char c, float scale) {
+Size DrawingContext::measureText(char c, float scale) {
     return textRenderer->measureText(c, scale);
 }
 
-void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, Rect<float> rect, int padding, Color color) {
+void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {
     // The reason for the additional calculations here is because in order
     // to avoid horrible texture wrapping issues on text we need to give it a
     // nice even number to start from.
@@ -100,20 +100,20 @@ void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, 
     }
 }
 
-Rect<float> DrawingContext::drawBorder(Rect<float> rect, int border_width, Color rect_color) {
+Rect DrawingContext::drawBorder(Rect rect, int border_width, Color rect_color) {
     // TODO this is slow as shit
     // light border
     {
         // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here
         this->fillRect(
-            Rect<float>(rect.x,
+            Rect(rect.x,
                 rect.y + border_width / 2,
                 rect.w,
                 border_width / 2
             ), Color(1.0f, 1.0f, 1.0f)
         );
         this->fillRect(
-            Rect<float>(rect.x + border_width / 2,
+            Rect(rect.x + border_width / 2,
                 rect.y,
                 border_width / 2,
                 rect.h
@@ -121,14 +121,14 @@ Rect<float> DrawingContext::drawBorder(Rect<float> rect, int border_width, Color
         );
         // top layer of the top & left border : background
         this->fillRect(
-            Rect<float>(rect.x,
+            Rect(rect.x,
                 rect.y,
                 rect.w,
                 border_width / 2
             ), rect_color
         );
         this->fillRect(
-            Rect<float>(rect.x,
+            Rect(rect.x,
                 rect.y,
                 border_width / 2,
                 rect.h
@@ -139,14 +139,14 @@ Rect<float> DrawingContext::drawBorder(Rect<float> rect, int border_width, Color
     {
         // top layer of the bottom & right border : dark grey, drawn first so that the bottom layer will paint over some extra pixels from here
         this->fillRect(
-            Rect<float>(rect.x + border_width / 2,
+            Rect(rect.x + border_width / 2,
                 rect.y + rect.h - border_width,
                 rect.w - border_width / 2,
                 border_width / 2
             ), Color(0.4f, 0.4f, 0.4f)
         );
         this->fillRect(
-            Rect<float>(rect.x + rect.w - border_width,
+            Rect(rect.x + rect.w - border_width,
                 rect.y + border_width / 2,
                 border_width / 2,
                 rect.h - border_width / 2
@@ -154,14 +154,14 @@ Rect<float> DrawingContext::drawBorder(Rect<float> rect, int border_width, Color
         );
         // bottom layer of the bottom & right border : black
         this->fillRect(
-            Rect<float>(rect.x,
+            Rect(rect.x,
                 rect.y + rect.h - border_width / 2,
                 rect.w,
                 border_width / 2
             ), Color(0.0f, 0.0f, 0.0f)
         );
         this->fillRect(
-            Rect<float>(rect.x + rect.w - border_width / 2,
+            Rect(rect.x + rect.w - border_width / 2,
                 rect.y,
                 border_width / 2,
                 rect.h
@@ -170,7 +170,7 @@ Rect<float> DrawingContext::drawBorder(Rect<float> rect, int border_width, Color
     }
 
     // resize rectangle to account for border
-    rect = Rect<float>(
+    rect = Rect(
         rect.x + border_width, 
         rect.y + border_width, 
         rect.w - border_width * 2, 

@@ -11,7 +11,7 @@ const char* Widget::name() {
     return this->m_name;
 }
 
-void Widget::draw(DrawingContext *dc, Rect<float> rect) {}
+void Widget::draw(DrawingContext *dc, Rect rect) {}
 
 Widget* Widget::append(Widget* widget, Fill fill_policy) {
     widget->set_fill_policy(fill_policy);
@@ -21,8 +21,8 @@ Widget* Widget::append(Widget* widget, Fill fill_policy) {
     return this;
 }
 
-Size<float> Widget::size_hint(DrawingContext *dc) {
-    return Size<float>(0, 0); 
+Size Widget::size_hint(DrawingContext *dc) {
+    return Size(0, 0); 
 }
 
 Color Widget::background() {
@@ -128,20 +128,20 @@ void Widget::update() {
 void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
     // TODO make a widget focused if its clicked on, focus should call update
     if (this->is_scrollable()) {
-        ScrolledBox *self = (ScrolledBox*)this;
-        if (self->m_vertical_scrollbar) {
-            if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
-                (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
-                return (void*)self->m_vertical_scrollbar->propagate_mouse_event(state, event);
-            }
-        }
-        if (self->m_horizontal_scrollbar) {
-            if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
-                (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
-                return (void*)self->m_horizontal_scrollbar->propagate_mouse_event(state, event);
-            }
-        }
-        goto CHILDREN;
+        // ScrolledBox *self = (ScrolledBox*)this;
+        // if (self->m_vertical_scrollbar) {
+        //     if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
+        //         (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
+        //         return (void*)self->m_vertical_scrollbar->propagate_mouse_event(state, event);
+        //     }
+        // }
+        // if (self->m_horizontal_scrollbar) {
+        //     if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
+        //         (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
+        //         return (void*)self->m_horizontal_scrollbar->propagate_mouse_event(state, event);
+        //     }
+        // }
+        // goto CHILDREN;
     } else { // TODO this probably doesnt need a goto leave the if but remove the else
         CHILDREN:
             for (Widget *child : this->children) {
