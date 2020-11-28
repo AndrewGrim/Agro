@@ -23,19 +23,22 @@ Application::Application(const char* title, Size size) {
     }
 
     dc = new DrawingContext(this);
-    dc->quadRenderer->shader.setMatrix4("projection", glm::ortho(
+    dc->quadRenderer->shader.use();
+    dc->quadRenderer->shader.setMatrix4(
+        "projection", 
+        glm::ortho(
             0.0f, static_cast<float>(size.w),
             static_cast<float>(size.h), 0.0f,
             -1.0f, 1.0f
-        ), 
-        true
+        ) 
     );
-    dc->textRenderer->shader.setMatrix4("projection", glm::ortho(
+    dc->textRenderer->shader.setMatrix4(
+        "projection", 
+        glm::ortho(
             0.0f, static_cast<float>(size.w),
             static_cast<float>(size.h), 0.0f,
             -1.0f, 1.0f
-        ), 
-        true
+        ) 
     );
 }
 
@@ -45,19 +48,23 @@ Application::~Application() {
 }
 
 void Application::draw() {
-    dc->quadRenderer->shader.setMatrix4("projection", glm::ortho(
+    dc->quadRenderer->shader.use();
+    dc->quadRenderer->shader.setMatrix4(
+        "projection", 
+        glm::ortho(
             0.0f, static_cast<float>(this->m_size.w),
             static_cast<float>(this->m_size.h), 0.0f,
             -1.0f, 1.0f
-        ), 
-        true
+        ) 
     );
-    dc->textRenderer->shader.setMatrix4("projection", glm::ortho(
+    dc->textRenderer->shader.use();
+    dc->textRenderer->shader.setMatrix4(
+        "projection", 
+        glm::ortho(
             0.0f, static_cast<float>(this->m_size.w),
             static_cast<float>(this->m_size.h), 0.0f,
             -1.0f, 1.0f
-        ), 
-        true
+        ) 
     );
     this->dc->clear();
     this->main_widget->draw(this->dc, Rect(0, 0, this->m_size.w, this->m_size.h));
