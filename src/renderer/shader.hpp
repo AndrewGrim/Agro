@@ -17,7 +17,7 @@
         public:
             unsigned int ID;
 
-            Shader(const char *vertexPath, const char *fragmentPath) {
+            Shader(bool file, const char *vertexPath, const char *fragmentPath) {
                 std::string vertex_shader;
                 std::string fragment_shader;
                 std::ifstream vShaderFile;
