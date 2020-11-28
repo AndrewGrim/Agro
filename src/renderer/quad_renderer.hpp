@@ -27,7 +27,37 @@
         unsigned int count = 0;
         Vertex vertices[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
-        Shader shader = Shader("shaders/batch_colored_quad.glsl.vert", "shaders/batch_colored_quad.glsl.frag");
+        Shader shader = Shader(
+            "#version 330 core\n"
+            "layout (location = 0) in vec2 aPos;\n"
+            "layout (location = 1) in vec4 aColor;\n"
+            "layout (location = 2) in vec4 aRect;\n"
+            "\n"
+            "out vec4 vColor;\n"
+            "\n"
+            "uniform mat4 projection;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+                "mat4 model = mat4(\n"
+                    "vec4(aRect.z, 0.0, 0.0, 0.0),\n"
+                    "vec4(0.0, aRect.w, 0.0, 0.0),\n"
+                    "vec4(0.0, 0.0, 1.0, 0.0),\n"
+                    "vec4(aRect.x, aRect.y, 0.0, 1.0)\n"
+                ");\n"
+                "gl_Position = projection * model * vec4(aPos, 1.0, 1.0);\n"
+                "vColor = aColor;\n"
+            "}",
+            "#version 330 core\n"
+            "in vec4 vColor;\n"
+            "\n"
+            "out vec4 FragColor;\n"
+            "\n"
+            "void main()\n"
+            "{\n"
+                "FragColor = vColor;\n"
+            "}"
+        );
 
         QuadRenderer(unsigned int *indices);
         ~QuadRenderer();
