@@ -29,14 +29,33 @@
             /// will always fire in this order: Down, Up, Click
             /// furthermore the Click event will **ONLY** fire if
             /// both the target of Down and Up are the same.
-            ///
+            
             /// `onMouseDown` gets called when the user presses
             /// down **ANY** mouse button over the target Widget. 
             std::function<void(MouseEvent)> onMouseDown = nullptr;
+            
+            ///`onMouseUp` gets called when the user releases
+            /// **ANY** mouse button over the target Widget.
+            // TODO does this also get called when we release over a layout?? dont think so but check.
             std::function<void(MouseEvent)> onMouseUp = nullptr;
+
+            /// `onMouseClick` gets called whenver the user presses
+            /// down on a Widget and the releases the button over
+            /// the same Widget.
+            // TODO this will likely trigger when the mouse events come from different buttons
+            // i dont think that behaviour is very intuitive and so should be changed.
             std::function<void(MouseEvent)> onMouseClick = nullptr;
+
+            /// `onMouseLeft` get called whenever the mouse leaves
+            /// the area of the Widget.
             std::function<void(MouseEvent)> onMouseLeft = nullptr;
+
+            /// `onMouseEntered` get called whenever the mouse
+            /// enters the area of the Widget.
             std::function<void(MouseEvent)> onMouseEntered = nullptr;
+
+            /// `onMouseMotion` get called whenever the mouse moves
+            /// over the area of the Widget.
             std::function<void(MouseEvent)> onMouseMotion = nullptr; // TODO name it move instead?
 
             NewWidget() {};
@@ -85,7 +104,7 @@
 
             /// This method retrieves the Fill policy of the Widget.
             Fill fillPolicy();
-            
+
             void show(); // TODO not used at the moment, 
             // but i totally see them being useful, 
             // should probably use this information in layout 
