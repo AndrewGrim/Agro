@@ -18,8 +18,8 @@
             unsigned int ID;
 
             Shader(const char *vertexPath, const char *fragmentPath) {
-                std::string vertexCode;
-                std::string fragmentCode;
+                std::string vertex_shader;
+                std::string fragment_shader;
                 std::ifstream vShaderFile;
                 std::ifstream fShaderFile;
                 
@@ -37,24 +37,24 @@
                     vShaderFile.close();
                     fShaderFile.close();
                     
-                    vertexCode   = vShaderStream.str();
-                    fragmentCode = fShaderStream.str();
+                    vertex_shader = vShaderStream.str();
+                    fragment_shader = fShaderStream.str();
                 } catch (std::ifstream::failure e) {
                     println("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
                 }
+                compile(vertex_shader.c_str(), fragment_shader.c_str());
+            };
 
-                const char* vShaderCode = vertexCode.c_str();
-                const char * fShaderCode = fragmentCode.c_str();
-                
+            void compile(const char *vertext_shader, const char *fragment_shader) {
                 unsigned int vertex, fragment;
-                
+
                 vertex = glCreateShader(GL_VERTEX_SHADER);
-                glShaderSource(vertex, 1, &vShaderCode, NULL);
+                glShaderSource(vertex, 1, &vertext_shader, NULL);
                 glCompileShader(vertex);
                 checkCompileErrors(vertex, "VERTEX");
                 
                 fragment = glCreateShader(GL_FRAGMENT_SHADER);
-                glShaderSource(fragment, 1, &fShaderCode, NULL);
+                glShaderSource(fragment, 1, &fragment_shader, NULL);
                 glCompileShader(fragment);
                 checkCompileErrors(fragment, "FRAGMENT");
                 
@@ -66,7 +66,7 @@
                 
                 glDeleteShader(vertex);
                 glDeleteShader(fragment);
-            };
+            }
 
             void use() {
                 glUseProgram(ID);
