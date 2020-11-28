@@ -15,6 +15,7 @@ void Box::draw(DrawingContext *dc, Rect<float> rect) {
     this->rect = rect;
     dc->fillRect(rect, this->bg);
 
+    // TODO probably can remove this
     dc->render();
     glEnable(GL_SCISSOR_TEST);
         Size<int> window = ((Application*)this->m_app)->m_size;

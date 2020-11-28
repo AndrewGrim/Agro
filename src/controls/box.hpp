@@ -11,7 +11,7 @@
             Box(Align align_policy);
             ~Box();
             const char* name();
-            void draw(DrawingContext *dc, Rect<float> rect);
+            void draw(DrawingContext *dc, Rect<float> rect) override;
             void layout_children(DrawingContext *dc, Rect<float> rect);
             virtual Size<float> size_hint(DrawingContext *dc) override;
             Color background();

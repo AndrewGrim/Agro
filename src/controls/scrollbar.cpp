@@ -9,7 +9,7 @@ ScrollBar::ScrollBar(Align alignment, std::string text) {
     m_begin_button = new Button("<");
     m_begin_button->m_parent = this;
     m_begin_button->mouse_click_callback = [&](MouseEvent event) {
-        this->m_slider->m_value -= 0.05f; 
+        this->m_slider->m_value -= 0.05f; // TODO should be a customizable step
         if (this->m_slider->m_value < 0.0f) this->m_slider->m_value = 0.0f;
         if (this->m_app) ((Application*)this->m_app)->m_needs_update = true;
     };
