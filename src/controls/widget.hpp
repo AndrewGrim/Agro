@@ -194,7 +194,7 @@
             void* propagateMouseEvent(State *state, MouseEvent event);
 
             /// Handles the MouseEvent sent by the Application.
-            virtual void mouseEvent(State *state, MouseEvent event);
+            virtual void handleMouseEvent(State *state, MouseEvent event);
 
             /// Sets the Application* of the Widget and does the same
             /// for any of its children.
