@@ -173,20 +173,20 @@
             bool m_is_focused = false;
             bool m_is_visible = false;
             Fill m_fill_policy = Fill::None;
-            
+
             /// The parent* is mostly used by compound Widgets.
             Widget *m_parent = nullptr;
             
             /// Stores all the child Widgets of this Widget.
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
-            std::vector<Widget*> children;
+            std::vector<Widget*> m_children;
 
-            Color fg = Color();
-            Color bg = Color(1, 1, 1);
-            Color hover_bg = Color(0.8f, 0.8f, 0.8f); // i think these should be implemented
+            Color m_fg = Color();
+            Color m_bg = Color(1, 1, 1);
+            Color m_hover_bg = Color(0.8f, 0.8f, 0.8f); // i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
-            Color pressed_bg = Color(0.6f, 0.6f, 0.6f); // i think these should be implemented
+            Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
 
             /// Passes the event further down the Widget tree until
