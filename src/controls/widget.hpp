@@ -80,7 +80,7 @@
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
             /// end of the children dynamic array.
-            Widget* append(Widget* widget, Fill fill_policy);
+            Widget* append(Widget* widget, Fill fill_policy = Fill::None);
 
             /// This method is responsible for returning the minimum size
             /// for the widget.
