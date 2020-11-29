@@ -118,14 +118,11 @@
             
             bool isVisible();
             
-            virtual bool isLayout(); // TODO i'm not sure if this is the best way
-            // an alternative would be to use dynamic casts at runtime, but
-            // i think in this case the overriding would be better
+            /// Used to check if the Widget implements a Layout interface.
+            virtual bool isLayout() = 0;
             
-            virtual bool isScrollable(); // TODO i'm not sure if this is the best way
-            // an alternative would be to use dynamic casts at runtime, but
-            // i think in this case the overriding would be better
-            // TODO is enabled, this would ignore events when disabled, and have a different colour scheme
+            /// Used to check if the Widget implements a Scrollable interface.
+            virtual bool isScrollable() = 0;
             
             bool isHovered();
             void setHovered(bool hover);
