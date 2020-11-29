@@ -6,6 +6,7 @@
 #include "app.hpp"
 #include "controls/widget.hpp"
 #include "controls/new_widget.hpp"
+#include "option.hpp"
 // #include "controls/box.hpp"
 // #include "controls/button.hpp"
 // #include "controls/slider.hpp"
