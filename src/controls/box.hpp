@@ -19,12 +19,6 @@
             virtual bool isLayout() override;
 
         protected:
-            // TODO the color variables likely need to go into the constructor
-            // because if we dont override the getter for them they will return
-            // the base class variables
-            Color m_fg = Color();
-            Color m_bg = Color(0.50f, 0.50f, 0.50f);
-
             /// Align policy dictates in on which axis
             /// the child Widgets will be layed out
             Align m_align_policy;
