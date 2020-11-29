@@ -11,7 +11,6 @@
     #include "../common/size.hpp"
     #include "../common/color.hpp"
     #include "../renderer/drawing_context.hpp"
-    #include "../option.hpp"
 
     class Widget {
         public:
