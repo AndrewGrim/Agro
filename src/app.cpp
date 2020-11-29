@@ -27,23 +27,6 @@ Application::Application(const char* title, Size size) {
     }
 
     dc = new DrawingContext(this);
-    dc->quadRenderer->shader.use();
-    dc->quadRenderer->shader.setMatrix4(
-        "projection", 
-        glm::ortho(
-            0.0f, static_cast<float>(size.w),
-            static_cast<float>(size.h), 0.0f,
-            -1.0f, 1.0f
-        ) 
-    );
-    dc->textRenderer->shader.setMatrix4(
-        "projection", 
-        glm::ortho(
-            0.0f, static_cast<float>(size.w),
-            static_cast<float>(size.h), 0.0f,
-            -1.0f, 1.0f
-        ) 
-    );
 }
 
 Application::~Application() {
