@@ -11,8 +11,8 @@ Widget::~Widget() {
 
 Widget* Widget::append(Widget* widget, Fill fill_policy) {
     widget->setFillPolicy(fill_policy);
-    this->m_children.push_back(widget);
-    if (this->m_app) widget->m_app = this->m_app;
+    this->children.push_back(widget);
+    if (this->app) widget->app = this->app;
 
     return this;
 }
@@ -108,21 +108,10 @@ void Widget::setFocused(bool focused) {
     }
 }
 
-// TODO try to change this to application* explicitly.
 void Widget::update() {
-    Option<void*> result = this->app();
-    switch (result.type) {
-        case Option<void*>::Type::Some:
-            ((Application*)result.value)->m_needs_update = true; // TODO this should be either update or needUpdate in Application
-            break;
+    if (this->app) {
+        ((Application*)this->app)->update();
     }
-}
-
-Option<void*> Widget::app() {
-    if (this->m_app) {
-        return Option<void*>(this->m_app);
-    }
-    return Option<void*>();
 }
 
 void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
@@ -141,7 +130,7 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         //     }
         // }
     }
-    for (Widget *child : this->m_children) {
+    for (Widget *child : this->children) {
         if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
             (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
             void *last = nullptr;
@@ -173,14 +162,14 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
             ((Widget*)state->pressed)->onMouseMotion(event);
         }
     }
-    ((Application*)this->m_app)->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted);
+    ((Application*)this->app)->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted);
     return nullptr;
 }
 
 void Widget::handleMouseEvent(State *state, MouseEvent event) {
     // TODO when the mouse moves outside the window
     // hovered and pressed should be reset
-    Application *app = (Application*)this->m_app;
+    Application *app = (Application*)this->app;
     switch (event.type) {
         case MouseEvent::Type::Down:
             if (state->pressed) {
@@ -247,8 +236,8 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
 }
 
 void Widget::attachApp(void *app) {
-    for (Widget *child : this->m_children) {
-        child->m_app = app;
+    for (Widget *child : this->children) {
+        child->app = app;
         child->attachApp(app);
     }
 }
