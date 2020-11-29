@@ -17,9 +17,11 @@ void Box::draw(DrawingContext *dc, Rect rect) {
     dc->fillRect(rect, this->background());
 
     // TODO probably can remove this, need to double check
+    // as in the scissor test
+    // actually maybe not because we would draw one over the viewport?
     dc->render();
     glEnable(GL_SCISSOR_TEST);
-        Size window = ((Application*)this->m_app)->m_size;
+        Size window = ((Application*)this->app)->m_size;
         glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
         layoutChildren(dc, rect);
         dc->render();
@@ -27,6 +29,8 @@ void Box::draw(DrawingContext *dc, Rect rect) {
 }
 
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
+    // TODO simplify the code branches here, and double check if scissor test is needed, i think it is
+    // also dont relayout children if the app layout hasnt changed?
     int non_expandable_widgets = 0;
     Size total_children_size;
     Align parent_layout = this->alignPolicy();
@@ -88,7 +92,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 } else {
                     DRAW_VERTICAL:
                         child->draw(dc, widget_rect);
-                        if (pos.y > ((Application*)this->m_app)->m_size.h) break;
+                        if (pos.y > ((Application*)this->app)->m_size.h) break;
                 }
                 pos.y += size.h;
             }
@@ -132,7 +136,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 } else {
                     DRAW_HORIZONTAL:
                         child->draw(dc, widget_rect);
-                        if (pos.x > ((Application*)this->m_app)->m_size.w) break;
+                        if (pos.x > ((Application*)this->app)->m_size.w) break;
                 }
                 pos.x += size.w;
             }
