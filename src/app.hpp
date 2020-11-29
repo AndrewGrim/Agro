@@ -11,8 +11,9 @@
     #include "state.hpp"
     #include "common/color.hpp"
     #include "common/size.hpp"
+    #include "common/align.hpp"
     #include "controls/widget.hpp"
-    // #include "controls/box.hpp"
+    #include "controls/box.hpp"
     // #include "controls/scrolledbox.hpp"
     #include "renderer/drawing_context.hpp"
     
@@ -97,7 +98,7 @@
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
             // Widget *main_widget = new ScrolledBox(Align::Vertical);
-            Widget *m_main_widget = nullptr; // TODO might break stuff, implement Box at least
+            Widget *m_main_widget = new Box(Align::Vertical); // TODO might break stuff, implement Box at least
             State *m_state = new State();
             bool m_needs_update = false;
             bool m_layout_changed = true;
