@@ -75,6 +75,10 @@ void Application::draw() {
     this->dc->render();
 }
 
+Widget* Application::mainWidget() {
+    return this->m_main_widget;
+}
+
 void Application::setMainWidget(Widget *widget) {
     this->m_main_widget = widget;
 }
