@@ -115,6 +115,12 @@ void Widget::update() {
     }
 }
 
+void Widget::layout() {
+    if (this->app) {
+        ((Application*)this->app)->layout();
+    }
+}
+
 void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
     if (this->isScrollable()) {
         // ScrolledBox *self = (ScrolledBox*)this;

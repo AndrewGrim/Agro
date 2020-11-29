@@ -159,6 +159,10 @@ void Application::update() {
     this->m_needs_update = true;
 }
 
+void Application::layout() {
+    this->m_layout_changed = true;
+}
+
 bool Application::hasLayoutChanged() {
     return this->m_layout_changed;
 }
