@@ -1,37 +1,38 @@
-#include "../app.hpp"
 #include "box.hpp"
+#include "../common/point.hpp"
+#include "../app.hpp"
 
 Box::Box(Align align_policy) {
     this->m_align_policy = align_policy;
+    Widget::m_fg = Color();
+    Widget::m_bg = Color(0.50f, 0.50f, 0.50f);
 }
 
-Box::~Box() {}
+Box::~Box() {
 
-const char* Box::name() {
-    return this->m_name;
 }
 
-void Box::draw(DrawingContext *dc, Rect<float> rect) {
+void Box::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    dc->fillRect(rect, this->bg);
+    dc->fillRect(rect, this->background());
 
-    // TODO probably can remove this
+    // TODO probably can remove this, need to double check
     dc->render();
     glEnable(GL_SCISSOR_TEST);
-        Size<int> window = ((Application*)this->m_app)->m_size;
+        Size window = ((Application*)this->m_app)->m_size;
         glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
-        layout_children(dc, rect);
+        layoutChildren(dc, rect);
         dc->render();
     glDisable(GL_SCISSOR_TEST);
 }
 
-void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
+void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     int non_expandable_widgets = 0;
-    Size<float> total_children_size;
-    Align parent_layout = this->m_align_policy;
+    Size total_children_size;
+    Align parent_layout = this->alignPolicy();
     for (Widget* child : this->children) {
-        Size<float> child_size = child->size_hint(dc);
-        Fill child_layout = child->fill_policy();
+        Size child_size = child->sizeHint(dc);
+        Fill child_layout = child->fillPolicy();
         if (parent_layout == Align::Vertical) {
             if (child_layout == Fill::Horizontal || child_layout == Fill::None) {
                 non_expandable_widgets += 1;
@@ -47,38 +48,38 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
 
     int child_count = this->children.size() - non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
-    Point<float> pos = Point<float>(rect.x, rect.y);
+    Point pos = Point(rect.x, rect.y);
     switch (parent_layout) {
         case Align::Vertical: {
             float available_height = rect.h;
             float expandable_height = (available_height - total_children_size.h) / child_count;
             if (expandable_height < 0) expandable_height = 0;
             for (Widget* child : this->children) {
-                Size<float> size;
-                Size<float> child_hint = child->size_hint(dc);
-                switch (child->fill_policy()) {
+                Size size;
+                Size child_hint = child->sizeHint(dc);
+                switch (child->fillPolicy()) {
                     case Fill::Both: {
-                        size = Size<float> { 
+                        size = Size { 
                             rect.w > child_hint.w ? rect.w : child_hint.w, 
                             child_hint.h + expandable_height
                         };
                         break;
                     }
                     case Fill::Vertical: {
-                        size = Size<float> { 
+                        size = Size { 
                             child_hint.w, 
                             child_hint.h + expandable_height
                         };
                         break;
                     }
                     case Fill::Horizontal:
-                        size = Size<float> { rect.w > child_hint.w ? rect.w : child_hint.w, child_hint.h };
+                        size = Size { rect.w > child_hint.w ? rect.w : child_hint.w, child_hint.h };
                         break;
                     case Fill::None:
                     default:
                         size = child_hint;
                 }
-                Rect<float> widget_rect = Rect<float>(pos.x, pos.y, size.w, size.h);
+                Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
                 if (pos.y < 0) {
                     if (pos.y + size.h < 0) {
                         child->rect = widget_rect;
@@ -98,21 +99,21 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
             float expandable_width = (available_width - total_children_size.w) / child_count;
             if (expandable_width < 0) expandable_width = 0;
             for (Widget* child : this->children) {
-                Size<float> size;
-                Size<float> child_hint = child->size_hint(dc);
-                switch (child->fill_policy()) {
+                Size size;
+                Size child_hint = child->sizeHint(dc);
+                switch (child->fillPolicy()) {
                     case Fill::Both: {
-                        size = Size<float> { 
+                        size = Size { 
                             child_hint.w + expandable_width, 
                             rect.h > child_hint.h ? rect.h : child_hint.h
                         };
                         break;
                     }
                     case Fill::Vertical:
-                        size = Size<float> { child_hint.w, rect.h > child_hint.h ? rect.h : child_hint.h };
+                        size = Size { child_hint.w, rect.h > child_hint.h ? rect.h : child_hint.h };
                         break;
                     case Fill::Horizontal: {
-                        size = Size<float> { 
+                        size = Size { 
                             child_hint.w + expandable_width, 
                             child_hint.h
                         };
@@ -122,7 +123,7 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
                     default:
                         size = child_hint;
                 }
-                Rect<float> widget_rect = Rect<float>(pos.x, pos.y, size.w, size.h);
+                Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
                 if (pos.x < 0) {
                     if (pos.x + size.w < 0) {
                         child->rect = widget_rect;
@@ -140,12 +141,12 @@ void Box::layout_children(DrawingContext *dc, Rect<float> rect) {
     }
 }
 
-Size<float> Box::size_hint(DrawingContext *dc) {
-    if (this->size_changed || ((Application*)this->m_app)->m_layout_changed) {
-        Size<float> size = Size<float> { 0, 0 };
+Size Box::sizeHint(DrawingContext *dc) {
+    if (this->m_size_changed) {
+        Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {
             for (Widget* child : this->children) {
-                Size<float> s = child->size_hint(dc);
+                Size s = child->sizeHint(dc);
                 size.w += s.w;
                 if (s.h > size.h) {
                     size.h = s.h;
@@ -153,7 +154,7 @@ Size<float> Box::size_hint(DrawingContext *dc) {
             }
         } else {
             for (Widget* child : this->children) {
-                Size<float> s = child->size_hint(dc);
+                Size s = child->sizeHint(dc);
                 size.h += s.h;
                 if (s.w > size.w) {
                     size.w = s.w;
@@ -161,7 +162,7 @@ Size<float> Box::size_hint(DrawingContext *dc) {
             }
         }
         this->m_size = size;
-        this->size_changed = false;
+        this->m_size_changed = false;
 
         return size;
     } else {
@@ -169,17 +170,15 @@ Size<float> Box::size_hint(DrawingContext *dc) {
     }
 }
 
-Color Box::background() {
-    return this->bg;
-}
-
-Box* Box::set_background(Color background) {
-    this->bg = background;
-    this->update();
+Box* Box::setBackground(Color background) {
+    if (Widget::m_bg != background) {
+        Widget::m_bg = background;
+        this->update();
+    }
 
     return this;
 }
 
-bool Box::is_layout() {
+bool Box::isLayout() {
     return true;
 }
