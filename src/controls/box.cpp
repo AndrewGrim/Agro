@@ -179,6 +179,28 @@ Box* Box::setBackground(Color background) {
     return this;
 }
 
+
+Box* Box::setForeground(Color foreground) {
+    if (Widget::m_fg != foreground) {
+        Widget::m_fg = foreground;
+        this->update();
+    }
+
+    return this;
+}
+
 bool Box::isLayout() {
     return true;
+}
+
+bool Box::isScrollable() {
+    return false;
+}
+
+const char* Box::name() {
+    return "Box";
+}
+
+Align Box::alignPolicy() {
+    return this->m_align_policy;
 }
