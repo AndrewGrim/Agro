@@ -107,13 +107,13 @@
             virtual Size sizeHint(DrawingContext *dc) = 0;
 
             /// Returns the background Color of the Widget.
-            virtual Color background();
+            Color background();
             
             /// Sets the background Color of the Widget.
             virtual Widget* setBackground(Color background);
 
             /// Returns the foreground Color of the Widget.
-            virtual Color foreground();
+            Color foreground();
             
             /// Sets the foreground Color of the Widget.
             virtual Widget* setForeground(Color foreground);
