@@ -189,11 +189,20 @@
             bool m_is_visible = false;
             Fill m_fill_policy = Fill::None;
 
+            /// The precomputed sizeHint of the Widget.
+            /// Returned when nothing changed that would
+            /// invalidate the sizeHint() calculation.
+            Size m_size = Size();
+
+            /// Stores whether the sizeHint() calculation 
+            /// needs to be recomputed.
+            bool m_size_changed = true;
+
             Color m_fg = Color();
             Color m_bg = Color(1, 1, 1);
-            Color m_hover_bg = Color(0.8f, 0.8f, 0.8f); // i think these should be implemented
+            Color m_hover_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
-            Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // i think these should be implemented
+            Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
 
             /// Handles the MouseEvent sent by the Application.
