@@ -22,5 +22,10 @@ The exception would be if you're using braces purely to create a specific scope.
 All if statements and all loops should **ALWAYS** have braces even if the body
 contains only one statement.
 
+## General
 All language keywords should be followed by a single space ` ` even if not stricly required.
 Like in a loop `for () {` or an if `if () {` or ` void func() override {`.
+
+Accessing a member function or variables should always be prefaced with `this`.
+
+TODO provide code examples
