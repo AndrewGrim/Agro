@@ -160,11 +160,11 @@ Widget* Application::append(Widget* widget, Fill fill_policy) {
     return this->m_main_widget;
 }
 
-std::pair<Application::Event, Application::EventHandler> lastEvent() {
+std::pair<Application::Event, Application::EventHandler> Application::lastEvent() {
     return this->m_last_event;
 }
 
-void setLastEvent(std::pair<Application::Event, Application::EventHandler> event) {
+void Application::setLastEvent(std::pair<Application::Event, Application::EventHandler> event) {
     this->m_last_event = event;
 }
 
