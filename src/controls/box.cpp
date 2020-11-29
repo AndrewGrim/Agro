@@ -4,8 +4,7 @@
 
 Box::Box(Align align_policy) {
     this->m_align_policy = align_policy;
-    Widget::m_fg = Color();
-    Widget::m_bg = Color(0.50f, 0.50f, 0.50f);
+    Widget::m_bg = Color(0.5, 0.5, 0.5);
 }
 
 Box::~Box() {
