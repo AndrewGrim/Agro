@@ -146,7 +146,9 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
 }
 
 Size Box::sizeHint(DrawingContext *dc) {
-    if (this->m_size_changed) {
+    // `hasLayoutChanged()` is necessary here because the Box won't know
+    // that it's sizeHint() needs to be recalculated because of it's children.
+    if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
         Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {
             for (Widget* child : this->children) {
