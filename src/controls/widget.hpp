@@ -59,8 +59,11 @@
             /// over the area of the Widget.
             std::function<void(MouseEvent)> onMouseMotion = nullptr; // TODO name it move instead?
 
-            Widget() {};
-            virtual ~Widget() {};
+            /// The constructor is empty.
+            Widget();
+
+            /// The destructor is empty.
+            virtual ~Widget();
 
             /// This method should return the name of the widget
             /// in `CamelCase`.
@@ -91,13 +94,19 @@
             // TODO note about performance and avoiding recomputing the sizeHint
             // unless something has changed
             virtual Size sizeHint(DrawingContext *dc) = 0;
-            virtual Color background();
-            virtual Widget* setBackground(Color background);
-            virtual Color hoverBackground();
-            virtual Widget* setHoverBackground(Color background);
-            virtual Color pressedBackground();
-            virtual Widget* setPressedBackground(Color background);
 
+            /// Returns the background Color of the Widget.
+            virtual Color background();
+            
+            /// Sets the background Color of the Widget.
+            virtual Widget* setBackground(Color background);
+
+            /// Returns the foreground Color of the Widget.
+            virtual Color foreground();
+            
+            /// Sets the foreground Color of the Widget.
+            virtual Widget* setForeground(Color foreground);
+            
             /// This method sets the Fill policy of the Widget.
             /// Fill dicates how the Widget will expand.
             /// Options are: None, Horizontal, Vertical and Both.
@@ -124,11 +133,31 @@
             /// Used to check if the Widget implements a Scrollable interface.
             virtual bool isScrollable() = 0;
             
+            /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
+
+            /// Sets whether the Widget is currently hovered or not.
+            /// To avoid unecessary redraws it first checks if the new
+            /// value is the same as the one stored in the Widget
+            /// and if its not it will call update().
             void setHovered(bool hover);
+
+            /// Returns whether the Widget is currently pressed or not.
             bool isPressed();
+
+            /// Sets whether the Widget is currently pressed or not.
+            /// To avoid unecessary redraws it first checks if the new
+            /// value is the same as the one stored in the Widget
+            /// and if its not it will call update().
             void setPressed(bool pressed);
+
+            /// Returns whether the Widget is currently focused or not.
             bool isFocused();
+
+            /// Sets whether the Widget is currently focused or not.
+            /// To avoid unecessary redraws it first checks if the new
+            /// value is the same as the one stored in the Widget
+            /// and if its not it will call update().
             void setFocused(bool focused);
 
             /// Tells the Application that it needs to redraw.
@@ -138,22 +167,27 @@
             Option<void*> app();
 
         protected:
-            void *m_app = nullptr; // add accessor function using option?
+            void *m_app = nullptr;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             bool m_is_focused = false;
             bool m_is_visible = false;
-            Widget *m_parent = nullptr; // parent is absolutely used by compound widgets, like scrollbar
-            bool size_changed = true; // definitely used, could be widget specific like min_size?
+            Fill m_fill_policy = Fill::None;
+            
+            /// The parent* is mostly used by compound Widgets.
+            Widget *m_parent = nullptr;
+            
+            /// Stores all the child Widgets of this Widget.
+            /// Its not meant to be interacted with directly but
+            /// rather through methods like append().
             std::vector<Widget*> children;
 
             Color fg = Color();
             Color bg = Color(1, 1, 1);
             Color hover_bg = Color(0.8f, 0.8f, 0.8f); // i think these should be implemented
-            // as an altered fg, bg color?
+            // as an altered fg, bg color? dynamic i mean
             Color pressed_bg = Color(0.6f, 0.6f, 0.6f); // i think these should be implemented
-            // as an altered fg, bg color?
-            Fill m_fill_policy = Fill::None;
+            // as an altered fg, bg color? dynamic i mean
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
