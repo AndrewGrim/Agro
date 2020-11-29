@@ -87,6 +87,9 @@
             /// Tells the Application to recompute its layout.
             void layout();
 
+            /// Returns whether the Application layout has been invalidated.
+            bool hasLayoutChanged();
+
             /// Starts the Application, calls `onReady` and enters the event loop.
             void run();
 

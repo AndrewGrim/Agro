@@ -171,3 +171,7 @@ void Application::setLastEvent(std::pair<Application::Event, Application::EventH
 void Application::update() {
     this->m_needs_update = true;
 }
+
+bool Application::hasLayoutChanged() {
+    return this->m_layout_changed;
+}
