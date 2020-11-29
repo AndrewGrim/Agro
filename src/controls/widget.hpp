@@ -137,12 +137,8 @@
             /// Tells the Application that it needs to redraw.
             void update();
 
-            Option<void*> app() {
-                if (this->m_app) {
-                    return Option<void*>(this->m_app);
-                }
-                return Option<void*>();
-            }
+            /// Returns the Application* if its been set.
+            Option<void*> app();
 
         protected:
             void *m_app = nullptr; // add accessor function using option?
