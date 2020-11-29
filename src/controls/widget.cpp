@@ -162,7 +162,7 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
             ((Widget*)state->pressed)->onMouseMotion(event);
         }
     }
-    ((Application*)this->app)->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted);
+    ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted));
     return nullptr;
 }
 
@@ -183,7 +183,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             state->focused = (void*)this;
             // TODO maybe add an on_focus callback?
             if (this->onMouseDown) this->onMouseDown(event);
-            app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted);;
+            app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted));
             break;
         case MouseEvent::Type::Up:
             if (state->pressed) {
@@ -193,10 +193,10 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             this->setHovered(true);
             state->hovered = this;
             if (this->onMouseUp) this->onMouseUp(event);
-            app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseUp, Application::EventHandler::Accepted);
+            app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseUp, Application::EventHandler::Accepted));
             if (this == state->pressed) {
                 if (this->onMouseClick) this->onMouseClick(event);
-                app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseClick, Application::EventHandler::Accepted);
+                app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseClick, Application::EventHandler::Accepted));
             }
             state->pressed = nullptr;
             break;
@@ -230,7 +230,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                     ((Widget*)state->pressed)->onMouseMotion(event);
                 }
             }
-            app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseMotion, Application::EventHandler::Accepted);;
+            app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseMotion, Application::EventHandler::Accepted));
             break;
     }
 }
