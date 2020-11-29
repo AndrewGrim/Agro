@@ -1,133 +1,132 @@
-#include <chrono>
-
-#include "../app.hpp"
 #include "widget.hpp"
+#include "../app.hpp"
 
-Widget::Widget() {}
+Widget::Widget() {
 
-Widget::~Widget() {}
-
-const char* Widget::name() {
-    return this->m_name;
 }
 
-void Widget::draw(DrawingContext *dc, Rect rect) {}
+Widget::~Widget() {
+
+}
 
 Widget* Widget::append(Widget* widget, Fill fill_policy) {
-    widget->set_fill_policy(fill_policy);
-    this->children.push_back(widget);
+    widget->setFillPolicy(fill_policy);
+    this->m_children.push_back(widget);
     if (this->m_app) widget->m_app = this->m_app;
 
     return this;
 }
 
-Size Widget::size_hint(DrawingContext *dc) {
-    return Size(0, 0); 
-}
 
 Color Widget::background() {
-    return this->bg;
+    return this->m_bg;
 }
 
-Widget* Widget::set_background(Color background) {
-    this->bg = background;
-    this->update();
+Widget* Widget::setBackground(Color background) {
+    if (this->m_bg != background) {
+        this->m_bg = background;
+        this->update();
+    }
 
     return this;
 }
 
-Color Widget::hover_background() {
-    return this->hover_bg;
+Color Widget::foreground() {
+    return this->m_fg;
 }
 
-Widget* Widget::set_hover_background(Color background) {
-    this->hover_bg = background;
-    this->update();
+Widget* Widget::setForeground(Color foreground) {
+    if (this->m_fg != foreground) {
+        this->m_fg = foreground;
+        this->update();
+    }
 
     return this;
 }
 
-Color Widget::pressed_background() {
-    return this->pressed_bg;
-}
-
-Widget* Widget::set_pressed_background(Color background) {
-    this->pressed_bg = background;
-    this->update();
+Widget* Widget::setFillPolicy(Fill fill_policy) {
+    if (this->m_fill_policy != fill_policy) {
+        this->m_fill_policy = fill_policy;
+        this->update();
+    }
 
     return this;
 }
 
-Widget* Widget::set_fill_policy(Fill fill_policy) {
-    this->m_fill_policy = fill_policy;
-
-    return this;
-}
-
-Fill Widget::fill_policy() {
+Fill Widget::fillPolicy() {
     return this->m_fill_policy;
 }
 
 void Widget::show() {
-    this->m_is_visible = true;
+    if (!this->m_is_visible) {
+        this->m_is_visible = true;
+        this->update();
+    }
 }
 
 void Widget::hide() {
-    this->m_is_visible = false;
+    if (this->m_is_visible) {
+        this->m_is_visible = false;
+        this->update();
+    }
 }
 
-bool Widget::is_visible() {
+bool Widget::isVisible() {
     return this->m_is_visible;
 }
 
-bool Widget::is_layout() {
-    return false;
-}
-
-bool Widget::is_scrollable() {
-    return false;
-}
-
-bool Widget::is_hovered() {
+bool Widget::isHovered() {
     return this->m_is_hovered;
 }
 
-void Widget::set_hovered(bool hover) {
-    if (hover != this->m_is_hovered) {
+void Widget::setHovered(bool hover) {
+    if (this->m_is_hovered != hover) {
         this->m_is_hovered = hover;
         this->update();
     }
 }
 
-bool Widget::is_pressed() {
+bool Widget::isPressed() {
     return this->m_is_pressed;
 }
 
-void Widget::set_pressed(bool pressed) {
-    if (pressed != this->m_is_pressed) {
+void Widget::setPressed(bool pressed) {
+    if (this->m_is_pressed != pressed) {
         this->m_is_pressed = pressed;
         this->update();
     }
 }
 
-bool Widget::is_focused() {
+bool Widget::isFocused() {
     return this->m_is_focused;
 }
 
-void Widget::set_focused(bool focused) {
-    if (focused != this->m_is_focused) {
+void Widget::setFocused(bool focused) {
+    if (this->m_is_focused != focused) {
         this->m_is_focused = focused;
         this->update();
     }
 }
 
+// TODO try to change this to application* explicitly.
 void Widget::update() {
-    if (this->m_app) ((Application*)this->m_app)->m_needs_update = true;
+    Option<void*> result = this->app();
+    switch (result.type) {
+        case Option<void*>::Type::Some:
+            ((Application*)result.value)->m_needs_update = true; // TODO this should be either update or needUpdate in Application
+            break;
+    }
 }
 
-void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
-    // TODO make a widget focused if its clicked on, focus should call update
-    if (this->is_scrollable()) {
+Option<void*> Widget::app() {
+    if (this->m_app) {
+        return Option<void*>(this->m_app);
+    }
+    return Option<void*>();
+}
+
+void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
+    if (this->isScrollable()) {
         // ScrolledBox *self = (ScrolledBox*)this;
         // if (self->m_vertical_scrollbar) {
         //     if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
@@ -141,76 +140,73 @@ void* Widget::propagate_mouse_event(State *state, MouseEvent event) {
         //         return (void*)self->m_horizontal_scrollbar->propagate_mouse_event(state, event);
         //     }
         // }
-        // goto CHILDREN;
-    } else { // TODO this probably doesnt need a goto leave the if but remove the else
-        CHILDREN:
-            for (Widget *child : this->children) {
-                if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
-                    (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
-                    void *last = nullptr;
-                    if (child->is_layout()) {
-                        last = (void*)child->propagate_mouse_event(state, event);
-                    } else {
-                        child->mouse_event(state, event);
-                        last = (void*)child;
-                    }
-                    return last;
-                }
+    }
+    for (Widget *child : this->m_children) {
+        if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+            (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+            void *last = nullptr;
+            if (child->isLayout()) {
+                last = (void*)child->propagateMouseEvent(state, event);
+            } else {
+                child->handleMouseEvent(state, event);
+                last = (void*)child;
             }
+            return last;
+        }
     }
 
     if (event.type == MouseEvent::Type::Up && state->pressed) {
-        ((Widget*)state->pressed)->set_pressed(false);
-        ((Widget*)state->pressed)->set_hovered(false);
+        ((Widget*)state->pressed)->setPressed(false);
+        ((Widget*)state->pressed)->setHovered(false);
         state->hovered = nullptr;
         state->pressed = nullptr;
     }
     if (event.type == MouseEvent::Type::Motion && state->hovered) {
-        ((Widget*)state->hovered)->set_hovered(false);
-        if (((Widget*)state->hovered)->mouse_left_callback) {
-            ((Widget*)state->hovered)->mouse_left_callback(event);
+        ((Widget*)state->hovered)->setHovered(false);
+        if (((Widget*)state->hovered)->onMouseLeft) {
+            ((Widget*)state->hovered)->onMouseLeft(event);
         }
         state->hovered = nullptr;
     }
     if (event.type == MouseEvent::Type::Motion && state->pressed) {
-        if (((Widget*)state->pressed)->mouse_motion_callback) {
-            ((Widget*)state->pressed)->mouse_motion_callback(event);
+        if (((Widget*)state->pressed)->onMouseMotion) {
+            ((Widget*)state->pressed)->onMouseMotion(event);
         }
     }
     ((Application*)this->m_app)->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted);
     return nullptr;
 }
 
-void Widget::mouse_event(State *state, MouseEvent event) {
-    // TODO when the user clicks outside the window
+void Widget::handleMouseEvent(State *state, MouseEvent event) {
+    // TODO when the mouse moves outside the window
     // hovered and pressed should be reset
     Application *app = (Application*)this->m_app;
     switch (event.type) {
         case MouseEvent::Type::Down:
             if (state->pressed) {
-                ((Widget*)state->pressed)->set_pressed(false);
+                ((Widget*)state->pressed)->setPressed(false);
             }
-            this->set_pressed(true);
+            this->setPressed(true);
             if (state->focused) {
-                ((Widget*)state->focused)->set_focused(false);
+                ((Widget*)state->focused)->setFocused(false);
             }
-            this->set_focused(true);
+            this->setFocused(true);
             state->focused = (void*)this;
             // TODO maybe add an on_focus callback?
-            if (this->mouse_down_callback) this->mouse_down_callback(event);
+            if (this->onMouseDown) this->onMouseDown(event);
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted);;
             break;
         case MouseEvent::Type::Up:
             if (state->pressed) {
-                ((Widget*)state->pressed)->set_pressed(false);
-                ((Widget*)state->pressed)->set_hovered(false);
+                ((Widget*)state->pressed)->setPressed(false);
+                ((Widget*)state->pressed)->setHovered(false);
             }
-            this->set_hovered(true);
+            this->setHovered(true);
             state->hovered = this;
-            if (this->mouse_up_callback) this->mouse_up_callback(event);
+            if (this->onMouseUp) this->onMouseUp(event);
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseUp, Application::EventHandler::Accepted);
             if (this == state->pressed) {
-                if (this->mouse_click_callback) this->mouse_click_callback(event);
+                if (this->onMouseClick) this->onMouseClick(event);
                 app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseClick, Application::EventHandler::Accepted);
             }
             state->pressed = nullptr;
@@ -219,30 +215,30 @@ void Widget::mouse_event(State *state, MouseEvent event) {
             if (!state->pressed) {
                 if (state->hovered) {
                     if (this != state->hovered) {
-                        ((Widget*)state->hovered)->set_hovered(false);
-                        if (((Widget*)state->hovered)->mouse_left_callback) {
-                            ((Widget*)state->hovered)->mouse_left_callback(event);
+                        ((Widget*)state->hovered)->setHovered(false);
+                        if (((Widget*)state->hovered)->onMouseLeft) {
+                            ((Widget*)state->hovered)->onMouseLeft(event);
                         }
-                        this->set_hovered(true);
-                        if (this->mouse_entered_callback) {
-                            this->mouse_entered_callback(event);
+                        this->setHovered(true);
+                        if (this->onMouseEntered) {
+                            this->onMouseEntered(event);
                         }
                     }
                 } else {
-                    this->set_hovered(true);
-                    if (this->mouse_entered_callback) {
-                        this->mouse_entered_callback(event);
+                    this->setHovered(true);
+                    if (this->onMouseEntered) {
+                        this->onMouseEntered(event);
                     }
                 }
-                if (this->mouse_motion_callback) this->mouse_motion_callback(event);
+                if (this->onMouseMotion) this->onMouseMotion(event);
             } else {
                 if (state->pressed == state->hovered) {
-                    ((Widget*)state->pressed)->set_hovered(true);
+                    ((Widget*)state->pressed)->setHovered(true);
                 } else {
-                    ((Widget*)state->pressed)->set_hovered(false);
+                    ((Widget*)state->pressed)->setHovered(false);
                 }
-                if (((Widget*)state->pressed)->mouse_motion_callback) {
-                    ((Widget*)state->pressed)->mouse_motion_callback(event);
+                if (((Widget*)state->pressed)->onMouseMotion) {
+                    ((Widget*)state->pressed)->onMouseMotion(event);
                 }
             }
             app->m_last_event = std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseMotion, Application::EventHandler::Accepted);;
@@ -250,9 +246,9 @@ void Widget::mouse_event(State *state, MouseEvent event) {
     }
 }
 
-void Widget::attach_app(void *app) {
-    for (Widget *child : this->children) {
+void Widget::attachApp(void *app) {
+    for (Widget *child : this->m_children) {
         child->m_app = app;
-        child->attach_app(app);
+        child->attachApp(app);
     }
 }
