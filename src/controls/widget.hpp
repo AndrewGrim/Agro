@@ -182,7 +182,6 @@
             virtual void attachApp(void *app);
 
         protected:
-            void *m_app = nullptr;
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             bool m_is_focused = false;
