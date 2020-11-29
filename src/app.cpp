@@ -1,10 +1,14 @@
+#include <iostream>
+
+#include <glad/glad.h>
+
 #include "app.hpp"
 
 Application::Application(const char* title, Size size) {
     this->m_size = size;
 
     SDL_Init(SDL_INIT_VIDEO);
-    this->win = SDL_CreateWindow(
+    this->m_win = SDL_CreateWindow(
         title, 
         SDL_WINDOWPOS_CENTERED, 
         SDL_WINDOWPOS_CENTERED, 
@@ -15,8 +19,8 @@ Application::Application(const char* title, Size size) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    sdl_context = SDL_GL_CreateContext(this->win);
-    SDL_GL_MakeCurrent(this->win, this->sdl_context);
+    m_sdl_context = SDL_GL_CreateContext(this->m_win);
+    SDL_GL_MakeCurrent(this->m_win, this->m_sdl_context);
     SDL_GL_SetSwapInterval(0);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         println("Failed to initialize GLAD");
@@ -44,7 +48,7 @@ Application::Application(const char* title, Size size) {
 
 Application::~Application() {
     // TODO recursively delete
-    delete main_widget;
+    delete m_main_widget;
 }
 
 void Application::draw() {
@@ -67,38 +71,34 @@ void Application::draw() {
         ) 
     );
     this->dc->clear();
-    this->main_widget->draw(this->dc, Rect(0, 0, this->m_size.w, this->m_size.h));
+    this->m_main_widget->draw(this->dc, Rect(0, 0, this->m_size.w, this->m_size.h));
     this->dc->render();
 }
 
-void Application::set_main_widget(Widget *widget) {
-    this->main_widget = widget;
+void Application::setMainWidget(Widget *widget) {
+    this->m_main_widget = widget;
 }
 
 void Application::show() {
     this->draw();
-    this->dc->swap_buffer(this->win);
-}
-
-int Application::next_id() {
-    return this->id_counter++;
+    this->dc->swap_buffer(this->m_win);
 }
 
 void Application::run() {
     dc->textRenderer->load("fonts/DejaVu/DejaVuSans.ttf", 14);
     dc->textRenderer->shader.use();
-    dc->textRenderer->shader.setInt("text", 0);
-    this->main_widget->m_app = (void*)this;
-    for (Widget *child : this->main_widget->children) {
-        child->m_app = (void*)this;
-        child->attach_app((void*)this);
+    dc->textRenderer->shader.setInt("text", 0); // TODO just hard code it? then the above statment would be useless
+    this->m_main_widget->app = (void*)this;
+    for (Widget *child : this->m_main_widget->children) {
+        child->app = (void*)this;
+        child->attachApp((void*)this);
     }
     this->show();
-    if (this->ready_callback) {
-        this->ready_callback(this);
+    if (this->onReady) {
+        this->onReady(this);
     }
     while (true) {
-        if (this->state->focused) {
+        if (this->m_state->focused) {
             SDL_StartTextInput();
         } else {
             SDL_StopTextInput();
@@ -108,19 +108,19 @@ void Application::run() {
             int64_t time_since_last_event = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - this->m_last_event_time).count();
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
-                    this->state->pressed = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button, time_since_last_event));
+                    this->m_state->pressed = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
                 case SDL_MOUSEBUTTONUP:
-                    this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.button, time_since_last_event));
+                    this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
                     break;
                 case SDL_MOUSEMOTION:
-                    this->state->hovered = this->main_widget->propagate_mouse_event(this->state, MouseEvent(event.motion, time_since_last_event));
+                    this->m_state->hovered = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.motion, time_since_last_event));
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
                         case SDL_WINDOWEVENT_RESIZED:
                             this->m_size = Size(event.window.data1, event.window.data2);
                             int w, h;
-                            SDL_GL_GetDrawableSize(this->win, &w, &h);
+                            SDL_GL_GetDrawableSize(this->m_win, &w, &h);
                             glViewport(0, 0, w, h);
                             this->m_needs_update = true;
                             this->m_layout_changed = true;
@@ -128,8 +128,8 @@ void Application::run() {
                     }
                     break;
                 case SDL_TEXTINPUT:
-                    if (state->focused) {
-                        // ((Button*)state->focused)->set_text(((Button*)state->focused)->text() += event.text.text);
+                    if (m_state->focused) {
+                        // ((Button*)m_state->focused)->set_text(((Button*)m_state->focused)->text() += event.text.text);
                     }
                     break;
                 case SDL_QUIT:
@@ -147,15 +147,15 @@ void Application::run() {
     }
 
     EXIT:
-        SDL_GL_DeleteContext(this->sdl_context);
-        SDL_DestroyWindow(this->win);
+        SDL_GL_DeleteContext(this->m_sdl_context);
+        SDL_DestroyWindow(this->m_win);
         SDL_Quit();
 }
 
 Widget* Application::append(Widget* widget, Fill fill_policy) {
-    widget->set_fill_policy(fill_policy);
-    this->main_widget->children.push_back(widget);
-    widget->m_app = this;
+    widget->setFillPolicy(fill_policy);
+    this->m_main_widget->children.push_back(widget);
+    widget->app = this;
 
-    return this->main_widget;
+    return this->m_main_widget;
 }
