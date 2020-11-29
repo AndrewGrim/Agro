@@ -17,6 +17,17 @@
         public:
             /// A rectangle representing the Widget position and size.
             Rect rect = Rect(0, 0, 0, 0);
+            
+            /// Pointer to the Application. Used to tell the Application to update.
+            void *app = nullptr;
+
+            /// The parent* is mostly used by compound Widgets.
+            Widget *parent = nullptr;
+            
+            /// Stores all the child Widgets of this Widget.
+            /// Its not meant to be interacted with directly but
+            /// rather through methods like append().
+            std::vector<Widget*> children;
 
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 
@@ -163,8 +174,13 @@
             /// Tells the Application that it needs to redraw.
             void update();
 
-            /// Returns the Application* if its been set.
-            Option<void*> app();
+            /// Passes the event further down the Widget tree until
+            /// it finds a Widget that matches the x and y of the event.
+            void* propagateMouseEvent(State *state, MouseEvent event);
+
+            /// Sets the Application* of the Widget and does the same
+            /// for any of its children.
+            virtual void attachApp(void *app);
 
         protected:
             void *m_app = nullptr;
@@ -174,14 +190,6 @@
             bool m_is_visible = false;
             Fill m_fill_policy = Fill::None;
 
-            /// The parent* is mostly used by compound Widgets.
-            Widget *m_parent = nullptr;
-            
-            /// Stores all the child Widgets of this Widget.
-            /// Its not meant to be interacted with directly but
-            /// rather through methods like append().
-            std::vector<Widget*> m_children;
-
             Color m_fg = Color();
             Color m_bg = Color(1, 1, 1);
             Color m_hover_bg = Color(0.8f, 0.8f, 0.8f); // i think these should be implemented
@@ -189,15 +197,7 @@
             Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
 
-            /// Passes the event further down the Widget tree until
-            /// it finds a Widget that matches the x and y of the event.
-            void* propagateMouseEvent(State *state, MouseEvent event);
-
             /// Handles the MouseEvent sent by the Application.
             virtual void handleMouseEvent(State *state, MouseEvent event);
-
-            /// Sets the Application* of the Widget and does the same
-            /// for any of its children.
-            virtual void attachApp(void *app);
     };
 #endif
