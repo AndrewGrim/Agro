@@ -50,7 +50,7 @@
             std::function<void(Application*)> onReady = nullptr;
 
             Application(const char* title = "Application", Size size = Size(400, 400));
-            
+
             ~Application();
 
             /// This method is used to add a Widget to the children
@@ -79,7 +79,7 @@
 
             /// Sets the last event.
             // TODO add more docs
-            void setLastEvent(std::pair<Event, EventHandler>);
+            void setLastEvent(std::pair<Event, EventHandler> event);
 
             /// Tells the Application to update which causes a redraw.
             void update();
