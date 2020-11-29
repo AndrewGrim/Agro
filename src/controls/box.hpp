@@ -2,25 +2,31 @@
     #define BOX_HPP
 
     #include "widget.hpp"
-    #include "../renderer/drawing_context.hpp"
+    #include "../common/align.hpp"
 
     class Box : public Widget {
         public:
-            Align m_align_policy;
-
             Box(Align align_policy);
             ~Box();
-            const char* name();
-            void draw(DrawingContext *dc, Rect<float> rect) override;
-            void layout_children(DrawingContext *dc, Rect<float> rect);
-            virtual Size<float> size_hint(DrawingContext *dc) override;
-            Color background();
-            virtual Box* set_background(Color background);
-            bool is_layout();
+            virtual const char* name() override;
+            void draw(DrawingContext *dc, Rect rect) override;
+            void layoutChildren(DrawingContext *dc, Rect rect);
+            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual Box* setBackground(Color background) override;
+            virtual Box* setForeground(Color background) override;
+            void setAlignPolicy(Align align_policy);
+            Align alignPolicy();
+            virtual bool isLayout() override;
 
         protected:
-            const char *m_name = "Box";
-            Color fg = Color();
-            Color bg = Color(0.50f, 0.50f, 0.50f);
+            // TODO the color variables likely need to go into the constructor
+            // because if we dont override the getter for them they will return
+            // the base class variables
+            Color m_fg = Color();
+            Color m_bg = Color(0.50f, 0.50f, 0.50f);
+
+            /// Align policy dictates in on which axis
+            /// the child Widgets will be layed out
+            Align m_align_policy;
     };
 #endif
