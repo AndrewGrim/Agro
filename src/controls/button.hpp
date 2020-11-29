@@ -1,85 +1,29 @@
 #ifndef BUTTON_HPP
     #define BUTTON_HPP
 
-    #include "../app.hpp"
+    #include <string>
+
     #include "widget.hpp"
-    #include "../renderer/drawing_context.hpp"
+    #include "../common/align.hpp"
 
     class Button : public Widget {
         public:
-            Button(std::string text) {
-                this->set_text(text);
-            }
-            
-            ~Button() {}
-
-            virtual const char* name() {
-                return this->m_name;
-            }
-
-            virtual void draw(DrawingContext *dc, Rect<float> rect) {
-                this->rect = rect;
-                Color color = Color(0, 0, 0, 0); 
-                if (this->is_pressed() && this->is_hovered()) {
-                    color = this->pressed_background(); 
-                } else if (this->is_hovered()) {
-                    color = this->hover_background();
-                } else {
-                    color = this->background();
-                }
-                
-                // draw border and shrink rectangle to prevent drawing over the border
-                rect = dc->drawBorder(rect, this->m_border_width, color);
-                dc->fillRect(rect, color);
-                dc->fillTextAligned(this->m_text, this->m_text_align, rect, this->m_padding);
-            }
-
-            Size<float> size_hint(DrawingContext *dc) {
-                // TODO we still probably need the if app layout changed condition
-                if (this->size_changed) {
-                    Size<float> size = dc->measureText(text());
-                    size.w += this->m_padding * 2;
-                    size.h += this->m_padding * 2;
-
-                    this->m_size = size;
-                    this->size_changed = false;
-
-                    return size;
-                } else {
-                    return this->m_size;
-                }
-            }
-
-            Color background() {
-                return this->bg;
-            }
-
-            virtual Button* set_background(Color background) {
-                this->bg = background;
-                this->update();
-
-                return this;
-            }
-
-            std::string text() {
-                return this->m_text;
-            }
-
-            virtual Button* set_text(std::string text) {
-                this->m_text = text;
-                this->size_changed = true;
-                this->update();
-
-                return this;
-            }
+            Button(std::string text);
+            ~Button();
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual Button* setBackground(Color background) override;
+            virtual Button* setForeground(Color background) override;
+            std::string text();
+            virtual Button* setText(std::string text);
+            TextAlignment textAlignment();
+            void setTextAlignment(TextAlignment text_align);
 
         protected:
-            const char *m_name = "Button";
             std::string m_text;
-            TextAlignment m_text_align = TextAlignment::Center;
+            TextAlignment m_text_align = TextAlignment::Center; // needs a setter with both update and layout
             unsigned int m_padding = 10;
             unsigned int m_border_width = 4;
-            Color fg = Color();
-            Color bg = Color(0.9f, 0.9f, 0.9f);
     };
 #endif
