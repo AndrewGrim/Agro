@@ -98,7 +98,7 @@
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
             // Widget *main_widget = new ScrolledBox(Align::Vertical);
-            Widget *m_main_widget = new Box(Align::Vertical); // TODO might break stuff, implement Box at least
+            Widget *m_main_widget = new Box(Align::Vertical);
             State *m_state = new State();
             bool m_needs_update = false;
             bool m_layout_changed = true;
