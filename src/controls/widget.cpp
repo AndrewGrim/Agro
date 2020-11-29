@@ -13,6 +13,7 @@ Widget* Widget::append(Widget* widget, Fill fill_policy) {
     widget->setFillPolicy(fill_policy);
     this->children.push_back(widget);
     if (this->app) widget->app = this->app;
+    this->m_size_changed = true;
 
     return this;
 }
