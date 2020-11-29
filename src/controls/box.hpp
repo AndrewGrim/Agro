@@ -17,7 +17,6 @@
             void setAlignPolicy(Align align_policy);
             Align alignPolicy();
             virtual bool isLayout() override;
-            virtual bool isScrollable() override;
 
         protected:
             /// Align policy dictates in on which axis

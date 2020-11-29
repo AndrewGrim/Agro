@@ -197,10 +197,6 @@ bool Box::isLayout() {
     return true;
 }
 
-bool Box::isScrollable() {
-    return false;
-}
-
 const char* Box::name() {
     return "Box";
 }
