@@ -138,10 +138,10 @@
             bool isVisible();
             
             /// Used to check if the Widget implements a Layout interface.
-            virtual bool isLayout() = 0;
+            virtual bool isLayout();
             
             /// Used to check if the Widget implements a Scrollable interface.
-            virtual bool isScrollable() = 0;
+            virtual bool isScrollable();
             
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
@@ -173,6 +173,9 @@
             /// Tells the Application that it needs to redraw.
             void update();
 
+            /// Tells the Application that it needs to recalculate its layout.
+            void layout();
+
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
             void* propagateMouseEvent(State *state, MouseEvent event);
@@ -199,7 +202,7 @@
 
             Color m_fg = Color();
             Color m_bg = Color(1, 1, 1);
-            Color m_hover_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
+            Color m_hovered_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
             Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean

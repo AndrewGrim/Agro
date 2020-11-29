@@ -242,3 +242,11 @@ void Widget::attachApp(void *app) {
         child->attachApp(app);
     }
 }
+
+bool Widget::isLayout() {
+    return false;
+}
+
+bool Widget::isScrollable() {
+    return false;
+}
