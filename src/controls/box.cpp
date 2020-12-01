@@ -202,6 +202,17 @@ const char* Box::name() {
     return "Box";
 }
 
+void Box::setAlignPolicy(Align align_policy) {
+    if (this->m_align_policy != align_policy) {
+        this->m_align_policy = align_policy;
+        this->update();
+        // this->layout
+        // TODO calling layout here might be necessary if
+        // we are going for the bsearch impementation
+        // and the if layout changed in layouts layoutChildren()
+    }
+}
+
 Align Box::alignPolicy() {
     return this->m_align_policy;
 }
