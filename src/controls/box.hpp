@@ -22,5 +22,6 @@
             /// Align policy dictates in on which axis
             /// the child Widgets will be layed out
             Align m_align_policy;
+            unsigned int m_visible_children = 0;
     };
 #endif
