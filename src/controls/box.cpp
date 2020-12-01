@@ -32,6 +32,9 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // also dont relayout children if the app layout hasnt changed?
     // ^ i think that would require setting the rect which we would need for bsearch anyway
     int non_expandable_widgets = 0;
+    if (this->m_size_changed) {
+        this->sizeHint(dc);
+    }
     Size total_children_size = this->m_size;
     // TODO can we omptimize this?
     // we might not need to do this if we keep a variable keeping track of this
@@ -169,22 +172,22 @@ Size Box::sizeHint(DrawingContext *dc) {
         if (this->m_align_policy == Align::Horizontal) {
             for (Widget* child : this->children) {
                 if (child->isVisible()) {
-                Size s = child->sizeHint(dc);
-                size.w += s.w;
-                if (s.h > size.h) {
-                    size.h = s.h;
-                }
+                    Size s = child->sizeHint(dc);
+                    size.w += s.w;
+                    if (s.h > size.h) {
+                        size.h = s.h;
+                    }
                     this->m_visible_children++;
-            }
+                }
             }
         } else {
             for (Widget* child : this->children) {
                 if (child->isVisible()) {
-                Size s = child->sizeHint(dc);
-                size.h += s.h;
-                if (s.w > size.w) {
-                    size.w = s.w;
-                }
+                    Size s = child->sizeHint(dc);
+                    size.h += s.h;
+                    if (s.w > size.w) {
+                        size.w = s.w;
+                    }
                     this->m_visible_children++;
                 }
             }
