@@ -30,11 +30,20 @@ void Box::draw(DrawingContext *dc, Rect rect) {
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // TODO simplify the code branches here, and double check if scissor test is needed, i think it is
     // also dont relayout children if the app layout hasnt changed?
+    // ^ i think that would require setting the rect which we would need for bsearch anyway
     int non_expandable_widgets = 0;
-    Size total_children_size;
+    Size total_children_size = this->m_size;
+    // TODO can we omptimize this?
+    // we might not need to do this if we keep a variable keeping track of this
+    // we could change it when a widgets is appended to a layout
+    // and when the widget changes fillpolicy it could notify its parent?????
+    // in fact we could store the non_expandable widgets separately for both align policies
+    // obviously this would also need to change when destroying a widget (which i should implement :^)
+    // the optimization would be worth it on a higher number of widgets
+    // we know that the lib can do about 70k buttons in a scrolledbox smoothly in -O2
+    // and this would get rid off of one loop through all the buttons
     Align parent_layout = this->alignPolicy();
     for (Widget* child : this->children) {
-        Size child_size = child->sizeHint(dc);
         Fill child_layout = child->fillPolicy();
         if (parent_layout == Align::Vertical) {
             if (child_layout == Fill::Horizontal || child_layout == Fill::None) {
@@ -45,8 +54,6 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 non_expandable_widgets += 1;
             }
         }
-        total_children_size.w += child_size.w;
-        total_children_size.h += child_size.h;
     }
 
     int child_count = this->children.size() - non_expandable_widgets;
