@@ -56,6 +56,12 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
         }
     }
 
+    // TODO add support for proportions, this could work like so
+    // the widget would store its proportion internally with a default of 1
+    // then we dividing the avaiable space between widgets we would get their internal
+    // proportion and use that for the calculation
+    // we would probably need to subtract extra proportions from child_count
+    // and then multiply expandable_height times proportion
     int child_count = this->children.size() - non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
     Point pos = Point(rect.x, rect.y);
