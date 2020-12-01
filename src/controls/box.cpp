@@ -168,18 +168,24 @@ Size Box::sizeHint(DrawingContext *dc) {
         Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {
             for (Widget* child : this->children) {
+                if (child->isVisible()) {
                 Size s = child->sizeHint(dc);
                 size.w += s.w;
                 if (s.h > size.h) {
                     size.h = s.h;
                 }
+                    this->m_visible_children++;
+            }
             }
         } else {
             for (Widget* child : this->children) {
+                if (child->isVisible()) {
                 Size s = child->sizeHint(dc);
                 size.h += s.h;
                 if (s.w > size.w) {
                     size.w = s.w;
+                }
+                    this->m_visible_children++;
                 }
             }
         }
