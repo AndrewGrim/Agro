@@ -51,6 +51,7 @@ Widget* Widget::setFillPolicy(Fill fill_policy) {
     if (this->m_fill_policy != fill_policy) {
         this->m_fill_policy = fill_policy;
         this->update();
+        this->layout();
     }
 
     return this;
@@ -64,6 +65,7 @@ void Widget::show() {
     if (!this->m_is_visible) {
         this->m_is_visible = true;
         this->update();
+        this->layout();
     }
 }
 
@@ -71,6 +73,7 @@ void Widget::hide() {
     if (this->m_is_visible) {
         this->m_is_visible = false;
         this->update();
+        this->layout();
     }
 }
 
