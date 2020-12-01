@@ -178,7 +178,14 @@
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
-            void* propagateMouseEvent(State *state, MouseEvent event);
+            /// Should not be used directly! Let the application call it.
+            // TODO im not a fan of this one and the next one being public
+            // and asking the user not to call. There must be a better way!
+            virtual void* propagateMouseEvent(State *state, MouseEvent event);
+
+            /// Handles the MouseEvent sent by the Application.
+            /// Should not be used directly! Let the application call it.
+            virtual void handleMouseEvent(State *state, MouseEvent event);
 
             /// Sets the Application* of the Widget and does the same
             /// for any of its children.
@@ -206,8 +213,5 @@
             // as an altered fg, bg color? dynamic i mean
             Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
-
-            /// Handles the MouseEvent sent by the Application.
-            virtual void handleMouseEvent(State *state, MouseEvent event);
     };
 #endif
