@@ -65,6 +65,10 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     int child_count = this->children.size() - non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
     Point pos = Point(rect.x, rect.y);
+    // TODO we wouldnt need to do most of this part unless the layout changed
+    // we would only need to go over every widget and redraw the visible ones
+    // TODO check if widget is visible
+    // should that affect anything other than drawing??
     switch (parent_layout) {
         case Align::Vertical: {
             float available_height = rect.h;
