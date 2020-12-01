@@ -195,7 +195,7 @@
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             bool m_is_focused = false;
-            bool m_is_visible = false;
+            bool m_is_visible = true;
             Fill m_fill_policy = Fill::None;
 
             /// The precomputed sizeHint of the Widget.
