@@ -47,14 +47,16 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // and this would get rid off of one loop through all the buttons
     Align parent_layout = this->alignPolicy();
     for (Widget* child : this->children) {
-        Fill child_layout = child->fillPolicy();
-        if (parent_layout == Align::Vertical) {
-            if (child_layout == Fill::Horizontal || child_layout == Fill::None) {
-                non_expandable_widgets += 1;
-            }
-        } else if (parent_layout == Align::Horizontal) {
-            if (child_layout == Fill::Vertical || child_layout == Fill::None) {
-                non_expandable_widgets += 1;
+        if (child->isVisible()) {
+            Fill child_layout = child->fillPolicy();
+            if (parent_layout == Align::Vertical) {
+                if (child_layout == Fill::Horizontal || child_layout == Fill::None) {
+                    non_expandable_widgets += 1;
+                }
+            } else if (parent_layout == Align::Horizontal) {
+                if (child_layout == Fill::Vertical || child_layout == Fill::None) {
+                    non_expandable_widgets += 1;
+                }
             }
         }
     }
@@ -65,7 +67,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // proportion and use that for the calculation
     // we would probably need to subtract extra proportions from child_count
     // and then multiply expandable_height times proportion
-    int child_count = this->children.size() - non_expandable_widgets;
+    int child_count = this->m_visible_children - non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
     Point pos = Point(rect.x, rect.y);
     // TODO we wouldnt need to do most of this part unless the layout changed
@@ -110,10 +112,16 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     else goto DRAW_VERTICAL;
                 } else {
                     DRAW_VERTICAL:
-                        child->draw(dc, widget_rect);
-                        if (pos.y > ((Application*)this->app)->m_size.h) break;
+                        if (child->isVisible()) {
+                            child->draw(dc, widget_rect);
+                        }
+                        if (pos.y > ((Application*)this->app)->m_size.h) {
+                            break;
+                        }
                 }
-                pos.y += size.h;
+                if (child->isVisible()) {
+                    pos.y += size.h;
+                }
             }
             break;
         }
@@ -154,10 +162,16 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     else goto DRAW_HORIZONTAL;
                 } else {
                     DRAW_HORIZONTAL:
-                        child->draw(dc, widget_rect);
-                        if (pos.x > ((Application*)this->app)->m_size.w) break;
+                        if (child->isVisible()) {
+                            child->draw(dc, widget_rect);
+                        }
+                        if (pos.x > ((Application*)this->app)->m_size.w) {
+                            break;
+                        }
                 }
-                pos.x += size.w;
+                if (child->isVisible()) {
+                    pos.x += size.w;
+                }
             }
             break;
         }   
