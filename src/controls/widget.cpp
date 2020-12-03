@@ -143,16 +143,18 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         // }
     }
     for (Widget *child : this->children) {
-        if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
-            (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
-            void *last = nullptr;
-            if (child->isLayout()) {
-                last = (void*)child->propagateMouseEvent(state, event);
-            } else {
-                child->handleMouseEvent(state, event);
-                last = (void*)child;
+        if (child->isVisible()) {
+            if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                void *last = nullptr;
+                if (child->isLayout()) {
+                    last = (void*)child->propagateMouseEvent(state, event);
+                } else {
+                    child->handleMouseEvent(state, event);
+                    last = (void*)child;
+                }
+                return last;
             }
-            return last;
         }
     }
 
