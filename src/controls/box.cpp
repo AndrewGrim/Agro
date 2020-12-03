@@ -181,6 +181,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
 Size Box::sizeHint(DrawingContext *dc) {
     // `hasLayoutChanged()` is necessary here because the Box won't know
     // that it's sizeHint() needs to be recalculated because of it's children.
+    unsigned int visible = 0;
     if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
         Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {
@@ -191,7 +192,7 @@ Size Box::sizeHint(DrawingContext *dc) {
                     if (s.h > size.h) {
                         size.h = s.h;
                     }
-                    this->m_visible_children++;
+                    visible++;
                 }
             }
         } else {
@@ -202,10 +203,11 @@ Size Box::sizeHint(DrawingContext *dc) {
                     if (s.w > size.w) {
                         size.w = s.w;
                     }
-                    this->m_visible_children++;
+                    visible++;
                 }
             }
         }
+        this->m_visible_children = visible;
         this->m_size = size;
         this->m_size_changed = false;
 
