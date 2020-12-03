@@ -32,7 +32,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // also dont relayout children if the app layout hasnt changed?
     // ^ i think that would require setting the rect which we would need for bsearch anyway
     int non_expandable_widgets = 0;
-    if (this->m_size_changed) {
+    if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
     }
     Size total_children_size = this->m_size;
