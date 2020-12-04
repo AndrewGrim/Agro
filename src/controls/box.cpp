@@ -28,14 +28,13 @@ void Box::draw(DrawingContext *dc, Rect rect) {
 }
 
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
-    // TODO simplify the code branches here, and double check if scissor test is needed, i think it is
+    // TODO double check if scissor test is needed, i think it is
     // also dont relayout children if the app layout hasnt changed?
     // ^ i think that would require setting the rect which we would need for bsearch anyway
     int non_expandable_widgets = 0;
     if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
     }
-    Size total_children_size = this->m_size;
     // TODO can we omptimize this?
     // we might not need to do this if we keep a variable keeping track of this
     // we could change it when a widgets is appended to a layout
@@ -45,6 +44,9 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // the optimization would be worth it on a higher number of widgets
     // we know that the lib can do about 70k buttons in a scrolledbox smoothly in -O2
     // and this would get rid off of one loop through all the buttons
+    // TODO we should probably do the above in sizeHint, and either
+    // store the expandable widgets for both alignments or store the current
+    // and reevaluate after changing the policy
     Align parent_layout = this->alignPolicy();
     for (Widget* child : this->children) {
         if (child->isVisible()) {
@@ -67,114 +69,116 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     // proportion and use that for the calculation
     // we would probably need to subtract extra proportions from child_count
     // and then multiply expandable_height times proportion
+    // int child_count = this->m_visible_children - non_expandable_widgets;
+    // if (!child_count) child_count = 1; // Protects from division by zero
+
+    // TODO we wouldnt need to do most of this part unless the layout changed
+    // (if we are going to implement bsearch!)
+    // we would only need to go over every widget and redraw the visible ones
     int child_count = this->m_visible_children - non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
     Point pos = Point(rect.x, rect.y);
-    // TODO we wouldnt need to do most of this part unless the layout changed
-    // we would only need to go over every widget and redraw the visible ones
-    // TODO check if widget is visible
-    // should that affect anything other than drawing??
+    float generic_total_layout_length;
+    float *generic_position_coord; // Needs to be a ptr because the value will change.
+    float rect_length;
+    Size size;
+    float *generic_length; // Needs to be a ptr because the value will change.
+    Size app_size = ((Application*)this->app)->m_size;
+    float generic_app_length;
     switch (parent_layout) {
-        case Align::Vertical: {
-            float available_height = rect.h;
-            float expandable_height = (available_height - total_children_size.h) / child_count;
-            if (expandable_height < 0) expandable_height = 0;
-            for (Widget* child : this->children) {
-                Size size;
-                Size child_hint = child->sizeHint(dc);
+        case Align::Vertical:
+            generic_total_layout_length = this->m_size.h;
+            generic_position_coord = &pos.y;
+            rect_length = rect.h;
+            generic_length = &size.h;
+            generic_app_length = app_size.h;
+            break;
+        case Align::Horizontal:
+            generic_total_layout_length = this->m_size.w;
+            generic_position_coord = &pos.x;
+            rect_length = rect.w;
+            generic_length = &size.w;
+            generic_app_length = app_size.w;
+            break;
+    }
+    float expandable_length = (rect_length - generic_total_layout_length) / child_count;
+    if (expandable_length < 0) expandable_length = 0;
+    for (Widget* child : this->children) {
+        Size child_hint = child->sizeHint(dc);
+        switch (parent_layout) {
+            case Align::Vertical:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
                         size = Size { 
                             rect.w > child_hint.w ? rect.w : child_hint.w, 
-                            child_hint.h + expandable_height
+                            child_hint.h + expandable_length
                         };
                         break;
                     }
                     case Fill::Vertical: {
                         size = Size { 
                             child_hint.w, 
-                            child_hint.h + expandable_height
+                            child_hint.h + expandable_length
                         };
                         break;
                     }
                     case Fill::Horizontal:
-                        size = Size { rect.w > child_hint.w ? rect.w : child_hint.w, child_hint.h };
+                        size = Size { 
+                            rect.w > child_hint.w ? rect.w : child_hint.w, 
+                            child_hint.h 
+                        };
                         break;
                     case Fill::None:
                     default:
                         size = child_hint;
                 }
-                Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-                if (pos.y < 0) {
-                    if (pos.y + size.h < 0) {
-                        child->rect = widget_rect;
-                    }
-                    else goto DRAW_VERTICAL;
-                } else {
-                    DRAW_VERTICAL:
-                        if (child->isVisible()) {
-                            child->draw(dc, widget_rect);
-                        }
-                        if (pos.y > ((Application*)this->app)->m_size.h) {
-                            break;
-                        }
-                }
-                if (child->isVisible()) {
-                    pos.y += size.h;
-                }
-            }
-            break;
-        }
-        case Align::Horizontal: {
-            float available_width = rect.w;
-            float expandable_width = (available_width - total_children_size.w) / child_count;
-            if (expandable_width < 0) expandable_width = 0;
-            for (Widget* child : this->children) {
-                Size size;
-                Size child_hint = child->sizeHint(dc);
+                break;
+            case Align::Horizontal:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
-                        size = Size { 
-                            child_hint.w + expandable_width, 
-                            rect.h > child_hint.h ? rect.h : child_hint.h
-                        };
-                        break;
-                    }
-                    case Fill::Vertical:
-                        size = Size { child_hint.w, rect.h > child_hint.h ? rect.h : child_hint.h };
-                        break;
-                    case Fill::Horizontal: {
-                        size = Size { 
-                            child_hint.w + expandable_width, 
-                            child_hint.h
-                        };
-                        break;
-                    }
-                    case Fill::None:
-                    default:
-                        size = child_hint;
-                }
-                Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-                if (pos.x < 0) {
-                    if (pos.x + size.w < 0) {
-                        child->rect = widget_rect;
-                    }
-                    else goto DRAW_HORIZONTAL;
-                } else {
-                    DRAW_HORIZONTAL:
-                        if (child->isVisible()) {
-                            child->draw(dc, widget_rect);
-                        }
-                        if (pos.x > ((Application*)this->app)->m_size.w) {
+                            size = Size { 
+                                child_hint.w + expandable_length, 
+                                rect.h > child_hint.h ? rect.h : child_hint.h
+                            };
                             break;
                         }
+                        case Fill::Vertical:
+                            size = Size { 
+                                child_hint.w, 
+                                rect.h > child_hint.h ? rect.h : child_hint.h 
+                            };
+                            break;
+                        case Fill::Horizontal: {
+                            size = Size { 
+                                child_hint.w + expandable_length, 
+                                child_hint.h
+                            };
+                            break;
+                        }
+                        case Fill::None:
+                        default:
+                            size = child_hint;
+                    break;
                 }
-                if (child->isVisible()) {
-                    pos.x += size.w;
-                }
+        }
+        Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
+        if (generic_position_coord < 0) {
+            if (*generic_position_coord + *generic_length < 0) {
+                child->rect = widget_rect;
             }
-            break;
-        }   
+            else goto DRAW_WIDGET;
+        } else {
+            DRAW_WIDGET:
+                if (child->isVisible()) {
+                    child->draw(dc, widget_rect);
+                }
+                if (*generic_position_coord > generic_app_length) {
+                    break;
+                }
+        }
+        if (child->isVisible()) {
+            *generic_position_coord += *generic_length;
+        }
     }
 }
 
