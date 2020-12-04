@@ -28,6 +28,9 @@ int main() {
                 (new Button("Button"))->setBackground(colors[4]),
                 (new Button("Button"))->setBackground(colors[5]),
             };
+            buttons[0]->setProportion(10);
+            buttons[3]->setProportion(3);
+            buttons[5]->setProportion(5);
             for (int i = 0; i < 6; i++) {
                 auto b = buttons[i];
                 // TODO maybe rename to onClick instead??
