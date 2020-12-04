@@ -63,15 +63,6 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
         }
     }
 
-    // TODO add support for proportions, this could work like so
-    // the widget would store its proportion internally with a default of 1
-    // then we dividing the avaiable space between widgets we would get their internal
-    // proportion and use that for the calculation
-    // we would probably need to subtract extra proportions from child_count
-    // and then multiply expandable_height times proportion
-    // int child_count = this->m_visible_children - non_expandable_widgets;
-    // if (!child_count) child_count = 1; // Protects from division by zero
-
     // TODO we wouldnt need to do most of this part unless the layout changed
     // (if we are going to implement bsearch!)
     // we would only need to go over every widget and redraw the visible ones
@@ -111,14 +102,14 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     case Fill::Both: {
                         size = Size { 
                             rect.w > child_hint.w ? rect.w : child_hint.w, 
-                            child_hint.h + expandable_length
+                            child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
                     }
                     case Fill::Vertical: {
                         size = Size { 
                             child_hint.w, 
-                            child_hint.h + expandable_length
+                            child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
                     }
@@ -137,7 +128,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
                             size = Size { 
-                                child_hint.w + expandable_length, 
+                                child_hint.w + (expandable_length * child->proportion()), 
                                 rect.h > child_hint.h ? rect.h : child_hint.h
                             };
                             break;
@@ -150,7 +141,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                             break;
                         case Fill::Horizontal: {
                             size = Size { 
-                                child_hint.w + expandable_length, 
+                                child_hint.w + (expandable_length * child->proportion()), 
                                 child_hint.h
                             };
                             break;
@@ -196,7 +187,7 @@ Size Box::sizeHint(DrawingContext *dc) {
                     if (s.h > size.h) {
                         size.h = s.h;
                     }
-                    visible++;
+                    visible += child->proportion();
                 }
             }
         } else {
@@ -207,13 +198,13 @@ Size Box::sizeHint(DrawingContext *dc) {
                     if (s.w > size.w) {
                         size.w = s.w;
                     }
-                    visible++;
+                    visible += child->proportion();
                 }
             }
         }
         this->m_visible_children = visible;
         this->m_size = size;
-        this->m_size_changed = false;
+        this->m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
 
         return size;
     } else {
