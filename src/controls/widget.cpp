@@ -263,3 +263,15 @@ bool Widget::isLayout() {
 bool Widget::isScrollable() {
     return false;
 }
+
+unsigned int Widget::proportion() {
+    return this->m_proportion;
+}
+
+void Widget::setProportion(unsigned int proportion) {
+    if (this->m_proportion != proportion) {
+        this->m_proportion = proportion ? proportion : 1;
+        this->update();
+        this->layout();
+    }
+}

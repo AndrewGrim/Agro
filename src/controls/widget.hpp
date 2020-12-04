@@ -191,12 +191,24 @@
             /// for any of its children.
             virtual void attachApp(void *app);
 
+            unsigned int proportion();
+
+            void setProportion(unsigned int proportion);
+
         protected:
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             bool m_is_focused = false;
             bool m_is_visible = true;
             Fill m_fill_policy = Fill::None;
+
+            /// Determines how much the Widget will scale into expandable space
+            /// compared to other Widgets.
+            /// Default is 1 and it means that each Widget will get the same
+            /// amount of expandable space if its available.
+            /// Proportion higher than that, 5 for example, will mean that for every pixel a default
+            /// Widget expands this one will expand 5 pixels.
+            unsigned int m_proportion = 1;
 
             /// The precomputed sizeHint of the Widget.
             /// Returned when nothing changed that would
