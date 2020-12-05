@@ -22,39 +22,28 @@ int main() {
                 Color(1, 0.19, 0.19), Color(1, 0.6), Color(1, 1),
                 Color(0.19, 0.19, 1), Color(0, 0.5, 1), Color(0, 1, 1),
             };
-            Button *buttons[] = {
-                (new Button("Button"))->setBackground(colors[0]),
-                (new Button("Button"))->setBackground(colors[1]),
-                (new Button("Button"))->setBackground(colors[2]),
-                (new Button("Button"))->setBackground(colors[3]),
-                (new Button("Button"))->setBackground(colors[4]),
-                (new Button("Button"))->setBackground(colors[5]),
-            };
-            Option<Color> o = Option<Color>(Color(1, 0, 1));
-            // Option<Color> o = Option<Color>();
-            // if (o.some()) {
-                // buttons[5]->setBackground(o.value);
-                buttons[5]->setBackground(o.unwrap());
-            // }
-            for (int i = 0; i < 6; i++) {
-                auto b = buttons[i];
-                // TODO maybe rename to onClick instead??
-                b->onMouseClick = [=](MouseEvent event) {
-                    auto t = std::time(nullptr);
-                    b->setText(std::asctime(std::localtime(&t)));
-                    if (buttons[1]->isVisible()) {
-                        buttons[1]->hide();
-                    } else {
-                        buttons[1]->show();
-                    }
-                };
-                if (i == 1) {
-                    b->hide();
-                }
-                app->append(b, Fill::Both, i);
-            }
-        // app->append(new LineEdit("text 1"), Fill::Horizontal);
-        // app->append(new LineEdit("text 2"), Fill::Horizontal);
+            int button_count = 1;
+            int color_index = 0;
+            Box *left = new Box(Align::Vertical);
+            app->append(left, Fill::Both, 10);
+            Box *right = new Box(Align::Vertical);
+                Button *add = new Button("Add Button");
+                    add->onMouseClick = [&](MouseEvent event) {
+                        Button *b = new Button(std::to_string(button_count));
+                            b->setBackground(colors[color_index]);
+                            b->onMouseClick = [=](MouseEvent event) {
+                                time_t t = std::time(nullptr);
+                                b->setText(std::asctime(std::localtime(&t)));
+                            };
+                        button_count++;
+                        color_index++;
+                        if (color_index == 6) {
+                            color_index = 0;
+                        }
+                        left->append(b, Fill::Both);
+                    };
+                right->append(add, Fill::Both);
+            app->append(right, Fill::Both);
     app->run();
 
     return 0; 
