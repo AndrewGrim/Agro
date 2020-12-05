@@ -9,8 +9,9 @@ Widget::~Widget() {
 
 }
 
-Widget* Widget::append(Widget* widget, Fill fill_policy) {
+Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
     widget->setFillPolicy(fill_policy);
+    widget->setProportion(proportion);
     this->children.push_back(widget);
     if (this->app) widget->app = this->app;
     this->m_size_changed = true;

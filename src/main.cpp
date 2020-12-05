@@ -28,9 +28,6 @@ int main() {
                 (new Button("Button"))->setBackground(colors[4]),
                 (new Button("Button"))->setBackground(colors[5]),
             };
-            buttons[0]->setProportion(10);
-            buttons[3]->setProportion(3);
-            buttons[5]->setProportion(5);
             for (int i = 0; i < 6; i++) {
                 auto b = buttons[i];
                 // TODO maybe rename to onClick instead??
@@ -46,7 +43,7 @@ int main() {
                 if (i == 1) {
                     b->hide();
                 }
-                app->append(b, Fill::Both);
+                app->append(b, Fill::Both, i);
             }
         // app->append(new LineEdit("text 1"), Fill::Horizontal);
         // app->append(new LineEdit("text 2"), Fill::Horizontal);
