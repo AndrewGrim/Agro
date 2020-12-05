@@ -28,7 +28,7 @@ int main() {
             app->append(left, Fill::Both, 10);
             Box *right = new Box(Align::Vertical);
                 Button *add = new Button("Add Button");
-                    add->onMouseClick = [&](MouseEvent event) {
+                    add->onMouseDown = [&](MouseEvent event) {
                         Button *b = new Button(std::to_string(button_count));
                             b->setBackground(colors[color_index]);
                             b->onMouseClick = [=](MouseEvent event) {

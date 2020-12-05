@@ -100,6 +100,7 @@ void Application::run() {
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
                     this->m_state->pressed = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
+                    break;
                 case SDL_MOUSEBUTTONUP:
                     this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
                     break;
