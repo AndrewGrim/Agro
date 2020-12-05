@@ -15,6 +15,7 @@
 
 int main() { 
     Application *app = new Application("Application", Size(500, 500));
+    app->setMainWidget(new Box(Align::Horizontal));
     app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
             Color colors[] = {
                 Color(1, 0.19, 0.19), Color(1, 0.6), Color(1, 1),

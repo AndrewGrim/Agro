@@ -64,6 +64,10 @@ Widget* Application::mainWidget() {
 
 void Application::setMainWidget(Widget *widget) {
     this->m_main_widget = widget;
+    for (Widget *child : widget->children) {
+        child->app = this;
+        child->attachApp(this);
+    }
 }
 
 void Application::show() {
