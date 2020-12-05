@@ -8,6 +8,7 @@
 #include "controls/widget.hpp"
 #include "controls/box.hpp"
 #include "controls/button.hpp"
+#include "option.hpp"
 // #include "controls/slider.hpp"
 // #include "controls/scrollbar.hpp"
 // #include "controls/scrolledbox.hpp"
@@ -29,6 +30,12 @@ int main() {
                 (new Button("Button"))->setBackground(colors[4]),
                 (new Button("Button"))->setBackground(colors[5]),
             };
+            Option<Color> o = Option<Color>(Color(1, 0, 1));
+            // Option<Color> o = Option<Color>();
+            // if (o.some()) {
+                // buttons[5]->setBackground(o.value);
+                buttons[5]->setBackground(o.unwrap());
+            // }
             for (int i = 0; i < 6; i++) {
                 auto b = buttons[i];
                 // TODO maybe rename to onClick instead??

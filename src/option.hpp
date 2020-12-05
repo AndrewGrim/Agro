@@ -20,14 +20,15 @@
         }
 
         T unwrap() {
-            switch (this->type) {
-                case Type::Some:
-                    return this->value;
-                    break;
-                case Type::None:
-                    assert(this->type == Type::Some);
-                    break;
+            assert(this->type == Type::Some);
+            return this->value;
+        }
+
+        bool some() {
+            if (this->type == Type::Some) {
+                return true;
             }
+            return false;
         }
     };
 #endif
