@@ -23,5 +23,7 @@
             /// the child Widgets will be layed out
             Align m_align_policy;
             unsigned int m_visible_children = 0;
+            unsigned int m_vertical_non_expandable = 0;
+            unsigned int m_horizontal_non_expandable = 0;
     };
 #endif

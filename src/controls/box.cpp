@@ -35,39 +35,12 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
     }
-    // TODO can we omptimize this?
-    // we might not need to do this if we keep a variable keeping track of this
-    // we could change it when a widgets is appended to a layout
-    // and when the widget changes fillpolicy it could notify its parent?????
-    // in fact we could store the non_expandable widgets separately for both align policies
-    // obviously this would also need to change when destroying a widget (which i should implement :^)
-    // the optimization would be worth it on a higher number of widgets
-    // we know that the lib can do about 70k buttons in a scrolledbox smoothly in -O2
-    // and this would get rid off of one loop through all the buttons
-    // TODO we should probably do the above in sizeHint, and either
-    // store the expandable widgets for both alignments or store the current
-    // and reevaluate after changing the policy
-    Align parent_layout = this->alignPolicy();
-    for (Widget* child : this->children) {
-        if (child->isVisible()) {
-            Fill child_layout = child->fillPolicy();
-            if (parent_layout == Align::Vertical) {
-                if (child_layout == Fill::Horizontal || child_layout == Fill::None) {
-                    non_expandable_widgets += 1;
-                }
-            } else if (parent_layout == Align::Horizontal) {
-                if (child_layout == Fill::Vertical || child_layout == Fill::None) {
-                    non_expandable_widgets += 1;
-                }
-            }
-        }
-    }
 
     // TODO we wouldnt need to do most of this part unless the layout changed
     // (if we are going to implement bsearch!)
     // we would only need to go over every widget and redraw the visible ones
-    int child_count = this->m_visible_children - non_expandable_widgets;
-    if (!child_count) child_count = 1; // Protects from division by zero
+    Align parent_layout = this->alignPolicy();
+    int generic_non_expandable_widgets;
     Point pos = Point(rect.x, rect.y);
     float generic_total_layout_length;
     float *generic_position_coord; // Needs to be a ptr because the value will change.
@@ -78,6 +51,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     float generic_app_length;
     switch (parent_layout) {
         case Align::Vertical:
+            generic_non_expandable_widgets = this->m_vertical_non_expandable;
             generic_total_layout_length = this->m_size.h;
             generic_position_coord = &pos.y;
             rect_length = rect.h;
@@ -85,6 +59,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_app_length = app_size.h;
             break;
         case Align::Horizontal:
+            generic_non_expandable_widgets = this->m_horizontal_non_expandable;
             generic_total_layout_length = this->m_size.w;
             generic_position_coord = &pos.x;
             rect_length = rect.w;
@@ -92,6 +67,8 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_app_length = app_size.w;
             break;
     }
+    int child_count = this->m_visible_children - non_expandable_widgets;
+    if (!child_count) child_count = 1; // Protects from division by zero
     float expandable_length = (rect_length - generic_total_layout_length) / child_count;
     if (expandable_length < 0) expandable_length = 0;
     for (Widget* child : this->children) {
@@ -163,7 +140,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 if (child->isVisible()) {
                     child->draw(dc, widget_rect);
                 }
-                if (*generic_position_coord > generic_app_length) {
+                if (*generic_position_coord > generic_app_length) { // TODO i wanna say generic_app_length could just be rect_length?
                     break;
                 }
         }
@@ -177,6 +154,8 @@ Size Box::sizeHint(DrawingContext *dc) {
     // `hasLayoutChanged()` is necessary here because the Box won't know
     // that it's sizeHint() needs to be recalculated because of it's children.
     unsigned int visible = 0;
+    unsigned int vertical_non_expandable = 0;
+    unsigned int horizontal_non_expandable = 0;
     if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
         Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {
@@ -188,6 +167,9 @@ Size Box::sizeHint(DrawingContext *dc) {
                         size.h = s.h;
                     }
                     visible += child->proportion();
+                    if (child->fillPolicy() == Fill::Vertical || child->fillPolicy() == Fill::None) {
+                        horizontal_non_expandable++;
+                    }
                 }
             }
         } else {
@@ -199,9 +181,14 @@ Size Box::sizeHint(DrawingContext *dc) {
                         size.w = s.w;
                     }
                     visible += child->proportion();
+                    if (child->fillPolicy() == Fill::Horizontal || child->fillPolicy() == Fill::None) {
+                        vertical_non_expandable++;
+                    }
                 }
             }
         }
+        this->m_vertical_non_expandable = vertical_non_expandable;
+        this->m_horizontal_non_expandable = horizontal_non_expandable;
         this->m_visible_children = visible;
         this->m_size = size;
         this->m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
