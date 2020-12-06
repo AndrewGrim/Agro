@@ -33,8 +33,8 @@ void Button::draw(DrawingContext *dc, Rect rect) {
 Size Button::sizeHint(DrawingContext *dc) {
     if (this->m_size_changed) {
         Size size = dc->measureText(text());
-        size.w += this->m_padding * 2;
-        size.h += this->m_padding * 2;
+        size.w += this->m_padding * 2 + this->m_border_width;
+        size.h += this->m_padding * 2 + this->m_border_width;
 
         this->m_size = size;
         this->m_size_changed = false;
