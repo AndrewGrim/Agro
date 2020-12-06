@@ -46,9 +46,13 @@
 
             Size m_size; // TODO get rid of this, change to rect?
 
-            /// `onReady` get called when the Application has finished its first draw()
+            /// `onReady` gets called when the Application has finished its first draw()
             /// but before entering the event loop.
             std::function<void(Application*)> onReady = nullptr;
+
+            /// `onQuit` gets called when the Application is about to exit but
+            /// before anything is freed.
+            std::function<bool(Application*)> onQuit = nullptr;
 
             Application(const char* title = "Application", Size size = Size(400, 400));
 

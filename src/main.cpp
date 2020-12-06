@@ -16,6 +16,14 @@
 
 int main() { 
     Application *app = new Application("Application", Size(500, 500));
+    app->onReady = [](Application *app) {
+        println("READY");
+    };
+    app->onQuit = [](Application *app) -> bool {
+        println("QUIT");
+        return true;
+        // return false; // to not quit 
+    };
     app->setMainWidget(new Box(Align::Horizontal));
     app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
             Color colors[] = {

@@ -125,6 +125,11 @@ void Application::run() {
                     }
                     break;
                 case SDL_QUIT:
+                    if (this->onQuit) {
+                        if (!this->onQuit(this)) {
+                            break;
+                        }
+                    }
                     goto EXIT;
             }
             if (this->m_last_event.second == EventHandler::Accepted) {
