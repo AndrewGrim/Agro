@@ -15,9 +15,7 @@ void Box::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     dc->fillRect(rect, this->background());
 
-    // TODO probably can remove this, need to double check
-    // as in the scissor test
-    // actually maybe not because we would draw one over the viewport?
+    // TODO double check if this is even needed anymore, need scrolledbox to check
     dc->render();
     glEnable(GL_SCISSOR_TEST);
         Size window = ((Application*)this->app)->m_size;
@@ -28,124 +26,138 @@ void Box::draw(DrawingContext *dc, Rect rect) {
 }
 
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
-    // TODO double check if scissor test is needed, i think it is
-    // also dont relayout children if the app layout hasnt changed?
-    // ^ i think that would require setting the rect which we would need for bsearch anyway
-    int non_expandable_widgets = 0;
     if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
-    }
-
-    // TODO we wouldnt need to do most of this part unless the layout changed
-    // (if we are going to implement bsearch!)
-    // we would only need to go over every widget and redraw the visible ones
-    Align parent_layout = this->alignPolicy();
-    int generic_non_expandable_widgets;
-    Point pos = Point(rect.x, rect.y);
-    float generic_total_layout_length;
-    float *generic_position_coord; // Needs to be a ptr because the value will change.
-    float rect_length;
-    Size size;
-    float *generic_length; // Needs to be a ptr because the value will change.
-    Size app_size = ((Application*)this->app)->m_size;
-    float generic_app_length;
-    switch (parent_layout) {
-        case Align::Vertical:
-            generic_non_expandable_widgets = this->m_vertical_non_expandable;
-            generic_total_layout_length = this->m_size.h;
-            generic_position_coord = &pos.y;
-            rect_length = rect.h;
-            generic_length = &size.h;
-            generic_app_length = app_size.h;
-            break;
-        case Align::Horizontal:
-            generic_non_expandable_widgets = this->m_horizontal_non_expandable;
-            generic_total_layout_length = this->m_size.w;
-            generic_position_coord = &pos.x;
-            rect_length = rect.w;
-            generic_length = &size.w;
-            generic_app_length = app_size.w;
-            break;
-    }
-    int child_count = this->m_visible_children - non_expandable_widgets;
-    if (!child_count) child_count = 1; // Protects from division by zero
-    float expandable_length = (rect_length - generic_total_layout_length) / child_count;
-    if (expandable_length < 0) expandable_length = 0;
-    for (Widget* child : this->children) {
-        Size child_hint = child->sizeHint(dc);
+        int non_expandable_widgets = 0;
+        Align parent_layout = this->alignPolicy();
+        int generic_non_expandable_widgets;
+        Point pos = Point(rect.x, rect.y);
+        float generic_total_layout_length;
+        float *generic_position_coord; // Needs to be a ptr because the value will change.
+        float rect_length;
+        Size size;
+        float *generic_length; // Needs to be a ptr because the value will change.
+        Size app_size = ((Application*)this->app)->m_size;
+        float generic_app_length;
         switch (parent_layout) {
             case Align::Vertical:
-                switch (child->fillPolicy()) {
-                    case Fill::Both: {
-                        size = Size { 
-                            rect.w > child_hint.w ? rect.w : child_hint.w, 
-                            child_hint.h + (expandable_length * child->proportion())
-                        };
-                        break;
-                    }
-                    case Fill::Vertical: {
-                        size = Size { 
-                            child_hint.w, 
-                            child_hint.h + (expandable_length * child->proportion())
-                        };
-                        break;
-                    }
-                    case Fill::Horizontal:
-                        size = Size { 
-                            rect.w > child_hint.w ? rect.w : child_hint.w, 
-                            child_hint.h 
-                        };
-                        break;
-                    case Fill::None:
-                    default:
-                        size = child_hint;
-                }
+                generic_non_expandable_widgets = this->m_vertical_non_expandable;
+                generic_total_layout_length = this->m_size.h;
+                generic_position_coord = &pos.y;
+                rect_length = rect.h;
+                generic_length = &size.h;
+                generic_app_length = app_size.h;
                 break;
             case Align::Horizontal:
-                switch (child->fillPolicy()) {
-                    case Fill::Both: {
+                generic_non_expandable_widgets = this->m_horizontal_non_expandable;
+                generic_total_layout_length = this->m_size.w;
+                generic_position_coord = &pos.x;
+                rect_length = rect.w;
+                generic_length = &size.w;
+                generic_app_length = app_size.w;
+                break;
+        }
+        int child_count = this->m_visible_children - non_expandable_widgets;
+        if (!child_count) child_count = 1; // Protects from division by zero
+        float expandable_length = (rect_length - generic_total_layout_length) / child_count;
+        if (expandable_length < 0) expandable_length = 0;
+        for (Widget* child : this->children) {
+            Size child_hint = child->sizeHint(dc);
+            switch (parent_layout) {
+                case Align::Vertical:
+                    switch (child->fillPolicy()) {
+                        case Fill::Both: {
                             size = Size { 
-                                child_hint.w + (expandable_length * child->proportion()), 
-                                rect.h > child_hint.h ? rect.h : child_hint.h
+                                rect.w > child_hint.w ? rect.w : child_hint.w, 
+                                child_hint.h + (expandable_length * child->proportion())
                             };
                             break;
                         }
-                        case Fill::Vertical:
+                        case Fill::Vertical: {
                             size = Size { 
                                 child_hint.w, 
-                                rect.h > child_hint.h ? rect.h : child_hint.h 
-                            };
-                            break;
-                        case Fill::Horizontal: {
-                            size = Size { 
-                                child_hint.w + (expandable_length * child->proportion()), 
-                                child_hint.h
+                                child_hint.h + (expandable_length * child->proportion())
                             };
                             break;
                         }
+                        case Fill::Horizontal:
+                            size = Size { 
+                                rect.w > child_hint.w ? rect.w : child_hint.w, 
+                                child_hint.h 
+                            };
+                            break;
                         case Fill::None:
                         default:
                             size = child_hint;
+                    }
                     break;
-                }
-        }
-        Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-        if (generic_position_coord < 0) {
-            if (*generic_position_coord + *generic_length < 0) {
-                child->rect = widget_rect;
+                case Align::Horizontal:
+                    switch (child->fillPolicy()) {
+                        case Fill::Both: {
+                                size = Size { 
+                                    child_hint.w + (expandable_length * child->proportion()), 
+                                    rect.h > child_hint.h ? rect.h : child_hint.h
+                                };
+                                break;
+                            }
+                            case Fill::Vertical:
+                                size = Size { 
+                                    child_hint.w, 
+                                    rect.h > child_hint.h ? rect.h : child_hint.h 
+                                };
+                                break;
+                            case Fill::Horizontal: {
+                                size = Size { 
+                                    child_hint.w + (expandable_length * child->proportion()), 
+                                    child_hint.h
+                                };
+                                break;
+                            }
+                            case Fill::None:
+                            default:
+                                size = child_hint;
+                        break;
+                    }
             }
-            else goto DRAW_WIDGET;
-        } else {
-            DRAW_WIDGET:
-                if (child->isVisible()) {
-                    child->draw(dc, widget_rect);
+            Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
+            if (generic_position_coord < 0) {
+                if (*generic_position_coord + *generic_length < 0) {
+                    child->rect = widget_rect;
                 }
-                if (*generic_position_coord > generic_app_length) { // TODO i wanna say generic_app_length could just be rect_length?
-                    break;
-                }
+                else goto DRAW_WIDGET;
+            } else {
+                DRAW_WIDGET:
+                    if (child->isVisible()) {
+                        child->draw(dc, widget_rect);
+                    }
+                    if (*generic_position_coord > generic_app_length) {
+                        break;
+                    }
+            }
+            if (child->isVisible()) {
+                *generic_position_coord += *generic_length;
+            }
         }
-        if (child->isVisible()) {
-            *generic_position_coord += *generic_length;
+    } else {
+        float *generic_child_coord;
+        float generic_app_length;
+        Rect child_rect;
+        Size app_size = ((Application*)this->app)->m_size;
+        if (this->alignPolicy() == Align::Vertical) {
+            generic_child_coord = &child_rect.y;
+            generic_app_length = app_size.h;
+        } else {
+            generic_child_coord = &child_rect.x;
+            generic_app_length = app_size.w;
+        }
+        for (Widget* child : this->children) {
+            child_rect = child->rect;
+            if (child->isVisible()) {
+                child->draw(dc, child->rect);
+            }
+            if (*generic_child_coord > generic_app_length) {
+                break;
+            }
         }
     }
 }
@@ -230,10 +242,7 @@ void Box::setAlignPolicy(Align align_policy) {
     if (this->m_align_policy != align_policy) {
         this->m_align_policy = align_policy;
         this->update();
-        // this->layout
-        // TODO calling layout here might be necessary if
-        // we are going for the bsearch impementation
-        // and the if layout changed in layouts layoutChildren()
+        this->layout();
     }
 }
 
