@@ -54,8 +54,6 @@ int main() {
             println("QUIT");
             return true;
             // return false; // to not quit 
-        // return false; // to not quit 
-            // return false; // to not quit 
         };
         app->setMainWidget(new Box(Align::Horizontal));
         app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
