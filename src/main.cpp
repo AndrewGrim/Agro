@@ -14,6 +14,35 @@
 // #include "controls/scrolledbox.hpp"
 // #include "controls/lineedit.hpp"
 
+struct AllocatedMemory {
+    size_t allocated = 0;
+    size_t freed = 0;
+
+    friend std::ostream& operator<<(std::ostream &os, const AllocatedMemory &am) {
+        printf("Memory { allocated: %f MB, freed: %f MB }", (float)am.allocated / 1024 / 1024, (float)am.freed / 1024 / 1024);
+        return os;
+    }
+};
+
+static AllocatedMemory allocated_memory;
+
+void* operator new(size_t size) {
+    allocated_memory.allocated += size;
+    return malloc(size);
+}
+
+// void* operator new[](size_t size) {
+
+// }
+
+void  operator delete(void *memory, size_t size) {
+    allocated_memory.freed += size;
+    free(memory);
+}
+
+// void operator delete[](void *memory) {
+
+// }
 int main() { 
     Application *app = new Application("Application", Size(500, 500));
     app->onReady = [](Application *app) {
