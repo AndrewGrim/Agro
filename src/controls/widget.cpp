@@ -10,15 +10,32 @@ Widget::~Widget() {
 }
 
 Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
+    if (widget->parent) {
+        widget->parent->remove(widget->parent_index);
+    }
+    widget->parent = this;
     widget->setFillPolicy(fill_policy);
     widget->setProportion(proportion);
     this->children.push_back(widget);
+    widget->parent_index = this->children.size() - 1;
     if (this->app) widget->app = this->app;
     this->m_size_changed = true;
     this->update();
     this->layout();
 
     return this;
+}
+
+Widget* Widget::remove(size_t parent_index) {
+    Widget *child = this->children[parent_index];
+    this->children.erase(this->children.begin() + parent_index);
+    size_t i = 0;
+    for (Widget *child : this->children) {
+        child->parent_index = i;
+        i++;
+    }
+
+    return child;
 }
 
 
@@ -122,6 +139,10 @@ void Widget::update() {
 }
 
 void Widget::layout() {
+    // maybe make a method in app to resend the last event?
+    // TODO we might want layout to invalidate the state
+    // right now when we swap widgets they still present themselves
+    // with a hover effect even though they are in a different place
     if (this->app) {
         ((Application*)this->app)->layout();
     }

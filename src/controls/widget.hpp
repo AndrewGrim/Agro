@@ -22,6 +22,8 @@
 
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
+
+            size_t parent_index = 0;
             
             /// Stores all the child Widgets of this Widget.
             /// Its not meant to be interacted with directly but
@@ -92,6 +94,8 @@
             /// end of the children dynamic array.
             virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
 
+            virtual Widget* remove(size_t parent_index);
+
             /// This method is responsible for returning the minimum size
             /// for the widget.
             /// It is directly used by any layout widgets for computing
@@ -142,6 +146,8 @@
             
             /// Used to check if the Widget implements a Scrollable interface.
             virtual bool isScrollable();
+
+            // TODO acceptsInput(); this would be used for text widgets, would it be used for shortcuts as well??
             
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
@@ -194,6 +200,23 @@
             unsigned int proportion();
 
             void setProportion(unsigned int proportion);
+
+            // TODO hmm.. we might need to set the parent for every widget
+            // then if the widget has a parent, remove its from its children
+            // and do any deleting operations that are required.
+            // we should be easily able to set the parent in append
+            // how would we know the index in the children vector??
+            // i guess just compare the pointers, so its not going to be super efficient
+            // we could store the index in the widget, but it would have to be updated
+            // whenever it would move around in the children vector, thankfully it doesnt atm
+            // we could also do some operations when append finds that a widget already has a parent
+            // to prevent double inserts and so we could easily move ownership
+            // what would happen if you appended the mainWidget somewhere?? just dont do it dog
+            // well actually the main widget could have an application pointer as its parent? hmm
+            // i think it would be better if the parent* would be null for mainWidget, otherwise
+            // we would need to deal with fucked casting and this way we know that the widget
+            // either hasnt been appended anywhere or its the mainWidget
+            // virtual void destroy();
 
         protected:
             bool m_is_hovered = false;
