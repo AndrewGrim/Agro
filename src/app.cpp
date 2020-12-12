@@ -149,11 +149,7 @@ void Application::run() {
 }
 
 Widget* Application::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
-    widget->setFillPolicy(fill_policy);
-    widget->setProportion(proportion);
-    this->m_main_widget->children.push_back(widget);
-    widget->app = this;
-
+    this->m_main_widget->append(widget, fill_policy, proportion);
     return this->m_main_widget;
 }
 
