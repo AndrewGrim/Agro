@@ -21,6 +21,8 @@ DrawingContext::DrawingContext(void *app) {
 }
 
 DrawingContext::~DrawingContext() {
+    delete quadRenderer;
+    delete textRenderer;
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {

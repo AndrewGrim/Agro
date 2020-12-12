@@ -30,8 +30,12 @@ Application::Application(const char* title, Size size) {
 }
 
 Application::~Application() {
-    // TODO recursively delete
     delete m_main_widget;
+    delete m_state;
+    delete dc;
+    SDL_GL_DeleteContext(this->m_sdl_context);
+    SDL_DestroyWindow(this->m_win);
+    SDL_Quit();
 }
 
 void Application::draw() {
@@ -144,9 +148,7 @@ void Application::run() {
     }
 
     EXIT:
-        SDL_GL_DeleteContext(this->m_sdl_context);
-        SDL_DestroyWindow(this->m_win);
-        SDL_Quit();
+        delete this;
 }
 
 Widget* Application::append(Widget* widget, Fill fill_policy, unsigned int proportion) {

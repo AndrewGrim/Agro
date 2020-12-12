@@ -6,7 +6,9 @@ Widget::Widget() {
 }
 
 Widget::~Widget() {
-
+    for (Widget *child : this->children) {
+        delete child;
+    }
 }
 
 Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
