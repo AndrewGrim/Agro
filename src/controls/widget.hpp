@@ -94,8 +94,10 @@
             /// end of the children dynamic array.
             virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
 
+            /// This method is used to remove a Widget from parent's children based on the given index.
             virtual Widget* remove(size_t parent_index);
 
+            /// This method is used to free the Widget. It will also remove it from its parent's children when applicable.
             virtual void destroy();
 
             /// This method is responsible for returning the minimum size
@@ -104,7 +106,7 @@
             /// the layout extents.
             ///
             /// A layout widget should return the total size of the layout.
-            /// Which most often would take the form of total children size
+            /// In the Box layout this would take the form of total children size
             /// on the alignment axis and max children size for the other axis.
             // TODO add example from box layout
             // TODO note about performance and avoiding recomputing the sizeHint
