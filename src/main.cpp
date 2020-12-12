@@ -14,85 +14,52 @@
 // #include "controls/scrolledbox.hpp"
 // #include "controls/lineedit.hpp"
 
-struct AllocatedMemory {
-    size_t allocated = 0;
-    size_t freed = 0;
-
-    friend std::ostream& operator<<(std::ostream &os, const AllocatedMemory &am) {
-        printf("Memory { allocated: %f MB, freed: %f MB }", (float)am.allocated / 1024 / 1024, (float)am.freed / 1024 / 1024);
-        return os;
-    }
-};
-
-static AllocatedMemory allocated_memory;
-
-void* operator new(size_t size) {
-    allocated_memory.allocated += size;
-    return malloc(size);
-}
-
-// void* operator new[](size_t size) {
-
-// }
-
-void  operator delete(void *memory, size_t size) {
-    allocated_memory.freed += size;
-    free(memory);
-}
-
-// void operator delete[](void *memory) {
-
-// }
-
 int main() { 
-    {
-        Application *app = new Application("Application", Size(500, 500));
-        app->onReady = [](Application *app) {
-            println("READY");
-        };
-        app->onQuit = [](Application *app) -> bool {
-            println("QUIT");
-            return true;
-            // return false; // to not quit 
-        };
-        app->setMainWidget(new Box(Align::Horizontal));
-        app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
-                Color colors[] = {
-                    Color(1, 0.19, 0.19), Color(1, 0.6), Color(1, 1),
-                    Color(0.19, 0.19, 1), Color(0, 0.5, 1), Color(0, 1, 1),
-                };
-                int button_count = 1;
-                int color_index = 0;
-                Box *left = new Box(Align::Vertical);
-                app->append(left, Fill::Both, 10);
-                Box *middle = new Box(Align::Vertical);
-                app->append(middle, Fill::Both, 10);
-                Box *right = new Box(Align::Vertical);
-                    Button *add = new Button("Add Button");
-                        add->onMouseDown = [&](MouseEvent event) {
-                            Button *b = new Button(std::to_string(button_count));
-                                b->setBackground(colors[color_index]);
-                                b->onMouseClick = [=](MouseEvent event) {
-                                    time_t t = std::time(nullptr);
-                                    b->setText(std::asctime(std::localtime(&t)));
-                                    if (b->parent == left) {
-                                        middle->append(b, Fill::Both);
-                                    } else {
-                                        left->append(b, Fill::Both);
-                                    }
-                                };
-                            button_count++;
-                            color_index++;
-                            if (color_index == 6) {
-                                color_index = 0;
-                            }
-                            left->append(b, Fill::Both);
-                        };
-                    right->append(add, Fill::Both);
-                app->append(right, Fill::Both);
-        app->run();
-    }
-    println(allocated_memory);
+    Application *app = new Application("Application", Size(500, 500));
+    app->onReady = [](Application *app) {
+        println("READY");
+    };
+    app->onQuit = [](Application *app) -> bool {
+        println("QUIT");
+        return true;
+        // return false; // to not quit 
+    };
+    app->setMainWidget(new Box(Align::Horizontal));
+    app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
+            Color colors[] = {
+                Color(1, 0.19, 0.19), Color(1, 0.6), Color(1, 1),
+                Color(0.19, 0.19, 1), Color(0, 0.5, 1), Color(0, 1, 1),
+            };
+            int button_count = 1;
+            int color_index = 0;
+            Box *left = new Box(Align::Vertical);
+            app->append(left, Fill::Both, 10);
+            Box *middle = new Box(Align::Vertical);
+            app->append(middle, Fill::Both, 10);
+            Box *right = new Box(Align::Vertical);
+                Button *add = new Button("Add Button");
+                    add->onMouseDown = [&](MouseEvent event) {
+                        Button *b = new Button(std::to_string(button_count));
+                            b->setBackground(colors[color_index]);
+                            b->onMouseClick = [=](MouseEvent event) {
+                                time_t t = std::time(nullptr);
+                                b->setText(std::asctime(std::localtime(&t)));
+                                if (b->parent == left) {
+                                    middle->append(b, Fill::Both);
+                                } else {
+                                    left->append(b, Fill::Both);
+                                }
+                            };
+                        button_count++;
+                        color_index++;
+                        if (color_index == 6) {
+                            color_index = 0;
+                        }
+                        left->append(b, Fill::Both);
+                    };
+                right->append(add, Fill::Both);
+            app->append(right, Fill::Both);
+    app->run();
 
     return 0; 
 }
