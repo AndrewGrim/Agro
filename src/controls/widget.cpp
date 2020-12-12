@@ -36,6 +36,9 @@ Widget* Widget::remove(size_t parent_index) {
         child->parent_index = i;
         i++;
     }
+    this->m_size_changed = true;
+    this->update();
+    this->layout();
 
     return child;
 }
