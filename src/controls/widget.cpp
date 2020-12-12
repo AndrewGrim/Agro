@@ -40,6 +40,13 @@ Widget* Widget::remove(size_t parent_index) {
     return child;
 }
 
+void Widget::destroy() {
+    if (this->parent) {
+        this->parent->remove(this->parent_index);
+    }
+    delete this;
+}
+
 
 Color Widget::background() {
     return this->m_bg;

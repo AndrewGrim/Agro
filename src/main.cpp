@@ -58,6 +58,13 @@ int main() {
                         left->append(b, Fill::Both);
                     };
                 right->append(add, Fill::Both);
+                Button *remove = new Button("Remove");
+                    remove->onMouseClick = [&](MouseEvent event) {
+                        if (left->children.size() > 0) {
+                            left->remove(left->children.size() - 1);
+                        }
+                    };
+                right->append(remove, Fill::Both);
             app->append(right, Fill::Both);
     app->run();
 
