@@ -68,6 +68,7 @@ Widget* Application::mainWidget() {
 
 void Application::setMainWidget(Widget *widget) {
     this->m_main_widget = widget;
+    widget->app = (void*)this;
     for (Widget *child : widget->children) {
         child->app = this;
         child->attachApp(this);
@@ -83,11 +84,7 @@ void Application::run() {
     dc->textRenderer->load("fonts/DejaVu/DejaVuSans.ttf", 14);
     dc->textRenderer->shader.use();
     dc->textRenderer->shader.setInt("text", 0); // TODO just hard code it? then the above statment would be useless
-    this->m_main_widget->app = (void*)this;
-    for (Widget *child : this->m_main_widget->children) {
-        child->app = (void*)this;
-        child->attachApp((void*)this);
-    }
+    this->setMainWidget(this->m_main_widget);
     this->show();
     if (this->onReady) {
         this->onReady(this);
