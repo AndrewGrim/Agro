@@ -30,6 +30,9 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
 
 Widget* Widget::remove(size_t parent_index) {
     Widget *child = this->children[parent_index];
+    child->setPressed(false);
+    child->setHovered(false);
+    child->setFocused(false);
     this->children.erase(this->children.begin() + parent_index);
     size_t i = 0;
     for (Widget *child : this->children) {
