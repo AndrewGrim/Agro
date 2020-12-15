@@ -23,6 +23,7 @@ DrawingContext::DrawingContext(void *app) {
 DrawingContext::~DrawingContext() {
     delete quadRenderer;
     delete textRenderer;
+    delete default_font;
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {
@@ -45,15 +46,15 @@ void DrawingContext::render() {
 void DrawingContext::fillText(std::string text, float x, float y, Color color, float scale) {
     if (lastRenderer != (void*)textRenderer) quadRenderer->render();
     lastRenderer = (void*)textRenderer;
-    textRenderer->fillText(text, x, y, color, scale);
+    textRenderer->fillText(this->default_font, text, x, y, color, scale);
 }
 
 Size DrawingContext::measureText(std::string text, float scale) {
-    return textRenderer->measureText(text, scale);
+    return textRenderer->measureText(this->default_font, text, scale);
 }
 
 Size DrawingContext::measureText(char c, float scale) {
-    return textRenderer->measureText(c, scale);
+    return textRenderer->measureText(this->default_font, c, scale);
 }
 
 void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {

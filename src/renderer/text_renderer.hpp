@@ -2,6 +2,8 @@
     #define TEXT_RENDERER_HPP
 
     #include <map>
+    #include <string>
+    #include <vector>
 
     #include <glad/glad.h>
     #include <glm/glm.hpp>
@@ -15,56 +17,56 @@
     #include "shader.hpp"
     #include "batch.hpp"
 
-    struct TextRenderer {
-        struct TextCharacter {
+    #define textureSlot(index) GL_TEXTURE##index
+
+    struct Font {
+        enum class Type {
+            Sans,
+            Serif,
+            Mono,
+        };
+
+        struct Character {
             glm::ivec2 size;
             glm::ivec2 bearing;
             long int advance;
             float textureX;
         };
 
+        std::map<char, Font::Character> characters;
+        unsigned int max_height = 0;
+        unsigned int pixel_size = 0;
+        unsigned int atlas_width = 0;
+        unsigned int atlas_height = 0;
+        unsigned int tab_width = 4;
+        Type type;
+        std::string file_path;
+        unsigned int atlas_ID;
+        unsigned int texture_slot; // TODO probably not needed here but rather somewhere like a texture struct
+
+        Font(std::string file_path, unsigned int pixel_size, Type type);
+        ~Font();
+
+        private:
+            void load();
+    };
+
+    struct TextRenderer {
+        // TODO add some sort of font manager
         struct Vertex {
             float position[2];
             float textureUV[2];
             float color[4];
+            float texture_index;
         };
         
-        std::map<char, TextCharacter> characters;
+        std::vector<Font> fonts;
         void *m_app = nullptr;
-        int atlasWidth = 0;
-        int atlasHeight = 0;
-        unsigned int atlasID;
-        Shader shader = Shader(
-            "#version 330 core\n"
-            "layout (location = 0) in vec2 position;\n"
-            "layout (location = 1) in vec2 textureUV;\n"
-            "layout (location = 2) in vec4 aColor;\n"
-            "\n"
-            "out vec2 TexCoords;\n"
-            "out vec4 color;\n"
-            "\n"
-            "uniform mat4 projection;\n"
-            "\n"
-            "void main()\n"
-            "{\n"
-                "gl_Position = projection * vec4(position, 0.0, 1.0);\n"
-                "TexCoords = textureUV;\n"
-                "color = aColor;\n"
-            "}", 
-            "#version 330 core\n"
-            "in vec2 TexCoords;\n"
-            "in vec4 color;\n"
-            "\n"
-            "out vec4 fColor;\n"
-            "\n"
-            "uniform sampler2D text;\n"
-            "\n"
-            "void main()\n"
-            "{    \n"
-                "vec4 sampled = vec4(1.0, 1.0, 1.0, texture(text, TexCoords).r);\n"
-                "fColor = color * sampled;\n"
-            "}"  
-        );
+        int max_texture_slots;
+        int current_texture_slot = 0;
+        unsigned int gl_texture_begin = GL_TEXTURE0;
+        std::vector<unsigned int> currently_bound_textures;
+        Shader shader;
         unsigned int index = 0;
         unsigned int count = 0;
         Vertex vertices[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
@@ -72,10 +74,9 @@
 
         TextRenderer(unsigned int *indices, void *app);
         ~TextRenderer();
-        void load(std::string font, unsigned int fontSize);
-        void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
-        Size measureText(std::string text, float scale = 1.0f);
-        Size measureText(char c, float scale = 1.0f);
+        void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        Size measureText(Font *font, std::string text, float scale = 1.0f);
+        Size measureText(Font *font, char c, float scale = 1.0f);
         void reset();
         void check();
         void render();

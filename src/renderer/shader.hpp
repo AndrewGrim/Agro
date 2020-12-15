@@ -17,33 +17,9 @@
         public:
             unsigned int ID;
 
-            Shader(bool file, const char *vertexPath, const char *fragmentPath) {
-                std::string vertex_shader;
-                std::string fragment_shader;
-                std::ifstream vShaderFile;
-                std::ifstream fShaderFile;
+            Shader() {
                 
-                vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-                fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
-
-                try {
-                    vShaderFile.open(vertexPath);
-                    fShaderFile.open(fragmentPath);
-                    std::stringstream vShaderStream, fShaderStream;
-                    
-                    vShaderStream << vShaderFile.rdbuf();
-                    fShaderStream << fShaderFile.rdbuf();
-                    
-                    vShaderFile.close();
-                    fShaderFile.close();
-                    
-                    vertex_shader = vShaderStream.str();
-                    fragment_shader = fShaderStream.str();
-                } catch (std::ifstream::failure e) {
-                    println("ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ");
-                }
-                compile(vertex_shader.c_str(), fragment_shader.c_str());
-            };
+            }
 
             Shader(const char *vertext_shader, const char *fragment_shader) {
                 compile(vertext_shader, fragment_shader);

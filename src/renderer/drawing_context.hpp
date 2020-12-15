@@ -20,6 +20,7 @@
         QuadRenderer *quadRenderer;
         TextRenderer *textRenderer;
         void *lastRenderer = (void*)quadRenderer;
+        Font *default_font = nullptr;
 
         DrawingContext(void *app);
         ~DrawingContext();

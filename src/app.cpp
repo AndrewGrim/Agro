@@ -81,9 +81,7 @@ void Application::show() {
 }
 
 void Application::run() {
-    dc->textRenderer->load("fonts/DejaVu/DejaVuSans.ttf", 14);
-    dc->textRenderer->shader.use();
-    dc->textRenderer->shader.setInt("text", 0); // TODO just hard code it? then the above statment would be useless
+    this->dc->default_font = new Font("fonts/DejaVu/DejaVuSans.ttf", 14, Font::Type::Sans);
     this->setMainWidget(this->m_main_widget);
     this->show();
     if (this->onReady) {
