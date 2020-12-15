@@ -312,3 +312,15 @@ void Widget::setProportion(unsigned int proportion) {
         this->layout();
     }
 }
+
+Font* Widget::font() {
+    return this->m_font;
+}
+
+void Widget::setFont(Font *font) {
+    if (this->m_font != font) {
+        this->m_font = font;
+        this->update();
+        this->layout();
+    }
+}

@@ -6,7 +6,6 @@ Button::Button(std::string text) {
 }
 
 Button::~Button() {
-
 }
 
 const char* Button::name() {
@@ -27,12 +26,12 @@ void Button::draw(DrawingContext *dc, Rect rect) {
     // draw border and shrink rectangle to prevent drawing over the border
     rect = dc->drawBorder(rect, this->m_border_width, color);
     dc->fillRect(rect, color);
-    dc->fillTextAligned(this->m_text, this->m_text_align, rect, this->m_padding);
+    dc->fillTextAligned(this->font() ? this->font() : dc->default_font, this->m_text, this->m_text_align, rect, this->m_padding);
 }
 
 Size Button::sizeHint(DrawingContext *dc) {
     if (this->m_size_changed) {
-        Size size = dc->measureText(text());
+        Size size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
         size.w += this->m_padding * 2 + this->m_border_width;
         size.h += this->m_padding * 2 + this->m_border_width;
 

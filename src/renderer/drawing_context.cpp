@@ -43,21 +43,21 @@ void DrawingContext::render() {
     textRenderer->render();
 }
 
-void DrawingContext::fillText(std::string text, float x, float y, Color color, float scale) {
+void DrawingContext::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
     if (lastRenderer != (void*)textRenderer) quadRenderer->render();
     lastRenderer = (void*)textRenderer;
-    textRenderer->fillText(this->default_font, text, x, y, color, scale);
+    textRenderer->fillText(font, text, x, y, color, scale);
 }
 
-Size DrawingContext::measureText(std::string text, float scale) {
-    return textRenderer->measureText(this->default_font, text, scale);
+Size DrawingContext::measureText(Font *font, std::string text, float scale) {
+    return textRenderer->measureText(font, text, scale);
 }
 
-Size DrawingContext::measureText(char c, float scale) {
-    return textRenderer->measureText(this->default_font, c, scale);
+Size DrawingContext::measureText(Font *font, char c, float scale) {
+    return textRenderer->measureText(font, c, scale);
 }
 
-void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {
+void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {
     // The reason for the additional calculations here is because in order
     // to avoid horrible texture wrapping issues on text we need to give it a
     // nice even number to start from.
@@ -79,25 +79,28 @@ void DrawingContext::fillTextAligned(std::string text, TextAlignment alignment, 
     switch (alignment) {
         case TextAlignment::Center:
             this->fillText(
+                font,
                 text,
-                normalize(rect.x + (rect.w * 0.5) - (this->measureText(text).w * 0.5)),
-                normalize(rect.y + (rect.h * 0.5) - (this->measureText(text).h * 0.5)),
+                normalize(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5)),
+                normalize(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
                 color
             );
             break;
         case TextAlignment::Right:
             this->fillText(
+                font,
                 text, 
-                normalize((rect.x + rect.w) - (this->measureText(text).w + padding)),
-                normalize(rect.y + (rect.h * 0.5) - (this->measureText(text).h * 0.5)),
+                normalize((rect.x + rect.w) - (this->measureText(font, text).w + padding)),
+                normalize(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
                 color
             );
             break;
         default:
             this->fillText(
+                font,
                 text, 
                 normalize(rect.x + padding),
-                normalize(rect.y + (rect.h * 0.5) - (this->measureText(text).h * 0.5)),
+                normalize(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
                 color
             );
     }

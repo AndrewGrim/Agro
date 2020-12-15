@@ -16,11 +16,13 @@
 
 int main() { 
     Application *app = new Application("Application", Size(500, 500));
+    Font *font = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 18, Font::Type::Mono);
     app->onReady = [](Application *app) {
         println("READY");
     };
-    app->onQuit = [](Application *app) -> bool {
+    app->onQuit = [&](Application *app) -> bool {
         println("QUIT");
+        delete font;
         return true;
         // return false; // to not quit 
     };
@@ -46,8 +48,10 @@ int main() {
                                 b->setText(std::asctime(std::localtime(&t)));
                                 if (b->parent == left) {
                                     middle->append(b, Fill::Both);
+                                    b->setFont(font);
                                 } else {
                                     left->append(b, Fill::Both);
+                                    b->setFont(nullptr);
                                 }
                             };
                         button_count++;

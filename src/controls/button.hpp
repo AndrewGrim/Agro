@@ -5,6 +5,7 @@
 
     #include "widget.hpp"
     #include "../common/align.hpp"
+    #include "../renderer/text_renderer.hpp"
 
     class Button : public Widget {
         public:

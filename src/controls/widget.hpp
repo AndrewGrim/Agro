@@ -205,6 +205,10 @@
 
             void setProportion(unsigned int proportion);
 
+            Font* font();
+
+            void setFont(Font *font);
+
         protected:
             bool m_is_hovered = false;
             bool m_is_pressed = false;
@@ -235,5 +239,7 @@
             // as an altered fg, bg color? dynamic i mean
             Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
+
+            Font *m_font = nullptr;
     };
 #endif

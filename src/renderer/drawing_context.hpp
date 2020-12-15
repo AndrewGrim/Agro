@@ -26,11 +26,11 @@
         ~DrawingContext();
         void fillRect(Rect rect, Color color);
         void fillGradientRect(Rect rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation);
-        void fillText(std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
-        Size measureText(std::string text, float scale = 1.0f);
-        Size measureText(char c, float scale = 1.0f);
+        void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        Size measureText(Font *font, std::string text, float scale = 1.0f);
+        Size measureText(Font *font, char c, float scale = 1.0f);
         void render();
-        void fillTextAligned(std::string text, TextAlignment alignment, Rect rect, int padding, Color color = Color());
+        void fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color = Color());
         Rect drawBorder(Rect rect, int border_width, Color rect_color);
         void clear();
         void swap_buffer(SDL_Window *win);
