@@ -72,7 +72,7 @@
         void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
-        void drawImage(Texture *texture, Color color = Color());
+        void drawImage(Texture *texture, Color color = Color(1, 1, 1));
         void check();
         void render();
         
