@@ -3,6 +3,7 @@
 DrawingContext::DrawingContext(void *app) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     unsigned int offset = 0;
     unsigned int indexCount = MAX_BATCH_SIZE * QUAD_INDEX_COUNT;
@@ -193,4 +194,8 @@ void DrawingContext::clear() {
 
 void DrawingContext::swap_buffer(SDL_Window *win) {
     SDL_GL_SwapWindow(win);
+}
+
+void DrawingContext::drawImage(Texture *texture, Color color) {
+    textRenderer->drawImage(texture, color);
 }
