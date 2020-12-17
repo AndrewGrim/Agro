@@ -121,7 +121,11 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         fragment_shader += "switch (int(vTextureIndex)) {\n";
         for (int i = 0; i < this->max_texture_slots; i++) {
             fragment_shader += "case " + std::to_string(i) + ": ";
-            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], TexCoords).r);\n";
+            // TODO the below line is for textures like images
+            fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], TexCoords));\n";
+            // but the one below here is for text
+            // so we need to switch the sampler on whether its text or not
+            // fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], TexCoords).r);\n";
             fragment_shader += "break;\n";
         }
         fragment_shader += "}\n";
@@ -143,7 +147,7 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         "\n"
         "void main()\n"
         "{\n"
-            "gl_Position = projection * vec4(position, 0.0, 1.0);\n"
+            "gl_Position = projection * vec4(position, 1.0, 1.0);\n"
             "TexCoords = textureUV;\n"
             "color = aColor;\n"
             "vTextureIndex = aTextureIndex;\n"
@@ -254,53 +258,40 @@ Size TextRenderer::measureText(Font *font, char c, float scale) {
 }
 
 void TextRenderer::drawImage(Texture *texture, Color color) {
-    // check();
+    check();
 
-    // if (this->current_texture_slot > this->max_texture_slots - 1) {
-    //     render();
-    // }
-    // glActiveTexture(gl_texture_begin + this->current_texture_slot);
-    // glBindTexture(GL_TEXTURE_2D, texture->ID);
+    if (this->current_texture_slot > this->max_texture_slots - 1) {
+        render();
+    }
+    glActiveTexture(gl_texture_begin + this->current_texture_slot);
+    glBindTexture(GL_TEXTURE_2D, texture->ID);
 
-    // float vertices[] = {
-    //     // positions          // texture coords
-    //      0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
-    //      0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
-    //     -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
-    //     -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
-    // };
-
-    // unsigned int indices[] = {  
-    //     0, 1, 3, // first triangle
-    //     1, 2, 3  // second triangle
-    // };
-
-    // vertices[index++] = {
-    //     {0.0,  1.0},
-    //     {1.0, 1.0},
-    //     {color.r, color.g, color.b, color.a},
-    //     (float)this->current_texture_slot
-    // };
-    // vertices[index++] = {
-    //     {0.0,  0.0},
-    //     {1.0, 0.0}, // TODO maybe swap with the one below?
-    //     {color.r, color.g, color.b, color.a},
-    //     (float)this->current_texture_slot
-    // };
-    // vertices[index++] = {
-    //     {1.0,  0.0},
-    //     {0.0, 0.0},
-    //     {color.r, color.g, color.b, color.a},
-    //     (float)this->current_texture_slot
-    // };
-    // vertices[index++] = {
-    //     {1.0,  1.0},
-    //     {0.0, 1.0},
-    //     {color.r, color.g, color.b, color.a},
-    //     (float)this->current_texture_slot
-    // };
-    // count++;
-    // this->current_texture_slot++;
+    vertices[index++] = {
+        {0.0,  (float)texture->height},
+        {1.0, 1.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot
+    };
+    vertices[index++] = {
+        {0.0,  0.0},
+        {1.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot
+    };
+    vertices[index++] = {
+        {(float)texture->width,  0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot
+    };
+    vertices[index++] = {
+        {(float)texture->width,  (float)texture->height},
+        {0.0, 1.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot
+    };
+    count++;
+    this->current_texture_slot++;
 }
 
 void TextRenderer::render() {
