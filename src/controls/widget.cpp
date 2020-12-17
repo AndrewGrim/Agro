@@ -30,6 +30,8 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
 
 Widget* Widget::remove(size_t parent_index) {
     Widget *child = this->children[parent_index];
+    // TODO need to reset the state as well
+    // we could just signal the app to do it??
     child->setPressed(false);
     child->setHovered(false);
     child->setFocused(false);
