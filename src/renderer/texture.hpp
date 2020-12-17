@@ -18,8 +18,6 @@
 
         Texture(std::string file_path) {
             this->file_path = file_path;
-            // TODO the below is not necessary for nergigante, how do we tell that it is needed??
-            // stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
             this->data = stbi_load(
                 file_path.c_str(), 
                 &this->width, 
