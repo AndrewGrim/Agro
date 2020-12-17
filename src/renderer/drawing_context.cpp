@@ -196,6 +196,6 @@ void DrawingContext::swap_buffer(SDL_Window *win) {
     SDL_GL_SwapWindow(win);
 }
 
-void DrawingContext::drawImage(Texture *texture, Color color) {
-    textRenderer->drawImage(texture, color);
+void DrawingContext::drawImage(float x, float y, Texture *texture, Color color) {
+    textRenderer->drawImage(x, y, texture, color);
 }

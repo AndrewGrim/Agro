@@ -107,6 +107,9 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
     glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, is_text));
     glEnableVertexAttribArray(4);
 
+    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, rect));
+    glEnableVertexAttribArray(5);
+
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->max_texture_slots);
 
     std::string fragment_shader = "#version 330 core\n";
@@ -138,37 +141,6 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         fragment_shader += "}\n";
         fragment_shader += "fColor = color * sampled;\n";
         fragment_shader += "}";
-    println(fragment_shader);
-
-    // "#version 330 core\n"
-    //     "layout (location = 0) in vec2 aPos;\n"
-    //     "layout (location = 1) in vec4 aColor;\n"
-    //     "layout (location = 2) in vec4 aRect;\n"
-    //     "\n"
-    //     "out vec4 vColor;\n"
-    //     "\n"
-    //     "uniform mat4 projection;\n"
-    //     "\n"
-    //     "void main()\n"
-    //     "{\n"
-    //         "mat4 model = mat4(\n"
-    //             "vec4(aRect.z, 0.0, 0.0, 0.0),\n"
-    //             "vec4(0.0, aRect.w, 0.0, 0.0),\n"
-    //             "vec4(0.0, 0.0, 1.0, 0.0),\n"
-    //             "vec4(aRect.x, aRect.y, 0.0, 1.0)\n"
-    //         ");\n"
-    //         "gl_Position = projection * model * vec4(aPos, 1.0, 1.0);\n"
-    //         "vColor = aColor;\n"
-    //     "}",
-    //     "#version 330 core\n"
-    //     "in vec4 vColor;\n"
-    //     "\n"
-    //     "out vec4 FragColor;\n"
-    //     "\n"
-    //     "void main()\n"
-    //     "{\n"
-    //         "FragColor = vColor;\n"
-    //     "}"
 
     this->shader = Shader(
         "#version 330 core\n"
@@ -177,6 +149,7 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         "layout (location = 2) in vec4 aColor;\n"
         "layout (location = 3) in float aTextureIndex;\n"
         "layout (location = 4) in float aIsText;\n"
+        "layout (location = 5) in vec4 aRect;\n"
         "\n"
         "out vec2 TexCoords;\n"
         "out vec4 color;\n"
@@ -187,7 +160,13 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         "\n"
         "void main()\n"
         "{\n"
-            "gl_Position = projection * vec4(position, 1.0, 1.0);\n"
+            "mat4 model = mat4(\n"
+                "vec4(aRect.z, 0.0, 0.0, 0.0),\n"
+                "vec4(0.0, aRect.w, 0.0, 0.0),\n"
+                "vec4(0.0, 0.0, 1.0, 0.0),\n"
+                "vec4(aRect.x, aRect.y, 0.0, 1.0)\n"
+            ");\n"
+            "gl_Position = projection * model * vec4(position, 1.0, 1.0);\n"
             "TexCoords = textureUV;\n"
             "color = aColor;\n"
             "vTextureIndex = aTextureIndex;\n"
@@ -250,28 +229,32 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0
+                1.0,
+                {1.0, 1.0, 1.0, 1.0}
             };
             vertices[index++] = {
                 {xpos, ypos}, 
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0
+                1.0,
+                {1.0, 1.0, 1.0, 1.0}
             };
             vertices[index++] = {
                 {xpos + w, ypos}, 
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0
+                1.0,
+                {1.0, 1.0, 1.0, 1.0}
             };
             vertices[index++] = {
                 {xpos + w, ypos + h}, 
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0
+                1.0,
+                {1.0, 1.0, 1.0, 1.0}
             };
 
             count++;
@@ -302,7 +285,7 @@ Size TextRenderer::measureText(Font *font, char c, float scale) {
     return size;
 }
 
-void TextRenderer::drawImage(Texture *texture, Color color) {
+void TextRenderer::drawImage(float x, float y, Texture *texture, Color color) {
     check();
 
     if (this->current_texture_slot > this->max_texture_slots - 1) {
@@ -314,32 +297,36 @@ void TextRenderer::drawImage(Texture *texture, Color color) {
     vertices[index++] = {
         // actually the texture->height and width should go
         // and go back to 1.0, we will get the position from the model
-        {0.0,  (float)texture->height},
+        {0.0,  1.0},
         {1.0, 1.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        0.0
+        0.0,
+        {x, y, (float)texture->width, (float)texture->height}
     };
     vertices[index++] = {
         {0.0,  0.0},
         {1.0, 0.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        0.0
+        0.0,
+        {x, y, (float)texture->width, (float)texture->height}
     };
     vertices[index++] = {
-        {(float)texture->width,  0.0},
+        {1.0,  0.0},
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        0.0
+        0.0,
+        {x, y, (float)texture->width, (float)texture->height}
     };
     vertices[index++] = {
-        {(float)texture->width,  (float)texture->height},
+        {1.0,  1.0},
         {0.0, 1.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        0.0
+        0.0,
+        {x, y, (float)texture->width, (float)texture->height}
     };
     count++;
     this->current_texture_slot++;

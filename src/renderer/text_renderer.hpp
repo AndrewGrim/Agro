@@ -56,6 +56,7 @@
             float color[4];
             float texture_index;
             float is_text;
+            float rect[4];
         };
         
         void *m_app = nullptr;
@@ -73,7 +74,7 @@
         void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
-        void drawImage(Texture *texture, Color color = Color(1, 1, 1));
+        void drawImage(float x, float y, Texture *texture, Color color = Color(1, 1, 1));
         void check();
         void render();
         
