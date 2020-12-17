@@ -17,45 +17,36 @@ DrawingContext::DrawingContext(void *app) {
         offset += 4;
     }
 
-    quadRenderer = new QuadRenderer(indices);
-    textRenderer = new TextRenderer(indices, app);
+    renderer = new Renderer(indices, app);
 }
 
 DrawingContext::~DrawingContext() {
-    delete quadRenderer;
-    delete textRenderer;
+    delete renderer;
     delete default_font;
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {
-    if (lastRenderer != (void*)quadRenderer) textRenderer->render();
-    lastRenderer = (void*)quadRenderer;
-    quadRenderer->fillRect(rect, color);
+    renderer->fillRect(rect, color);
 }
 
-void DrawingContext::fillGradientRect(Rect rect, Color fromColor, Color toColor, QuadRenderer::Gradient orientation) {
-    if (lastRenderer != (void*)quadRenderer) textRenderer->render();
-    lastRenderer = (void*)quadRenderer;
-    quadRenderer->fillGradientRect(rect, fromColor, toColor, orientation);
+void DrawingContext::fillGradientRect(Rect rect, Color fromColor, Color toColor, Renderer::Gradient orientation) {
+    renderer->fillGradientRect(rect, fromColor, toColor, orientation);
 }
 
 void DrawingContext::render() {
-    quadRenderer->render();
-    textRenderer->render();
+    renderer->render();
 }
 
 void DrawingContext::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
-    if (lastRenderer != (void*)textRenderer) quadRenderer->render();
-    lastRenderer = (void*)textRenderer;
-    textRenderer->fillText(font, text, x, y, color, scale);
+    renderer->fillText(font, text, x, y, color, scale);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text, float scale) {
-    return textRenderer->measureText(font, text, scale);
+    return renderer->measureText(font, text, scale);
 }
 
 Size DrawingContext::measureText(Font *font, char c, float scale) {
-    return textRenderer->measureText(font, c, scale);
+    return renderer->measureText(font, c, scale);
 }
 
 void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {
@@ -108,7 +99,6 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
 }
 
 Rect DrawingContext::drawBorder(Rect rect, int border_width, Color rect_color) {
-    // TODO this is slow as shit
     // light border
     {
         // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here
@@ -197,5 +187,5 @@ void DrawingContext::swap_buffer(SDL_Window *win) {
 }
 
 void DrawingContext::drawImage(float x, float y, Texture *texture, Color color) {
-    textRenderer->drawImage(x, y, texture, color);
+    renderer->drawImage(x, y, texture, color);
 }

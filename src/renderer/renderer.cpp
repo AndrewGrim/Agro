@@ -1,4 +1,4 @@
-#include "text_renderer.hpp"
+#include "renderer.hpp"
 #include "../app.hpp"
 
 Font::Font(std::string file_path, unsigned int pixel_size, Font::Type type) {
@@ -80,7 +80,7 @@ void Font::load() {
     FT_Done_FreeType(ft);
 }
 
-TextRenderer::TextRenderer(unsigned int *indices, void *app) {
+Renderer::Renderer(unsigned int *indices, void *app) {
     this->m_app = app;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -130,9 +130,12 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
             fragment_shader += "case " + std::to_string(i) + ":\n";
             fragment_shader += "switch (int(vIsText)) {\n";
             fragment_shader += "case 0: ";
-            fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], TexCoords));\n";
+            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
             fragment_shader += "break;\n";
             fragment_shader += "case 1: ";
+            fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], TexCoords));\n";
+            fragment_shader += "break;\n";
+            fragment_shader += "case 2: ";
             fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], TexCoords).r);\n";
             fragment_shader += "break;\n";
             fragment_shader += "}\n";
@@ -184,24 +187,24 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
     glUniform1iv(loc, 32, texture_indices.data());
 }
 
-TextRenderer::~TextRenderer() {
+Renderer::~Renderer() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
     delete[] vertices;
 }
 
-void TextRenderer::reset() {
+void Renderer::reset() {
     this->index = 0;
     this->count = 0;
     this->current_texture_slot = 2;
 }
 
-void TextRenderer::check() {
+void Renderer::check() {
     if (this->index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
-void TextRenderer::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
+void Renderer::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
     Size window = ((Application*)this->m_app)->m_size;
     std::string::const_iterator c;
     // TODO handle newlines and tab characters
@@ -229,7 +232,7 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0,
+                2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
             vertices[index++] = {
@@ -237,7 +240,7 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0,
+                2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
             vertices[index++] = {
@@ -245,7 +248,7 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0,
+                2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
             vertices[index++] = {
@@ -253,7 +256,7 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                1.0,
+                2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
 
@@ -264,7 +267,7 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
     this->current_texture_slot++;
 }
 
-Size TextRenderer::measureText(Font *font, std::string text, float scale) {
+Size Renderer::measureText(Font *font, std::string text, float scale) {
     std::string::const_iterator c;
     Size size;
     for (char c : text) {
@@ -276,7 +279,7 @@ Size TextRenderer::measureText(Font *font, std::string text, float scale) {
     return size;
 }
 
-Size TextRenderer::measureText(Font *font, char c, float scale) {
+Size Renderer::measureText(Font *font, char c, float scale) {
     Size size;
     Font::Character ch = font->characters[c];
     size.w = ch.advance >> 6;
@@ -285,7 +288,7 @@ Size TextRenderer::measureText(Font *font, char c, float scale) {
     return size;
 }
 
-void TextRenderer::drawImage(float x, float y, Texture *texture, Color color) {
+void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
     check();
 
     if (this->current_texture_slot > this->max_texture_slots - 1) {
@@ -294,54 +297,172 @@ void TextRenderer::drawImage(float x, float y, Texture *texture, Color color) {
     glActiveTexture(gl_texture_begin + this->current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, texture->ID);
 
+    // TOP LEFT
     vertices[index++] = {
-        // actually the texture->height and width should go
-        // and go back to 1.0, we will get the position from the model
         {0.0,  1.0},
-        {1.0, 1.0},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        0.0,
-        {x, y, (float)texture->width, (float)texture->height}
-    };
-    vertices[index++] = {
-        {0.0,  0.0},
-        {1.0, 0.0},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        0.0,
-        {x, y, (float)texture->width, (float)texture->height}
-    };
-    vertices[index++] = {
-        {1.0,  0.0},
-        {0.0, 0.0},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        0.0,
-        {x, y, (float)texture->width, (float)texture->height}
-    };
-    vertices[index++] = {
-        {1.0,  1.0},
         {0.0, 1.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        0.0,
+        1.0,
+        {x, y, (float)texture->width, (float)texture->height}
+    };
+    // BOTTOM LEFT
+    vertices[index++] = {
+        {0.0,  0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        1.0,
+        {x, y, (float)texture->width, (float)texture->height}
+    };
+    // BOTTOM RIGHT
+    vertices[index++] = {
+        {1.0,  0.0},
+        {1.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        1.0,
+        {x, y, (float)texture->width, (float)texture->height}
+    };
+    // TOP RIGHT
+    vertices[index++] = {
+        {1.0,  1.0},
+        {1.0, 1.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        1.0,
         {x, y, (float)texture->width, (float)texture->height}
     };
     count++;
     this->current_texture_slot++;
 }
 
-void TextRenderer::render() {
+void Renderer::render() {
     shader.use();
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * index, vertices);
     glDrawElements(GL_TRIANGLES, 6 * count, GL_UNSIGNED_INT, 0);
-    // TODO this would probably be the right point to also consolidate the quad and text renderers
-    // since they could easily use the same buffer
     // TODO we could finally add a better line implementation, and also add a draw pixel implementation
     // by just using quads, this way we could keep it all in the same buffer
     // TODO later on we could introduce rounded corners and circles by sampling pixels in the fragment shader??
     reset();
+}
+
+void Renderer::fillRect(Rect rect, Color color) {
+    check();
+    
+    vertices[index++] = {
+        {0.0,  1.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        0.0,
+        {rect.x, rect.y, rect.w, rect.h}
+    };
+    vertices[index++] = {
+        {0.0,  0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        0.0,
+        {rect.x, rect.y, rect.w, rect.h}
+    };
+    vertices[index++] = {
+        {1.0,  0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        0.0,
+        {rect.x, rect.y, rect.w, rect.h}
+    };
+    vertices[index++] = {
+        {1.0,  1.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        0.0,
+        {rect.x, rect.y, rect.w, rect.h}
+    };
+
+    count++;
+}
+
+void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
+    check();
+    
+    switch (orientation) {
+        case Gradient::TopToBottom: {
+            vertices[index++] = {
+                {0.0,  1.0},
+                {0.0, 0.0},
+                {toColor.r, toColor.g, toColor.b, toColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            vertices[index++] = {
+                {0.0,  0.0},
+                {0.0, 0.0},
+                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            vertices[index++] = {
+                {1.0,  0.0},
+                {0.0, 0.0},
+                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            vertices[index++] = {
+                {1.0,  1.0},
+                {0.0, 0.0},
+                {toColor.r, toColor.g, toColor.b, toColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            break;
+        }
+        case Gradient::LeftToRight: {
+            vertices[index++] = {
+                {0.0,  1.0},
+                {0.0, 0.0},
+                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            vertices[index++] = {
+                {0.0,  0.0},
+                {0.0, 0.0},
+                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            vertices[index++] = {
+                {1.0,  0.0},
+                {0.0, 0.0},
+                {toColor.r, toColor.g, toColor.b, toColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            vertices[index++] = {
+                {1.0,  1.0},
+                {0.0, 0.0},
+                {toColor.r, toColor.g, toColor.b, toColor.a},
+                0.0,
+                0.0,
+                {rect.x, rect.y, rect.w, rect.h}
+            };
+            break;
+        }
+    }
+
+    count++;
 }

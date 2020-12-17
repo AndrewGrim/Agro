@@ -1,5 +1,5 @@
-#ifndef TEXT_RENDERER_HPP
-    #define TEXT_RENDERER_HPP
+#ifndef RENDERER_HPP
+    #define RENDERER_HPP
 
     #include <map>
     #include <string>
@@ -49,7 +49,12 @@
             void load();
     };
 
-    struct TextRenderer {
+    struct Renderer {
+        enum class Gradient {
+            TopToBottom,
+            LeftToRight,
+        };
+
         struct Vertex {
             float position[2];
             float textureUV[2];
@@ -69,12 +74,14 @@
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
 
-        TextRenderer(unsigned int *indices, void *app);
-        ~TextRenderer();
+        Renderer(unsigned int *indices, void *app);
+        ~Renderer();
         void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
         void drawImage(float x, float y, Texture *texture, Color color = Color(1, 1, 1));
+        void fillRect(Rect rect, Color color);
+        void fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void check();
         void render();
         
