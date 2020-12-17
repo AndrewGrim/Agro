@@ -16,8 +16,7 @@
 
     #include "shader.hpp"
     #include "batch.hpp"
-
-    #define textureSlot(index) GL_TEXTURE##index
+    #include "texture.hpp"
 
     struct Font {
         enum class Type {
@@ -42,7 +41,6 @@
         Type type;
         std::string file_path;
         unsigned int atlas_ID;
-        unsigned int texture_slot; // TODO probably not needed here but rather somewhere like a texture struct
 
         Font(std::string file_path, unsigned int pixel_size, Type type);
         ~Font();
@@ -52,7 +50,6 @@
     };
 
     struct TextRenderer {
-        // TODO add some sort of font manager
         struct Vertex {
             float position[2];
             float textureUV[2];
@@ -63,13 +60,12 @@
         std::vector<Font> fonts;
         void *m_app = nullptr;
         int max_texture_slots;
-        int current_texture_slot = 0;
+        int current_texture_slot = 2;
         unsigned int gl_texture_begin = GL_TEXTURE0;
-        std::vector<unsigned int> currently_bound_textures;
         Shader shader;
         unsigned int index = 0;
         unsigned int count = 0;
-        Vertex vertices[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
+        Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
 
         TextRenderer(unsigned int *indices, void *app);
@@ -77,8 +73,11 @@
         void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
-        void reset();
+        void drawImage(Texture *texture, Color color = Color());
         void check();
         void render();
+        
+        private:
+            void reset();
     };
 #endif

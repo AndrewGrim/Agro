@@ -88,7 +88,7 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_BATCH_SIZE * QUAD_VERTEX_COUNT, nullptr, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * MAX_BATCH_SIZE * QUAD_INDEX_COUNT, indices, GL_STATIC_DRAW);
 
@@ -103,8 +103,6 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
 
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_index));
     glEnableVertexAttribArray(3);
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->max_texture_slots);
 
@@ -166,44 +164,33 @@ TextRenderer::~TextRenderer() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+    delete[] vertices;
 }
 
 void TextRenderer::reset() {
     this->index = 0;
     this->count = 0;
-    this->current_texture_slot = 0;
-    this->currently_bound_textures.clear();
+    this->current_texture_slot = 2;
 }
 
 void TextRenderer::check() {
-    if (this->index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE) render();
+    if (this->index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
 void TextRenderer::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
-    check();
-
-    auto isCurrentTextureBound = [](std::vector<unsigned int> &textures, unsigned int current) {
-        for (auto n : textures) {
-            if (n == current) {
-                return true;
-            }   
-        }
-        return false;
-    };
-    
     Size window = ((Application*)this->m_app)->m_size;
     std::string::const_iterator c;
     // TODO handle newlines and tab characters
     // TODO also we should probably find the max height for each font and store that information somewhere
     // then we could use that to calculate the height of text by multiplying the max with amound of newlines
     
-    bool current_bound = isCurrentTextureBound(this->currently_bound_textures, font->atlas_height);
-    if (this->current_texture_slot > this->max_texture_slots - 1 && !current_bound) {
+    if (this->current_texture_slot > this->max_texture_slots - 1) {
         render();
     }
-    glActiveTexture(gl_texture_begin + this->current_texture_slot);
+    glActiveTexture(gl_texture_begin + this->current_texture_slot); 
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     for (c = text.begin(); c != text.end() && x <= window.w; c++) {
+        check();
         Font::Character ch = font->characters[*c];
         float advance = ((ch.advance >> 6) * scale);
         if (x + advance >= 0) {
@@ -221,13 +208,13 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
             };
             vertices[index++] = {
                 {xpos, ypos}, 
-                {ch.textureX, 0.0f},
+                {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot
             };
             vertices[index++] = {
                 {xpos + w, ypos}, 
-                {ch.textureX + (w / font->atlas_width), 0.0f},
+                {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot
             };
@@ -242,24 +229,7 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
         }
         x += advance;
     }
-    if (!current_bound) {
-        this->current_texture_slot++;
-        currently_bound_textures.push_back(font->atlas_ID);
-    }
-
-    // TODO this mess below :(
-    // actually maybe instead of an array we could have a variable currently bound within texture????????
-    // so we should probably have a texture manager which would handle duplicate textures and just give out shared_ptrs?
-    // and they need to be shared so that while there is a reference to it we do not free
-    // this way we should be able to have that variable "currently_bound" because many widgets
-    // could use the same *texture which we could then check if its already bound.
-    // but how do we unbind it? we would have to go over all textures, or at least
-    // an array of bound textures within the texture manager?? 
-    // struct Texture {
-    //     char data[];
-    //     bool currently_bound;
-    //     // unsigned int ref_count; // ??
-    // };
+    this->current_texture_slot++;
 }
 
 Size TextRenderer::measureText(Font *font, std::string text, float scale) {
@@ -283,11 +253,61 @@ Size TextRenderer::measureText(Font *font, char c, float scale) {
     return size;
 }
 
+void TextRenderer::drawImage(Texture *texture, Color color) {
+    // check();
+
+    // if (this->current_texture_slot > this->max_texture_slots - 1) {
+    //     render();
+    // }
+    // glActiveTexture(gl_texture_begin + this->current_texture_slot);
+    // glBindTexture(GL_TEXTURE_2D, texture->ID);
+
+    // float vertices[] = {
+    //     // positions          // texture coords
+    //      0.5f,  0.5f, 0.0f,   1.0f, 1.0f, // top right
+    //      0.5f, -0.5f, 0.0f,   1.0f, 0.0f, // bottom right
+    //     -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, // bottom left
+    //     -0.5f,  0.5f, 0.0f,   0.0f, 1.0f  // top left 
+    // };
+
+    // unsigned int indices[] = {  
+    //     0, 1, 3, // first triangle
+    //     1, 2, 3  // second triangle
+    // };
+
+    // vertices[index++] = {
+    //     {0.0,  1.0},
+    //     {1.0, 1.0},
+    //     {color.r, color.g, color.b, color.a},
+    //     (float)this->current_texture_slot
+    // };
+    // vertices[index++] = {
+    //     {0.0,  0.0},
+    //     {1.0, 0.0}, // TODO maybe swap with the one below?
+    //     {color.r, color.g, color.b, color.a},
+    //     (float)this->current_texture_slot
+    // };
+    // vertices[index++] = {
+    //     {1.0,  0.0},
+    //     {0.0, 0.0},
+    //     {color.r, color.g, color.b, color.a},
+    //     (float)this->current_texture_slot
+    // };
+    // vertices[index++] = {
+    //     {1.0,  1.0},
+    //     {0.0, 1.0},
+    //     {color.r, color.g, color.b, color.a},
+    //     (float)this->current_texture_slot
+    // };
+    // count++;
+    // this->current_texture_slot++;
+}
+
 void TextRenderer::render() {
     shader.use();
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * index, vertices, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * index, vertices);
     glDrawElements(GL_TRIANGLES, 6 * count, GL_UNSIGNED_INT, 0);
     // TODO this would probably be the right point to also consolidate the quad and text renderers
     // since they could easily use the same buffer
