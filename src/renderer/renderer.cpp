@@ -116,7 +116,7 @@ Renderer::Renderer(unsigned int *indices, void *app) {
         fragment_shader += "in vec2 TexCoords;\n";
         fragment_shader += "in vec4 color;\n";
         fragment_shader += "in float vTextureIndex;\n";
-        fragment_shader += "in float vIsText;\n";
+        fragment_shader += "in float v_sampler_type;\n";
         fragment_shader += "\n";
         fragment_shader += "out vec4 fColor;\n";
         fragment_shader += "\n";
@@ -128,7 +128,7 @@ Renderer::Renderer(unsigned int *indices, void *app) {
         fragment_shader += "switch (int(vTextureIndex)) {\n";
         for (int i = 0; i < this->max_texture_slots; i++) {
             fragment_shader += "case " + std::to_string(i) + ":\n";
-            fragment_shader += "switch (int(vIsText)) {\n";
+            fragment_shader += "switch (int(v_sampler_type)) {\n";
             fragment_shader += "case 0: ";
             fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
             fragment_shader += "break;\n";
@@ -151,13 +151,13 @@ Renderer::Renderer(unsigned int *indices, void *app) {
         "layout (location = 1) in vec2 textureUV;\n"
         "layout (location = 2) in vec4 aColor;\n"
         "layout (location = 3) in float aTextureIndex;\n"
-        "layout (location = 4) in float aIsText;\n"
+        "layout (location = 4) in float a_sampler_type;\n"
         "layout (location = 5) in vec4 aRect;\n"
         "\n"
         "out vec2 TexCoords;\n"
         "out vec4 color;\n"
         "out float vTextureIndex;\n"
-        "out float vIsText;\n"
+        "out float v_sampler_type;\n"
         "\n"
         "uniform mat4 projection;\n"
         "\n"
@@ -173,7 +173,7 @@ Renderer::Renderer(unsigned int *indices, void *app) {
             "TexCoords = textureUV;\n"
             "color = aColor;\n"
             "vTextureIndex = aTextureIndex;\n"
-            "vIsText = aIsText;\n"
+            "v_sampler_type = a_sampler_type;\n"
         "}",
         fragment_shader.c_str()
     );
@@ -233,7 +233,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                2.0,
+                (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0}
             };
             // BOTTOM LEFT
@@ -242,7 +242,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                2.0,
+                (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0}
             };
             // BOTTOM RIGHT
@@ -251,7 +251,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                2.0,
+                (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0}
             };
             // TOP RIGHT
@@ -260,7 +260,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)this->current_texture_slot,
-                2.0,
+                (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0}
             };
 
@@ -307,7 +307,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {0.0, 1.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        1.0,
+        (float)Renderer::Sampler::Texture,
         {x, y, (float)texture->width, (float)texture->height}
     };
     // BOTTOM LEFT
@@ -316,7 +316,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        1.0,
+        (float)Renderer::Sampler::Texture,
         {x, y, (float)texture->width, (float)texture->height}
     };
     // BOTTOM RIGHT
@@ -325,7 +325,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {1.0, 0.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        1.0,
+        (float)Renderer::Sampler::Texture,
         {x, y, (float)texture->width, (float)texture->height}
     };
     // TOP RIGHT
@@ -334,7 +334,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {1.0, 1.0},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
-        1.0,
+        (float)Renderer::Sampler::Texture,
         {x, y, (float)texture->width, (float)texture->height}
     };
     count++;
@@ -362,7 +362,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        0.0,
+        (float)Renderer::Sampler::Color,
         {rect.x, rect.y, rect.w, rect.h}
     };
     // BOTTOM LEFT
@@ -371,7 +371,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        0.0,
+        (float)Renderer::Sampler::Color,
         {rect.x, rect.y, rect.w, rect.h}
     };
     // BOTTOM RIGHT
@@ -380,7 +380,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        0.0,
+        (float)Renderer::Sampler::Color,
         {rect.x, rect.y, rect.w, rect.h}
     };
     // TOP RIGHT
@@ -389,7 +389,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        0.0,
+        (float)Renderer::Sampler::Color,
         {rect.x, rect.y, rect.w, rect.h}
     };
 
@@ -407,7 +407,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             // BOTTOM LEFT
@@ -416,7 +416,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             // BOTTOM RIGHT
@@ -425,7 +425,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             // TOP RIGHT
@@ -434,7 +434,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             break;
@@ -446,7 +446,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             // BOTTOM LEFT
@@ -455,7 +455,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             // BOTTOM RIGHT
@@ -464,7 +464,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             // TOP RIGHT
@@ -473,7 +473,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                0.0,
+                (float)Renderer::Sampler::Color,
                 {rect.x, rect.y, rect.w, rect.h}
             };
             break;

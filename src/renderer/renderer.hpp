@@ -55,6 +55,12 @@
             LeftToRight,
         };
 
+        enum class Sampler {
+            Color,
+            Texture,
+            Text
+        };
+
         struct Vertex {
             float position[2];
             float textureUV[2];
