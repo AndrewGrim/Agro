@@ -113,19 +113,19 @@ Renderer::Renderer(unsigned int *indices, void *app) {
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->max_texture_slots);
 
     std::string fragment_shader = "#version 330 core\n";
-        fragment_shader += "in vec2 TexCoords;\n";
-        fragment_shader += "in vec4 color;\n";
-        fragment_shader += "in float vTextureIndex;\n";
+        fragment_shader += "in vec2 v_texture_uv;\n";
+        fragment_shader += "in vec4 v_color;\n";
+        fragment_shader += "in float v_texture_slot_index;\n";
         fragment_shader += "in float v_sampler_type;\n";
         fragment_shader += "\n";
-        fragment_shader += "out vec4 fColor;\n";
+        fragment_shader += "out vec4 f_color;\n";
         fragment_shader += "\n";
         fragment_shader += "uniform sampler2D textures[" + std::to_string(this->max_texture_slots) + "];\n";
         fragment_shader += "\n";
         fragment_shader += "void main()\n";
         fragment_shader += "{\n";
         fragment_shader += "vec4 sampled;\n";
-        fragment_shader += "switch (int(vTextureIndex)) {\n";
+        fragment_shader += "switch (int(v_texture_slot_index)) {\n";
         for (int i = 0; i < this->max_texture_slots; i++) {
             fragment_shader += "case " + std::to_string(i) + ":\n";
             fragment_shader += "switch (int(v_sampler_type)) {\n";
@@ -133,30 +133,30 @@ Renderer::Renderer(unsigned int *indices, void *app) {
             fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
             fragment_shader += "break;\n";
             fragment_shader += "case 1: ";
-            fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], TexCoords));\n";
+            fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], v_texture_uv));\n";
             fragment_shader += "break;\n";
             fragment_shader += "case 2: ";
-            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], TexCoords).r);\n";
+            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], v_texture_uv).r);\n";
             fragment_shader += "break;\n";
             fragment_shader += "}\n";
             fragment_shader += "break;\n";
         }
         fragment_shader += "}\n";
-        fragment_shader += "fColor = color * sampled;\n";
+        fragment_shader += "f_color = v_color * sampled;\n";
         fragment_shader += "}";
 
     this->shader = Shader(
         "#version 330 core\n"
-        "layout (location = 0) in vec2 position;\n"
-        "layout (location = 1) in vec2 textureUV;\n"
-        "layout (location = 2) in vec4 aColor;\n"
-        "layout (location = 3) in float aTextureIndex;\n"
+        "layout (location = 0) in vec2 a_opengl_position;\n"
+        "layout (location = 1) in vec2 a_texture_uv;\n"
+        "layout (location = 2) in vec4 a_color;\n"
+        "layout (location = 3) in float a_texture_slot_index;\n"
         "layout (location = 4) in float a_sampler_type;\n"
-        "layout (location = 5) in vec4 aRect;\n"
+        "layout (location = 5) in vec4 a_rect;\n"
         "\n"
-        "out vec2 TexCoords;\n"
-        "out vec4 color;\n"
-        "out float vTextureIndex;\n"
+        "out vec2 v_texture_uv;\n"
+        "out vec4 v_color;\n"
+        "out float v_texture_slot_index;\n"
         "out float v_sampler_type;\n"
         "\n"
         "uniform mat4 projection;\n"
@@ -164,15 +164,15 @@ Renderer::Renderer(unsigned int *indices, void *app) {
         "void main()\n"
         "{\n"
             "mat4 model = mat4(\n"
-                "vec4(aRect.z, 0.0, 0.0, 0.0),\n"
-                "vec4(0.0, aRect.w, 0.0, 0.0),\n"
+                "vec4(a_rect.z, 0.0, 0.0, 0.0),\n"
+                "vec4(0.0, a_rect.w, 0.0, 0.0),\n"
                 "vec4(0.0, 0.0, 1.0, 0.0),\n"
-                "vec4(aRect.x, aRect.y, 0.0, 1.0)\n"
+                "vec4(a_rect.x, a_rect.y, 0.0, 1.0)\n"
             ");\n"
-            "gl_Position = projection * model * vec4(position, 1.0, 1.0);\n"
-            "TexCoords = textureUV;\n"
-            "color = aColor;\n"
-            "vTextureIndex = aTextureIndex;\n"
+            "gl_Position = projection * model * vec4(a_opengl_position, 1.0, 1.0);\n"
+            "v_texture_uv = a_texture_uv;\n"
+            "v_color = a_color;\n"
+            "v_texture_slot_index = a_texture_slot_index;\n"
             "v_sampler_type = a_sampler_type;\n"
         "}",
         fragment_shader.c_str()
