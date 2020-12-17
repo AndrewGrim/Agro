@@ -25,7 +25,7 @@
 
         unsigned int index = 0;
         unsigned int count = 0;
-        Vertex vertices[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
+        Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
         Shader shader = Shader(
             "#version 330 core\n"

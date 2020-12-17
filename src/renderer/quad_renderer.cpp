@@ -7,7 +7,7 @@ QuadRenderer::QuadRenderer(unsigned int *indices) {
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_BATCH_SIZE * QUAD_VERTEX_COUNT, nullptr, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * MAX_BATCH_SIZE * QUAD_INDEX_COUNT, indices, GL_STATIC_DRAW);
 
@@ -25,6 +25,7 @@ QuadRenderer::~QuadRenderer() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
+    delete[] vertices;
 }
 
 void QuadRenderer::reset() {
@@ -33,7 +34,7 @@ void QuadRenderer::reset() {
 }
 
 void QuadRenderer::check() {
-    if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE) render();
+    if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
 void QuadRenderer::fillRect(Rect rect, Color color) {
