@@ -28,7 +28,6 @@ void Box::draw(DrawingContext *dc, Rect rect) {
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
-        int non_expandable_widgets = 0;
         Align parent_layout = this->alignPolicy();
         int generic_non_expandable_widgets;
         Point pos = Point(rect.x, rect.y);
@@ -57,7 +56,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 generic_app_length = app_size.w;
                 break;
         }
-        int child_count = this->m_visible_children - non_expandable_widgets;
+        int child_count = this->m_visible_children - generic_non_expandable_widgets;
         if (!child_count) child_count = 1; // Protects from division by zero
         float expandable_length = (rect_length - generic_total_layout_length) / child_count;
         if (expandable_length < 0) expandable_length = 0;
