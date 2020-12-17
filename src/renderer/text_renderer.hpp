@@ -57,7 +57,6 @@
             float texture_index;
         };
         
-        std::vector<Font> fonts;
         void *m_app = nullptr;
         int max_texture_slots;
         int current_texture_slot = 2;
