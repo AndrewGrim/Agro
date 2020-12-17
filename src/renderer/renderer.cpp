@@ -227,6 +227,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
             
+            // TOP LEFT
             vertices[index++] = {
                 {xpos, ypos + h}, 
                 {ch.textureX, (h / font->atlas_height)},
@@ -235,6 +236,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
+            // BOTTOM LEFT
             vertices[index++] = {
                 {xpos, ypos}, 
                 {ch.textureX, 0.0},
@@ -243,6 +245,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
+            // BOTTOM RIGHT
             vertices[index++] = {
                 {xpos + w, ypos}, 
                 {ch.textureX + (w / font->atlas_width), 0.0},
@@ -251,6 +254,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
                 2.0,
                 {1.0, 1.0, 1.0, 1.0}
             };
+            // TOP RIGHT
             vertices[index++] = {
                 {xpos + w, ypos + h}, 
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
@@ -352,6 +356,7 @@ void Renderer::render() {
 void Renderer::fillRect(Rect rect, Color color) {
     check();
     
+    // TOP LEFT
     vertices[index++] = {
         {0.0,  1.0},
         {0.0, 0.0},
@@ -360,6 +365,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         0.0,
         {rect.x, rect.y, rect.w, rect.h}
     };
+    // BOTTOM LEFT
     vertices[index++] = {
         {0.0,  0.0},
         {0.0, 0.0},
@@ -368,6 +374,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         0.0,
         {rect.x, rect.y, rect.w, rect.h}
     };
+    // BOTTOM RIGHT
     vertices[index++] = {
         {1.0,  0.0},
         {0.0, 0.0},
@@ -376,6 +383,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         0.0,
         {rect.x, rect.y, rect.w, rect.h}
     };
+    // TOP RIGHT
     vertices[index++] = {
         {1.0,  1.0},
         {0.0, 0.0},
@@ -393,6 +401,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
     
     switch (orientation) {
         case Gradient::TopToBottom: {
+            // TOP LEFT
             vertices[index++] = {
                 {0.0,  1.0},
                 {0.0, 0.0},
@@ -401,6 +410,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 0.0,
                 {rect.x, rect.y, rect.w, rect.h}
             };
+            // BOTTOM LEFT
             vertices[index++] = {
                 {0.0,  0.0},
                 {0.0, 0.0},
@@ -409,6 +419,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 0.0,
                 {rect.x, rect.y, rect.w, rect.h}
             };
+            // BOTTOM RIGHT
             vertices[index++] = {
                 {1.0,  0.0},
                 {0.0, 0.0},
@@ -417,6 +428,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 0.0,
                 {rect.x, rect.y, rect.w, rect.h}
             };
+            // TOP RIGHT
             vertices[index++] = {
                 {1.0,  1.0},
                 {0.0, 0.0},
@@ -428,6 +440,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
             break;
         }
         case Gradient::LeftToRight: {
+            // TOP LEFT
             vertices[index++] = {
                 {0.0,  1.0},
                 {0.0, 0.0},
@@ -436,6 +449,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 0.0,
                 {rect.x, rect.y, rect.w, rect.h}
             };
+            // BOTTOM LEFT
             vertices[index++] = {
                 {0.0,  0.0},
                 {0.0, 0.0},
@@ -444,6 +458,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 0.0,
                 {rect.x, rect.y, rect.w, rect.h}
             };
+            // BOTTOM RIGHT
             vertices[index++] = {
                 {1.0,  0.0},
                 {0.0, 0.0},
@@ -452,6 +467,7 @@ void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradi
                 0.0,
                 {rect.x, rect.y, rect.w, rect.h}
             };
+            // TOP RIGHT
             vertices[index++] = {
                 {1.0,  1.0},
                 {0.0, 0.0},
