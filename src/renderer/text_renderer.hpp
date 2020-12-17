@@ -55,6 +55,7 @@
             float textureUV[2];
             float color[4];
             float texture_index;
+            float is_text;
         };
         
         void *m_app = nullptr;

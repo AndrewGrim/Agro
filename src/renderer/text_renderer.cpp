@@ -104,12 +104,16 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_index));
     glEnableVertexAttribArray(3);
 
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, is_text));
+    glEnableVertexAttribArray(4);
+
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->max_texture_slots);
 
     std::string fragment_shader = "#version 330 core\n";
         fragment_shader += "in vec2 TexCoords;\n";
         fragment_shader += "in vec4 color;\n";
         fragment_shader += "in float vTextureIndex;\n";
+        fragment_shader += "in float vIsText;\n";
         fragment_shader += "\n";
         fragment_shader += "out vec4 fColor;\n";
         fragment_shader += "\n";
@@ -120,17 +124,51 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         fragment_shader += "vec4 sampled;\n";
         fragment_shader += "switch (int(vTextureIndex)) {\n";
         for (int i = 0; i < this->max_texture_slots; i++) {
-            fragment_shader += "case " + std::to_string(i) + ": ";
-            // TODO the below line is for textures like images
+            fragment_shader += "case " + std::to_string(i) + ":\n";
+            fragment_shader += "switch (int(vIsText)) {\n";
+            fragment_shader += "case 0: ";
             fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], TexCoords));\n";
-            // but the one below here is for text
-            // so we need to switch the sampler on whether its text or not
-            // fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], TexCoords).r);\n";
+            fragment_shader += "break;\n";
+            fragment_shader += "case 1: ";
+            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], TexCoords).r);\n";
+            fragment_shader += "break;\n";
+            fragment_shader += "}\n";
             fragment_shader += "break;\n";
         }
         fragment_shader += "}\n";
         fragment_shader += "fColor = color * sampled;\n";
         fragment_shader += "}";
+    println(fragment_shader);
+
+    // "#version 330 core\n"
+    //     "layout (location = 0) in vec2 aPos;\n"
+    //     "layout (location = 1) in vec4 aColor;\n"
+    //     "layout (location = 2) in vec4 aRect;\n"
+    //     "\n"
+    //     "out vec4 vColor;\n"
+    //     "\n"
+    //     "uniform mat4 projection;\n"
+    //     "\n"
+    //     "void main()\n"
+    //     "{\n"
+    //         "mat4 model = mat4(\n"
+    //             "vec4(aRect.z, 0.0, 0.0, 0.0),\n"
+    //             "vec4(0.0, aRect.w, 0.0, 0.0),\n"
+    //             "vec4(0.0, 0.0, 1.0, 0.0),\n"
+    //             "vec4(aRect.x, aRect.y, 0.0, 1.0)\n"
+    //         ");\n"
+    //         "gl_Position = projection * model * vec4(aPos, 1.0, 1.0);\n"
+    //         "vColor = aColor;\n"
+    //     "}",
+    //     "#version 330 core\n"
+    //     "in vec4 vColor;\n"
+    //     "\n"
+    //     "out vec4 FragColor;\n"
+    //     "\n"
+    //     "void main()\n"
+    //     "{\n"
+    //         "FragColor = vColor;\n"
+    //     "}"
 
     this->shader = Shader(
         "#version 330 core\n"
@@ -138,10 +176,12 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
         "layout (location = 1) in vec2 textureUV;\n"
         "layout (location = 2) in vec4 aColor;\n"
         "layout (location = 3) in float aTextureIndex;\n"
+        "layout (location = 4) in float aIsText;\n"
         "\n"
         "out vec2 TexCoords;\n"
         "out vec4 color;\n"
         "out float vTextureIndex;\n"
+        "out float vIsText;\n"
         "\n"
         "uniform mat4 projection;\n"
         "\n"
@@ -151,6 +191,7 @@ TextRenderer::TextRenderer(unsigned int *indices, void *app) {
             "TexCoords = textureUV;\n"
             "color = aColor;\n"
             "vTextureIndex = aTextureIndex;\n"
+            "vIsText = aIsText;\n"
         "}",
         fragment_shader.c_str()
     );
@@ -208,25 +249,29 @@ void TextRenderer::fillText(Font *font, std::string text, float x, float y, Colo
                 {xpos, ypos + h}, 
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot
+                (float)this->current_texture_slot,
+                1.0
             };
             vertices[index++] = {
                 {xpos, ypos}, 
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot
+                (float)this->current_texture_slot,
+                1.0
             };
             vertices[index++] = {
                 {xpos + w, ypos}, 
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot
+                (float)this->current_texture_slot,
+                1.0
             };
             vertices[index++] = {
                 {xpos + w, ypos + h}, 
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot
+                (float)this->current_texture_slot,
+                1.0
             };
 
             count++;
@@ -267,28 +312,34 @@ void TextRenderer::drawImage(Texture *texture, Color color) {
     glBindTexture(GL_TEXTURE_2D, texture->ID);
 
     vertices[index++] = {
+        // actually the texture->height and width should go
+        // and go back to 1.0, we will get the position from the model
         {0.0,  (float)texture->height},
         {1.0, 1.0},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot
+        (float)this->current_texture_slot,
+        0.0
     };
     vertices[index++] = {
         {0.0,  0.0},
         {1.0, 0.0},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot
+        (float)this->current_texture_slot,
+        0.0
     };
     vertices[index++] = {
         {(float)texture->width,  0.0},
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot
+        (float)this->current_texture_slot,
+        0.0
     };
     vertices[index++] = {
         {(float)texture->width,  (float)texture->height},
         {0.0, 1.0},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot
+        (float)this->current_texture_slot,
+        0.0
     };
     count++;
     this->current_texture_slot++;
