@@ -341,6 +341,55 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
     this->current_texture_slot++;
 }
 
+void Renderer::drawImageAtSize(float x, float y, Size size, Texture *texture, Color color) {
+    check();
+
+    if (this->current_texture_slot > this->max_texture_slots - 1) {
+        render();
+    }
+    glActiveTexture(gl_texture_begin + this->current_texture_slot);
+    glBindTexture(GL_TEXTURE_2D, texture->ID);
+
+    // TOP LEFT
+    vertices[index++] = {
+        {0.0,  1.0},
+        {0.0, 1.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        (float)Renderer::Sampler::Texture,
+        {x, y, size.w, size.h}
+    };
+    // BOTTOM LEFT
+    vertices[index++] = {
+        {0.0,  0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        (float)Renderer::Sampler::Texture,
+        {x, y, size.w, size.h}
+    };
+    // BOTTOM RIGHT
+    vertices[index++] = {
+        {1.0,  0.0},
+        {1.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        (float)Renderer::Sampler::Texture,
+        {x, y, size.w, size.h}
+    };
+    // TOP RIGHT
+    vertices[index++] = {
+        {1.0,  1.0},
+        {1.0, 1.0},
+        {color.r, color.g, color.b, color.a},
+        (float)this->current_texture_slot,
+        (float)Renderer::Sampler::Texture,
+        {x, y, size.w, size.h}
+    };
+    count++;
+    this->current_texture_slot++;
+}
+
 void Renderer::render() {
     shader.use();
     glBindVertexArray(VAO);

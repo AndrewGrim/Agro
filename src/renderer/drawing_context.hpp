@@ -30,6 +30,7 @@
         void fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color = Color());
         Rect drawBorder(Rect rect, int border_width, Color rect_color);
         void drawImage(float x, float y, Texture *texture, Color color = Color(1, 1, 1));
+        void drawImageAtSize(float x, float y, Size size, Texture *texture, Color color = Color(1, 1, 1));
         void clear();
         void swap_buffer(SDL_Window *win);
     };

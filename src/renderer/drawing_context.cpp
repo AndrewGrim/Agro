@@ -189,3 +189,7 @@ void DrawingContext::swap_buffer(SDL_Window *win) {
 void DrawingContext::drawImage(float x, float y, Texture *texture, Color color) {
     renderer->drawImage(x, y, texture, color);
 }
+
+void DrawingContext::drawImageAtSize(float x, float y, Size size, Texture *texture, Color color) {
+    renderer->drawImageAtSize(x, y, size, texture, color);
+}

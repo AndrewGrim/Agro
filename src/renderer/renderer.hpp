@@ -86,6 +86,7 @@
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
         void drawImage(float x, float y, Texture *texture, Color color = Color(1, 1, 1));
+        void drawImageAtSize(float x, float y, Size size, Texture *texture, Color color = Color(1, 1, 1));
         void fillRect(Rect rect, Color color);
         void fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void check();
