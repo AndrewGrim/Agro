@@ -13,6 +13,7 @@
     #include "batch.hpp"
 
     #include "renderer.hpp"
+    #include "font.hpp"
 
     struct DrawingContext {
         unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
