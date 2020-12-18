@@ -1,11 +1,21 @@
 #include "button.hpp"
 
-Button::Button(std::string text) {
+Button::Button(std::string text, TextAlignment text_align) {
     this->setText(text);
+    this->setTextAlignment(text_align);
+    Widget::m_bg = Color(0.9, 0.9, 0.9);
+}
+
+Button::Button(Image *image) {
+    this->setText("");
+    this->setImage(image);
     Widget::m_bg = Color(0.9, 0.9, 0.9);
 }
 
 Button::~Button() {
+    if (m_image) {
+        delete m_image;
+    }
 }
 
 const char* Button::name() {
@@ -23,15 +33,51 @@ void Button::draw(DrawingContext *dc, Rect rect) {
         color = this->background();
     }
     
-    // draw border and shrink rectangle to prevent drawing over the border
+    // Draw border and shrink rectangle to prevent drawing over the border
     rect = dc->drawBorder(rect, this->m_border_width, color);
     dc->fillRect(rect, color);
-    dc->fillTextAligned(this->font() ? this->font() : dc->default_font, this->m_text, this->m_text_align, rect, this->m_padding);
+    // Pad the rectangle with some empty space.
+    rect.x += m_padding;
+    rect.y += m_padding;
+    rect.w -= m_padding * 2;
+    rect.h -= m_padding * 2;
+    if (this->m_image) {
+        Size size = m_image->sizeHint(dc);
+        m_image->draw(
+            dc, 
+            Rect(
+                rect.x + (rect.w / 2 - dc->measureText(this->font() ? this->font() : dc->default_font, text()).w / 2) - m_image->width / 2, 
+                rect.y, 
+                size.w, 
+                rect.h
+            )
+        );
+        // Resize rect to account for image before the label is drawn.
+        rect.x += size.w;
+        rect.w -= size.w;
+    }
+    if (this->m_text.length() > 0) {
+        dc->fillTextAligned(
+            this->font() ? this->font() : dc->default_font,
+            this->m_text,
+            this->m_text_align,
+            rect,
+            0,
+            this->m_fg
+        );
+    }
 }
 
 Size Button::sizeHint(DrawingContext *dc) {
     if (this->m_size_changed) {
         Size size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+        if (m_image) {
+            Size i = m_image->sizeHint(dc);
+            size.w += i.w;
+            if (i.h > size.h) {
+                size.h = i.h;
+            }
+        }
         size.w += this->m_padding * 2 + this->m_border_width;
         size.h += this->m_padding * 2 + this->m_border_width;
 
@@ -84,9 +130,54 @@ TextAlignment Button::textAlignment() {
     return this->m_text_align;
 }
 
-void Button::setTextAlignment(TextAlignment text_align) {
+Button* Button::setTextAlignment(TextAlignment text_align) {
     if (this->m_text_align == text_align) {
         this->m_text_align = text_align;
         this->update();
     }
+
+    return this;
+}
+
+Image* Button::image() {
+    return this->m_image;
+}
+
+Button* Button::setImage(Image *image) {
+    if (m_image) {
+        delete m_image;
+    }
+    this->m_image = image;
+    this->update();
+    this->layout();
+
+    return this;
+}
+
+uint Button::padding() {
+    return this->m_padding;
+}
+
+Button* Button::setPadding(uint padding) {
+    if (this->m_padding != padding) {
+        this->m_padding = padding;
+        this->update();
+        this->layout();
+    }
+
+    return this;
+}
+
+uint Button::borderWidth() {
+    return this->m_border_width;
+}
+
+Button* Button::setBorderWidth(uint border_width) {
+    if (this->m_border_width != border_width) {
+        this->m_border_width = border_width;
+        this->update();
+        this->layout();
+    }
+
+    return this;
 }
