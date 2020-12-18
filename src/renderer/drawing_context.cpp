@@ -63,7 +63,7 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
     // and doing it slowely, if you just resize the window as you would
     // normally this isn't really perceptible.
 
-    auto normalize = [](float coordinate) {
+    auto normalize = [](float coordinate) -> float {
         int rounded = std::nearbyint(coordinate);
         return !(rounded % 2) ? (rounded * 0.5) * 2.0 : rounded;
     }; 

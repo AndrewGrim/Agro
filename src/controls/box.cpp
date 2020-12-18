@@ -164,9 +164,9 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
 Size Box::sizeHint(DrawingContext *dc) {
     // `hasLayoutChanged()` is necessary here because the Box won't know
     // that it's sizeHint() needs to be recalculated because of it's children.
-    unsigned int visible = 0;
-    unsigned int vertical_non_expandable = 0;
-    unsigned int horizontal_non_expandable = 0;
+    uint visible = 0;
+    uint vertical_non_expandable = 0;
+    uint horizontal_non_expandable = 0;
     if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
         Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {

@@ -22,16 +22,16 @@
         };
 
         std::map<char, Font::Character> characters;
-        unsigned int max_height = 0;
-        unsigned int pixel_size = 0;
-        unsigned int atlas_width = 0;
-        unsigned int atlas_height = 0;
-        unsigned int tab_width = 4;
+        uint max_height = 0;
+        uint pixel_size = 0;
+        uint atlas_width = 0;
+        uint atlas_height = 0;
+        uint tab_width = 4;
         Type type;
         std::string file_path;
-        unsigned int atlas_ID;
+        uint atlas_ID;
 
-        Font(std::string file_path, unsigned int pixel_size, Type type);
+        Font(std::string file_path, uint pixel_size, Type type);
         ~Font();
 
         private:

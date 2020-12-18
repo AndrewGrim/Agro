@@ -43,16 +43,16 @@
         void *m_app = nullptr;
         int max_texture_slots;
         int current_texture_slot = 2;
-        unsigned int gl_texture_begin = GL_TEXTURE0;
+        uint gl_texture_begin = GL_TEXTURE0;
         Shader shader;
-        unsigned int index = 0;
-        unsigned int count = 0;
+        uint index = 0;
+        uint count = 0;
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
-        unsigned int VAO, VBO, EBO;
+        uint VAO, VBO, EBO;
 
-        Renderer(unsigned int *indices, void *app);
+        Renderer(uint *indices, void *app);
         ~Renderer();
-        void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        void fillText(Font *font, std::string text, float x, float y, Color color = Color(), float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
         void drawImage(float x, float y, Texture *texture, Color color = Color(1, 1, 1));

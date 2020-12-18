@@ -64,7 +64,7 @@
             /// the same as the append() method in Widget and is
             /// provided for conveniance.
             /// It simply calls the append() method on the main Widget.
-            Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
+            Widget* append(Widget *widget, Fill fill_policy = Fill::None, uint proportion = 1);
 
             /// Returns the pointer to the main Widget of the Application.
             Widget* mainWidget();

@@ -14,7 +14,7 @@
         int height;
         int nr_channels;
         unsigned char *data;
-        unsigned int ID;
+        uint ID;
 
         Texture(std::string file_path) {
             this->file_path = file_path;

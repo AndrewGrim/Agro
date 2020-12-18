@@ -16,7 +16,7 @@
     #include "font.hpp"
 
     struct DrawingContext {
-        unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
+        uint indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer;
         Font *default_font = nullptr;
 
@@ -24,7 +24,7 @@
         ~DrawingContext();
         void fillRect(Rect rect, Color color);
         void fillGradientRect(Rect rect, Color fromColor, Color toColor, Renderer::Gradient orientation);
-        void fillText(Font *font, std::string text, float x, float y, Color color = {0, 0, 0, 1}, float scale = 1.0f);
+        void fillText(Font *font, std::string text, float x, float y, Color color = Color(), float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
         void render();
