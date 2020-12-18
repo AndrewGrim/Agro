@@ -9,7 +9,7 @@
 
     class Label : public Widget {
         public:
-            Label(std::string text);
+            Label(std::string text, TextAlignment text_align = TextAlignment::Left);
             ~Label();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
@@ -19,10 +19,10 @@
             std::string text();
             virtual Label* setText(std::string text);
             TextAlignment textAlignment();
-            void setTextAlignment(TextAlignment text_align);
+            Label* setTextAlignment(TextAlignment text_align);
 
         protected:
             std::string m_text;
-            TextAlignment m_text_align = TextAlignment::Center;
+            TextAlignment m_text_align;
     };
 #endif

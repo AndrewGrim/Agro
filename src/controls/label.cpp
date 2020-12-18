@@ -1,8 +1,9 @@
 #include "label.hpp"
 
-Label::Label(std::string text) {
+Label::Label(std::string text, TextAlignment text_align) {
     this->setText(text);
-    Widget::m_bg = Color(0.9, 0.9, 0.9);
+    this->setTextAlignment(text_align);
+    Widget::m_bg = Color(0, 0, 0, 0);
 }
 
 Label::~Label() {
@@ -20,7 +21,8 @@ void Label::draw(DrawingContext *dc, Rect rect) {
         this->m_text,
         this->m_text_align,
         rect,
-        0
+        0,
+        this->m_fg
     );
 }
 
@@ -76,9 +78,11 @@ TextAlignment Label::textAlignment() {
     return this->m_text_align;
 }
 
-void Label::setTextAlignment(TextAlignment text_align) {
+Label* Label::setTextAlignment(TextAlignment text_align) {
     if (this->m_text_align == text_align) {
         this->m_text_align = text_align;
         this->update();
     }
+    
+    return this;
 }
