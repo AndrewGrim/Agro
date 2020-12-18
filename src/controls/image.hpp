@@ -15,5 +15,10 @@
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual Image* setBackground(Color background) override;
             virtual Image* setForeground(Color background) override;
+            bool expand();
+            Image* setExpand(bool expand);
+
+        protected:
+            bool m_expand = false;
     };
 #endif

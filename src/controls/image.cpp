@@ -15,11 +15,23 @@ const char* Image::name() {
 void Image::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     dc->fillRect(rect, Widget::m_bg);
-    dc->drawImage(
-        rect.x + (rect.w / 2) - Texture::width / 2,
-        rect.y + (rect.h / 2) - Texture::height / 2, this,
-        Widget::m_fg
-    );
+    if (this->m_expand) {
+        dc->drawImageAtSize(
+            rect.x,
+            rect.y, 
+            Size(rect.w, rect.h),
+            this,
+            Widget::m_fg
+        );
+    } else {
+        // TODO add switch for alignment: left, rigth, center
+        dc->drawImage(
+            rect.x + (rect.w / 2) - Texture::width / 2,
+            rect.y + (rect.h / 2) - Texture::height / 2, 
+            this,
+            Widget::m_fg
+        );
+    }
 }
 
 Size Image::sizeHint(DrawingContext *dc) {
@@ -43,3 +55,17 @@ Image* Image::setForeground(Color foreground) {
 
     return this;
 }
+
+bool Image::expand() {
+    return this->m_expand;
+}
+
+Image* Image::setExpand(bool expand) {
+    if (this->m_expand != expand) {
+        this->m_expand = expand;
+        this->update();
+    }
+
+    return this;
+}
+
