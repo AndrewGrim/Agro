@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "drawing_context.hpp"
+#include "../common/point.hpp"
 
 DrawingContext::DrawingContext(void *app) {
     glEnable(GL_BLEND);
@@ -185,4 +186,48 @@ void DrawingContext::drawImage(float x, float y, Texture *texture, Color color) 
 
 void DrawingContext::drawImageAtSize(float x, float y, Size size, Texture *texture, Color color) {
     renderer->drawImageAtSize(x, y, size, texture, color);
+}
+
+void DrawingContext::drawImageAligned(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Texture *texture, Color color) {
+    this->drawImageAlignedAtSize(
+        rect,
+        h_align,
+        v_align,
+        Size(texture->width, texture->height),
+        texture,
+        color
+    );
+}
+
+void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Size size, Texture *texture, Color color) {
+    Point pos = Point();
+    switch (h_align) {
+        case HorizontalAlignment::Left:
+            pos.x = rect.x;
+            break;
+        case HorizontalAlignment::Right:
+            pos.x = rect.x + rect.w - size.w;
+            break;
+        case HorizontalAlignment::Center:
+            pos.x = rect.x + (rect.w / 2) - size.w / 2;
+            break;
+    }
+    switch (v_align) {
+        case VerticalAlignment::Top:
+            pos.y = rect.y;
+            break;
+        case VerticalAlignment::Bottom:
+            pos.y = rect.y + rect.h - size.h;
+            break;
+        case VerticalAlignment::Center:
+            pos.y = rect.y + (rect.h / 2) - size.h / 2;
+            break;
+    }
+    this->drawImageAtSize(
+        pos.x,
+        pos.y, 
+        size,
+        texture,
+        color
+    );
 }
