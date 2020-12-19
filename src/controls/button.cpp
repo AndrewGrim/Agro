@@ -37,30 +37,29 @@ void Button::draw(DrawingContext *dc, Rect rect) {
     rect = dc->drawBorder(rect, this->m_border_width, color);
     dc->fillRect(rect, color);
     // Pad the rectangle with some empty space.
-    rect.x += m_padding;
-    rect.y += m_padding;
-    rect.w -= m_padding * 2;
-    rect.h -= m_padding * 2;
+    rect.shrink(m_padding);
+    Size text_size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
     if (this->m_image) {
-        Size size = m_image->sizeHint(dc);
-        m_image->draw(
-            dc, 
-            Rect(
-                rect.x + (rect.w / 2 - dc->measureText(this->font() ? this->font() : dc->default_font, text()).w / 2) - m_image->width / 2, 
-                rect.y, 
-                size.w, 
-                rect.h
-            )
+        Size image_size = m_image->sizeHint(dc);
+        dc->drawImageAtSize(
+            round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+            round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5)),
+            image_size,
+            m_image
         );
         // Resize rect to account for image before the label is drawn.
-        rect.x += size.w;
-        rect.w -= size.w;
+        rect.x += image_size.w;
+        rect.w -= image_size.w;
     }
-    if (this->m_text.length() > 0) {
+    TextAlignment text_align = m_text_align;
+    if (m_image) {
+        text_align = TextAlignment::Center;
+    }
+    if (this->m_text.length()) {
         dc->fillTextAligned(
             this->font() ? this->font() : dc->default_font,
             this->m_text,
-            this->m_text_align,
+            text_align,
             rect,
             0,
             this->m_fg
