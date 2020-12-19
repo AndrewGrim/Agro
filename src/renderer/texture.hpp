@@ -9,11 +9,11 @@
     #include "../util.hpp"
 
     struct Texture {
-        std::string file_path;
-        int width;
-        int height;
-        int nr_channels;
-        unsigned char *data;
+        std::string file_path = "";
+        int width = 0;
+        int height = 0;
+        int nr_channels = 0;
+        unsigned char *data = nullptr;
         uint ID;
 
         Texture(std::string file_path) {
