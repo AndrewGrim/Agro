@@ -1,9 +1,10 @@
 #include "image.hpp"
 #include "../common/point.hpp"
 
-Image::Image(std::string file_path) : Texture(file_path) {
+Image::Image(std::string file_path, bool expand) : Texture(file_path) {
     Widget::m_fg = Color(1, 1, 1, 1);
     Widget::m_bg = Color(0, 0, 0, 0);
+    this->setExpand(expand);
 }
 
 Image::~Image() {
@@ -17,42 +18,45 @@ void Image::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     dc->fillRect(rect, Widget::m_bg);
     if (this->m_expand) {
-        // TODO add option to maintan aspect ratio
-        // basically check whats bigger rect.w rect.h, and use the smaller one as size for both of them
-        dc->drawImageAtSize(
-            rect.x,
-            rect.y, 
-            Size(rect.w, rect.h),
-            this,
-            Widget::m_fg
-        );
+        if (m_maintain_aspect_ratio) {
+            Size size = Size();
+            if (rect.w > rect.h) {
+                size.w = 1;
+            } else if (rect.h > rect.w) {
+                size.h = 1;
+            }
+            if (size.w) {
+                size.w = rect.h;
+                size.h = size.w / (size.w / rect.h);
+            } else if (size.h) {
+                size.h = rect.w;
+                size.w = size.h / (size.h / rect.w);
+            } else {
+                size = Size(rect.w < rect.h ? rect.w : rect.h, rect.h < rect.w ? rect.h : rect.w);
+            }
+            dc->drawImageAlignedAtSize(
+                rect,
+                this->m_horizontal_align,
+                this->m_vertical_align,
+                size,
+                this,
+                Widget::m_fg
+            );
+        } else {
+            dc->drawImageAlignedAtSize(
+                rect,
+                this->m_horizontal_align,
+                this->m_vertical_align,
+                Size(rect.w, rect.h),
+                this,
+                Widget::m_fg
+            );
+        }
     } else {
-        Point pos = Point();
-        switch (this->m_horizontal_align) {
-            case HorizontalAlignment::Left:
-                pos.x = rect.x;
-                break;
-            case HorizontalAlignment::Right:
-                pos.x = rect.x + rect.w - Texture::width;
-                break;
-            case HorizontalAlignment::Center:
-                pos.x = rect.x + (rect.w / 2) - Texture::width / 2;
-                break;
-        }
-        switch (this->m_vertical_align) {
-            case VerticalAlignment::Top:
-                pos.y = rect.y;
-                break;
-            case VerticalAlignment::Bottom:
-                pos.y = rect.y + rect.h - Texture::height;
-                break;
-            case VerticalAlignment::Center:
-                pos.y = rect.y + (rect.h / 2) - Texture::height / 2;
-                break;
-        }
-        dc->drawImage(
-            pos.x,
-            pos.y, 
+        dc->drawImageAligned(
+            rect,
+            this->m_horizontal_align,
+            this->m_vertical_align,
             this,
             Widget::m_fg
         );
@@ -120,3 +124,15 @@ Image* Image::setVerticalAlignment(VerticalAlignment image_align) {
     return this;
 }
 
+bool Image::maintainAspectRation() {
+    return this->m_maintain_aspect_ratio;
+}
+
+Image* Image::setMaintainAspectRatio(bool aspect_ratio) {
+    if (m_maintain_aspect_ratio != aspect_ratio) {
+        m_maintain_aspect_ratio = aspect_ratio;
+        this->update();
+    }
+
+    return this;
+}
