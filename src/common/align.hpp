@@ -11,4 +11,16 @@
         Right,
         Center,
     };
+
+    enum class HorizontalAlignment {
+        Left,
+        Right,
+        Center,
+    };
+
+    enum class VerticalAlignment {
+        Top,
+        Bottom,
+        Center,
+    };
 #endif
