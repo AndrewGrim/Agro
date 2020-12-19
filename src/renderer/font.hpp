@@ -5,7 +5,18 @@
     #include <string>
 
     // TODO get rid of glm, we can just use size here and perhaps point for bearing? or another size
+    #include <glad/glad.h>
     #include <glm/glm.hpp>
+    #include <ft2build.h>
+    #include FT_FREETYPE_H
+
+    #include "../common/color.hpp"
+    #include "../common/rect.hpp"
+    #include "../common/size.hpp"
+
+    #include "shader.hpp"
+    #include "batch.hpp"
+    #include "texture.hpp"
 
     struct Font {
         enum class Type {
