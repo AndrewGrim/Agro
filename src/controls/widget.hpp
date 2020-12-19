@@ -10,6 +10,7 @@
     #include "../common/fill.hpp"
     #include "../common/size.hpp"
     #include "../common/color.hpp"
+    #include "../common/point.hpp"
     #include "../renderer/drawing_context.hpp"
 
     class Widget {
