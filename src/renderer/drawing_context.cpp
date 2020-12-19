@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "drawing_context.hpp"
 
 DrawingContext::DrawingContext(void *app) {
@@ -50,31 +52,22 @@ Size DrawingContext::measureText(Font *font, char c, float scale) {
 }
 
 void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {
-    // The reason for the additional calculations here is because in order
+    // The reason for the rounding here is because in order
     // to avoid horrible texture wrapping issues on text we need to give it a
-    // nice even number to start from.
+    // nice whole number to start from.
     //
-    // Before: "rect.x + (rect.w * 0.5) - (this->measureText(text).w * 0.5)".
-    // After: "std::nearbyint((rect.x + (rect.w * 0.5) - (this->measureText(text).w * 0.5)) * 0.5) * 2.0".
-    // 
     // This causes something that looks like dithering which is caused
     // by the rounding of x and or y.
     // This is only really noticeable when scrolling or resizing a window
     // and doing it slowely, if you just resize the window as you would
     // normally this isn't really perceptible.
-
-    auto normalize = [](float coordinate) -> float {
-        int rounded = std::nearbyint(coordinate);
-        return !(rounded % 2) ? (rounded * 0.5) * 2.0 : rounded;
-    }; 
-    
     switch (alignment) {
         case TextAlignment::Center:
             this->fillText(
                 font,
                 text,
-                normalize(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5)),
-                normalize(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
+                round(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5)),
+                round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
                 color
             );
             break;
@@ -82,8 +75,8 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
             this->fillText(
                 font,
                 text, 
-                normalize((rect.x + rect.w) - (this->measureText(font, text).w + padding)),
-                normalize(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
+                round((rect.x + rect.w) - (this->measureText(font, text).w + padding)),
+                round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
                 color
             );
             break;
@@ -91,8 +84,8 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
             this->fillText(
                 font,
                 text, 
-                normalize(rect.x + padding),
-                normalize(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
+                round(rect.x + padding),
+                round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
                 color
             );
     }
