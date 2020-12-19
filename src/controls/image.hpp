@@ -17,8 +17,14 @@
             virtual Image* setForeground(Color background) override;
             bool expand();
             Image* setExpand(bool expand);
+            HorizontalAlignment horizontalAlignment();
+            Image* setHorizontalAlignment(HorizontalAlignment image_align);
+            VerticalAlignment verticalAlignment();
+            Image* setVerticalAlignment(VerticalAlignment image_align);
 
         protected:
             bool m_expand = false;
+            HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
+            VerticalAlignment m_vertical_align = VerticalAlignment::Center;
     };
 #endif
