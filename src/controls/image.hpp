@@ -8,7 +8,7 @@
 
     class Image : public Widget, public Texture {
         public:
-            Image(std::string file_path, bool expand = true);
+            Image(std::string file_path, bool expand = false);
             ~Image();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
