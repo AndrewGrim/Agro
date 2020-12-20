@@ -236,11 +236,8 @@ void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_ali
     );
 }
 
-// TODO this is not quite right, ATM we dont support quads which arent on the same y
-// basically we need to add a new function to Renderer in which you can manipulate the
-// y of the vertices on the right side
 void DrawingContext::drawLine(Point from, Point to, float line_width, Color color) {
-    this->fillRect(Rect(from.x, from.y, to.x - from.x, line_width), color);
+    renderer->drawLine(from, to, line_width, color);
 }
 
 void DrawingContext::drawPoint(Point point, Color color) {
