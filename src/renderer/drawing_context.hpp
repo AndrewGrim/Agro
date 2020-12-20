@@ -35,7 +35,6 @@
         void drawImageAtSize(Point point, Size size, Texture *texture, Color color = Color(1, 1, 1));
         void drawImageAligned(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Texture *texture, Color color = Color(1, 1, 1));
         void drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Size size, Texture *texture, Color color = Color(1, 1, 1));
-        void drawLine(Point from, Point to, float line_width, Color color);
         void drawPoint(Point point, Color color);
         void clear();
         void swap_buffer(SDL_Window *win);

@@ -236,10 +236,6 @@ void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_ali
     );
 }
 
-void DrawingContext::drawLine(Point from, Point to, float line_width, Color color) {
-    renderer->drawLine(from, to, line_width, color);
-}
-
 void DrawingContext::drawPoint(Point point, Color color) {
     this->fillRect(Rect(point.x, point.y, 1, 1), color);
 }
