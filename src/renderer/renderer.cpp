@@ -366,7 +366,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     count++;
 }
 
-void Renderer::fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
+void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
     check();
     
     switch (orientation) {

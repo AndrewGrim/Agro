@@ -24,8 +24,8 @@
             void draw(DrawingContext *dc, Rect rect) {
                 this->rect = rect;
                 dc->fillRect(rect, Color(0.7, 0.7, 0.7));
-                dc->fillGradientRect(Rect(rect.x, rect.y, 125, 100), Color(), Color(1, 0.1), Renderer::Gradient::LeftToRight);
-                dc->fillGradientRect(Rect(rect.x + 125, rect.y, 125, 100), Color(), Color(0.2, 0.7, 0.9), Renderer::Gradient::TopToBottom);
+                dc->fillRectWithGradient(Rect(rect.x, rect.y, 125, 100), Color(), Color(1, 0.1), Renderer::Gradient::LeftToRight);
+                dc->fillRectWithGradient(Rect(rect.x + 125, rect.y, 125, 100), Color(), Color(0.2, 0.7, 0.9), Renderer::Gradient::TopToBottom);
                 dc->drawLine(Point(rect.x, rect.y + 110), Point(rect.x + rect.w, rect.y + 130), 3, Color(1, 1));
                 dc->drawImageAtSize(Point(rect.x + 125, rect.y + 140), Size(24, 24), m_texture);
                 dc->fillRect(Rect(rect.x, rect.y + 175, rect.w, 20), Color());

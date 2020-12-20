@@ -60,7 +60,7 @@
         void drawImage(Point point, Texture *texture, Color color = Color(1, 1, 1));
         void drawImageAtSize(Point point, Size size, Texture *texture, Color color = Color(1, 1, 1));
         void fillRect(Rect rect, Color color);
-        void fillGradientRect(Rect rect, Color fromColor, Color toColor, Gradient orientation);
+        void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void check();
         void render();
         
