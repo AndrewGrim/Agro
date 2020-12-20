@@ -134,15 +134,9 @@
             /// This method retrieves the Fill policy of the Widget.
             Fill fillPolicy();
 
-            void show(); // TODO not used at the moment, 
-            // but i totally see them being useful, 
-            // should probably use this information in layout 
-            // and when drawing and just skip over these widget
+            Widget* show();
             
-            void hide(); // TODO not used at the moment, 
-            // but i totally see them being useful, 
-            // should probably use this information in layout 
-            // and when drawing and just skip over these widget
+            Widget* hide();
             
             bool isVisible();
             
@@ -161,7 +155,7 @@
             /// To avoid unecessary redraws it first checks if the new
             /// value is the same as the one stored in the Widget
             /// and if its not it will call update().
-            void setHovered(bool hover);
+            Widget* setHovered(bool hover);
 
             /// Returns whether the Widget is currently pressed or not.
             bool isPressed();
@@ -170,7 +164,7 @@
             /// To avoid unecessary redraws it first checks if the new
             /// value is the same as the one stored in the Widget
             /// and if its not it will call update().
-            void setPressed(bool pressed);
+            Widget* setPressed(bool pressed);
 
             /// Returns whether the Widget is currently focused or not.
             bool isFocused();
@@ -179,13 +173,13 @@
             /// To avoid unecessary redraws it first checks if the new
             /// value is the same as the one stored in the Widget
             /// and if its not it will call update().
-            void setFocused(bool focused);
+            Widget* setFocused(bool focused);
 
             /// Tells the Application that it needs to redraw.
-            void update();
+            Widget* update();
 
             /// Tells the Application that it needs to recalculate its layout.
-            void layout();
+            Widget* layout();
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
@@ -200,15 +194,15 @@
 
             /// Sets the Application* of the Widget and does the same
             /// for any of its children.
-            virtual void attachApp(void *app);
+            virtual Widget* attachApp(void *app);
 
             uint proportion();
 
-            void setProportion(uint proportion);
+            Widget* setProportion(uint proportion);
 
             Font* font();
 
-            void setFont(Font *font);
+            Widget* setFont(Font *font);
 
         protected:
             bool m_is_hovered = false;

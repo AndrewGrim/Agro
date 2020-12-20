@@ -96,20 +96,24 @@ Fill Widget::fillPolicy() {
     return this->m_fill_policy;
 }
 
-void Widget::show() {
+Widget* Widget::show() {
     if (!this->m_is_visible) {
         this->m_is_visible = true;
         this->update();
         this->layout();
     }
+    
+    return this;
 }
 
-void Widget::hide() {
+Widget* Widget::hide() {
     if (this->m_is_visible) {
         this->m_is_visible = false;
         this->update();
         this->layout();
     }
+    
+    return this;
 }
 
 bool Widget::isVisible() {
@@ -120,42 +124,50 @@ bool Widget::isHovered() {
     return this->m_is_hovered;
 }
 
-void Widget::setHovered(bool hover) {
+Widget* Widget::setHovered(bool hover) {
     if (this->m_is_hovered != hover) {
         this->m_is_hovered = hover;
         this->update();
     }
+    
+    return this;
 }
 
 bool Widget::isPressed() {
     return this->m_is_pressed;
 }
 
-void Widget::setPressed(bool pressed) {
+Widget* Widget::setPressed(bool pressed) {
     if (this->m_is_pressed != pressed) {
         this->m_is_pressed = pressed;
         this->update();
     }
+    
+    return this;
 }
 
 bool Widget::isFocused() {
     return this->m_is_focused;
 }
 
-void Widget::setFocused(bool focused) {
+Widget* Widget::setFocused(bool focused) {
     if (this->m_is_focused != focused) {
         this->m_is_focused = focused;
         this->update();
     }
+    
+    return this;
 }
 
-void Widget::update() {
+Widget* Widget::update() {
     if (this->app) {
         ((Application*)this->app)->update();
     }
+    
+    return this;
 }
 
-void Widget::layout() {
+Widget* Widget::layout() {
     // maybe make a method in app to resend the last event?
     // TODO we might want layout to invalidate the state
     // right now when we swap widgets they still present themselves
@@ -163,6 +175,8 @@ void Widget::layout() {
     if (this->app) {
         ((Application*)this->app)->layout();
     }
+    
+    return this;
 }
 
 void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
@@ -288,11 +302,13 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
     }
 }
 
-void Widget::attachApp(void *app) {
+Widget* Widget::attachApp(void *app) {
     for (Widget *child : this->children) {
         child->app = app;
         child->attachApp(app);
     }
+    
+    return this;
 }
 
 bool Widget::isLayout() {
@@ -307,22 +323,26 @@ uint Widget::proportion() {
     return this->m_proportion;
 }
 
-void Widget::setProportion(uint proportion) {
+Widget* Widget::setProportion(uint proportion) {
     if (this->m_proportion != proportion) {
         this->m_proportion = proportion ? proportion : 1;
         this->update();
         this->layout();
     }
+    
+    return this;
 }
 
 Font* Widget::font() {
     return this->m_font;
 }
 
-void Widget::setFont(Font *font) {
+Widget* Widget::setFont(Font *font) {
     if (this->m_font != font) {
         this->m_font = font;
         this->update();
         this->layout();
     }
+    
+    return this;
 }
