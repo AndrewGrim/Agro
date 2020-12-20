@@ -125,7 +125,7 @@ void Renderer::check() {
     if (this->index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
-void Renderer::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
+void Renderer::fillText(Font *font, std::string text, Point point, Color color, float scale) {
     Size window = ((Application*)this->m_app)->m_size;
     std::string::const_iterator c;
     // TODO handle newlines and tab characters
@@ -137,13 +137,13 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
     }
     glActiveTexture(gl_texture_begin + this->current_texture_slot); 
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
-    for (c = text.begin(); c != text.end() && x <= window.w; c++) {
+    for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
         check();
         Font::Character ch = font->characters[*c];
         float advance = ((ch.advance >> 6) * scale);
-        if (x + advance >= 0) {
-            float xpos = x + ch.bearing.x * scale;
-            float ypos = y + (font->characters['H'].bearing.y - ch.bearing.y) * scale;
+        if (point.x + advance >= 0) {
+            float xpos = point.x + ch.bearing.x * scale;
+            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y) * scale;
 
             float w = ch.size.x * scale;
             float h = ch.size.y * scale;
@@ -187,7 +187,7 @@ void Renderer::fillText(Font *font, std::string text, float x, float y, Color co
 
             count++;
         }
-        x += advance;
+        point.x += advance;
     }
     this->current_texture_slot++;
 }

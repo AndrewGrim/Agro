@@ -39,8 +39,8 @@ void DrawingContext::render() {
     renderer->render();
 }
 
-void DrawingContext::fillText(Font *font, std::string text, float x, float y, Color color, float scale) {
-    renderer->fillText(font, text, x, y, color, scale);
+void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, float scale) {
+    renderer->fillText(font, text, point, color, scale);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text, float scale) {
@@ -66,8 +66,10 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
             this->fillText(
                 font,
                 text,
-                round(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5)),
-                round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
+                Point(
+                    round(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5)),
+                    round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5))
+                ),
                 color
             );
             break;
@@ -75,8 +77,10 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
             this->fillText(
                 font,
                 text, 
-                round((rect.x + rect.w) - (this->measureText(font, text).w + padding)),
-                round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
+                Point(
+                    round((rect.x + rect.w) - (this->measureText(font, text).w + padding)),
+                    round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5))
+                ),
                 color
             );
             break;
@@ -84,8 +88,10 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
             this->fillText(
                 font,
                 text, 
-                round(rect.x + padding),
-                round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5)),
+                Point(
+                    round(rect.x + padding),
+                    round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5))
+                ),
                 color
             );
     }

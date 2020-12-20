@@ -53,8 +53,7 @@
 
         Renderer(uint *indices, void *app);
         ~Renderer();
-        // TODO change to point
-        void fillText(Font *font, std::string text, float x, float y, Color color = Color(), float scale = 1.0f);
+        void fillText(Font *font, std::string text, Point point, Color color = Color(), float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
         void drawImage(Point point, Texture *texture, Color color = Color(1, 1, 1));
