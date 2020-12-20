@@ -179,12 +179,12 @@ void DrawingContext::swap_buffer(SDL_Window *win) {
     SDL_GL_SwapWindow(win);
 }
 
-void DrawingContext::drawImage(float x, float y, Texture *texture, Color color) {
-    renderer->drawImage(x, y, texture, color);
+void DrawingContext::drawImage(Point point, Texture *texture, Color color) {
+    renderer->drawImage(point, texture, color);
 }
 
-void DrawingContext::drawImageAtSize(float x, float y, Size size, Texture *texture, Color color) {
-    renderer->drawImageAtSize(x, y, size, texture, color);
+void DrawingContext::drawImageAtSize(Point point, Size size, Texture *texture, Color color) {
+    renderer->drawImageAtSize(point, size, texture, color);
 }
 
 void DrawingContext::drawImageAligned(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Texture *texture, Color color) {
@@ -223,8 +223,7 @@ void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_ali
             break;
     }
     this->drawImageAtSize(
-        pos.x,
-        pos.y, 
+        pos, 
         size,
         texture,
         color

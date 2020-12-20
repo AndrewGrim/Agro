@@ -42,8 +42,10 @@ void Button::draw(DrawingContext *dc, Rect rect) {
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
         dc->drawImageAtSize(
-            round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
-            round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5)),
+            Point(
+                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
+            ),
             image_size,
             m_image
         );

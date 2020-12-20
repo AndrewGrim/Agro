@@ -213,7 +213,7 @@ Size Renderer::measureText(Font *font, char c, float scale) {
     return size;
 }
 
-void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
+void Renderer::drawImage(Point point, Texture *texture, Color color) {
     check();
 
     if (this->current_texture_slot > this->max_texture_slots - 1) {
@@ -229,7 +229,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, (float)texture->width, (float)texture->height}
+        {point.x, point.y, (float)texture->width, (float)texture->height}
     };
     // BOTTOM LEFT
     vertices[index++] = {
@@ -238,7 +238,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, (float)texture->width, (float)texture->height}
+        {point.x, point.y, (float)texture->width, (float)texture->height}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
@@ -247,7 +247,7 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, (float)texture->width, (float)texture->height}
+        {point.x, point.y, (float)texture->width, (float)texture->height}
     };
     // TOP RIGHT
     vertices[index++] = {
@@ -256,13 +256,13 @@ void Renderer::drawImage(float x, float y, Texture *texture, Color color) {
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, (float)texture->width, (float)texture->height}
+        {point.x, point.y, (float)texture->width, (float)texture->height}
     };
     count++;
     this->current_texture_slot++;
 }
 
-void Renderer::drawImageAtSize(float x, float y, Size size, Texture *texture, Color color) {
+void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color color) {
     check();
 
     if (this->current_texture_slot > this->max_texture_slots - 1) {
@@ -278,7 +278,7 @@ void Renderer::drawImageAtSize(float x, float y, Size size, Texture *texture, Co
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, size.w, size.h}
+        {point.x, point.y, size.w, size.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
@@ -287,7 +287,7 @@ void Renderer::drawImageAtSize(float x, float y, Size size, Texture *texture, Co
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, size.w, size.h}
+        {point.x, point.y, size.w, size.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
@@ -296,7 +296,7 @@ void Renderer::drawImageAtSize(float x, float y, Size size, Texture *texture, Co
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, size.w, size.h}
+        {point.x, point.y, size.w, size.h}
     };
     // TOP RIGHT
     vertices[index++] = {
@@ -305,7 +305,7 @@ void Renderer::drawImageAtSize(float x, float y, Size size, Texture *texture, Co
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {x, y, size.w, size.h}
+        {point.x, point.y, size.w, size.h}
     };
     count++;
     this->current_texture_slot++;

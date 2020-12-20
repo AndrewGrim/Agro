@@ -32,9 +32,9 @@
         void fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color = Color());
         Rect drawBorder(Rect rect, int border_width, Color rect_color);
         // TODO change to Point
-        void drawImage(float x, float y, Texture *texture, Color color = Color(1, 1, 1));
+        void drawImage(Point point, Texture *texture, Color color = Color(1, 1, 1));
         // TODO change to Point
-        void drawImageAtSize(float x, float y, Size size, Texture *texture, Color color = Color(1, 1, 1));
+        void drawImageAtSize(Point point, Size size, Texture *texture, Color color = Color(1, 1, 1));
         void drawImageAligned(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Texture *texture, Color color = Color(1, 1, 1));
         void drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Size size, Texture *texture, Color color = Color(1, 1, 1));
         void drawLine(Point from, Point to, float line_width, Color color);
