@@ -23,6 +23,7 @@
 
             void draw(DrawingContext *dc, Rect rect) {
                 this->rect = rect;
+                m_texture->flipBoth();
                 dc->fillRect(rect, Color(0.7, 0.7, 0.7));
                 dc->fillRectWithGradient(Rect(rect.x, rect.y, 125, 100), Color(), Color(1, 0.1), Renderer::Gradient::LeftToRight);
                 dc->fillRectWithGradient(Rect(rect.x + 125, rect.y, 125, 100), Color(), Color(0.2, 0.7, 0.9), Renderer::Gradient::TopToBottom);
@@ -30,8 +31,6 @@
                 dc->fillTextAligned(dc->default_font, "Centered Aligned Text", HorizontalAlignment::Center, VerticalAlignment::Center, Rect(rect.x, rect.y, 250, 100), 10, Color(1, 1, 1));
                 dc->fillTextAligned(dc->default_font, "Right Aligned Text", HorizontalAlignment::Right, VerticalAlignment::Bottom, Rect(rect.x, rect.y, 250, 100), 10, Color(1, 1, 1));
                 dc->fillText(dc->default_font, "Teostra.png", Point(rect.x + 25, rect.y + 130));
-                // TODO add the ability to change texture coords for images/texture, this would allows us to easily flip texture on either axis
-                // without modifying the underlying data
                 dc->drawImageAtSize(Point(rect.x + 50, rect.y + 140), Size(24, 24), m_texture);
                 dc->drawImageAtSize(Point(rect.x + 125, rect.y + 90), Size(96, 96), m_texture);
                 dc->fillRect(Rect(rect.x, rect.y + 175, rect.w, 20), Color());

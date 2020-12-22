@@ -53,5 +53,48 @@
             free(this->data);
             glDeleteTextures(1, &this->ID);
         }
+
+        Texture* flipHorizontally() {
+            // if flipped reset to default
+            if (top_left.x) {
+                top_left.x = 0.0;
+                bottom_left.x = 0.0;
+                bottom_right.x = 1.0;
+                top_right.x = 1.0;
+            // flip x to the opposite side
+            } else {
+                top_left.x = 1.0;
+                bottom_left.x = 1.0;
+                bottom_right.x = 0.0;
+                top_right.x = 0.0;
+            }
+
+            return this;
+        }
+
+        Texture* flipVertically() {
+            // if flipped reset to default
+            if (!top_left.y) {
+                top_left.y = 1.0;
+                bottom_left.y = 0.0;
+                bottom_right.y = 0.0;
+                top_right.y = 1.0;
+            // flip y to the opposite side
+            } else {
+                top_left.y = 0.0;
+                bottom_left.y = 1.0;
+                bottom_right.y = 1.0;
+                top_right.y = 0.0;
+            }
+
+            return this;
+        }
+
+        Texture* flipBoth() {
+            this->flipHorizontally();
+            this->flipVertically();
+
+            return this;
+        }
     };
 #endif
