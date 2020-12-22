@@ -9,7 +9,7 @@
 
     class Button : public Widget {
         public:
-            Button(std::string text, TextAlignment text_align = TextAlignment::Center);
+            Button(std::string text);
             Button(Image *image);
             ~Button();
             virtual const char* name() override;
@@ -21,8 +21,10 @@
             Button* setText(std::string text);
             Image* image(); 
             Button* setImage(Image *image);
-            TextAlignment textAlignment();
-            Button* setTextAlignment(TextAlignment text_align);
+            HorizontalAlignment horizontalAlignment();
+            Button* setHorizontalAlignment(HorizontalAlignment text_align);
+            VerticalAlignment verticalAlignment();
+            Button* setVerticalAlignment(VerticalAlignment text_align);
             uint padding();
             Button* setPadding(uint padding);
             uint borderWidth();
@@ -30,7 +32,8 @@
 
         protected:
             std::string m_text;
-            TextAlignment m_text_align = TextAlignment::Center;
+            HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
+            VerticalAlignment m_vertical_align = VerticalAlignment::Center;
             uint m_padding = 5;
             uint m_border_width = 4;
             Image *m_image = nullptr;

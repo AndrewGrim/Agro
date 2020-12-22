@@ -6,12 +6,6 @@
         Vertical,
     };
 
-    enum class TextAlignment {
-        Left,
-        Right,
-        Center,
-    };
-
     enum class HorizontalAlignment {
         Left,
         Right,

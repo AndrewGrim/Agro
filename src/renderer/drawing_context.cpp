@@ -51,7 +51,7 @@ Size DrawingContext::measureText(Font *font, char c, float scale) {
     return renderer->measureText(font, c, scale);
 }
 
-void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color) {
+void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color) {
     // The reason for the rounding here is because in order
     // to avoid horrible texture wrapping issues on text we need to give it a
     // nice whole number to start from.
@@ -61,40 +61,35 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, TextAlignment
     // This is only really noticeable when scrolling or resizing a window
     // and doing it slowely, if you just resize the window as you would
     // normally this isn't really perceptible.
-    switch (alignment) {
-        case TextAlignment::Center:
-            this->fillText(
-                font,
-                text,
-                Point(
-                    round(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5)),
-                    round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5))
-                ),
-                color
-            );
+    Point pos = Point();
+    switch (h_align) {
+        case HorizontalAlignment::Left:
+            pos.x = round(rect.x + padding);
             break;
-        case TextAlignment::Right:
-            this->fillText(
-                font,
-                text, 
-                Point(
-                    round((rect.x + rect.w) - (this->measureText(font, text).w + padding)),
-                    round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5))
-                ),
-                color
-            );
+        case HorizontalAlignment::Right:
+            pos.x = round((rect.x + rect.w) - (this->measureText(font, text).w + padding));
             break;
-        default:
-            this->fillText(
-                font,
-                text, 
-                Point(
-                    round(rect.x + padding),
-                    round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5))
-                ),
-                color
-            );
+        case HorizontalAlignment::Center:
+            pos.x = round(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5));
+            break;
     }
+    switch (v_align) {
+        case VerticalAlignment::Top:
+            pos.y = round(rect.y + padding);
+            break;
+        case VerticalAlignment::Bottom:
+            pos.y = round((rect.y + rect.h) - (this->measureText(font, text).h + padding));
+            break;
+        case VerticalAlignment::Center:
+            pos.y = round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5));
+            break;
+    }
+    this->fillText(
+        font,
+        text,
+        pos,
+        color
+    );
 }
 
 Rect DrawingContext::drawBorder(Rect rect, int border_width, Color rect_color) {

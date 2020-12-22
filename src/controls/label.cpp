@@ -1,8 +1,7 @@
 #include "label.hpp"
 
-Label::Label(std::string text, TextAlignment text_align) {
+Label::Label(std::string text) {
     this->setText(text);
-    this->setTextAlignment(text_align);
     Widget::m_bg = Color(0, 0, 0, 0);
 }
 
@@ -19,7 +18,8 @@ void Label::draw(DrawingContext *dc, Rect rect) {
     dc->fillTextAligned(
         this->font() ? this->font() : dc->default_font,
         this->m_text,
-        this->m_text_align,
+        this->m_horizontal_align,
+        this->m_vertical_align,
         rect,
         0,
         this->m_fg
@@ -74,15 +74,28 @@ Label* Label::setText(std::string text) {
     return this;
 }
 
-TextAlignment Label::textAlignment() {
-    return this->m_text_align;
+HorizontalAlignment Label::horizontalAlignment() {
+    return this->m_horizontal_align;
 }
 
-Label* Label::setTextAlignment(TextAlignment text_align) {
-    if (this->m_text_align == text_align) {
-        this->m_text_align = text_align;
+Label* Label::setHorizontalAlignment(HorizontalAlignment text_align) {
+    if (m_horizontal_align != text_align) {
+        m_horizontal_align = text_align;
         this->update();
     }
-    
+
+    return this;
+}
+
+VerticalAlignment Label::verticalAlignment() {
+    return this->m_vertical_align;
+}
+
+Label* Label::setVerticalAlignment(VerticalAlignment text_align) {
+    if (m_vertical_align != text_align) {
+        m_vertical_align = text_align;
+        this->update();
+    }
+
     return this;
 }

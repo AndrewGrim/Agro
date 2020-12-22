@@ -29,7 +29,7 @@
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
         void render();
-        void fillTextAligned(Font *font, std::string text, TextAlignment alignment, Rect rect, int padding, Color color = Color());
+        void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = Color());
         Rect drawBorder(Rect rect, int border_width, Color rect_color);
         void drawImage(Point point, Texture *texture, Color color = Color(1, 1, 1));
         void drawImageAtSize(Point point, Size size, Texture *texture, Color color = Color(1, 1, 1));

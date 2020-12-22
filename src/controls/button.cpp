@@ -1,8 +1,7 @@
 #include "button.hpp"
 
-Button::Button(std::string text, TextAlignment text_align) {
+Button::Button(std::string text) {
     this->setText(text);
-    this->setTextAlignment(text_align);
     Widget::m_bg = Color(0.9, 0.9, 0.9);
 }
 
@@ -53,15 +52,18 @@ void Button::draw(DrawingContext *dc, Rect rect) {
         rect.x += image_size.w;
         rect.w -= image_size.w;
     }
-    TextAlignment text_align = m_text_align;
+    HorizontalAlignment h_text_align = m_horizontal_align;
+    VerticalAlignment v_text_align = m_vertical_align;
     if (m_image) {
-        text_align = TextAlignment::Center;
+        h_text_align = HorizontalAlignment::Center;
+        v_text_align = VerticalAlignment::Center;
     }
     if (this->m_text.length()) {
         dc->fillTextAligned(
             this->font() ? this->font() : dc->default_font,
             this->m_text,
-            text_align,
+            h_text_align,
+            v_text_align,
             rect,
             0,
             this->m_fg
@@ -127,13 +129,26 @@ Button* Button::setText(std::string text) {
     return this;
 }
 
-TextAlignment Button::textAlignment() {
-    return this->m_text_align;
+HorizontalAlignment Button::horizontalAlignment() {
+    return this->m_horizontal_align;
 }
 
-Button* Button::setTextAlignment(TextAlignment text_align) {
-    if (this->m_text_align == text_align) {
-        this->m_text_align = text_align;
+Button* Button::setHorizontalAlignment(HorizontalAlignment text_align) {
+    if (m_horizontal_align != text_align) {
+        m_horizontal_align = text_align;
+        this->update();
+    }
+
+    return this;
+}
+
+VerticalAlignment Button::verticalAlignment() {
+    return this->m_vertical_align;
+}
+
+Button* Button::setVerticalAlignment(VerticalAlignment text_align) {
+    if (m_vertical_align != text_align) {
+        m_vertical_align = text_align;
         this->update();
     }
 
