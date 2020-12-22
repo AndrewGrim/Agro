@@ -224,8 +224,8 @@ void Renderer::drawImage(Point point, Texture *texture, Color color) {
 
     // TOP LEFT
     vertices[index++] = {
-        {0.0,  1.0},
         {0.0, 1.0},
+        {texture->top_left.x, texture->top_left.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -233,8 +233,8 @@ void Renderer::drawImage(Point point, Texture *texture, Color color) {
     };
     // BOTTOM LEFT
     vertices[index++] = {
-        {0.0,  0.0},
         {0.0, 0.0},
+        {texture->bottom_left.x, texture->bottom_left.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -242,8 +242,8 @@ void Renderer::drawImage(Point point, Texture *texture, Color color) {
     };
     // BOTTOM RIGHT
     vertices[index++] = {
-        {1.0,  0.0},
         {1.0, 0.0},
+        {texture->bottom_right.x, texture->bottom_right.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -251,8 +251,8 @@ void Renderer::drawImage(Point point, Texture *texture, Color color) {
     };
     // TOP RIGHT
     vertices[index++] = {
-        {1.0,  1.0},
         {1.0, 1.0},
+        {texture->top_right.x, texture->top_right.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -273,8 +273,8 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
 
     // TOP LEFT
     vertices[index++] = {
-        {0.0,  1.0},
         {0.0, 1.0},
+        {texture->top_left.x, texture->top_left.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -282,8 +282,8 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
     };
     // BOTTOM LEFT
     vertices[index++] = {
-        {0.0,  0.0},
         {0.0, 0.0},
+        {texture->bottom_left.x, texture->bottom_left.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -291,8 +291,8 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
     };
     // BOTTOM RIGHT
     vertices[index++] = {
-        {1.0,  0.0},
         {1.0, 0.0},
+        {texture->bottom_right.x, texture->bottom_right.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -300,8 +300,8 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
     };
     // TOP RIGHT
     vertices[index++] = {
-        {1.0,  1.0},
         {1.0, 1.0},
+        {texture->top_right.x, texture->top_right.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -317,8 +317,6 @@ void Renderer::render() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * index, vertices);
     glDrawElements(GL_TRIANGLES, 6 * count, GL_UNSIGNED_INT, 0);
-    // TODO we could finally add a better line implementation, and also add a draw pixel implementation
-    // by just using quads, this way we could keep it all in the same buffer
     // TODO later on we could introduce rounded corners and circles by sampling pixels in the fragment shader??
     reset();
 }
@@ -328,7 +326,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     
     // TOP LEFT
     vertices[index++] = {
-        {0.0,  1.0},
+        {0.0, 1.0},
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
@@ -337,7 +335,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     };
     // BOTTOM LEFT
     vertices[index++] = {
-        {0.0,  0.0},
+        {0.0, 0.0},
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
@@ -346,7 +344,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     };
     // BOTTOM RIGHT
     vertices[index++] = {
-        {1.0,  0.0},
+        {1.0, 0.0},
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
@@ -355,7 +353,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     };
     // TOP RIGHT
     vertices[index++] = {
-        {1.0,  1.0},
+        {1.0, 1.0},
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
@@ -373,7 +371,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
         case Gradient::TopToBottom: {
             // TOP LEFT
             vertices[index++] = {
-                {0.0,  1.0},
+                {0.0, 1.0},
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
@@ -382,7 +380,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             };
             // BOTTOM LEFT
             vertices[index++] = {
-                {0.0,  0.0},
+                {0.0, 0.0},
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
@@ -391,7 +389,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             };
             // BOTTOM RIGHT
             vertices[index++] = {
-                {1.0,  0.0},
+                {1.0, 0.0},
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
@@ -400,7 +398,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             };
             // TOP RIGHT
             vertices[index++] = {
-                {1.0,  1.0},
+                {1.0, 1.0},
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
@@ -412,7 +410,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
         case Gradient::LeftToRight: {
             // TOP LEFT
             vertices[index++] = {
-                {0.0,  1.0},
+                {0.0, 1.0},
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
@@ -421,7 +419,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             };
             // BOTTOM LEFT
             vertices[index++] = {
-                {0.0,  0.0},
+                {0.0, 0.0},
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
@@ -430,7 +428,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             };
             // BOTTOM RIGHT
             vertices[index++] = {
-                {1.0,  0.0},
+                {1.0, 0.0},
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
@@ -439,7 +437,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             };
             // TOP RIGHT
             vertices[index++] = {
-                {1.0,  1.0},
+                {1.0, 1.0},
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,

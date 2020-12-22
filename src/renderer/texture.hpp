@@ -7,6 +7,7 @@
     #include "stb_image.h"
 
     #include "../util.hpp"
+    #include "../common/point.hpp"
 
     struct Texture {
         std::string file_path = "";
@@ -15,6 +16,10 @@
         int nr_channels = 0;
         unsigned char *data = nullptr;
         uint ID;
+        Point top_left = Point(0.0, 1.0);
+        Point bottom_left = Point(0.0, 0.0);
+        Point bottom_right = Point(1.0, 0.0);
+        Point top_right = Point(1.0, 1.0);
 
         Texture(std::string file_path) {
             this->file_path = file_path;
