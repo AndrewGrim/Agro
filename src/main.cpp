@@ -11,7 +11,7 @@
 #include "controls/image.hpp"
 #include "controls/label.hpp"
 #include "option.hpp"
-// #include "controls/slider.hpp"
+#include "controls/slider.hpp"
 // #include "controls/scrollbar.hpp"
 // #include "controls/scrolledbox.hpp"
 // #include "controls/lineedit.hpp"
@@ -42,6 +42,28 @@ int main() {
             app->append(left, Fill::Both, 10);
             Box *middle = new Box(Align::Vertical);
                 middle->append(new CustomWidget());
+                Label *l = new Label("0.000000");
+                    l->setHorizontalAlignment(HorizontalAlignment::Center);
+                middle->append(l, Fill::Horizontal);
+                Slider *s = new Slider(Align::Horizontal);
+                    s->onValueChanged = [=]() {
+                        l->setText(std::to_string(s->m_value));
+                    };
+                middle->append(s, Fill::Horizontal);
+                Box *b = new Box(Align::Horizontal);
+                    b->setBackground(Color(0.6, 1.0, 0.6));
+                    {
+                        Label *l = new Label("0.000000");
+                            l->setHorizontalAlignment(HorizontalAlignment::Center);
+                        b->append(l, Fill::Both);
+                        Slider *s = new Slider(Align::Vertical);
+                            s->setBackground(Color(0.6, 0.0, 0.6));
+                            s->onValueChanged = [=]() {
+                                l->setText(std::to_string(s->m_value));
+                            };
+                        b->append(s, Fill::Vertical);
+                    }
+                middle->append(b, Fill::Both);
             app->append(middle, Fill::Both);
             Box *right = new Box(Align::Vertical);
                 Button *add = new Button("Add Button");
