@@ -58,6 +58,7 @@ int main() {
                         b->append(l, Fill::Both);
                         Slider *s = new Slider(Align::Vertical);
                             s->setBackground(Color(0.6, 0.0, 0.6));
+                            s->setForeground(Color(1, 0, 1));
                             s->onValueChanged = [=]() {
                                 l->setText(std::to_string(s->m_value));
                             };
