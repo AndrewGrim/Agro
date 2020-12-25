@@ -3,10 +3,60 @@
 #include "scrollbar.hpp"
 #include "image.hpp"
 
+ScrollBarArrowButton::ScrollBarArrowButton(Image *image) : Button(image) {
+
+}
+
+ScrollBarArrowButton::~ScrollBarArrowButton() {
+
+}
+
+const char* ScrollBarArrowButton::name() {
+    return "ScrollBarArrowButton";
+}
+
+void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
+    this->rect = rect;
+    Color color; 
+    if (this->isPressed() && this->isHovered()) {
+        color = this->m_pressed_bg; 
+    } else if (this->isHovered()) {
+        color = this->m_hovered_bg;
+    } else {
+        color = this->background();
+    }
+    
+    // Draw border and shrink rectangle to prevent drawing over the border
+    rect = dc->drawBorder(rect, this->m_border_width, color);
+    dc->fillRect(rect, color);
+    // Pad the rectangle with some empty space.
+    rect.shrink(m_padding);
+    if (this->m_image) {
+        Size image_size = Size(12, 12);
+        dc->drawImageAtSize(
+            Point(
+                (rect.x + (rect.w * 0.5) - (image_size.w * 0.5)), 
+                (rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
+            ),
+            image_size,
+            m_image,
+            m_image->foreground()
+        );
+    }
+}
+
+Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
+    Size size = Size(12, 12);
+    size.w += this->m_padding * 2 + this->m_border_width * 2;
+    size.h += this->m_padding * 2 + this->m_border_width * 2;
+
+    return size;
+}
+
 ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
-    m_begin_button = new Button((new Image("scrollbar_arrow.png"))->setForeground(Color()));
+    m_begin_button = new ScrollBarArrowButton((new Image("scrollbar_arrow.png"))->setForeground(Color()));
     m_begin_button->setPadding(1);
     m_begin_button->onMouseClick = [&](MouseEvent event) {
         this->m_slider->m_value -= 0.05f; // TODO should be a customizable step
@@ -24,7 +74,7 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
         this->append(m_slider, Fill::Both);
     }
 
-    m_end_button = new Button((new Image("scrollbar_arrow.png"))->setForeground(Color()));
+    m_end_button = new ScrollBarArrowButton((new Image("scrollbar_arrow.png"))->setForeground(Color()));
     m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();
     m_end_button->onMouseClick = [&](MouseEvent event) {
