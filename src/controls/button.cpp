@@ -46,7 +46,8 @@ void Button::draw(DrawingContext *dc, Rect rect) {
                 round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
-            m_image
+            m_image,
+            m_image->foreground()
         );
         // Resize rect to account for image before the label is drawn.
         rect.x += image_size.w;
