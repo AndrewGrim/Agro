@@ -113,9 +113,9 @@ void Slider::draw(DrawingContext *dc, Rect rect) {
         *align_rect[0] += result;
     }
     if (this->m_align_policy == Align::Horizontal) {
-        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, size, sizehint.h));
+        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
     } else {
-        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, sizehint.w, size));
+        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
     }
 }
 
