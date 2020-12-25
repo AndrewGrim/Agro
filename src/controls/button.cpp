@@ -82,8 +82,8 @@ Size Button::sizeHint(DrawingContext *dc) {
                 size.h = i.h;
             }
         }
-        size.w += this->m_padding * 2 + this->m_border_width;
-        size.h += this->m_padding * 2 + this->m_border_width;
+        size.w += this->m_padding * 2 + this->m_border_width * 2;
+        size.h += this->m_padding * 2 + this->m_border_width * 2;
 
         this->m_size = size;
         this->m_size_changed = false;
