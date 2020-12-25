@@ -7,7 +7,7 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
     m_begin_button = new Button((new Image("scrollbar_arrow.png"))->setForeground(Color()));
-    m_begin_button->setPadding(0);
+    m_begin_button->setPadding(1);
     m_begin_button->onMouseClick = [&](MouseEvent event) {
         this->m_slider->m_value -= 0.05f; // TODO should be a customizable step
         if (this->m_slider->m_value < 0.0f) {
@@ -25,7 +25,7 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     }
 
     m_end_button = new Button((new Image("scrollbar_arrow.png"))->setForeground(Color()));
-    m_end_button->setPadding(0);
+    m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();
     m_end_button->onMouseClick = [&](MouseEvent event) {
         this->m_slider->m_value += 0.05f; 
