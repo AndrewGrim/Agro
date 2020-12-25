@@ -8,9 +8,6 @@
     #include "slider.hpp"
     #include "../renderer/drawing_context.hpp"
 
-    void _onBeginClicked(Widget *scrollbar_begin_button, MouseEvent event);
-    void _onEndClicked(Widget *scrollbar_begin_button, MouseEvent event);
-
     class ScrollBar : public Widget {
         // TODO could we just inherit from box instead??
         public:
