@@ -12,7 +12,7 @@
 #include "controls/label.hpp"
 #include "option.hpp"
 #include "controls/slider.hpp"
-// #include "controls/scrollbar.hpp"
+#include "controls/scrollbar.hpp"
 // #include "controls/scrolledbox.hpp"
 // #include "controls/lineedit.hpp"
 
@@ -65,6 +65,8 @@ int main() {
                         b->append(s, Fill::Vertical);
                     }
                 middle->append(b, Fill::Both);
+                ScrollBar *sb = new ScrollBar(Align::Vertical);
+                middle->append(sb, Fill::Vertical);
             app->append(middle, Fill::Both);
             Box *right = new Box(Align::Vertical);
                 Button *add = new Button("Add Button");

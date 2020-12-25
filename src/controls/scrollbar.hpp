@@ -12,21 +12,20 @@
     void _onEndClicked(Widget *scrollbar_begin_button, MouseEvent event);
 
     class ScrollBar : public Widget {
+        // TODO could we just inherit from box instead??
         public:
             Button *m_begin_button = nullptr;
             Slider *m_slider = nullptr;
             Button *m_end_button = nullptr;
-            Align m_align_policy;
-            std::string m_text;
 
-            ScrollBar(Align alignment, std::string text = "");
+            ScrollBar(Align alignment);
             ~ScrollBar();
-            const char* name();
-            void draw(DrawingContext *dc, Rect<float> rect);
-            Size<float> size_hint(DrawingContext *dc);
-            bool is_layout();
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual bool isLayout() override;
 
         protected:
-            const char *m_name = "ScrollBar";
+            Align m_align_policy;
     };  
 #endif
