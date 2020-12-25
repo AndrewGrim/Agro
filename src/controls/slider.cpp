@@ -69,7 +69,7 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
 }
 
 Slider::~Slider() {
-
+    delete m_slider_button;
 }
 
 const char* Slider::name() {
