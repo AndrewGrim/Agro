@@ -69,7 +69,8 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
 }
 
 Slider::~Slider() {
-    delete m_slider_button;
+    // No need to delete slider button because it'll get freed
+    // as part of the slider's children.
 }
 
 const char* Slider::name() {
