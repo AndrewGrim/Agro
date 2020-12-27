@@ -71,22 +71,24 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
 
     float content_x = rect.x;
     float content_y = rect.y;
-    // BUG scrollbar obscures content
-    // the problem only occurs when the horizontal scrollbar is active
-    // ^ when its active the vertical scrollbar does not take the horizontal
-    // scrollbars height into account when deciding whether its needed
-    // which results in the horizontal scrollbar obscuring some content of
-    // the scrolledbox whenever that happens
     if (this->m_align_policy == Align::Horizontal) {
+        bool vert = false;
         if (rect.h < generic_max_layout_length) {
+            vert = true;
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        } else {
-            this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_total_layout_length) {
             this->addScrollBar(Align::Horizontal);
             rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
+            if (rect.h < generic_max_layout_length) {
+                this->addScrollBar(Align::Vertical);
+                if (!vert) {
+                    rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
+                }
+            } else {
+                this->removeScrollBar(Align::Vertical);
+            }
         } else {
             this->removeScrollBar(Align::Horizontal);
         }
@@ -97,15 +99,23 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_total_layout_length) - rect.w);
         }
     } else {
+        bool vert = false;
         if (rect.h < generic_total_layout_length) {
+            vert = true;
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        } else {
-            this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_max_layout_length) {
             this->addScrollBar(Align::Horizontal);
             rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
+            if (rect.h < generic_total_layout_length) {
+                this->addScrollBar(Align::Vertical);
+                if (!vert) {
+                    rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
+                }
+            } else {
+                this->removeScrollBar(Align::Vertical);
+            }
         } else {
             this->removeScrollBar(Align::Horizontal);
         }

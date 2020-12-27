@@ -42,10 +42,12 @@ int main() {
                 {
                     ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
                         sb->setBackground(Color(0.8, 0.5, 0.5));
-                        for (int i = 0; i < 100; i++) {
-                            Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
-                            sb->append(_l);
-                        }
+                        // for (int i = 0; i < 100; i++) {
+                        //     Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
+                        //     sb->append(_l);
+                        // }
+                        CustomWidget *c = new CustomWidget();
+                        sb->append(c, Fill::None);
                     left->append(sb, Fill::Both);
                 }
                 {
