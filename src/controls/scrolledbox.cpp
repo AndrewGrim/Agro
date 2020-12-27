@@ -71,23 +71,24 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
 
     float content_x = rect.x;
     float content_y = rect.y;
-    // TODO to fix the scrollbars hiding content sometimes
-    // this has been already improved some but it seems that
-    // the issue still persists, for example: when a horizntal scrolledbox
-    // only has a vertical scrollbar it can obscure some content without prompting the
-    // horizontal scrollbar to popup
+    // BUG scrollbar obscures content
+    // the problem only occurs when the horizontal scrollbar is active
+    // ^ when its active the vertical scrollbar does not take the horizontal
+    // scrollbars height into account when deciding whether its needed
+    // which results in the horizontal scrollbar obscuring some content of
+    // the scrolledbox whenever that happens
     if (this->m_align_policy == Align::Horizontal) {
-        if (rect.w < generic_total_layout_length) {
-            this->addScrollBar(Align::Horizontal);
-            rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
-        } else {
-            this->removeScrollBar(Align::Horizontal);
-        }
         if (rect.h < generic_max_layout_length) {
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
         } else {
             this->removeScrollBar(Align::Vertical);
+        }
+        if (rect.w < generic_total_layout_length) {
+            this->addScrollBar(Align::Horizontal);
+            rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
+        } else {
+            this->removeScrollBar(Align::Horizontal);
         }
         if (this->hasScrollBar(Align::Vertical)) {
             content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_max_layout_length) - rect.h);
