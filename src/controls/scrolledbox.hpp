@@ -11,19 +11,18 @@
             ScrollBar *m_vertical_scrollbar = nullptr;
             ScrollBar *m_horizontal_scrollbar = nullptr;
 
-            ScrolledBox(Align align_policy, Size<float> min_size = Size<float>(50, 50));
+            ScrolledBox(Align align_policy, Size min_size = Size(50, 50));
             ~ScrolledBox();
-            const char* name();
-            void draw(DrawingContext *dc, Rect<float> rect);
-            void layout_children(DrawingContext *dc, Rect<float> rect);
-            void add_scrollbar(Align alignment);
-            void remove_scrollbar(Align alignment);
-            bool has_scrollbar(Align alignment);
-            bool is_scrollable();
-            Size<float> size_hint(DrawingContext *dc) override;
-            ScrolledBox* set_background(Color background) override;
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual bool isScrollable() override;
+            void layoutChildren(DrawingContext *dc, Rect rect);
+            void addScrollBar(Align alignment);
+            void removeScrollBar(Align alignment);
+            bool hasScrollBar(Align alignment);
 
         protected:
-            const char *m_name = "ScrolledBox";
+            Size m_viewport = Size();
     };
 #endif

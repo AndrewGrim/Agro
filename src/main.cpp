@@ -13,7 +13,7 @@
 #include "option.hpp"
 #include "controls/slider.hpp"
 #include "controls/scrollbar.hpp"
-// #include "controls/scrolledbox.hpp"
+#include "controls/scrolledbox.hpp"
 // #include "controls/lineedit.hpp"
 
 #include "custom_widget.hpp"
@@ -39,6 +39,29 @@ int main() {
             int widget_count = 1;
             int color_index = 0;
             Box *left = new Box(Align::Vertical);
+                {
+                    ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
+                        sb->setBackground(Color(0.8, 0.5, 0.5));
+                        for (int i = 0; i < 100; i++) {
+                            Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
+                            sb->append(_l);
+                        }
+                    left->append(sb, Fill::Both);
+                }
+                {
+                    ScrolledBox *sb = new ScrolledBox(Align::Horizontal, Size(200, 200));
+                        sb->setBackground(Color(0.5, 0.5, 0.8));
+                        // Box *_b = new Box(Align::Vertical);
+                        //     _b->setBackground(Color(0.5, 0.5, 0.8));
+                        // for (int i = 0; i < 100; i++) {
+                        //     Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
+                        //     _b->append(_l);
+                        // }
+                        // sb->append(_b);
+                        CustomWidget *c = new CustomWidget();
+                        sb->append(c, Fill::None);
+                    left->append(sb, Fill::Both);
+                }
             app->append(left, Fill::Both, 10);
             Box *middle = new Box(Align::Vertical);
                 middle->append(new CustomWidget());
@@ -65,8 +88,10 @@ int main() {
                         b->append(s, Fill::Vertical);
                     }
                 middle->append(b, Fill::Both);
-                ScrollBar *sb = new ScrollBar(Align::Vertical);
-                middle->append(sb, Fill::Vertical);
+                ScrollBar *sbv = new ScrollBar(Align::Vertical);
+                middle->append(sbv, Fill::Vertical);
+                ScrollBar *sbh = new ScrollBar(Align::Horizontal);
+                middle->append(sbh, Fill::Horizontal);
             app->append(middle, Fill::Both);
             Box *right = new Box(Align::Vertical);
                 Button *add = new Button("Add Button");

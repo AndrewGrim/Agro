@@ -181,19 +181,21 @@ Widget* Widget::layout() {
 
 void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
     if (this->isScrollable()) {
-        // ScrolledBox *self = (ScrolledBox*)this;
-        // if (self->m_vertical_scrollbar) {
-        //     if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
-        //         (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
-        //         return (void*)self->m_vertical_scrollbar->propagate_mouse_event(state, event);
-        //     }
-        // }
-        // if (self->m_horizontal_scrollbar) {
-        //     if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
-        //         (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
-        //         return (void*)self->m_horizontal_scrollbar->propagate_mouse_event(state, event);
-        //     }
-        // }
+        // TODO this should probably be an abstract class that provides a vert
+        // and a horizontal scrollbar, so in the future dont cast to scrolledbox
+        ScrolledBox *self = (ScrolledBox*)this;
+        if (self->m_vertical_scrollbar) {
+            if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
+                (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
+                return (void*)self->m_vertical_scrollbar->propagateMouseEvent(state, event);
+            }
+        }
+        if (self->m_horizontal_scrollbar) {
+            if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
+                (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
+                return (void*)self->m_horizontal_scrollbar->propagateMouseEvent(state, event);
+            }
+        }
     }
     for (Widget *child : this->children) {
         if (child->isVisible()) {
