@@ -41,7 +41,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     float generic_max_layout_length;
     float *generic_position_coord; // Needs to be a ptr because the value will change.
     float *generic_rect_coord;
-    float rect_length;
+    float *rect_length;
     Size size; // Individual widget size.
     float *generic_length; // Needs to be a ptr because the value will change.
     Size app_size = ((Application*)this->app)->m_size;
@@ -53,7 +53,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_max_layout_length = this->m_size.w;
             generic_position_coord = &pos.y;
             generic_rect_coord = &rect.y;
-            rect_length = rect.h;
+            rect_length = &rect.h;
             generic_length = &size.h;
             generic_app_length = app_size.h;
             break;
@@ -63,7 +63,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_max_layout_length = this->m_size.h;
             generic_position_coord = &pos.x;
             generic_rect_coord = &rect.x;
-            rect_length = rect.w;
+            rect_length = &rect.w;
             generic_length = &size.w;
             generic_app_length = app_size.w;
             break;
@@ -71,58 +71,61 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
 
     float content_x = rect.x;
     float content_y = rect.y;
+    // TODO to fix the scrollbars hiding content sometimes
+    // this has been already improved some but it seems that
+    // the issue still persists, for example: when a horizntal scrolledbox
+    // only has a vertical scrollbar it can obscure some content without prompting the
+    // horizontal scrollbar to popup
     if (this->m_align_policy == Align::Horizontal) {
         if (rect.w < generic_total_layout_length) {
             this->addScrollBar(Align::Horizontal);
+            rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
         } else {
             this->removeScrollBar(Align::Horizontal);
         }
         if (rect.h < generic_max_layout_length) {
             this->addScrollBar(Align::Vertical);
+            rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
         } else {
             this->removeScrollBar(Align::Vertical);
         }
         if (this->hasScrollBar(Align::Vertical)) {
-            float vscroll = 0;
-            if (this->hasScrollBar(Align::Horizontal)) vscroll += this->m_horizontal_scrollbar->sizeHint(dc).h;
-            content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_max_layout_length + vscroll) - rect.h);
+            content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_max_layout_length) - rect.h);
         }
         if (this->hasScrollBar(Align::Horizontal)) {
-            float hscroll = 0;
-            if (this->hasScrollBar(Align::Vertical)) hscroll += this->m_vertical_scrollbar->sizeHint(dc).w;
-            content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_total_layout_length + hscroll) - rect.w);
+            content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_total_layout_length) - rect.w);
         }
     } else {
         if (rect.h < generic_total_layout_length) {
             this->addScrollBar(Align::Vertical);
+            rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
         } else {
             this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_max_layout_length) {
             this->addScrollBar(Align::Horizontal);
+            rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
         } else {
             this->removeScrollBar(Align::Horizontal);
         }
         if (this->hasScrollBar(Align::Vertical)) {
-            float vscroll = 0;
-            if (this->hasScrollBar(Align::Horizontal)) vscroll += this->m_horizontal_scrollbar->sizeHint(dc).h;
-            content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_total_layout_length + vscroll) - rect.h);
+            content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_total_layout_length) - rect.h);
         }
         if (this->hasScrollBar(Align::Horizontal)) {
-            float hscroll = 0;
-            if (this->hasScrollBar(Align::Vertical)) hscroll += this->m_vertical_scrollbar->sizeHint(dc).w;
-            content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_max_layout_length + hscroll) - rect.w);
+            content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_max_layout_length) - rect.w);
         }
     }
     pos = Point(content_x, content_y);
     // if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
         int child_count = this->m_visible_children - generic_non_expandable_widgets;
-        if (!child_count) child_count = 1; // Protects from division by zero
-        float expandable_length = (rect_length - generic_total_layout_length) / child_count;
-        if (expandable_length < 0) expandable_length = 0;
-        if (this->hasScrollBar(Align::Vertical)) rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        if (this->hasScrollBar(Align::Horizontal)) rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
+        if (!child_count) {
+            child_count = 1; // Protects from division by zero
+        }
+        float expandable_length = (*rect_length - generic_total_layout_length) / child_count;
+        if (expandable_length < 0) {
+            expandable_length = 0;
+        }
         for (Widget* child : this->children) {
             Size child_hint = child->sizeHint(dc);
             switch (parent_layout) {
