@@ -32,8 +32,10 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
         int generic_non_expandable_widgets;
         Point pos = Point(rect.x, rect.y);
         float generic_total_layout_length;
+        float generic_max_layout_length;
         float *generic_position_coord; // Needs to be a ptr because the value will change.
         float rect_length;
+        float rect_opposite_length;
         Size size;
         float *generic_length; // Needs to be a ptr because the value will change.
         Size app_size = ((Application*)this->app)->m_size;
@@ -42,16 +44,20 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
             case Align::Vertical:
                 generic_non_expandable_widgets = this->m_vertical_non_expandable;
                 generic_total_layout_length = this->m_size.h;
+                generic_max_layout_length = this->m_size.w;
                 generic_position_coord = &pos.y;
                 rect_length = rect.h;
+                rect_opposite_length = rect.w;
                 generic_length = &size.h;
                 generic_app_length = app_size.h;
                 break;
             case Align::Horizontal:
                 generic_non_expandable_widgets = this->m_horizontal_non_expandable;
                 generic_total_layout_length = this->m_size.w;
+                generic_max_layout_length = this->m_size.h;
                 generic_position_coord = &pos.x;
                 rect_length = rect.w;
+                rect_opposite_length = rect.h;
                 generic_length = &size.w;
                 generic_app_length = app_size.w;
                 break;
@@ -59,6 +65,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
         int child_count = this->m_visible_children - generic_non_expandable_widgets;
         if (!child_count) child_count = 1; // Protects from division by zero
         float expandable_length = (rect_length - generic_total_layout_length) / child_count;
+        float expandable_opposite_length = rect_opposite_length > generic_max_layout_length ? rect_opposite_length : generic_max_layout_length;
         if (expandable_length < 0) expandable_length = 0;
         for (Widget* child : this->children) {
             Size child_hint = child->sizeHint(dc);
@@ -67,7 +74,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     switch (child->fillPolicy()) {
                         case Fill::Both: {
                             size = Size { 
-                                rect.w > child_hint.w ? rect.w : child_hint.w, 
+                                expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
                                 child_hint.h + (expandable_length * child->proportion())
                             };
                             break;
@@ -81,7 +88,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                         }
                         case Fill::Horizontal:
                             size = Size { 
-                                rect.w > child_hint.w ? rect.w : child_hint.w, 
+                                expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
                                 child_hint.h 
                             };
                             break;
@@ -95,14 +102,14 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                         case Fill::Both: {
                                 size = Size { 
                                     child_hint.w + (expandable_length * child->proportion()), 
-                                    rect.h > child_hint.h ? rect.h : child_hint.h
+                                    expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                                 };
                                 break;
                             }
                             case Fill::Vertical:
                                 size = Size { 
                                     child_hint.w, 
-                                    rect.h > child_hint.h ? rect.h : child_hint.h 
+                                    expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h 
                                 };
                                 break;
                             case Fill::Horizontal: {
@@ -119,7 +126,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     }
             }
             Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-            if (generic_position_coord < 0) {
+            if (*generic_position_coord < 0) {
                 if (*generic_position_coord + *generic_length < 0) {
                     child->rect = widget_rect;
                 }

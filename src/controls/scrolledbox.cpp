@@ -30,6 +30,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     float *generic_position_coord; // Needs to be a ptr because the value will change.
     float *generic_rect_coord;
     float *rect_length;
+    float *rect_opposite_length;
     Size size; // Individual widget size.
     float *generic_length; // Needs to be a ptr because the value will change.
     Size app_size = ((Application*)this->app)->m_size;
@@ -42,6 +43,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_position_coord = &pos.y;
             generic_rect_coord = &rect.y;
             rect_length = &rect.h;
+            rect_opposite_length = &rect.w;
             generic_length = &size.h;
             generic_app_length = app_size.h;
             break;
@@ -52,6 +54,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_position_coord = &pos.x;
             generic_rect_coord = &rect.x;
             rect_length = &rect.w;
+            rect_opposite_length = &rect.h;
             generic_length = &size.w;
             generic_app_length = app_size.w;
             break;
@@ -116,12 +119,12 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     }
     pos = Point(content_x, content_y);
     // if (((Application*)this->app)->hasLayoutChanged()) {
-        this->sizeHint(dc);
         int child_count = this->m_visible_children - generic_non_expandable_widgets;
         if (!child_count) {
             child_count = 1; // Protects from division by zero
         }
         float expandable_length = (*rect_length - generic_total_layout_length) / child_count;
+        float expandable_opposite_length = *rect_opposite_length > generic_max_layout_length ? *rect_opposite_length : generic_max_layout_length;
         if (expandable_length < 0) {
             expandable_length = 0;
         }
@@ -131,8 +134,12 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                 case Align::Vertical:
                     switch (child->fillPolicy()) {
                         case Fill::Both: {
+                            // Just leaving a little note here:
+                            // expandable_opposite_length used to be rect.w, i think this is
+                            // the behaviour we want but honestly we just gotta build something
+                            // so that we can see the difference between these
                             size = Size { 
-                                rect.w > child_hint.w ? rect.w : child_hint.w, 
+                                expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
                                 child_hint.h + (expandable_length * child->proportion())
                             };
                             break;
@@ -146,7 +153,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                         }
                         case Fill::Horizontal:
                             size = Size { 
-                                rect.w > child_hint.w ? rect.w : child_hint.w, 
+                                expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
                                 child_hint.h 
                             };
                             break;
@@ -160,14 +167,14 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                         case Fill::Both: {
                                 size = Size { 
                                     child_hint.w + (expandable_length * child->proportion()), 
-                                    rect.h > child_hint.h ? rect.h : child_hint.h
+                                    expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                                 };
                                 break;
                             }
                             case Fill::Vertical:
                                 size = Size { 
                                     child_hint.w, 
-                                    rect.h > child_hint.h ? rect.h : child_hint.h 
+                                    expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h 
                                 };
                                 break;
                             case Fill::Horizontal: {
