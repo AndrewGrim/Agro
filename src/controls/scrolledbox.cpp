@@ -20,19 +20,6 @@ const char* ScrolledBox::name() {
     return "ScrolledBox";
 }
 
-void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
-    this->rect = rect;
-    dc->fillRect(rect, this->m_bg);
-
-    dc->render();
-    glEnable(GL_SCISSOR_TEST);
-        Size window = ((Application*)this->app)->m_size;
-        glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
-        layoutChildren(dc, rect);
-        dc->render();
-    glDisable(GL_SCISSOR_TEST);
-}
-
 void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     Align parent_layout = this->alignPolicy();
     int generic_non_expandable_widgets;
