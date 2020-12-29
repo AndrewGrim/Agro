@@ -164,6 +164,10 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
 Size Box::sizeHint(DrawingContext *dc) {
     // `hasLayoutChanged()` is necessary here because the Box won't know
     // that it's sizeHint() needs to be recalculated because of it's children.
+    // TODO ideally now that every widget should have a parent (except main_widget?)
+    // it would be better to simply recalculate whats changed rather than
+    // all of it, simply recursivly go up the widget tree and say the layout changed
+    // until we hit the top :)
     uint visible = 0;
     uint vertical_non_expandable = 0;
     uint horizontal_non_expandable = 0;
