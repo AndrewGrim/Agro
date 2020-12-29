@@ -109,7 +109,7 @@
             std::chrono::time_point<std::chrono::steady_clock> m_last_event_time = std::chrono::steady_clock::now();
 
             /// Updates the projection matrix, clears the context and
-            /// renders any state that was stored in the renderes from
+            /// renders any state that was stored in the renderer from
             /// calls to the DrawingContext.
             /// Used internally by show().
             void draw();
