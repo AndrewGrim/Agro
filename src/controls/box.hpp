@@ -9,8 +9,8 @@
             Box(Align align_policy);
             ~Box();
             virtual const char* name() override;
-            void draw(DrawingContext *dc, Rect rect) override;
-            void layoutChildren(DrawingContext *dc, Rect rect);
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual void layoutChildren(DrawingContext *dc, Rect rect);
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual Box* setBackground(Color background) override;
             virtual Box* setForeground(Color background) override;
