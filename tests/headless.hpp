@@ -1,15 +1,9 @@
 #ifndef HEADLESS_HPP
     #define HEADLESS_HPP
-    app->dc->textRenderer->load("fonts/FreeSans.ttf", 14);
-    app->dc->textRenderer->shader.use();
-    app->dc->textRenderer->shader.setInt("text", 0);
-    app->main_widget->m_app = (void*)app;
-    for (Widget *child : app->main_widget->children) {
-        child->m_app = (void*)app;
-        child->attach_app((void*)app);
-    }
+    app->dc->default_font = new Font("fonts/DejaVu/DejaVuSans.ttf", 14, Font::Type::Sans);
+    app->setMainWidget(app->mainWidget());
     app->show();
-    if (app->ready_callback) {
-        app->ready_callback(app);
+    if (app->onReady) {
+        app->onReady(app);
     }
 #endif
