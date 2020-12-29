@@ -199,6 +199,8 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                     }
                     // TODO generic app length might need to be generic coord + generic length??
                     // update: definitely
+                    // for sure, to see the difference just count the number of widgets
+                    // that get drawn in a long scrolledbox!
                     if (*generic_position_coord > generic_app_length) {
                         break;
                     }
