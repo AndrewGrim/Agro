@@ -26,7 +26,7 @@ void Box::draw(DrawingContext *dc, Rect rect) {
 }
 
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
-    if (((Application*)this->app)->hasLayoutChanged()) {
+    // if (((Application*)this->app)->hasLayoutChanged()) {
         this->sizeHint(dc);
         Align parent_layout = this->alignPolicy();
         int generic_non_expandable_widgets;
@@ -137,28 +137,29 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                 *generic_position_coord += *generic_length;
             }
         }
-    } else {
-        float *generic_child_coord;
-        float generic_app_length;
-        Rect child_rect;
-        Size app_size = ((Application*)this->app)->m_size;
-        if (this->alignPolicy() == Align::Vertical) {
-            generic_child_coord = &child_rect.y;
-            generic_app_length = app_size.h;
-        } else {
-            generic_child_coord = &child_rect.x;
-            generic_app_length = app_size.w;
-        }
-        for (Widget* child : this->children) {
-            child_rect = child->rect;
-            if (child->isVisible()) {
-                child->draw(dc, child->rect);
-            }
-            if (*generic_child_coord > generic_app_length) {
-                break;
-            }
-        }
-    }
+    // } 
+    // else {
+    //     float *generic_child_coord;
+    //     float generic_app_length;
+    //     Rect child_rect;
+    //     Size app_size = ((Application*)this->app)->m_size;
+    //     if (this->alignPolicy() == Align::Vertical) {
+    //         generic_child_coord = &child_rect.y;
+    //         generic_app_length = app_size.h;
+    //     } else {
+    //         generic_child_coord = &child_rect.x;
+    //         generic_app_length = app_size.w;
+    //     }
+    //     for (Widget* child : this->children) {
+    //         child_rect = child->rect;
+    //         if (child->isVisible()) {
+    //             child->draw(dc, child->rect);
+    //         }
+    //         if (*generic_child_coord > generic_app_length) {
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 Size Box::sizeHint(DrawingContext *dc) {
