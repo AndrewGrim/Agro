@@ -10,7 +10,7 @@
 
 void onApplicationReady(Application *self) {
     #ifndef TEST
-        for (Widget *child : self->main_widget->children) {
+        for (Widget *child : self->mainWidget()->children) {
             println(child->rect);
             for (Widget *child : child->children) {
                 pprint(4, child->rect);
@@ -22,30 +22,30 @@ void onApplicationReady(Application *self) {
     #endif
 
     // Root: Align::Vertical, Fill::Both
-    assert(((ScrolledBox*)self->main_widget)->has_scrollbar(Align::Vertical));
-    assert(((ScrolledBox*)self->main_widget)->has_scrollbar(Align::Horizontal));
+    // assert(((ScrolledBox*)self->mainWidget())->hasScrollBar(Align::Vertical));
+    // assert(((ScrolledBox*)self->mainWidget())->hasScrollBar(Align::Horizontal));
 
-    assert(((ScrolledBox*)self->main_widget->children[0])->has_scrollbar(Align::Vertical));
-    assert(((ScrolledBox*)self->main_widget->children[0])->has_scrollbar(Align::Horizontal));
-    assert(((ScrolledBox*)self->main_widget->children[1])->has_scrollbar(Align::Vertical));
-    assert(((ScrolledBox*)self->main_widget->children[1])->has_scrollbar(Align::Horizontal));
+    // assert(((ScrolledBox*)self->mainWidget()->children[0])->hasScrollBar(Align::Vertical));
+    // assert(((ScrolledBox*)self->mainWidget()->children[0])->hasScrollBar(Align::Horizontal));
+    // assert(((ScrolledBox*)self->mainWidget()->children[1])->hasScrollBar(Align::Vertical));
+    // assert(((ScrolledBox*)self->mainWidget()->children[1])->hasScrollBar(Align::Horizontal));
     
-    assert(self->main_widget->children[0]->rect == Rect<float>(0, 0, 800, 400));
-    assert(self->main_widget->children[1]->rect == Rect<float>(0, 400, 800, 400));
+    // assert(self->mainWidget()->children[0]->rect == Rect(0, 0, 800, 400));
+    // assert(self->mainWidget()->children[1]->rect == Rect(0, 400, 800, 400));
 }
 
 int main() { 
-    Application *app = new Application("ScrolledBox Both Test", Size<int>(500, 500));
-        app->ready_callback = onApplicationReady;
+    Application *app = new Application("ScrolledBox Both Test", Size(500, 500));
+        app->onReady = onApplicationReady;
 
-        ScrolledBox *top = new ScrolledBox(Align::Vertical, Size<float>(800, 400));
+        ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(800, 400));
             for (char i = 'a'; i <= 'z'; i++) {
-                top->append((new Button(std::string(100, i)))->set_background(Color(0.6, 0.0, 0.6)), Fill::Both);
+                top->append((new Button(std::string(100, i)))->setBackground(Color(0.6, 0.0, 0.6)), Fill::Both);
             }
         app->append(top, Fill::Both);
-        ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size<float>(800, 400));
+        ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size(800, 400));
             for (char i = 'A'; i < 'Z'; i++) {
-                bottom->append((new Button(std::string(100, i)))->set_background(Color(0.0, 0.6, 0.6)), Fill::Both);
+                bottom->append((new Button(std::string(100, i)))->setBackground(Color(0.0, 0.6, 0.6)), Fill::Both);
             }
         app->append(bottom, Fill::Both);
 
