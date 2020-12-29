@@ -21,6 +21,7 @@ const char* ScrolledBox::name() {
 }
 
 void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
+    this->sizeHint(dc);
     Align parent_layout = this->alignPolicy();
     int generic_non_expandable_widgets;
     Point pos;
