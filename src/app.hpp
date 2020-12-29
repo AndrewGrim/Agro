@@ -98,6 +98,9 @@
             /// Starts the Application, calls `onReady` and enters the event loop.
             void run();
 
+            /// Redraws the Application and swaps the front buffer.
+            void show();
+
         private:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
@@ -113,8 +116,5 @@
             /// calls to the DrawingContext.
             /// Used internally by show().
             void draw();
-
-            /// Redraws the Application and swaps the front buffer.
-            void show();
     };
 #endif
