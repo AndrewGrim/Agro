@@ -14,10 +14,9 @@
             ScrolledBox(Align align_policy, Size min_size = Size(50, 50));
             ~ScrolledBox();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isScrollable() override;
-            void layoutChildren(DrawingContext *dc, Rect rect);
+            virtual void layoutChildren(DrawingContext *dc, Rect rect) override;
             void addScrollBar(Align alignment);
             void removeScrollBar(Align alignment);
             bool hasScrollBar(Align alignment);
