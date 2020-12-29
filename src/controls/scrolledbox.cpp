@@ -62,12 +62,16 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
 
     float content_x = rect.x;
     float content_y = rect.y;
+    // TODO perhaps abstract this block into a generic add / remove scrollbar
+    // and we just pass in some variables?
     if (this->m_align_policy == Align::Horizontal) {
         bool vert = false;
         if (rect.h < generic_max_layout_length) {
             vert = true;
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
+        } else {
+            this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_total_layout_length) {
             this->addScrollBar(Align::Horizontal);
@@ -95,6 +99,8 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             vert = true;
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
+        } else {
+            this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_max_layout_length) {
             this->addScrollBar(Align::Horizontal);
