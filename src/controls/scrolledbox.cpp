@@ -70,8 +70,6 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             vert = true;
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        } else {
-            this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_total_layout_length) {
             this->addScrollBar(Align::Horizontal);
@@ -81,11 +79,12 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                 if (!vert) {
                     rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
                 }
-            } else {
-                this->removeScrollBar(Align::Vertical);
             }
         } else {
             this->removeScrollBar(Align::Horizontal);
+        }
+        if (!(rect.h < generic_max_layout_length)) {
+            this->removeScrollBar(Align::Vertical);
         }
         if (this->hasScrollBar(Align::Vertical)) {
             content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_max_layout_length) - rect.h);
@@ -99,8 +98,6 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             vert = true;
             this->addScrollBar(Align::Vertical);
             rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        } else {
-            this->removeScrollBar(Align::Vertical);
         }
         if (rect.w < generic_max_layout_length) {
             this->addScrollBar(Align::Horizontal);
@@ -110,11 +107,12 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                 if (!vert) {
                     rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
                 }
-            } else {
-                this->removeScrollBar(Align::Vertical);
             }
         } else {
             this->removeScrollBar(Align::Horizontal);
+        }
+        if (!(rect.h < generic_max_layout_length)) {
+            this->removeScrollBar(Align::Vertical);
         }
         if (this->hasScrollBar(Align::Vertical)) {
             content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_total_layout_length) - rect.h);
@@ -314,6 +312,7 @@ void ScrolledBox::addScrollBar(Align alignment) {
         }
         if (this->m_horizontal_scrollbar) {
             this->m_horizontal_scrollbar->app = this->app;
+            // TODO surely we can just call attachApp on the scrollbar itself?
             for (Widget *child : this->m_horizontal_scrollbar->children) {
                 child->app = this->app;
                 child->attachApp(this->app);
@@ -326,6 +325,7 @@ void ScrolledBox::addScrollBar(Align alignment) {
         }
         if (this->m_vertical_scrollbar) {
             this->m_vertical_scrollbar->app = this->app;
+            // TODO surely we can just call attachApp on the scrollbar itself?
             for (Widget *child : this->m_vertical_scrollbar->children) {
                 child->app = this->app;
                 child->attachApp(this->app);
