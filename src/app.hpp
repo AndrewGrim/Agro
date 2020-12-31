@@ -101,6 +101,8 @@
             /// Redraws the Application and swaps the front buffer.
             void show();
 
+            void removeFromState(void *widget);
+
         private:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;

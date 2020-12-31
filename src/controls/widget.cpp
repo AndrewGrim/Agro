@@ -6,6 +6,9 @@ Widget::Widget() {
 }
 
 Widget::~Widget() {
+    if (this->app) {
+        ((Application*)this->app)->removeFromState(this);
+    }
     for (Widget *child : this->children) {
         delete child;
     }
@@ -213,6 +216,8 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         }
     }
 
+    // TODO I believe we should not be setting the hovered state here
+    // because its should get returned
     if (event.type == MouseEvent::Type::Up && state->pressed) {
         ((Widget*)state->pressed)->setPressed(false);
         ((Widget*)state->pressed)->setHovered(false);
@@ -236,6 +241,9 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
 }
 
 void Widget::handleMouseEvent(State *state, MouseEvent event) {
+    // Note: The hovered state is not set as it is returned
+    // from the propagateMouseEvent function.
+
     // TODO when the mouse moves outside the window
     // hovered and pressed should be reset
     Application *app = (Application*)this->app;

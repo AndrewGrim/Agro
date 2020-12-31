@@ -100,6 +100,8 @@ void Application::run() {
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
                         case SDL_WINDOWEVENT_RESIZED:
+                            // TODO test SDL_WINDOWEVENT_SIZE_CHANGED instead, to see if on windows the window refreshes while being resized
+                            // also the above seems to be cover cases where the window is resized by the system better
                             this->m_size = Size(event.window.data1, event.window.data2);
                             int w, h;
                             SDL_GL_GetDrawableSize(this->m_win, &w, &h);
@@ -160,4 +162,19 @@ void Application::layout() {
 
 bool Application::hasLayoutChanged() {
     return this->m_layout_changed;
+}
+
+void Application::removeFromState(void *widget) {
+    if (widget) {
+        if (m_state->focused == widget) {
+            m_state->focused = nullptr;
+        }
+        if (m_state->hovered == widget) {
+            m_state->hovered = nullptr;
+        }
+        if (m_state->pressed == widget) {
+            m_state->pressed = nullptr;
+        }
+        this->update();
+    }
 }
