@@ -15,13 +15,17 @@ Application::Application(const char* title, Size size) {
         static_cast<int>(size.w), static_cast<int>(size.h),
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
+    // TODO dont capture the mouse all the time only when pressed
+    // and capture long enough to reset hover when exiting window
+    // NOTE: Doesnt seem to work on X11
+    SDL_CaptureMouse(SDL_TRUE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     m_sdl_context = SDL_GL_CreateContext(this->m_win);
     SDL_GL_MakeCurrent(this->m_win, this->m_sdl_context);
-    SDL_GL_SetSwapInterval(0);
+    SDL_GL_SetSwapInterval(1);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         println("Failed to initialize GLAD");
     }
@@ -78,7 +82,10 @@ void Application::run() {
     if (this->onReady) {
         this->onReady(this);
     }
+    int32_t mouse_movement_x = 0;
+    int32_t mouse_movement_y = 0;
     while (true) {
+        uint32_t frame_start = SDL_GetTicks();
         if (this->m_state->focused) {
             SDL_StartTextInput();
         } else {
@@ -95,7 +102,16 @@ void Application::run() {
                     this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
                     break;
                 case SDL_MOUSEMOTION:
-                    this->m_state->hovered = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.motion, time_since_last_event));
+                    if (event.motion.timestamp >= frame_start) {
+                        event.motion.xrel += mouse_movement_x;
+                        event.motion.yrel += mouse_movement_y;
+                        this->m_state->hovered = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.motion, time_since_last_event));
+                        mouse_movement_x = 0;
+                        mouse_movement_y = 0;
+                    } else {
+                        mouse_movement_x += event.motion.xrel;
+                        mouse_movement_y += event.motion.yrel;
+                    }
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
