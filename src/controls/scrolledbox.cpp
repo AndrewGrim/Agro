@@ -312,11 +312,7 @@ void ScrolledBox::addScrollBar(Align alignment) {
         }
         if (this->m_horizontal_scrollbar) {
             this->m_horizontal_scrollbar->app = this->app;
-            // TODO surely we can just call attachApp on the scrollbar itself?
-            for (Widget *child : this->m_horizontal_scrollbar->children) {
-                child->app = this->app;
-                child->attachApp(this->app);
-            }
+            this->m_horizontal_scrollbar->attachApp(this->app);
         }
     }
     else {
@@ -325,11 +321,7 @@ void ScrolledBox::addScrollBar(Align alignment) {
         }
         if (this->m_vertical_scrollbar) {
             this->m_vertical_scrollbar->app = this->app;
-            // TODO surely we can just call attachApp on the scrollbar itself?
-            for (Widget *child : this->m_vertical_scrollbar->children) {
-                child->app = this->app;
-                child->attachApp(this->app);
-            }
+            this->m_vertical_scrollbar->attachApp(this->app);
         }
     }
 }
