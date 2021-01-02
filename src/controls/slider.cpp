@@ -57,13 +57,9 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
                 else if (value < this->m_min) value = this->m_min;
                 this->m_value = value;
             }
-            if (event.time_since_last_event >= 10) {
-                if (this->onValueChanged) this->onValueChanged();
-                this->update();
-                ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::Scroll, Application::EventHandler::Accepted));
-            } else {
-                ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::Scroll, Application::EventHandler::Ignored));
-            }
+            if (this->onValueChanged) this->onValueChanged();
+            this->update();
+            ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::Scroll, Application::EventHandler::Accepted));
         }
     };
 }
