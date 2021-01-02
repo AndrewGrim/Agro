@@ -14,15 +14,7 @@ Box::~Box() {
 void Box::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     dc->fillRect(rect, this->background());
-
-    // TODO double check if this is even needed anymore, need scrolledbox to check
-    dc->render();
-    glEnable(GL_SCISSOR_TEST);
-        Size window = ((Application*)this->app)->m_size;
-        glScissor(rect.x, window.h - (rect.y + rect.h), rect.w, rect.h);
-        layoutChildren(dc, rect);
-        dc->render();
-    glDisable(GL_SCISSOR_TEST);
+    layoutChildren(dc, rect);
 }
 
 void Box::layoutChildren(DrawingContext *dc, Rect rect) {
