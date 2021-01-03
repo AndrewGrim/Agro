@@ -204,7 +204,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                 if (child->isVisible()) {
                     child->draw(dc, widget_rect);
                 }
-                if (*generic_position_coord > (*generic_rect_coord + *rect_length)) {
+                if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
                     break;
                 }
             }
