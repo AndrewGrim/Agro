@@ -118,19 +118,15 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     }
             }
             Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-            if (*generic_position_coord < 0) {
-                if (*generic_position_coord + *generic_length < 0) {
-                    child->rect = widget_rect;
-                }
-                else goto DRAW_WIDGET;
+            if ((*generic_position_coord + *generic_length) < 0) {
+                child->rect = widget_rect;
             } else {
-                DRAW_WIDGET:
-                    if (child->isVisible()) {
-                        child->draw(dc, widget_rect);
-                    }
-                    if (*generic_position_coord > generic_app_length) {
-                        break;
-                    }
+                if (child->isVisible()) {
+                    child->draw(dc, widget_rect);
+                }
+                if ((*generic_position_coord + *generic_length) > generic_app_length) {
+                    break;
+                }
             }
             if (child->isVisible()) {
                 *generic_position_coord += *generic_length;
