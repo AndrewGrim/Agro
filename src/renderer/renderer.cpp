@@ -34,6 +34,7 @@ Renderer::Renderer(uint *indices, void *app) {
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->max_texture_slots);
 
     std::string fragment_shader = "#version 330 core\n";
+        fragment_shader += "layout (origin_upper_left) in vec4 gl_FragCoord;\n";
         fragment_shader += "in vec2 v_texture_uv;\n";
         fragment_shader += "in vec4 v_color;\n";
         fragment_shader += "in float v_texture_slot_index;\n";
@@ -45,6 +46,11 @@ Renderer::Renderer(uint *indices, void *app) {
         fragment_shader += "\n";
         fragment_shader += "void main()\n";
         fragment_shader += "{\n";
+        fragment_shader += "vec4 clip_rect = vec4(0.0, 0.0, 250.0, 250.0);\n";
+        fragment_shader += "if ((gl_FragCoord.x < clip_rect.x || gl_FragCoord.y < clip_rect.y) ||\n";
+        fragment_shader += "    (gl_FragCoord.x > (clip_rect.x + clip_rect.z) || gl_FragCoord.y > (clip_rect.y + clip_rect.w))) {\n";
+        fragment_shader += "discard;\n";
+        fragment_shader += "}\n";
         fragment_shader += "vec4 sampled;\n";
         fragment_shader += "switch (int(v_texture_slot_index)) {\n";
         for (int i = 0; i < this->max_texture_slots; i++) {
