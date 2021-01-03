@@ -198,19 +198,15 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             // TODO shouldnt we set widget rect for all widgets?
             // especially since its calculated anyway?
             // and would that allow use to not set rect in draw??? (i dont think so??)
-            if (*generic_position_coord < *generic_rect_coord) {
-                if (*generic_position_coord + *generic_length < *generic_rect_coord) {
-                    child->rect = widget_rect;
-                }
-                else goto DRAW_WIDGET;
+            if ((*generic_position_coord + *generic_length) < *generic_rect_coord) {
+                child->rect = widget_rect;
             } else {
-                DRAW_WIDGET:
-                    if (child->isVisible()) {
-                        child->draw(dc, widget_rect);
-                    }
-                    if (*generic_position_coord > (*generic_rect_coord + *rect_length)) {
-                        break;
-                    }
+                if (child->isVisible()) {
+                    child->draw(dc, widget_rect);
+                }
+                if (*generic_position_coord > (*generic_rect_coord + *rect_length)) {
+                    break;
+                }
             }
             if (child->isVisible()) {
                 *generic_position_coord += *generic_length;
