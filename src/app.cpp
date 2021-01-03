@@ -45,7 +45,7 @@ Application::~Application() {
 void Application::draw() {
     dc->renderer->shader.use();
     dc->renderer->shader.setMatrix4(
-        "projection", 
+        "u_projection", 
         glm::ortho(
             0.0f, static_cast<float>(this->m_size.w),
             static_cast<float>(this->m_size.h), 0.0f,
