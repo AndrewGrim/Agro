@@ -90,6 +90,9 @@ Widget* Widget::setFillPolicy(Fill fill_policy) {
         this->m_fill_policy = fill_policy;
         this->update();
         this->layout();
+        // TODO maybe instead of layout manually change
+        // expandable and non expandable widgets for parent?
+        // it would probably be good to have an abstract layout then
     }
 
     return this;
@@ -102,6 +105,7 @@ Fill Widget::fillPolicy() {
 Widget* Widget::show() {
     if (!this->m_is_visible) {
         this->m_is_visible = true;
+        this->m_size_changed = true;
         this->update();
         this->layout();
     }
@@ -112,6 +116,7 @@ Widget* Widget::show() {
 Widget* Widget::hide() {
     if (this->m_is_visible) {
         this->m_is_visible = false;
+        this->m_size_changed = true;
         this->update();
         this->layout();
     }
@@ -175,6 +180,7 @@ Widget* Widget::layout() {
     // TODO we might want layout to invalidate the state
     // right now when we swap widgets they still present themselves
     // with a hover effect even though they are in a different place
+    // TODO is this even true anymore?
     if (this->app) {
         ((Application*)this->app)->layout();
     }
@@ -350,6 +356,7 @@ Font* Widget::font() {
 Widget* Widget::setFont(Font *font) {
     if (this->m_font != font) {
         this->m_font = font;
+        this->m_size_changed = true;
         this->update();
         this->layout();
     }
