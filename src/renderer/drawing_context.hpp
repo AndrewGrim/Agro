@@ -38,5 +38,7 @@
         void drawPoint(Point point, Color color);
         void clear();
         void swap_buffer(SDL_Window *win);
+        void setClip(Rect rect);
+        Rect clip();
     };
 #endif

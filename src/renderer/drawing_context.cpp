@@ -234,3 +234,11 @@ void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_ali
 void DrawingContext::drawPoint(Point point, Color color) {
     this->fillRect(Rect(point.x, point.y, 1, 1), color);
 }
+
+void DrawingContext::setClip(Rect rect) {
+    this->renderer->clip_rect = rect;
+}
+
+Rect DrawingContext::clip() {
+    return this->renderer->clip_rect;
+}
