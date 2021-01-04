@@ -20,6 +20,17 @@ const char* ScrolledBox::name() {
     return "ScrolledBox";
 }
 
+void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
+    this->rect = rect;
+    dc->fillRect(rect, this->background());
+    Rect previous_clip = dc->clip();
+    if (!(rect.x < previous_clip.x || rect.y < previous_clip.y)) {
+        dc->setClip(rect);
+    }
+    layoutChildren(dc, rect);
+    dc->setClip(previous_clip);
+}
+
 void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     this->sizeHint(dc);
     Align parent_layout = this->alignPolicy();
