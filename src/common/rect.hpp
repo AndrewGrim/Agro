@@ -1,8 +1,7 @@
 #ifndef RECT_HPP
     #define RECT_HPP
     
-    #include <iostream>
-    #include <stdio.h>
+    #include <ostream>
 
     struct Rect {
         float x;
@@ -37,8 +36,7 @@
         }
 
         friend std::ostream& operator<<(std::ostream &os, const Rect &rect) {
-            printf("Rect { x: %f, y: %f, w: %f, h: %f }", rect.x, rect.y, rect.w, rect.h);
-            return os;
+            return os << "Rect { x: " << rect.x << ", y: " << rect.y << ", w: " << rect.w << ", h: " << rect.h << " }";
         }
     };
 #endif

@@ -1,6 +1,8 @@
 #ifndef SIZE_HPP
     #define SIZE_HPP
 
+    #include <ostream>
+
     struct Size {
         float w;
         float h;
@@ -19,8 +21,7 @@
         }
 
         friend std::ostream& operator<<(std::ostream &os, const Size &size) {
-            printf("Size { w: %f, h: %f }", size.w, size.h);
-            return os;
+            return os << "Size { w: " << size.w << ", h: " << size.h << " }";
         }
     };
 #endif
