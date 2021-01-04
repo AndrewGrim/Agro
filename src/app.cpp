@@ -173,6 +173,8 @@ void Application::update() {
 }
 
 void Application::layout() {
+    // TODO i think it would make sense if layout
+    // also called update
     this->m_layout_changed = true;
 }
 
