@@ -34,11 +34,12 @@
 
         struct Vertex {
             float position[2];
-            float textureUV[2];
+            float texture_uv[2];
             float color[4];
             float texture_index;
             float is_text;
             float rect[4];
+            float clip_rect[4];
         };
         
         void *m_app = nullptr;
@@ -50,6 +51,7 @@
         uint count = 0;
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         uint VAO, VBO, EBO;
+        Rect clip_rect; // Gets set before each draw() in Application.
 
         Renderer(uint *indices, void *app);
         ~Renderer();
