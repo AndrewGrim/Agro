@@ -118,6 +118,8 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
                     }
             }
             Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
+            // TODO find a solution to optimize the drawing further
+            // since this is suboptimal
             if ((*generic_position_coord + *generic_length) < 0) {
                 child->rect = widget_rect;
             } else {
