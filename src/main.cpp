@@ -42,26 +42,29 @@ int main() {
             {
                 ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
                     sb->setBackground(Color(0.8, 0.5, 0.5));
-                    // for (int i = 0; i < 100; i++) {
-                    //     Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
-                    //     sb->append(_l);
-                    // }
-                    CustomWidget *c = new CustomWidget();
-                    sb->append(c, Fill::None);
+                    for (int i = 0; i < 100; i++) {
+                        Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
+                        sb->append(_l);
+                    }
                 left->append(sb, Fill::Both);
             }
             {
-                ScrolledBox *sb = new ScrolledBox(Align::Horizontal, Size(200, 200));
+                ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
                     sb->setBackground(Color(0.5, 0.5, 0.8));
-                    // Box *_b = new Box(Align::Vertical);
-                    //     _b->setBackground(Color(0.5, 0.5, 0.8));
-                    // for (int i = 0; i < 100; i++) {
-                    //     Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
-                    //     _b->append(_l);
-                    // }
-                    // sb->append(_b);
-                    CustomWidget *c = new CustomWidget();
-                    sb->append(c, Fill::None);
+                    ScrolledBox *inner_sb = new ScrolledBox(Align::Vertical, Size(150, 150));
+                        inner_sb->setBackground(Color(0.8, 0.8, 0.5));
+                        for (int i = 0; i < 100; i++) {
+                            Label *_l2 = new Label(std::string("This is some long ass text ") + std::to_string(i));
+                            inner_sb->append(_l2);
+                        }
+                    sb->append(inner_sb, Fill::Both);
+                    Box *inner_b = new Box(Align::Vertical);
+                        inner_b->setBackground(Color(1.0, 0.8, 0.4));
+                        for (int i = 0; i < 100; i++) {
+                            Label *_l = new Label(std::string("This is some long ass text ") + std::to_string(i));
+                            inner_b->append(_l);
+                        }
+                    sb->append(inner_b, Fill::Both);
                 left->append(sb, Fill::Both);
             }
         app->append(left, Fill::Both, 10);
