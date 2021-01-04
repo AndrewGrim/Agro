@@ -53,6 +53,7 @@ void Application::draw() {
         ) 
     );
     this->dc->clear();
+    this->dc->setClip(Rect(0, 0, this->m_size.w, this->m_size.h));
     this->m_main_widget->draw(this->dc, Rect(0, 0, this->m_size.w, this->m_size.h));
     this->dc->render();
 }
