@@ -14,7 +14,7 @@
 #include "controls/slider.hpp"
 #include "controls/scrollbar.hpp"
 #include "controls/scrolledbox.hpp"
-// #include "controls/lineedit.hpp"
+#include "controls/lineedit.hpp"
 
 #include "custom_widget.hpp"
 
@@ -30,6 +30,9 @@ int main() {
         return true;
         // return false; // to not quit 
     };
+    // for (int i = 0; i < 1000000; i++) {
+    //     app->append(new Button(std::to_string(i)), Fill::Both);
+    // }
     ((ScrolledBox*)app->mainWidget())->setAlignPolicy(Align::Horizontal);
     app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
         Color colors[] = {
@@ -39,6 +42,10 @@ int main() {
         int widget_count = 1;
         int color_index = 0;
         Box *left = new Box(Align::Vertical);
+            LineEdit *ln = new LineEdit("Fill::None");
+            left->append(ln, Fill::None);
+            LineEdit *lb = new LineEdit("Fill::Both");
+            left->append(lb, Fill::Both);
             {
                 ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
                     sb->setBackground(Color(0.8, 0.5, 0.5));
