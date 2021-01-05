@@ -6,7 +6,6 @@ Button::Button(std::string text) {
 }
 
 Button::Button(Image *image) {
-    this->setText("");
     this->setImage(image);
     Widget::m_bg = Color(0.9, 0.9, 0.9);
 }

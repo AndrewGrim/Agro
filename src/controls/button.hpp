@@ -31,7 +31,7 @@
             Button* setBorderWidth(uint border_width);
 
         protected:
-            std::string m_text;
+            std::string m_text = "";
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
             uint m_padding = 5;
