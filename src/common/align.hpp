@@ -1,6 +1,7 @@
 #ifndef ALIGN_HPP
     #define ALIGN_HPP
 
+    // TODO direction? layout?
     enum class Align {
         Horizontal,
         Vertical,

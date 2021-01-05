@@ -21,6 +21,7 @@
     #include "font.hpp"
 
     struct Renderer {
+        // TODO move gradient either to dc or make it standalone leaning towards the latter
         enum class Gradient {
             TopToBottom,
             LeftToRight,
