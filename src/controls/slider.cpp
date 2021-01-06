@@ -37,6 +37,7 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
     this->m_value = value;
     this->m_slider_button = new SliderButton();
     if (alignment == Align::Horizontal) {
+        // TODO investigate, because scrollbar does something different
         this->append(this->m_slider_button, Fill::Horizontal);
     } else {
         this->append(this->m_slider_button, Fill::Vertical);
