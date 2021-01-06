@@ -17,11 +17,19 @@
             virtual Size sizeHint(DrawingContext *dc) override;
     };
 
+    class ScrollBarSlider : public Slider {
+        public:
+            ScrollBarSlider(Align alignment);
+            ~ScrollBarSlider();
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+    };
+
     class ScrollBar : public Widget {
         // TODO could we just inherit from box instead??
         public:
             ScrollBarArrowButton *m_begin_button = nullptr;
-            Slider *m_slider = nullptr;
+            ScrollBarSlider *m_slider = nullptr;
             ScrollBarArrowButton *m_end_button = nullptr;
 
             ScrollBar(Align alignment);

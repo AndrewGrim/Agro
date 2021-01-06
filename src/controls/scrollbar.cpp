@@ -53,6 +53,60 @@ Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
     return size;
 }
 
+ScrollBarSlider::ScrollBarSlider(Align alignment) : Slider(alignment) {
+    Widget::m_bg = Color(0.7, 0.7, 0.7);
+}
+
+ScrollBarSlider::~ScrollBarSlider() {
+
+}
+
+const char* ScrollBarSlider::name() {
+    return "ScrollBarSlider";
+}
+
+void ScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
+    this->rect = rect;
+    if (this->m_align_policy == Align::Horizontal) {
+        dc->fillRect(rect, this->background());
+    } else {
+        dc->fillRect(rect, this->background());
+    }
+    Size sizehint = this->m_slider_button->sizeHint(dc);
+    float size;
+    if (!this->m_slider_button_size) {
+        if (this->m_align_policy == Align::Horizontal) {
+            size = sizehint.w;
+        } else {
+            size = sizehint.h;
+        }
+    } else {
+        size = this->m_slider_button_size;
+    }
+    float *align_rect[2] = {};
+    if (this->m_align_policy == Align::Horizontal) {
+        align_rect[0] = &rect.x;
+        align_rect[1] = &rect.w;
+    } else {
+        align_rect[0] = &rect.y;
+        align_rect[1] = &rect.h;
+    }
+
+    float result = ((*align_rect[1] - size) * this->m_value);
+    if (result <= 0) {
+        // NO OP
+    } else if (result > (*align_rect[1] - size)) {
+        *align_rect[0] += (*align_rect[1] - size);
+    } else {
+        *align_rect[0] += result;
+    }
+    if (this->m_align_policy == Align::Horizontal) {
+        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
+    } else {
+        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
+    }
+}
+
 ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
@@ -67,12 +121,11 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     };
     this->append(m_begin_button, Fill::None);
 
-    m_slider = new Slider(alignment);
-    if (alignment == Align::Horizontal) {
-        this->append(m_slider, Fill::Both);
-    } else {
-        this->append(m_slider, Fill::Both);
-    }
+    m_slider = new ScrollBarSlider(alignment);
+    this->append(m_slider, Fill::Both);
+    // TODO this is a nice idea but for the scrollbar would need
+    // to inherit its parents color for the line below to do anything
+    // m_slider->setBackground(m_slider->parent->background());
 
     m_end_button = new ScrollBarArrowButton((new Image("scrollbar_arrow.png"))->setForeground(Color()));
     m_end_button->setPadding(1);
@@ -93,7 +146,7 @@ ScrollBar::~ScrollBar() {
 }
 
 const char* ScrollBar::name() {
-    return "Scrollbar";
+    return "ScrollBar";
 }
 
 void ScrollBar::draw(DrawingContext *dc, Rect rect) {
