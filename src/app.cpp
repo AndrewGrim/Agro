@@ -85,15 +85,9 @@ void Application::run() {
     }
     int32_t mouse_movement_x = 0;
     int32_t mouse_movement_y = 0;
+    SDL_StartTextInput();
     while (m_running) {
         uint32_t frame_start = SDL_GetTicks();
-        // TODO this is likely unnecessary, change to
-        // startinput before the loop and end at exit
-        if (this->m_state->focused) {
-            SDL_StartTextInput();
-        } else {
-            SDL_StopTextInput();
-        }
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
             int64_t time_since_last_event = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - this->m_last_event_time).count();
@@ -217,6 +211,7 @@ void Application::run() {
             this->m_layout_changed = false;
         }
     }
+    SDL_StopTextInput();
 
     delete this;
 }
