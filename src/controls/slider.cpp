@@ -47,6 +47,10 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
         SliderButton *self = this->m_slider_button;
         Rect rect = this->rect;
         if (self->isPressed()) {
+            // TODO probably should still switch to mouse x and y
+            // just make it so it only moves from the center of the slider
+            // then we might be able to go back to the old limiter in the main loop
+            // which would be good for controlling the framerate
             if (this->m_align_policy == Align::Horizontal) {
                 float value = this->m_value + (event.xrel / (rect.w - this->m_slider_button_size));
                 if (value > this->m_max) value = this->m_max;
