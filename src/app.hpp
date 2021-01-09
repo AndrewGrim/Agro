@@ -16,6 +16,32 @@
     #include "controls/box.hpp"
     #include "controls/scrolledbox.hpp"
     #include "renderer/drawing_context.hpp"
+
+    struct Key {
+        // TODO not sure about naming here
+        // TODO change to class enums that use sdl values underneath
+        int code = SDLK_UNKNOWN;
+        int mod = KMOD_NONE;
+        // SDL_Keymod mod1 = KMOD_NONE;
+        // SDL_Keymod mod2 = KMOD_NONE;
+        // SDL_Keymod mod3 = KMOD_NONE;
+        // SDL_Keymod mod4 = KMOD_NONE;
+
+        Key(int code = (int)SDLK_UNKNOWN, int mod = (int)KMOD_NONE) {
+            this->code = code;
+            this->mod = mod;
+        }
+    };
+
+    struct KeyboardShortcut {
+        Key key;
+        std::function<void()> callback;
+
+        KeyboardShortcut(Key key, std::function<void()> callback) {
+            this->key = key;
+            this->callback = callback;
+        }
+    };
     
     class Application {
         public:
@@ -103,6 +129,9 @@
 
             void removeFromState(void *widget);
 
+            size_t bind(Key key, std::function<void()> callback);
+            void unbind(size_t index);
+
         private:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
@@ -112,6 +141,8 @@
             bool m_layout_changed = true;
             std::pair<Event, EventHandler> m_last_event = std::make_pair<Event, EventHandler>(Event::None, EventHandler::Accepted);
             std::chrono::time_point<std::chrono::steady_clock> m_last_event_time = std::chrono::steady_clock::now();
+            // TODO have another vector for hotkeys ie menu shortcut keys
+            std::vector<KeyboardShortcut> m_keyboard_shortcuts;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from

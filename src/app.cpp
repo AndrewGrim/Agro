@@ -87,6 +87,8 @@ void Application::run() {
     int32_t mouse_movement_y = 0;
     while (true) {
         uint32_t frame_start = SDL_GetTicks();
+        // TODO this is likely unnecessary, change to
+        // startinput before the loop and end at exit
         if (this->m_state->focused) {
             SDL_StartTextInput();
         } else {
@@ -128,9 +130,78 @@ void Application::run() {
                             break;
                     }
                     break;
+                case SDL_KEYDOWN: {
+                        SDL_Keycode key = event.key.keysym.sym;
+                        Uint16 mod = event.key.keysym.mod;
+                        bool matched = false;
+                        // TODO add matching for hotkeys and the widget itself
+                        for (auto hotkey : m_keyboard_shortcuts) {
+                            if (hotkey.key.code == key && hotkey.key.mod & mod) {
+                                hotkey.callback();
+                                SDL_FlushEvent(SDL_TEXTINPUT);
+                                matched = true;
+                            }
+                        }
+                        // if (mod & KMOD_CTRL) {
+                        //     println("ANY CONTROL");
+                        // }
+                        // if (mod & KMOD_LCTRL) {
+                        //     println("LEFT CONTROL");
+                        // } else if (mod & KMOD_RCTRL) {
+                        //     println("RIGHT CONTROL");
+                        // }
+                        // if (mod & KMOD_SHIFT) {
+                        //     println("ANY SHIFT");
+                        // }
+                        // if (mod & KMOD_LSHIFT) {
+                        //     println("LEFT SHIFT");
+                        // } else if (mod & KMOD_RSHIFT) {
+                        //     println("RIGHT SHIFT");
+                        // }
+                        // if (mod & KMOD_ALT) {
+                        //     println("ANY ALT");
+                        // }
+                        // if (mod & KMOD_LALT) {
+                        //     println("LEFT ALT");
+                        // } else if (mod & KMOD_RALT) {
+                        //     println("RIGHT ALT");
+                        // }
+                        // if (mod & KMOD_GUI) {
+                        //     println("ANY GUI");
+                        // }
+                        // if (mod & KMOD_LGUI) {
+                        //     println("LEFT GUI");
+                        // } else if (mod & KMOD_RGUI) {
+                        //     println("RIGHT GUI");
+                        // }
+                        // if (mod & KMOD_NUM) {
+                        //     println("NUM");
+                        // }
+                        // if (mod & KMOD_CAPS) {
+                        //     println("CAPS");
+                        // }
+                        // if (mod & KMOD_MODE) {
+                        //     println("MODE");
+                        // }
+                        // if (key == SDLK_q && (mod == KMOD_LCTRL + KMOD_LSHIFT)) {
+                        //     println("RUNS!");
+                        //     // TODO should add some quit() function
+                        //     goto EXIT;
+                        // }
+                    }
+                    break;
                 case SDL_TEXTINPUT:
+                    // println("TEXT");
+                    // println(event.text.text);
+                    // TODO widget is going to need a onTextInput callback handler
+                    // so now is probably a good time to change it so that each event
+                    // has a default handler which can optionally call callbacks??
+                    // does that even make sense?
                     if (m_state->focused) {
-                        // ((Button*)m_state->focused)->set_text(((Button*)m_state->focused)->text() += event.text.text);
+                        // TODO lineedit probably needs to have a hardcoded sizehint to some extent
+                        // we dont want the text size to force it to be wider
+                        // we also need to be able to scroll it somehow 
+                        // ((LineEdit*)m_state->focused)->setText(((LineEdit*)m_state->focused)->text() += event.text.text);
                     }
                     break;
                 case SDL_QUIT:
@@ -196,4 +267,15 @@ void Application::removeFromState(void *widget) {
         }
         this->update();
     }
+}
+
+size_t Application::bind(Key key, std::function<void()> callback) {
+    this->m_keyboard_shortcuts.push_back(KeyboardShortcut(key, callback));
+    return this->m_keyboard_shortcuts.size() - 1;
+}
+
+// TODO this would break because we dont update the indices
+// use a hashmap or pointers instead
+void Application::unbind(size_t index) {
+    this->m_keyboard_shortcuts.erase(this->m_keyboard_shortcuts.cbegin() + index);
 }

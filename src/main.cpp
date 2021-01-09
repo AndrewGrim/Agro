@@ -33,6 +33,12 @@ int main() {
     // for (int i = 0; i < 1000000; i++) {
     //     app->append(new Button(std::to_string(i)), Fill::Both);
     // }
+    app->bind(
+        Key((int)SDLK_q, (int)KMOD_CTRL), 
+        [](){
+            println("CTRL+Q");
+        }
+    );
     ((ScrolledBox*)app->mainWidget())->setAlignPolicy(Align::Horizontal);
     app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
         Color colors[] = {
