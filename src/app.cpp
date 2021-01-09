@@ -85,7 +85,7 @@ void Application::run() {
     }
     int32_t mouse_movement_x = 0;
     int32_t mouse_movement_y = 0;
-    while (true) {
+    while (m_running) {
         uint32_t frame_start = SDL_GetTicks();
         // TODO this is likely unnecessary, change to
         // startinput before the loop and end at exit
@@ -205,12 +205,7 @@ void Application::run() {
                     }
                     break;
                 case SDL_QUIT:
-                    if (this->onQuit) {
-                        if (!this->onQuit(this)) {
-                            break;
-                        }
-                    }
-                    goto EXIT;
+                    quit();
             }
             if (this->m_last_event.second == EventHandler::Accepted) {
                 this->m_last_event_time = std::chrono::steady_clock::now();
@@ -223,8 +218,7 @@ void Application::run() {
         }
     }
 
-    EXIT:
-        delete this;
+    delete this;
 }
 
 Widget* Application::append(Widget* widget, Fill fill_policy, uint proportion) {
@@ -278,4 +272,13 @@ size_t Application::bind(Key key, std::function<void()> callback) {
 // use a hashmap or pointers instead
 void Application::unbind(size_t index) {
     this->m_keyboard_shortcuts.erase(this->m_keyboard_shortcuts.cbegin() + index);
+}
+
+void Application::quit() {
+    if (this->onQuit) {
+        if (!this->onQuit(this)) {
+            return;
+        }
+    }
+    m_running = false;
 }

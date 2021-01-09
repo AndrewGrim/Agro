@@ -35,8 +35,9 @@ int main() {
     // }
     app->bind(
         Key((int)SDLK_q, (int)KMOD_CTRL), 
-        [](){
+        [&](){
             println("CTRL+Q");
+            app->quit();
         }
     );
     ((ScrolledBox*)app->mainWidget())->setAlignPolicy(Align::Horizontal);

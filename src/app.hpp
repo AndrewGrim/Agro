@@ -132,6 +132,8 @@
             size_t bind(Key key, std::function<void()> callback);
             void unbind(size_t index);
 
+            void quit();
+
         private:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
@@ -143,6 +145,7 @@
             std::chrono::time_point<std::chrono::steady_clock> m_last_event_time = std::chrono::steady_clock::now();
             // TODO have another vector for hotkeys ie menu shortcut keys
             std::vector<KeyboardShortcut> m_keyboard_shortcuts;
+            bool m_running = true;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from
