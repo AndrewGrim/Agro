@@ -130,7 +130,7 @@ void Application::run() {
                         bool matched = false;
                         // TODO add matching for hotkeys and the widget itself
                         for (auto hotkey : m_keyboard_shortcuts) {
-                            if (hotkey.key.code == key && hotkey.key.mod & mod) {
+                            if (hotkey.key == key && hotkey.modifiers & mod) {
                                 hotkey.callback();
                                 SDL_FlushEvent(SDL_TEXTINPUT);
                                 matched = true;
@@ -258,8 +258,13 @@ void Application::removeFromState(void *widget) {
     }
 }
 
-size_t Application::bind(Key key, std::function<void()> callback) {
-    this->m_keyboard_shortcuts.push_back(KeyboardShortcut(key, callback));
+size_t Application::bind(int key, int modifiers, std::function<void()> callback) {
+    this->m_keyboard_shortcuts.push_back(KeyboardShortcut(key, modifiers, callback));
+    return this->m_keyboard_shortcuts.size() - 1;
+}
+
+size_t Application::bind(int key, Mod modifier, std::function<void()> callback) {
+    this->m_keyboard_shortcuts.push_back(KeyboardShortcut(key, (int)modifier, callback));
     return this->m_keyboard_shortcuts.size() - 1;
 }
 

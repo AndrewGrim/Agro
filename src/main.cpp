@@ -34,7 +34,8 @@ int main() {
     //     app->append(new Button(std::to_string(i)), Fill::Both);
     // }
     app->bind(
-        Key((int)SDLK_q, (int)KMOD_CTRL), 
+        SDLK_q,
+        Mod::Ctrl, 
         [&](){
             println("CTRL+Q");
             app->quit();
