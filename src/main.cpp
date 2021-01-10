@@ -35,13 +35,37 @@ int main() {
     // }
     int map_key = app->bind(
         SDLK_q,
-        Mod::Ctrl, 
+        Mod::None, 
+        [&](){
+            println("Q");
+            app->quit();
+        }
+    );
+    // app->unbind(map_key);
+    app->bind(
+        SDLK_q,
+        Mod::Ctrl,
         [&](){
             println("CTRL+Q");
             app->quit();
         }
     );
-    // app->unbind(map_key);
+    app->bind(
+        SDLK_q,
+        Mod::Ctrl|Mod::Shift|Mod::Alt,
+        [&](){
+            println("CTRL+Shift+Alt+Q");
+            app->quit();
+        }
+    );
+    app->bind(
+        SDLK_q,
+        Mod::Ctrl|Mod::Shift,
+        [&](){
+            println("CTRL+Shift+Q");
+            app->quit();
+        }
+    );
     ((ScrolledBox*)app->mainWidget())->setAlignPolicy(Align::Horizontal);
     app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
         Color colors[] = {

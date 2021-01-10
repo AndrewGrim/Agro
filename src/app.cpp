@@ -127,61 +127,44 @@ void Application::run() {
                 case SDL_KEYDOWN: {
                         SDL_Keycode key = event.key.keysym.sym;
                         Uint16 mod = event.key.keysym.mod;
+                        Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
+                        if (mod & KMOD_CTRL) {
+                            mods[0] = Mod::Ctrl;
+                        }
+                        if (mod & KMOD_SHIFT) {
+                            mods[1] = Mod::Shift;
+                        }
+                        if (mod & KMOD_ALT) {
+                            mods[2] = Mod::Alt;
+                        }
+                        if (mod & KMOD_GUI) {
+                            mods[3] = Mod::Gui;
+                        }
                         bool matched = false;
                         // TODO add matching for hotkeys and the widget itself
                         for (auto hotkey : m_keyboard_shortcuts) {
-                            if (hotkey.second.key == key && hotkey.second.modifiers & mod) {
-                                hotkey.second.callback();
-                                SDL_FlushEvent(SDL_TEXTINPUT);
-                                matched = true;
+                            if (hotkey.second.key == key) {
+                                bool mods_matched = true;
+                                if (hotkey.second.ctrl != mods[0]) {
+                                    mods_matched = false;
+                                }
+                                if (hotkey.second.shift != mods[1]) {
+                                    mods_matched = false;
+                                }
+                                if (hotkey.second.alt != mods[2]) {
+                                    mods_matched = false;
+                                }
+                                if (hotkey.second.gui != mods[3]) {
+                                    mods_matched = false;
+                                }
+                                if (mods_matched) {
+                                    hotkey.second.callback();
+                                    SDL_FlushEvent(SDL_TEXTINPUT);
+                                    matched = true;
+                                    break;
+                                }
                             }
                         }
-                        // if (mod & KMOD_CTRL) {
-                        //     println("ANY CONTROL");
-                        // }
-                        // if (mod & KMOD_LCTRL) {
-                        //     println("LEFT CONTROL");
-                        // } else if (mod & KMOD_RCTRL) {
-                        //     println("RIGHT CONTROL");
-                        // }
-                        // if (mod & KMOD_SHIFT) {
-                        //     println("ANY SHIFT");
-                        // }
-                        // if (mod & KMOD_LSHIFT) {
-                        //     println("LEFT SHIFT");
-                        // } else if (mod & KMOD_RSHIFT) {
-                        //     println("RIGHT SHIFT");
-                        // }
-                        // if (mod & KMOD_ALT) {
-                        //     println("ANY ALT");
-                        // }
-                        // if (mod & KMOD_LALT) {
-                        //     println("LEFT ALT");
-                        // } else if (mod & KMOD_RALT) {
-                        //     println("RIGHT ALT");
-                        // }
-                        // if (mod & KMOD_GUI) {
-                        //     println("ANY GUI");
-                        // }
-                        // if (mod & KMOD_LGUI) {
-                        //     println("LEFT GUI");
-                        // } else if (mod & KMOD_RGUI) {
-                        //     println("RIGHT GUI");
-                        // }
-                        // if (mod & KMOD_NUM) {
-                        //     println("NUM");
-                        // }
-                        // if (mod & KMOD_CAPS) {
-                        //     println("CAPS");
-                        // }
-                        // if (mod & KMOD_MODE) {
-                        //     println("MODE");
-                        // }
-                        // if (key == SDLK_q && (mod == KMOD_LCTRL + KMOD_LSHIFT)) {
-                        //     println("RUNS!");
-                        //     // TODO should add some quit() function
-                        //     goto EXIT;
-                        // }
                     }
                     break;
                 case SDL_TEXTINPUT:
@@ -258,14 +241,67 @@ void Application::removeFromState(void *widget) {
     }
 }
 
+// TODO implement left/right specific modifiers any the other remaining ones
 int Application::bind(int key, int modifiers, std::function<void()> callback) {
-    this->m_keyboard_shortcuts.insert(std::make_pair(m_binding_id, KeyboardShortcut(key, modifiers, callback)));
+    Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
+
+    if (modifiers & KMOD_CTRL) {
+        mods[0] = Mod::Ctrl;
+    }
+    // if (modifiers & KMOD_LCTRL) {
+    //     println("LEFT CONTROL");
+    // } else if (modifiers & KMOD_RCTRL) {
+    //     println("RIGHT CONTROL");
+    // }
+    if (modifiers & KMOD_SHIFT) {
+        mods[1] = Mod::Shift;
+    }
+    // if (modifiers & KMOD_LSHIFT) {
+    //     println("LEFT SHIFT");
+    // } else if (modifiers & KMOD_RSHIFT) {
+    //     println("RIGHT SHIFT");
+    // }
+    if (modifiers & KMOD_ALT) {
+        mods[2] = Mod::Alt;
+    }
+    // if (modifiers & KMOD_LALT) {
+    //     println("LEFT ALT");
+    // } else if (modifiers & KMOD_RALT) {
+    //     println("RIGHT ALT");
+    // }
+    if (modifiers & KMOD_GUI) {
+        mods[3] = Mod::Gui;
+    }
+    // if (modifiers & KMOD_LGUI) {
+    //     println("LEFT GUI");
+    // } else if (modifiers & KMOD_RGUI) {
+    //     println("RIGHT GUI");
+    // }
+    // if (modifiers & KMOD_NUM) {
+    //     println("NUM");
+    // }
+    // if (modifiers & KMOD_CAPS) {
+    //     println("CAPS");
+    // }
+    // if (modifiers & KMOD_MODE) {
+    //     println("MODE");
+    // }
+    this->m_keyboard_shortcuts.insert(
+        std::make_pair(
+            m_binding_id, 
+            KeyboardShortcut(
+                key,
+                mods[0], mods[1], mods[2], mods[3],
+                modifiers,
+                callback
+            )
+        )
+    );
     return m_binding_id++;
 }
 
 int Application::bind(int key, Mod modifier, std::function<void()> callback) {
-    this->m_keyboard_shortcuts.insert(std::make_pair(m_binding_id, KeyboardShortcut(key, (int)modifier, callback)));
-    return m_binding_id++;
+    return bind(key, (int)modifier, callback);
 }
 
 void Application::unbind(int key) {

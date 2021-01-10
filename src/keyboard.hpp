@@ -45,11 +45,19 @@
 
     struct KeyboardShortcut {
         int key;
+        Mod ctrl;
+        Mod shift;
+        Mod alt;
+        Mod gui;
         int modifiers;
         std::function<void()> callback;
 
-        KeyboardShortcut(int key, int modifiers, std::function<void()> callback) {
+        KeyboardShortcut(int key, Mod ctrl, Mod shift, Mod alt, Mod gui, int modifiers, std::function<void()> callback) {
             this->key = key;
+            this->ctrl = ctrl;
+            this->shift = shift;
+            this->alt = alt;
+            this->gui = gui;
             this->modifiers = modifiers;
             this->callback = callback;
         }
