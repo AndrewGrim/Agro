@@ -31,8 +31,16 @@
         return (int)lhs|(int)rhs;
     }
 
+    inline int operator|(int lhs, Mod rhs) {
+        return lhs|(int)rhs;
+    }
+
     inline int operator&(Mod lhs, Mod rhs) {
         return (int)lhs&(int)rhs;
+    }
+
+    inline int operator&(int lhs, Mod rhs) {
+        return lhs&(int)rhs;
     }
 
     struct KeyboardShortcut {
