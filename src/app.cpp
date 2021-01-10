@@ -130,8 +130,8 @@ void Application::run() {
                         bool matched = false;
                         // TODO add matching for hotkeys and the widget itself
                         for (auto hotkey : m_keyboard_shortcuts) {
-                            if (hotkey.key == key && hotkey.modifiers & mod) {
-                                hotkey.callback();
+                            if (hotkey.second.key == key && hotkey.second.modifiers & mod) {
+                                hotkey.second.callback();
                                 SDL_FlushEvent(SDL_TEXTINPUT);
                                 matched = true;
                             }
@@ -258,20 +258,18 @@ void Application::removeFromState(void *widget) {
     }
 }
 
-size_t Application::bind(int key, int modifiers, std::function<void()> callback) {
-    this->m_keyboard_shortcuts.push_back(KeyboardShortcut(key, modifiers, callback));
-    return this->m_keyboard_shortcuts.size() - 1;
+int Application::bind(int key, int modifiers, std::function<void()> callback) {
+    this->m_keyboard_shortcuts.insert(std::make_pair(m_binding_id, KeyboardShortcut(key, modifiers, callback)));
+    return m_binding_id++;
 }
 
-size_t Application::bind(int key, Mod modifier, std::function<void()> callback) {
-    this->m_keyboard_shortcuts.push_back(KeyboardShortcut(key, (int)modifier, callback));
-    return this->m_keyboard_shortcuts.size() - 1;
+int Application::bind(int key, Mod modifier, std::function<void()> callback) {
+    this->m_keyboard_shortcuts.insert(std::make_pair(m_binding_id, KeyboardShortcut(key, (int)modifier, callback)));
+    return m_binding_id++;
 }
 
-// TODO this would break because we dont update the indices
-// use a hashmap or pointers instead
-void Application::unbind(size_t index) {
-    this->m_keyboard_shortcuts.erase(this->m_keyboard_shortcuts.cbegin() + index);
+void Application::unbind(int key) {
+    this->m_keyboard_shortcuts.erase(key);
 }
 
 void Application::quit() {

@@ -4,6 +4,7 @@
     #include <chrono>
     #include <utility>
     #include <functional>
+    #include <unordered_map>
     
     #include <SDL2/SDL.h>
 
@@ -104,9 +105,9 @@
 
             void removeFromState(void *widget);
 
-            size_t bind(int key, int modifiers, std::function<void()> callback);
-            size_t bind(int key, Mod modifier, std::function<void()> callback);
-            void unbind(size_t index);
+            int bind(int key, int modifiers, std::function<void()> callback);
+            int bind(int key, Mod modifier, std::function<void()> callback);
+            void unbind(int map_key);
 
             void quit();
 
@@ -119,8 +120,9 @@
             bool m_layout_changed = true;
             std::pair<Event, EventHandler> m_last_event = std::make_pair<Event, EventHandler>(Event::None, EventHandler::Accepted);
             std::chrono::time_point<std::chrono::steady_clock> m_last_event_time = std::chrono::steady_clock::now();
-            // TODO have another vector for hotkeys ie menu shortcut keys
-            std::vector<KeyboardShortcut> m_keyboard_shortcuts;
+            // TODO have another map for hotkeys ie menu shortcut keys
+            std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
+            int m_binding_id = 0;
             bool m_running = true;
 
             /// Updates the projection matrix, clears the context and

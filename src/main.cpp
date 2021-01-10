@@ -33,7 +33,7 @@ int main() {
     // for (int i = 0; i < 1000000; i++) {
     //     app->append(new Button(std::to_string(i)), Fill::Both);
     // }
-    app->bind(
+    int map_key = app->bind(
         SDLK_q,
         Mod::Ctrl, 
         [&](){
@@ -41,6 +41,7 @@ int main() {
             app->quit();
         }
     );
+    // app->unbind(map_key);
     ((ScrolledBox*)app->mainWidget())->setAlignPolicy(Align::Horizontal);
     app->mainWidget()->setBackground(Color(0.5, 0.2, 0.4, 0.8));
         Color colors[] = {
