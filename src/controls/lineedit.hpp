@@ -21,6 +21,8 @@
             LineEdit* setPadding(uint padding);
             float minLength();
             LineEdit* setMinLength(float length);
+            LineEdit* moveCursorLeft(DrawingContext *dc);
+            LineEdit* moveCursorRight(DrawingContext *dc);
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);

@@ -1,4 +1,5 @@
 #include "lineedit.hpp"
+#include "../app.hpp"
 
 LineEdit::LineEdit(std::string text) : Widget() {
     Widget::m_bg = Color(1, 1, 1);
@@ -11,6 +12,18 @@ LineEdit::LineEdit(std::string text) : Widget() {
             this->m_process_mouse_event = true;
         }
     };
+    this->bind(SDLK_LEFT, Mod::None, [&]{
+        if (this->app) {
+            DrawingContext *dc = ((Application*)this->app)->dc;
+            this->moveCursorLeft(dc);
+        }
+    });
+    this->bind(SDLK_RIGHT, Mod::None, [&]{
+        if (this->app) {
+            auto dc = ((Application*)this->app)->dc;
+            this->moveCursorRight(dc);
+        }
+    });
 }
 
 LineEdit::~LineEdit() {
@@ -145,10 +158,7 @@ void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
     m_text.insert(m_cursor_index, text);
     m_cursor_index += strlen(text);
     m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text).w;
-
-    m_size_changed = true;
     update();
-    layout();
 }
 
 float LineEdit::minLength() {
@@ -161,6 +171,26 @@ LineEdit* LineEdit::setMinLength(float length) {
         m_size_changed = true;
         update();
         layout();
+    }
+
+    return this;
+}
+
+LineEdit* LineEdit::moveCursorLeft(DrawingContext *dc) {
+    if (m_cursor_index) {
+        m_cursor_index--;
+        m_cursor_position -= dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
+        update();
+    }
+
+    return this;
+}
+
+LineEdit* LineEdit::moveCursorRight(DrawingContext *dc) {
+    if (m_cursor_index < text().size()) {
+        m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
+        m_cursor_index++;
+        update();
     }
 
     return this;
