@@ -36,7 +36,7 @@ int main() {
     int map_key = app->bind(
         SDLK_q,
         Mod::None, 
-        [&](){
+        [&]{
             println("Q");
             app->quit();
         }
@@ -45,7 +45,7 @@ int main() {
     app->bind(
         SDLK_q,
         Mod::Ctrl,
-        [&](){
+        [&]{
             println("CTRL+Q");
             app->quit();
         }
@@ -53,7 +53,7 @@ int main() {
     app->bind(
         SDLK_q,
         Mod::Ctrl|Mod::Shift|Mod::Alt,
-        [&](){
+        [&]{
             println("CTRL+Shift+Alt+Q");
             app->quit();
         }
@@ -61,7 +61,7 @@ int main() {
     app->bind(
         SDLK_q,
         Mod::Ctrl|Mod::Shift,
-        [&](){
+        [&]{
             println("CTRL+Shift+Q");
             app->quit();
         }
@@ -77,7 +77,7 @@ int main() {
         Box *left = new Box(Align::Vertical);
             LineEdit *ln = new LineEdit("Fill::None");
                 // ln->setMinLength(80);
-                ln->bind(SDLK_a, Mod::Ctrl, [](){
+                ln->bind(SDLK_a, Mod::Ctrl, []{
                     println("Ctrl+A");
                 });
             left->append(ln, Fill::None);
