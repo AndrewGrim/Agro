@@ -2,10 +2,12 @@
     #define WIDGET_HPP
 
     #include <vector>
+    #include <unordered_map>
     #include <functional>
 
     #include "../state.hpp"
     #include "../event.hpp"
+    #include "../keyboard.hpp"
     #include "../common/rect.hpp"
     #include "../common/fill.hpp"
     #include "../common/size.hpp"
@@ -30,6 +32,8 @@
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
             std::vector<Widget*> children;
+
+            std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
 
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 
@@ -204,6 +208,10 @@
 
             Widget* setFont(Font *font);
 
+            int bind(int key, int modifiers, std::function<void()> callback);
+            int bind(int key, Mod modifier, std::function<void()> callback);
+            void unbind(int map_key);
+
         protected:
             bool m_is_hovered = false;
             bool m_is_pressed = false;
@@ -236,5 +244,7 @@
             // as an altered fg, bg color? dynamic i mean
 
             Font *m_font = nullptr;
+
+            int m_binding_id = 0;
     };
 #endif

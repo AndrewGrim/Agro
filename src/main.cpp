@@ -76,6 +76,9 @@ int main() {
         int color_index = 0;
         Box *left = new Box(Align::Vertical);
             LineEdit *ln = new LineEdit("Fill::None");
+                ln->bind(SDLK_a, Mod::Ctrl, [](){
+                    println("Ctrl+A");
+                });
             left->append(ln, Fill::None);
             LineEdit *lb = new LineEdit("Fill::Both");
             left->append(lb, Fill::Both);

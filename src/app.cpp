@@ -165,6 +165,31 @@ void Application::run() {
                                 }
                             }
                         }
+                        if (!matched && m_state->focused) {
+                            for (auto hotkey : ((Widget*)(m_state->focused))->m_keyboard_shortcuts) {
+                                if (hotkey.second.key == key) {
+                                    bool mods_matched = true;
+                                    if (hotkey.second.ctrl != mods[0]) {
+                                        mods_matched = false;
+                                    }
+                                    if (hotkey.second.shift != mods[1]) {
+                                        mods_matched = false;
+                                    }
+                                    if (hotkey.second.alt != mods[2]) {
+                                        mods_matched = false;
+                                    }
+                                    if (hotkey.second.gui != mods[3]) {
+                                        mods_matched = false;
+                                    }
+                                    if (mods_matched) {
+                                        hotkey.second.callback();
+                                        SDL_FlushEvent(SDL_TEXTINPUT);
+                                        matched = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
                     }
                     break;
                 case SDL_TEXTINPUT:

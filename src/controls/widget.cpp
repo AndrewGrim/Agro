@@ -363,3 +363,70 @@ Widget* Widget::setFont(Font *font) {
     
     return this;
 }
+
+// TODO implement left/right specific modifiers any the other remaining ones
+int Widget::bind(int key, int modifiers, std::function<void()> callback) {
+    Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
+
+    if (modifiers & KMOD_CTRL) {
+        mods[0] = Mod::Ctrl;
+    }
+    // if (modifiers & KMOD_LCTRL) {
+    //     println("LEFT CONTROL");
+    // } else if (modifiers & KMOD_RCTRL) {
+    //     println("RIGHT CONTROL");
+    // }
+    if (modifiers & KMOD_SHIFT) {
+        mods[1] = Mod::Shift;
+    }
+    // if (modifiers & KMOD_LSHIFT) {
+    //     println("LEFT SHIFT");
+    // } else if (modifiers & KMOD_RSHIFT) {
+    //     println("RIGHT SHIFT");
+    // }
+    if (modifiers & KMOD_ALT) {
+        mods[2] = Mod::Alt;
+    }
+    // if (modifiers & KMOD_LALT) {
+    //     println("LEFT ALT");
+    // } else if (modifiers & KMOD_RALT) {
+    //     println("RIGHT ALT");
+    // }
+    if (modifiers & KMOD_GUI) {
+        mods[3] = Mod::Gui;
+    }
+    // if (modifiers & KMOD_LGUI) {
+    //     println("LEFT GUI");
+    // } else if (modifiers & KMOD_RGUI) {
+    //     println("RIGHT GUI");
+    // }
+    // if (modifiers & KMOD_NUM) {
+    //     println("NUM");
+    // }
+    // if (modifiers & KMOD_CAPS) {
+    //     println("CAPS");
+    // }
+    // if (modifiers & KMOD_MODE) {
+    //     println("MODE");
+    // }
+    this->m_keyboard_shortcuts.insert(
+        std::make_pair(
+            m_binding_id, 
+            KeyboardShortcut(
+                key,
+                mods[0], mods[1], mods[2], mods[3],
+                modifiers,
+                callback
+            )
+        )
+    );
+    return m_binding_id++;
+}
+
+int Widget::bind(int key, Mod modifier, std::function<void()> callback) {
+    return bind(key, (int)modifier, callback);
+}
+
+void Widget::unbind(int key) {
+    this->m_keyboard_shortcuts.erase(key);
+}
