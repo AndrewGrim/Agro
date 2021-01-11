@@ -194,6 +194,8 @@
             /// Should not be used directly! Let the application call it.
             virtual void handleMouseEvent(State *state, MouseEvent event);
 
+            virtual void handleTextEvent(DrawingContext *dc, const char *text);
+
             /// Sets the Application* of the Widget and does the same
             /// for any of its children.
             virtual Widget* attachApp(void *app);

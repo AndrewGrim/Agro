@@ -318,6 +318,10 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
     }
 }
 
+void Widget::handleTextEvent(DrawingContext *dc, const char *text) {
+
+}
+
 Widget* Widget::attachApp(void *app) {
     for (Widget *child : this->children) {
         child->app = app;
