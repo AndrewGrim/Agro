@@ -19,6 +19,8 @@
             LineEdit* setBorderWidth(uint border_width);
             uint padding();
             LineEdit* setPadding(uint padding);
+            float minLength();
+            LineEdit* setMinLength(float length);
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);
@@ -28,5 +30,6 @@
             std::string m_text;
             uint m_border_width = 2;
             uint m_padding = 10;
+            float m_min_length = 50;
     };
 #endif

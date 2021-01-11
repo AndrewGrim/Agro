@@ -22,8 +22,11 @@ const char* LineEdit::name() {
 }
 
 void LineEdit::draw(DrawingContext *dc, Rect rect) {
+    // TODO slight issue with being able to set the cursor outside of the visible characters
     this->rect = rect;
 
+    Rect old_clip = dc->clip();
+    dc->setClip(rect);
     dc->fillRect(
         rect, 
         m_fg
@@ -75,11 +78,12 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
             m_fg
         );
     }
+    dc->setClip(old_clip);
 }
 
 Size LineEdit::sizeHint(DrawingContext *dc) {
     if (this->m_size_changed) {
-        Size size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+        Size size = Size(m_min_length, font() ? font()->max_height : dc->default_font->max_height);
         // Note: full padding is applied on both sides but
         // border width is divided in half for each side
         size.w += this->m_padding * 2 + this->m_border_width;
@@ -145,4 +149,19 @@ void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
     m_size_changed = true;
     update();
     layout();
+}
+
+float LineEdit::minLength() {
+    return m_min_length;
+}
+
+LineEdit* LineEdit::setMinLength(float length) {
+    if (m_min_length != length) {
+        m_min_length = length;
+        m_size_changed = true;
+        update();
+        layout();
+    }
+
+    return this;
 }
