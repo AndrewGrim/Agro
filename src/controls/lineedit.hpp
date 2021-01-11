@@ -12,6 +12,7 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
+            virtual void handleTextEvent(DrawingContext *dc, const char *text);
             LineEdit* setText(std::string text);
             std::string text();
             uint borderWidth();

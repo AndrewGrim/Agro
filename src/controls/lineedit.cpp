@@ -136,3 +136,13 @@ LineEdit* LineEdit::setPadding(uint padding) {
     
     return this;
 }
+
+void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
+    m_text.insert(m_cursor_index, text);
+    m_cursor_index += strlen(text);
+    m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text).w;
+
+    m_size_changed = true;
+    update();
+    layout();
+}
