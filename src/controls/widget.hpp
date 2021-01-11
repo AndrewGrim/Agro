@@ -33,8 +33,6 @@
             /// rather through methods like append().
             std::vector<Widget*> children;
 
-            std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
-
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 
             /// certain events happen. If not in use these should
@@ -211,6 +209,7 @@
             int bind(int key, int modifiers, std::function<void()> callback);
             int bind(int key, Mod modifier, std::function<void()> callback);
             void unbind(int map_key);
+            const std::unordered_map<int, KeyboardShortcut> keyboardShortcuts();
 
         protected:
             bool m_is_hovered = false;
@@ -246,5 +245,6 @@
             Font *m_font = nullptr;
 
             int m_binding_id = 0;
+            std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
     };
 #endif

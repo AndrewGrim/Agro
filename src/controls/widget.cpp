@@ -430,3 +430,7 @@ int Widget::bind(int key, Mod modifier, std::function<void()> callback) {
 void Widget::unbind(int key) {
     this->m_keyboard_shortcuts.erase(key);
 }
+
+const std::unordered_map<int, KeyboardShortcut> Widget::keyboardShortcuts() {
+    return this->m_keyboard_shortcuts;
+}

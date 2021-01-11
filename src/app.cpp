@@ -166,7 +166,7 @@ void Application::run() {
                             }
                         }
                         if (!matched && m_state->focused) {
-                            for (auto hotkey : ((Widget*)(m_state->focused))->m_keyboard_shortcuts) {
+                            for (auto hotkey : ((Widget*)(m_state->focused))->keyboardShortcuts()) {
                                 if (hotkey.second.key == key) {
                                     bool mods_matched = true;
                                     if (hotkey.second.ctrl != mods[0]) {
