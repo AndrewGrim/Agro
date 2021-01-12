@@ -53,7 +53,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
 
     dc->fillRect(rect, this->background());
     if (!(m_virtual_size.w < rect.w)) {
-        rect.x -= m_value * (m_virtual_size.w - rect.w);
+        rect.x -= m_current_view * (m_virtual_size.w - rect.w);
     }
     dc->fillTextAligned(
         this->font() ? this->font() : dc->default_font, 
@@ -77,11 +77,11 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
             index++;
         }
         if (!index) {
-            m_value = 0.0;
+            m_current_view = m_min_view;
         } else if (index == text().size()) {
-            m_value = 1.0;
+            m_current_view = m_max_view;
         } else {
-            this->m_value = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         this->m_cursor_position = x;
         this->m_cursor_index = index;
@@ -175,9 +175,9 @@ void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
     m_cursor_index += strlen(text);
     m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text).w;
     if (m_cursor_index == this->text().size()) {
-        m_value = 1.0;
+        m_current_view = m_max_view;
     } else {
-        m_value = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
 }
@@ -203,9 +203,9 @@ LineEdit* LineEdit::moveCursorLeft(DrawingContext *dc) {
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
         m_cursor_position -= char_size;
         if (!m_cursor_index) {
-            m_value = 0.0;
+            m_current_view = m_min_view;
         } else {
-            m_value = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         update();
     }
@@ -219,9 +219,9 @@ LineEdit* LineEdit::moveCursorRight(DrawingContext *dc) {
         m_cursor_position += char_size;
         m_cursor_index++;
         if (m_cursor_index == text().size()) {
-            m_value = 1.0;
+            m_current_view = m_max_view;
         } else {
-            m_value = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         update();
     }
