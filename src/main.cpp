@@ -81,7 +81,7 @@ int main() {
                     println("Ctrl+A");
                 });
             left->append(ln, Fill::None);
-            LineEdit *lb = new LineEdit("Fill::Both");
+            LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
             left->append(lb, Fill::Both);
             {
                 ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
