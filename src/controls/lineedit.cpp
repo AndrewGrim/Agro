@@ -35,7 +35,6 @@ const char* LineEdit::name() {
 }
 
 void LineEdit::draw(DrawingContext *dc, Rect rect) {
-    // TODO slight issue with being able to set the cursor outside of the visible characters
     this->rect = rect;
 
     Rect old_clip = dc->clip();
@@ -53,6 +52,9 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     );
 
     dc->fillRect(rect, this->background());
+    if (!(m_virtual_size.w < rect.w)) {
+        rect.x -= m_value * (m_virtual_size.w - rect.w);
+    }
     dc->fillTextAligned(
         this->font() ? this->font() : dc->default_font, 
         this->text(), 
@@ -64,7 +66,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     );
 
     if (this->m_process_mouse_event) {
-        float x = this->padding() + this->borderWidth() / 2;
+        float x = this->padding() + (this->borderWidth() / 2);
         unsigned int index = 0;
         for (char c : this->text()) {
             float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
@@ -74,9 +76,16 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
             x += w;
             index++;
         }
+        if (!index) {
+            m_value = 0.0;
+        } else if (index == text().size()) {
+            m_value = 1.0;
+        } else {
+            this->m_value = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        }
         this->m_cursor_position = x;
-        this->m_process_mouse_event = false;
         this->m_cursor_index = index;
+        this->m_process_mouse_event = false;
     }
     if (this->isFocused()) {
         float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
@@ -95,6 +104,11 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size LineEdit::sizeHint(DrawingContext *dc) {
+    if (m_text_changed) {
+        m_virtual_size = dc->measureText(font() ? font() : dc->default_font, text());
+        m_virtual_size.w += this->m_padding * 2 + this->m_border_width;
+        m_virtual_size.h += this->m_padding * 2 + this->m_border_width;
+    }
     if (this->m_size_changed) {
         Size size = Size(m_min_length, font() ? font()->max_height : dc->default_font->max_height);
         // Note: full padding is applied on both sides but
@@ -117,9 +131,8 @@ std::string LineEdit::text() {
 
 LineEdit* LineEdit::setText(std::string text) {
     this->m_text = text;
-    this->m_size_changed = true;
+    this->m_text_changed = true;
     this->update();
-    this->layout();
 
     return this;
 }
@@ -156,8 +169,16 @@ LineEdit* LineEdit::setPadding(uint padding) {
 
 void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
     m_text.insert(m_cursor_index, text);
+    // TODO add our own insert? just a wrapper? so that it calls text_changed automatically
+    m_text_changed = true;
+
     m_cursor_index += strlen(text);
     m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text).w;
+    if (m_cursor_index == this->text().size()) {
+        m_value = 1.0;
+    } else {
+        m_value = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+    }
     update();
 }
 
@@ -179,7 +200,13 @@ LineEdit* LineEdit::setMinLength(float length) {
 LineEdit* LineEdit::moveCursorLeft(DrawingContext *dc) {
     if (m_cursor_index) {
         m_cursor_index--;
-        m_cursor_position -= dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
+        m_cursor_position -= char_size;
+        if (!m_cursor_index) {
+            m_value = 0.0;
+        } else {
+            m_value = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        }
         update();
     }
 
@@ -188,8 +215,14 @@ LineEdit* LineEdit::moveCursorLeft(DrawingContext *dc) {
 
 LineEdit* LineEdit::moveCursorRight(DrawingContext *dc) {
     if (m_cursor_index < text().size()) {
-        m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
+        m_cursor_position += char_size;
         m_cursor_index++;
+        if (m_cursor_index == text().size()) {
+            m_value = 1.0;
+        } else {
+            m_value = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        }
         update();
     }
 

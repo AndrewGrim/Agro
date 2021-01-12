@@ -193,17 +193,8 @@ void Application::run() {
                     }
                     break;
                 case SDL_TEXTINPUT:
-                    // println("TEXT");
-                    // println(event.text.text);
-                    // TODO widget is going to need a onTextInput callback handler
-                    // so now is probably a good time to change it soth at each event
-                    // has a default handler which can optionally call callbacks??
-                    // does that even make sense?
                     if (m_state->focused) {
                         ((Widget*)m_state->focused)->handleTextEvent(dc, event.text.text);
-                        // TODO lineedit probably needs to have a hardcoded sizehint to some extent
-                        // we dont want the text size to force it to be wider
-                        // we also need to be able to scroll it somehow 
                     }
                     break;
                 case SDL_QUIT:

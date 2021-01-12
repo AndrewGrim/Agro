@@ -33,5 +33,10 @@
             uint m_border_width = 2;
             uint m_padding = 10;
             float m_min_length = 50;
+            float m_min = 0.0;
+            float m_max = 1.0;
+            float m_value = m_min;
+            Size m_virtual_size = Size();
+            bool m_text_changed = false;
     };
 #endif
