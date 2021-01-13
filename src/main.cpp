@@ -82,6 +82,7 @@ int main() {
                 });
             left->append(ln, Fill::None);
             LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
+                lb->setPlaceholderText("Nothing to see here!");
                 // lb->bind(SDLK_SPACE, Mod::None, [&]{
                 //     lb->clear();
                 // });

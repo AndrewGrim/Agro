@@ -4,6 +4,7 @@
 LineEdit::LineEdit(std::string text) : Widget() {
     Widget::m_bg = Color(1, 1, 1);
     this->setText(text);
+    this->setPlaceholderText("");
     this->onMouseDown = [&](MouseEvent event) {
         if (!this->text().length()) {
             this->m_cursor_position = this->padding() + (this->borderWidth() / 2);
@@ -66,15 +67,27 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     if (!(m_virtual_size.w < rect.w)) {
         rect.x -= m_current_view * (m_virtual_size.w - rect.w);
     }
-    dc->fillTextAligned(
-        this->font() ? this->font() : dc->default_font, 
-        this->text(), 
-        HorizontalAlignment::Left, 
-        VerticalAlignment::Center, 
-        rect,
-        this->m_padding,
-        m_fg
-    );
+    if (!isFocused() && !text().size()) {
+        dc->fillTextAligned(
+            this->font() ? this->font() : dc->default_font, 
+            this->placeholderText(), 
+            HorizontalAlignment::Left, 
+            VerticalAlignment::Center, 
+            rect,
+            this->m_padding,
+            Color(0.7, 0.7, 0.7)
+        );
+    } else {
+        dc->fillTextAligned(
+            this->font() ? this->font() : dc->default_font, 
+            this->text(), 
+            HorizontalAlignment::Left, 
+            VerticalAlignment::Center, 
+            rect,
+            this->m_padding,
+            m_fg
+        );
+    }
 
     if (this->m_process_mouse_event) {
         float x = this->padding() + (this->borderWidth() / 2);
@@ -279,6 +292,17 @@ LineEdit* LineEdit::clear() {
     update();
 
     return this;
+}
+
+LineEdit* LineEdit::setPlaceholderText(std::string text) {
+    this->m_placeholder_text = text;
+    this->update();
+
+    return this;
+}
+
+std::string LineEdit::placeholderText() {
+    return m_placeholder_text;
 }
 
 LineEdit* LineEdit::updateView() {

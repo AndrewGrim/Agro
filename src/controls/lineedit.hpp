@@ -27,6 +27,8 @@
             LineEdit* moveCursorEnd();
             LineEdit* deleteAt(int index);
             LineEdit* clear();
+            LineEdit* setPlaceholderText(std::string text);
+            std::string placeholderText();
             LineEdit* updateView();
 
         protected:
@@ -35,6 +37,7 @@
             uint m_cursor_index = 0;
             bool m_process_mouse_event = false;
             std::string m_text;
+            std::string m_placeholder_text;
             uint m_border_width = 2;
             uint m_padding = 10;
             float m_min_length = 50;
