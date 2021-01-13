@@ -30,6 +30,8 @@
             LineEdit* setPlaceholderText(std::string text);
             std::string placeholderText();
             LineEdit* updateView();
+            LineEdit* jumpWordLeft();
+            LineEdit* jumpWordRight();
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);
