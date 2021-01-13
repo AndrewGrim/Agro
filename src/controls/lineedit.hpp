@@ -23,6 +23,8 @@
             LineEdit* setMinLength(float length);
             LineEdit* moveCursorLeft();
             LineEdit* moveCursorRight();
+            LineEdit* moveCursorBegin();
+            LineEdit* moveCursorEnd();
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);

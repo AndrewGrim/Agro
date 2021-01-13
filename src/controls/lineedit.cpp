@@ -18,6 +18,12 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->bind(SDLK_RIGHT, Mod::None, [&]{
         this->moveCursorRight();
     });
+    this->bind(SDLK_HOME, Mod::None, [&]{
+        this->moveCursorBegin();
+    });
+    this->bind(SDLK_END, Mod::None, [&]{
+        this->moveCursorEnd();
+    });
 }
 
 LineEdit::~LineEdit() {
@@ -222,5 +228,23 @@ LineEdit* LineEdit::moveCursorRight() {
         update();
     }
 
+    return this;
+}
+
+LineEdit* LineEdit::moveCursorBegin() {
+    m_cursor_position = this->padding() + (this->borderWidth() / 2);
+    m_cursor_index = 0;
+    m_current_view = m_min_view;
+    update();
+    
+    return this;
+}
+
+LineEdit* LineEdit::moveCursorEnd() {
+    m_cursor_position = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
+    m_cursor_index = text().size();
+    m_current_view = m_max_view;
+    update();
+    
     return this;
 }
