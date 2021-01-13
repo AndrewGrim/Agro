@@ -28,6 +28,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
         if (m_cursor_index) {
             this->moveCursorLeft();
             this->deleteAt(m_cursor_index);
+            this->updateView();
         }
     });
     this->bind(SDLK_DELETE, Mod::None, [&]{
