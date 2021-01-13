@@ -24,6 +24,16 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->bind(SDLK_END, Mod::None, [&]{
         this->moveCursorEnd();
     });
+    this->bind(SDLK_BACKSPACE, Mod::None, [&]{
+        if (m_cursor_index) {
+            this->moveCursorLeft();
+            this->deleteAt(m_cursor_index);
+        }
+    });
+    this->bind(SDLK_DELETE, Mod::None, [&]{
+        this->deleteAt(m_cursor_index);
+        this->updateView();
+    });
 }
 
 LineEdit::~LineEdit() {
@@ -246,5 +256,28 @@ LineEdit* LineEdit::moveCursorEnd() {
     m_current_view = m_max_view;
     update();
     
+    return this;
+}
+
+LineEdit* LineEdit::deleteAt(int index) {
+    if (index > -1 && index < text().size()) {
+        m_text.erase(index, 1);
+        m_text_changed = true;
+        update();
+    }
+
+    return this;
+}
+
+
+LineEdit* LineEdit::updateView() {
+    if (!m_cursor_index) {
+        m_current_view = m_min_view;
+    } else if (m_cursor_index == text().size()) {
+        m_current_view = m_max_view;
+    } else {
+        m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+    }
+    update();
     return this;
 }

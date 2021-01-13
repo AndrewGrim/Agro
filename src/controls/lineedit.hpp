@@ -25,6 +25,8 @@
             LineEdit* moveCursorRight();
             LineEdit* moveCursorBegin();
             LineEdit* moveCursorEnd();
+            LineEdit* deleteAt(int index);
+            LineEdit* updateView();
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);
