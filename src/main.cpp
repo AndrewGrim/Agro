@@ -82,6 +82,9 @@ int main() {
                 });
             left->append(ln, Fill::None);
             LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
+                // lb->bind(SDLK_SPACE, Mod::None, [&]{
+                //     lb->clear();
+                // });
             left->append(lb, Fill::Both);
             {
                 ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));

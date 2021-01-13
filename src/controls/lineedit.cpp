@@ -269,6 +269,16 @@ LineEdit* LineEdit::deleteAt(int index) {
     return this;
 }
 
+LineEdit* LineEdit::clear() {
+    m_text.clear();
+    m_text_changed = true;
+    m_cursor_index = 0;
+    m_cursor_position = padding() + (borderWidth() / 2);
+    m_current_view = m_min_view;
+    update();
+
+    return this;
+}
 
 LineEdit* LineEdit::updateView() {
     if (!m_cursor_index) {

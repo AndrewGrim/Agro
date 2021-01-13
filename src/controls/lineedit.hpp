@@ -26,6 +26,7 @@
             LineEdit* moveCursorBegin();
             LineEdit* moveCursorEnd();
             LineEdit* deleteAt(int index);
+            LineEdit* clear();
             LineEdit* updateView();
 
         protected:
