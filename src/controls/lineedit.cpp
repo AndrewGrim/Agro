@@ -13,16 +13,10 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     };
     this->bind(SDLK_LEFT, Mod::None, [&]{
-        if (this->app) {
-            DrawingContext *dc = ((Application*)this->app)->dc;
-            this->moveCursorLeft(dc);
-        }
+        this->moveCursorLeft();
     });
     this->bind(SDLK_RIGHT, Mod::None, [&]{
-        if (this->app) {
-            auto dc = ((Application*)this->app)->dc;
-            this->moveCursorRight(dc);
-        }
+        this->moveCursorRight();
     });
 }
 
@@ -197,8 +191,9 @@ LineEdit* LineEdit::setMinLength(float length) {
     return this;
 }
 
-LineEdit* LineEdit::moveCursorLeft(DrawingContext *dc) {
-    if (m_cursor_index) {
+LineEdit* LineEdit::moveCursorLeft() {
+    if (m_cursor_index && app) {
+        DrawingContext *dc = ((Application*)this->app)->dc;
         m_cursor_index--;
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
         m_cursor_position -= char_size;
@@ -213,8 +208,9 @@ LineEdit* LineEdit::moveCursorLeft(DrawingContext *dc) {
     return this;
 }
 
-LineEdit* LineEdit::moveCursorRight(DrawingContext *dc) {
-    if (m_cursor_index < text().size()) {
+LineEdit* LineEdit::moveCursorRight() {
+    if (m_cursor_index < text().size() && app) {
+        DrawingContext *dc = ((Application*)this->app)->dc;
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
         m_cursor_position += char_size;
         m_cursor_index++;
