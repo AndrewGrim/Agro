@@ -20,7 +20,7 @@
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr);
             NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr);
             NoteBook* removeTab(int index);
-            NoteBook* setRootWidget(Widget *root);
+            NoteBook* setTabWidget(Widget *root);
             NoteBook* setTabText(std::string text);
             NoteBook* setTabIcon(Image *icon);
             int currentTab();

@@ -32,7 +32,7 @@ NoteBook* NoteBook::removeTab(int index) {
 
 }
 
-NoteBook* NoteBook::setRootWidget(Widget *root) {
+NoteBook* NoteBook::setTabWidget(Widget *root) {
 
 }
 
