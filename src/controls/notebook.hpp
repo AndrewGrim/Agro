@@ -3,6 +3,21 @@
 
     #include "widget.hpp"
     #include "image.hpp"
+    #include "scrollbar.hpp"
+
+    class NoteBookTabBar : public Widget {
+        public:
+            // TODO scrollable interface
+            ScrollBar *m_vertical_scrollbar = nullptr;
+            ScrollBar *m_horizontal_scrollbar = new ScrollBar(Align::Horizontal);
+
+            NoteBookTabBar();
+            ~NoteBookTabBar();
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual const char* name() override;
+            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual bool isLayout() override;
+    };
 
     struct NoteBookTab {
         Widget *root;
@@ -29,6 +44,6 @@
         protected:
             // TODO need to increment
             int m_tab_index = 0;
-            std::vector<NoteBookTab> m_tabs;
+            NoteBookTabBar *m_tabs = new NoteBookTabBar();
     };
 #endif

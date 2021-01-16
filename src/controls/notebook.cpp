@@ -1,56 +1,98 @@
 #include "notebook.hpp"
 
+NoteBookTabBar::NoteBookTabBar() : Widget() {
+
+}
+
+NoteBookTabBar::~NoteBookTabBar() {
+    delete m_horizontal_scrollbar;
+}
+
+void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
+    float x = rect.x;
+    x -= m_horizontal_scrollbar->m_slider->m_value * (m_size.w - rect.w);
+
+    for (Widget *child : children) {
+        Size child_hint = child->sizeHint(dc);
+        Rect child_rect = Rect(x, rect.y, child_hint.w, child_hint.h);
+        if (x + child_hint.w < rect.x) {
+            child->rect = child_rect;
+        } else {
+            child->draw(dc, child_rect);
+            if ((x + child_hint.w) > (rect.x + rect.w)) {
+                break;
+            }
+        }
+        x += child_hint.w;
+    }
+
+    // TODO change to simple scrollbar
+    Size size = m_horizontal_scrollbar->sizeHint(dc);
+    float slider_size = rect.w * ((rect.w - size.w / 2) / m_size.w);
+    float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
+    if (slider_size < 20) {
+        slider_size = 20;
+    } else if (slider_size > (rect.w - buttons_size - 10)) {
+        slider_size = rect.w - buttons_size - 10;
+    }
+    m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
+    m_horizontal_scrollbar->draw(dc, Rect(
+        rect.x, 
+        (rect.y + rect.h) - size.h, 
+        rect.w > size.w ? rect.w : size.w, 
+        size.h
+    ));
+}
+
+const char* NoteBookTabBar::name() {
+    return "NoteBookTabBar";
+}
+
+Size NoteBookTabBar::sizeHint(DrawingContext *dc) {
+    // TODO probably need `|| ((Application*)this->app)->hasLayoutChanged()`
+    // but for that to matter we will need the ability to change the tab
+    // buttons at runtime
+    if (m_size_changed) {
+        Size size = Size();
+        for (Widget *child : children) {
+            Size s = child->sizeHint(dc);
+            size.w += s.w;
+            if (s.h > size.h) {
+                size.h = s.h;
+            }
+            size.h += m_horizontal_scrollbar->sizeHint(dc).h;
+        }
+        m_size = size;
+        m_size_changed = false;
+        return size;
+    } else {
+        return m_size;
+    }
+}
+
+bool NoteBookTabBar::isLayout() {
+    return true;
+}
+
 NoteBook::NoteBook() {
 
 }
 
 NoteBook::~NoteBook() {
-    for (NoteBookTab tab : m_tabs) {
-        if (tab.icon) {
-            delete tab.icon;
-        }
-    }
+
 }
 
 void NoteBook::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    for (NoteBookTab tab : m_tabs) {
-        float tab_button_height = font() ? font()->max_height + 10 * 2 : dc->default_font->max_height + 10 * 2;
-        if (tab.icon) {
-            dc->drawImageAlignedAtSize(
-                Rect(rect.x, rect.y, rect.w, tab_button_height), 
-                HorizontalAlignment::Left, 
-                VerticalAlignment::Center,
-                Size(24, 24),
-                tab.icon
-            );
-            // 34
-            rect.x += 24; // Image width + padding.
-        }
-        float text_width = dc->measureText(font() ? font() : dc->default_font, tab.text).w + 10 * 2;
-        dc->fillRect(Rect(rect.x, rect.y, text_width, tab_button_height), Color(0.2, 0.5, 0.2));
-        dc->fillTextAligned(
-            font() ? font() : dc->default_font,
-            tab.text,
-            HorizontalAlignment::Left,
-            VerticalAlignment::Center,
-            Rect(rect.x, rect.y, rect.w, tab_button_height),
-            10,
-            foreground()
-        );
-        rect.x += text_width; // The padding on the right
-    }
-    if (m_tabs.size()) {
-        float tab_button_height = font() ? font()->max_height + 10 * 2 : dc->default_font->max_height + 10 * 2;
-        m_tabs[m_tab_index].root->draw(
-            dc, 
-            Rect(
-                this->rect.x, 
-                tab_button_height,
-                rect.w, 
-                rect.h - tab_button_height
-            )
-        );
+    if (m_tabs->children.size()) {
+        // NoteBookTabBar.
+        Size tab_bar_size = m_tabs->sizeHint(dc);
+        m_tabs->draw(dc, Rect(rect.x, rect.y, rect.w, tab_bar_size.h));
+        rect.y += tab_bar_size.h;
+        rect.h -= tab_bar_size.h;
+
+        // Tab content.
+        this->children[m_tab_index]->draw(dc, rect);
     }
 }
 
@@ -60,18 +102,12 @@ const char* NoteBook::name() {
 
 Size NoteBook::sizeHint(DrawingContext *dc) {
     if (m_size_changed) {
-        // TODO temporary solution
-        // i think ideally we should have a tabbar widget
-        // which would take care of all the tab buttons and its size
-        Size size = Size();
-        size.h = font() ? font()->max_height : dc->default_font->max_height;
-        size.h += 10 * 2;
-        if (m_tabs.size()) {
-            Size tab_size = m_tabs[m_tab_index].root->sizeHint(dc);
-            size.h += tab_size.h;
-            size.w = tab_size.w;
+        Size size = m_tabs->sizeHint(dc);
+        if (this->children.size()) {
+            Size current_tab_size = this->children[m_tab_index]->sizeHint(dc);
+            size.h += current_tab_size.h;
+            size.w = current_tab_size.w;
         }
-
         m_size = size;
         m_size_changed = false;
         return size;
@@ -83,8 +119,12 @@ Size NoteBook::sizeHint(DrawingContext *dc) {
 NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon) {
     // TODO either override Widget::append or manually append in this method.
     this->append(root, Fill::Both);
-    m_tabs.push_back({root, text, icon});
-    if (m_tabs.size() == 1) {
+    Button *tab_button = new Button(text);
+    if (icon) {
+        tab_button->setImage(icon);
+    }
+    m_tabs->append(tab_button);
+    if (this->children.size() == 1) {
         m_size_changed = true;
         update();
         layout();
