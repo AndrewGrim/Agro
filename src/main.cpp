@@ -15,6 +15,7 @@
 #include "controls/scrollbar.hpp"
 #include "controls/scrolledbox.hpp"
 #include "controls/lineedit.hpp"
+#include "controls/notebook.hpp"
 
 #include "custom_widget.hpp"
 
@@ -75,18 +76,25 @@ int main() {
         int widget_count = 1;
         int color_index = 0;
         Box *left = new Box(Align::Vertical);
-            LineEdit *ln = new LineEdit("Fill::None");
-                // ln->setMinLength(80);
-                ln->bind(SDLK_a, Mod::Ctrl, []{
-                    println("Ctrl+A");
-                });
-            left->append(ln, Fill::None);
-            LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
-                lb->setPlaceholderText("Nothing to see here!");
-                // lb->bind(SDLK_SPACE, Mod::None, [&]{
-                //     lb->clear();
-                // });
-            left->append(lb, Fill::Both);
+            NoteBook *nb = new NoteBook();
+                // TODO itll break beacuse we dont append or attach app
+                Box *_b = new Box(Align::Vertical);
+                    // _b->setBackground(Color(0, 0, 0, 0));
+                    _b->setBackground(Color(1, 0, 1, 1));
+                    LineEdit *ln = new LineEdit("Fill::None");
+                        // ln->setMinLength(80);
+                        ln->bind(SDLK_a, Mod::Ctrl, []{
+                            println("Ctrl+A");
+                        });
+                    _b->append(ln, Fill::None);
+                    LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
+                        lb->setPlaceholderText("Nothing to see here!");
+                        // lb->bind(SDLK_SPACE, Mod::None, [&]{
+                        //     lb->clear();
+                        // });
+                    _b->append(lb, Fill::Both);
+                nb->appendTab(_b, "Tab 1");
+            left->append(nb, Fill::Both);
             {
                 ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
                     sb->setBackground(Color(0.8, 0.5, 0.5));

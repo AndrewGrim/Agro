@@ -27,6 +27,7 @@
             NoteBook* setCurrentTab(int index);
 
         protected:
+            // TODO need to increment
             int m_tab_index = 0;
             std::vector<NoteBookTab> m_tabs;
     };
