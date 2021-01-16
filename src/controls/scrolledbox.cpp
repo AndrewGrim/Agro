@@ -260,49 +260,49 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             }
         } else {
             if (m_vertical_scrollbar) {
-            Size size = m_vertical_scrollbar->sizeHint(dc);
-            float slider_size = rect.h * ((rect.h - size.h / 2) / generic_max_layout_length);
-            float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
-            if (slider_size < 20) {
-                slider_size = 20;
-            } else if (slider_size > (rect.h - buttons_size - 10)) {
-                slider_size = rect.h - buttons_size - 10;
+                Size size = m_vertical_scrollbar->sizeHint(dc);
+                float slider_size = rect.h * ((rect.h - size.h / 2) / generic_max_layout_length);
+                float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
+                if (slider_size < 20) {
+                    slider_size = 20;
+                } else if (slider_size > (rect.h - buttons_size - 10)) {
+                    slider_size = rect.h - buttons_size - 10;
+                }
+                m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
+                m_vertical_scrollbar->draw(dc, Rect(
+                    rect.x + rect.w, 
+                    rect.y, 
+                    size.w, 
+                    rect.h > size.h ? rect.h : size.h
+                ));
             }
-            m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
-            m_vertical_scrollbar->draw(dc, Rect(
-                rect.x + rect.w, 
-                rect.y, 
-                size.w, 
-                rect.h > size.h ? rect.h : size.h
-            ));
-        }
-        if (m_horizontal_scrollbar) {
-            Size size = m_horizontal_scrollbar->sizeHint(dc);
-            float slider_size = rect.w * ((rect.w - size.w / 2) / generic_total_layout_length);
-            float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
-            if (slider_size < 20) {
-                slider_size = 20;
-            } else if (slider_size > (rect.w - buttons_size - 10)) {
-                slider_size = rect.w - buttons_size - 10;
+            if (m_horizontal_scrollbar) {
+                Size size = m_horizontal_scrollbar->sizeHint(dc);
+                float slider_size = rect.w * ((rect.w - size.w / 2) / generic_total_layout_length);
+                float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
+                if (slider_size < 20) {
+                    slider_size = 20;
+                } else if (slider_size > (rect.w - buttons_size - 10)) {
+                    slider_size = rect.w - buttons_size - 10;
+                }
+                m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
+                m_horizontal_scrollbar->draw(dc, Rect(
+                    rect.x, 
+                    rect.y + rect.h, 
+                    rect.w > size.w ? rect.w : size.w, 
+                    size.h
+                ));
             }
-            m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-            m_horizontal_scrollbar->draw(dc, Rect(
-                rect.x, 
-                rect.y + rect.h, 
-                rect.w > size.w ? rect.w : size.w, 
-                size.h
-            ));
-        }
-        }
-        if (m_vertical_scrollbar && m_horizontal_scrollbar) {
-            dc->fillRect(Rect(
-                rect.x + rect.w, 
-                rect.y + rect.h, 
-                m_vertical_scrollbar->sizeHint(dc).w, 
-                m_horizontal_scrollbar->sizeHint(dc).h), 
-                m_vertical_scrollbar->m_begin_button->background()
-            );
-        }
+            }
+            if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+                dc->fillRect(Rect(
+                    rect.x + rect.w, 
+                    rect.y + rect.h, 
+                    m_vertical_scrollbar->sizeHint(dc).w, 
+                    m_horizontal_scrollbar->sizeHint(dc).h), 
+                    m_vertical_scrollbar->m_begin_button->background()
+                );
+            }
     // }
     // TODO provide a more efficient drawing operation
     // when the layout hasnt changed
