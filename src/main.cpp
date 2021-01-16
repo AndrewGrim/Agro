@@ -5,12 +5,12 @@
 
 #include "util.hpp"
 #include "app.hpp"
+#include "option.hpp"
 #include "controls/widget.hpp"
 #include "controls/box.hpp"
 #include "controls/button.hpp"
 #include "controls/image.hpp"
 #include "controls/label.hpp"
-#include "option.hpp"
 #include "controls/slider.hpp"
 #include "controls/scrollbar.hpp"
 #include "controls/scrolledbox.hpp"
@@ -77,7 +77,6 @@ int main() {
         int color_index = 0;
         Box *left = new Box(Align::Vertical);
             NoteBook *nb = new NoteBook();
-                // TODO itll break beacuse we dont append or attach app
                 Box *_b = new Box(Align::Vertical);
                     // _b->setBackground(Color(0, 0, 0, 0));
                     _b->setBackground(Color(1, 0, 1, 1));
