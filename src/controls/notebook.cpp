@@ -165,6 +165,9 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon) {
     }
     this->append(root, Fill::Both);
     Button *tab_button = new Button(text);
+    tab_button->onMouseClick = [=](MouseEvent event) {
+        this->setCurrentTab(tab_button->parent_index);
+    };
     // We need to attach app at run time to new tabs / tab buttons.
     if (app) {
         tab_button->app = app;
