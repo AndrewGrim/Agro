@@ -77,22 +77,38 @@ int main() {
         int color_index = 0;
         Box *left = new Box(Align::Vertical);
             NoteBook *nb = new NoteBook();
-                Box *_b = new Box(Align::Vertical);
-                    // _b->setBackground(Color(0, 0, 0, 0));
-                    _b->setBackground(Color(1, 0, 1, 1));
-                    LineEdit *ln = new LineEdit("Fill::None");
-                        // ln->setMinLength(80);
-                        ln->bind(SDLK_a, Mod::Ctrl, []{
-                            println("Ctrl+A");
-                        });
-                    _b->append(ln, Fill::None);
-                    LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
-                        lb->setPlaceholderText("Nothing to see here!");
-                        // lb->bind(SDLK_SPACE, Mod::None, [&]{
-                        //     lb->clear();
-                        // });
-                    _b->append(lb, Fill::Both);
-                nb->appendTab(_b, "Tab 1");
+                {
+                    Box *_b = new Box(Align::Vertical);
+                        // _b->setBackground(Color(0, 0, 0, 0));
+                        _b->setBackground(Color(1, 0, 1, 1));
+                        LineEdit *ln = new LineEdit("Fill::None");
+                            // ln->setMinLength(80);
+                            ln->bind(SDLK_a, Mod::Ctrl, []{
+                                println("Ctrl+A");
+                            });
+                        _b->append(ln, Fill::None);
+                        LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
+                            lb->setPlaceholderText("Nothing to see here!");
+                            // lb->bind(SDLK_SPACE, Mod::None, [&]{
+                            //     lb->clear();
+                            // });
+                        _b->append(lb, Fill::Both);
+                    nb->appendTab(_b, "Tab 1");
+                }
+                {
+                    Box *_b = new Box(Align::Vertical);
+                        for (int i = 0; i < 5; i++) {
+                            _b->append(new Button(std::to_string(i)), Fill::Both);
+                        }
+                    nb->appendTab(_b, "Tab 2");
+                }
+                {
+                    Box *_b = new Box(Align::Vertical);
+                        for (int i = 0; i < 5; i++) {
+                            _b->append(new Button(std::to_string(i)), Fill::Both);
+                        }
+                    nb->appendTab(_b, "Tab 3", new Image("notes.png"));
+                }
             left->append(nb, Fill::Both);
             {
                 ScrolledBox *sb = new ScrolledBox(Align::Vertical, Size(200, 200));
