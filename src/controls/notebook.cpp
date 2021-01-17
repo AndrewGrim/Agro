@@ -14,9 +14,10 @@ void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
     float x = rect.x;
     x -= m_horizontal_scrollbar->m_slider->m_value * (m_size.w - rect.w);
 
+    Size scroll_size = m_horizontal_scrollbar->sizeHint(dc);
     for (Widget *child : children) {
         Size child_hint = child->sizeHint(dc);
-        Rect child_rect = Rect(x, rect.y, child_hint.w, child_hint.h);
+        Rect child_rect = Rect(x, rect.y, child_hint.w, rect.h - scroll_size.h);
         if (x + child_hint.w < rect.x) {
             child->rect = child_rect;
         } else {
@@ -29,8 +30,7 @@ void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
     }
 
     // TODO change to simple scrollbar
-    Size size = m_horizontal_scrollbar->sizeHint(dc);
-    float slider_size = rect.w * ((rect.w - size.w / 2) / m_size.w);
+    float slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
     float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
     if (slider_size < 20) {
         slider_size = 20;
@@ -40,9 +40,9 @@ void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
     m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
     m_horizontal_scrollbar->draw(dc, Rect(
         rect.x, 
-        (rect.y + rect.h) - size.h, 
-        rect.w > size.w ? rect.w : size.w, 
-        size.h
+        (rect.y + rect.h) - scroll_size.h, 
+        rect.w > scroll_size.w ? rect.w : scroll_size.w, 
+        scroll_size.h
     ));
 }
 
@@ -62,8 +62,8 @@ Size NoteBookTabBar::sizeHint(DrawingContext *dc) {
             if (s.h > size.h) {
                 size.h = s.h;
             }
-            size.h += m_horizontal_scrollbar->sizeHint(dc).h;
         }
+        size.h += m_horizontal_scrollbar->sizeHint(dc).h;
         m_size = size;
         m_size_changed = false;
         return size;
@@ -173,7 +173,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon) {
     if (icon) {
         tab_button->setImage(icon);
     }
-    m_tabs->append(tab_button);
+    m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
         m_size_changed = true;
         update();
