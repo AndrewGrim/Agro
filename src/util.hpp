@@ -9,7 +9,7 @@
             }
             std::cout << message;
             if (newline) {
-                std::cout << "\n";
+                std::cout << std::endl;
             }
         }
 
@@ -18,6 +18,6 @@
         }
 
         template <typename T> void println(T message) {
-            std::cout << message << "\n";
+            std::cout << message << std::endl;
         }
 #endif
