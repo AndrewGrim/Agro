@@ -32,7 +32,11 @@ Application::Application(const char* title, Size size) {
     );
     // TODO dont capture the mouse all the time only when pressed
     // and capture long enough to reset hover when exiting window
-    // NOTE: Doesnt seem to work on X11
+    // NOTE: Does not work on X11.
+    // UPDATE: Does not work until window has focus, but on X11
+    // its super important to release the mouse because you cant
+    // even click the close window decorator.
+    // NOTE: mouse left and entered dont work when capturing on X11
     SDL_CaptureMouse(SDL_TRUE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
