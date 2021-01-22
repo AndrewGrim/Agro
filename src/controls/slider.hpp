@@ -1,7 +1,6 @@
 #ifndef SLIDER_HPP
     #define SLIDER_HPP
 
-    #include "../app.hpp"
     #include "widget.hpp"
     #include "box.hpp"
     #include "button.hpp"

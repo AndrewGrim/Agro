@@ -1,7 +1,6 @@
 #ifndef SCROLLBAR_HPP
     #define SCROLLBAR_HPP
 
-    #include "../app.hpp"
     #include "widget.hpp"
     #include "box.hpp"
     #include "button.hpp"

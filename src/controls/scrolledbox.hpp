@@ -6,12 +6,6 @@
     #include "scrollbar.hpp"
     #include "../renderer/drawing_context.hpp"
 
-    // TODO Umm... what?
-    // Why the fuck is this necessary?
-    // Especially since if we dont compile notebook.cpp
-    // it works as it always did?
-    class ScrollBar;
-
     class ScrolledBox : public Box {
         public:
             ScrollBar *m_vertical_scrollbar = nullptr;
