@@ -137,6 +137,12 @@ void Application::run() {
                             // Gets handled in `forcePaintWhileResizing()` on Windows.
                             this->handleResizeEvent(event.window.data1, event.window.data2);
                             break;
+                        case SDL_WINDOWEVENT_ENTER:
+                            println("MOUSE ENTERED");
+                            break;
+                        case SDL_WINDOWEVENT_LEAVE:
+                            println("MOUSE LEFT");
+                            break;
                     }
                     break;
                 case SDL_KEYDOWN: {
