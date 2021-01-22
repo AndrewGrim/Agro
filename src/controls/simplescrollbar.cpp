@@ -79,7 +79,7 @@ void SimpleScrollBar::draw(DrawingContext *dc, Rect rect) {
 Size SimpleScrollBar::sizeHint(DrawingContext *dc) {
     Size size = this->m_slider->m_slider_button->sizeHint(dc);
     if (this->m_align_policy == Align::Horizontal) {
-        size.w *= 2 * 2;
+        size.w *= 2 * 2; // ?
     } else {
         size.h *= 2;
     }
