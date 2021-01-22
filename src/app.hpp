@@ -111,6 +111,9 @@
 
             void quit();
 
+            void handleResizeEvent(int width, int height);
+            void resize(int width, int height);
+
         private:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;

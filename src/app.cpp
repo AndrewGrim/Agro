@@ -4,6 +4,21 @@
 
 #include "app.hpp"
 
+// This is needed on Windows and supposedly on MacOS (not tested) to
+// redraw the window while the user is resizing it.
+int forcePaintWhileResizing(void *data, SDL_Event *event) {
+    switch (event->type) {
+        case SDL_WINDOWEVENT:
+            if (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+                Application *app = (Application*)data;
+                app->handleResizeEvent(event->window.data1, event->window.data2);
+                return 0;
+            }
+            break;
+    }
+    return 1;
+}
+
 Application::Application(const char* title, Size size) {
     this->m_size = size;
 
@@ -112,15 +127,11 @@ void Application::run() {
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
-                        case SDL_WINDOWEVENT_RESIZED:
-                            // TODO test SDL_WINDOWEVENT_SIZE_CHANGED instead, to see if on windows the window refreshes while being resized
-                            // also the above seems to be cover cases where the window is resized by the system better
-                            this->m_size = Size(event.window.data1, event.window.data2);
-                            int w, h;
-                            SDL_GL_GetDrawableSize(this->m_win, &w, &h);
-                            glViewport(0, 0, w, h);
-                            this->m_needs_update = true;
-                            this->m_layout_changed = true;
+                        // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
+                        // supposedly also triggers when the system changes the window size.
+                        case SDL_WINDOWEVENT_SIZE_CHANGED:
+                            // Gets handled in `forcePaintWhileResizing()` on Windows.
+                            this->handleResizeEvent(event.window.data1, event.window.data2);
                             break;
                     }
                     break;
@@ -331,4 +342,19 @@ void Application::quit() {
         }
     }
     m_running = false;
+}
+
+void Application::handleResizeEvent(int width, int height) {
+    this->m_size = Size(width, height);
+    int w, h;
+    SDL_GL_GetDrawableSize(this->m_win, &w, &h);
+    glViewport(0, 0, w, h);
+    this->m_needs_update = true;
+    this->m_layout_changed = true;
+    this->show();
+}
+
+void Application::resize(int width, int height) {
+    SDL_SetWindowSize(this->m_win, width, height);
+    handleResizeEvent(width, height);
 }

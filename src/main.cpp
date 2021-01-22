@@ -39,7 +39,7 @@ int main() {
         Mod::None, 
         [&]{
             println("Q");
-            app->quit();
+            app->resize(800, 800);
         }
     );
     // app->unbind(map_key);
