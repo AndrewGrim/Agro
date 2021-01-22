@@ -29,13 +29,11 @@ void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
         x += child_hint.w;
     }
 
-    // TODO change to simple scrollbar
     float slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
-    float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
     if (slider_size < 20) {
         slider_size = 20;
-    } else if (slider_size > (rect.w - buttons_size - 10)) {
-        slider_size = rect.w - buttons_size - 10;
+    } else if (slider_size > (rect.w - 10)) {
+        slider_size = rect.w - 10;
     }
     m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
     m_horizontal_scrollbar->draw(dc, Rect(

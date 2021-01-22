@@ -2,14 +2,14 @@
     #define NOTEBOOK_HPP
 
     #include "widget.hpp"
+    #include "simplescrollbar.hpp"
     #include "image.hpp"
-    #include "scrollbar.hpp"
 
     class NoteBookTabBar : public Widget {
         public:
             // TODO scrollable interface
-            ScrollBar *m_vertical_scrollbar = nullptr;
-            ScrollBar *m_horizontal_scrollbar = new ScrollBar(Align::Horizontal);
+            SimpleScrollBar *m_vertical_scrollbar = nullptr;
+            SimpleScrollBar *m_horizontal_scrollbar = new SimpleScrollBar(Align::Horizontal);
 
             NoteBookTabBar();
             ~NoteBookTabBar();
