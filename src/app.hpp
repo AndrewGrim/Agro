@@ -1,6 +1,8 @@
 #ifndef APP_HPP
     #define APP_HPP
 
+    using uint = unsigned int;
+
     #include <chrono>
     #include <utility>
     #include <functional>
