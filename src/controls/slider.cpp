@@ -4,6 +4,7 @@
 
 SliderButton::SliderButton() : Widget() {
     Widget::m_bg = Color(0.9, 0.9, 0.9);
+    setMinSize(Size(20, 20));
 }
 
 SliderButton::~SliderButton() {
