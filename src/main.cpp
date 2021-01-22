@@ -98,14 +98,14 @@ int main() {
                 {
                     Box *_b = new Box(Align::Vertical);
                         for (int i = 0; i < 5; i++) {
-                            _b->append(new Button(std::to_string(i)), Fill::Both);
+                            _b->append((new Button(std::to_string(i)))->setBackground(Color(1)), Fill::Both);
                         }
                     nb->appendTab(_b, "Tab 2");
                 }
                 {
                     Box *_b = new Box(Align::Vertical);
                         for (int i = 0; i < 5; i++) {
-                            _b->append(new Button(std::to_string(i)), Fill::Both);
+                            _b->append((new Button(std::to_string(i)))->setBackground(Color(0, 0, 1)), Fill::Both);
                         }
                     nb->appendTab(_b, "Tab 3", new Image("notes.png"));
                 }
