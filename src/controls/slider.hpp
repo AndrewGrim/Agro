@@ -13,6 +13,8 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override; 
+            SliderButton* setMinSize(Size size);
+            Size minSize();
     };
 
     class Slider : public Box {

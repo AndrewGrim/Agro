@@ -29,8 +29,19 @@ void SliderButton::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size SliderButton::sizeHint(DrawingContext *dc) {
-    return Size(20, 20);
+    return m_size;
 } 
+
+SliderButton* SliderButton::setMinSize(Size size) {
+    m_size = size;
+    update();
+    layout();
+    return this;
+}
+
+Size SliderButton::minSize() {
+    return m_size;
+}
 
 Slider::Slider(Align alignment, float value) : Box(alignment) {
     Widget::m_bg = Color();
