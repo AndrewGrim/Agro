@@ -30,6 +30,7 @@ Application::Application(const char* title, Size size) {
         static_cast<int>(size.w), static_cast<int>(size.h),
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
+    SDL_SetEventFilter(forcePaintWhileResizing, this);
     // TODO dont capture the mouse all the time only when pressed
     // and capture long enough to reset hover when exiting window
     // NOTE: Does not work on X11.
