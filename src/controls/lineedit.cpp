@@ -101,6 +101,10 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         for (char c : this->text()) {
             float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
             if (x + w > (rect.x * -1) + this->m_last_mouse_x) {
+                if (x + (w / 2) < (rect.x * -1) + this->m_last_mouse_x) {
+                    x += w;
+                    index++;
+                }
                 break;
             }
             x += w;
