@@ -17,7 +17,7 @@
     #include "font.hpp"
 
     struct DrawingContext {
-        uint indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
+        unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer;
         Font *default_font = nullptr;
 

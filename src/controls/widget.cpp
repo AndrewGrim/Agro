@@ -14,7 +14,7 @@ Widget::~Widget() {
     }
 }
 
-Widget* Widget::append(Widget* widget, Fill fill_policy, uint proportion) {
+Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
     if (widget->parent) {
         widget->parent->remove(widget->parent_index);
     }
@@ -339,11 +339,11 @@ bool Widget::isScrollable() {
     return false;
 }
 
-uint Widget::proportion() {
+unsigned int Widget::proportion() {
     return this->m_proportion;
 }
 
-Widget* Widget::setProportion(uint proportion) {
+Widget* Widget::setProportion(unsigned int proportion) {
     if (this->m_proportion != proportion) {
         this->m_proportion = proportion ? proportion : 1;
         this->update();

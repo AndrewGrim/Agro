@@ -1,6 +1,6 @@
 #include "font.hpp"
 
-Font::Font(std::string file_path, uint pixel_size, Font::Type type) {
+Font::Font(std::string file_path, unsigned int pixel_size, Font::Type type) {
     this->file_path = file_path;
     this->pixel_size = pixel_size;
     this->type = type;

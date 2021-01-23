@@ -15,10 +15,10 @@
             virtual void handleTextEvent(DrawingContext *dc, const char *text);
             LineEdit* setText(std::string text);
             std::string text();
-            uint borderWidth();
-            LineEdit* setBorderWidth(uint border_width);
-            uint padding();
-            LineEdit* setPadding(uint padding);
+            unsigned int borderWidth();
+            LineEdit* setBorderWidth(unsigned int border_width);
+            unsigned int padding();
+            LineEdit* setPadding(unsigned int padding);
             float minLength();
             LineEdit* setMinLength(float length);
             LineEdit* moveCursorLeft();
@@ -35,13 +35,13 @@
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);
-            uint m_last_mouse_x = 0;
-            uint m_cursor_index = 0;
+            unsigned int m_last_mouse_x = 0;
+            unsigned int m_cursor_index = 0;
             bool m_process_mouse_event = false;
             std::string m_text;
             std::string m_placeholder_text;
-            uint m_border_width = 2;
-            uint m_padding = 10;
+            unsigned int m_border_width = 2;
+            unsigned int m_padding = 10;
             float m_min_length = 50;
             float m_min_view = 0.0;
             float m_max_view = 1.0;

@@ -15,7 +15,7 @@
 
     class Shader {
         public:
-            uint ID;
+            unsigned int ID;
 
             Shader() {
                 
@@ -26,7 +26,7 @@
             }
 
             void compile(const char *vertext_shader, const char *fragment_shader) {
-                uint vertex, fragment;
+                unsigned int vertex, fragment;
 
                 vertex = glCreateShader(GL_VERTEX_SHADER);
                 glShaderSource(vertex, 1, &vertext_shader, NULL);
@@ -89,7 +89,7 @@
                 glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
             }
 
-            void checkCompileErrors(uint shader, std::string type) {
+            void checkCompileErrors(unsigned int shader, std::string type) {
                 int success;
                 char infoLog[1024];
                 if (type != "PROGRAM")

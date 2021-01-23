@@ -171,11 +171,11 @@ LineEdit* LineEdit::setText(std::string text) {
     return this;
 }
 
-uint LineEdit::borderWidth() {
+unsigned int LineEdit::borderWidth() {
     return this->m_border_width;
 }
 
-LineEdit* LineEdit::setBorderWidth(uint border_width) {
+LineEdit* LineEdit::setBorderWidth(unsigned int border_width) {
     if (m_border_width != border_width) {
         m_border_width = border_width;
         this->m_size_changed = true;
@@ -186,11 +186,11 @@ LineEdit* LineEdit::setBorderWidth(uint border_width) {
     return this;
 }
 
-uint LineEdit::padding() {
+unsigned int LineEdit::padding() {
     return this->m_padding;
 }
 
-LineEdit* LineEdit::setPadding(uint padding) {
+LineEdit* LineEdit::setPadding(unsigned int padding) {
     if (m_padding != padding) {
         m_padding = padding;
         this->m_size_changed = true;

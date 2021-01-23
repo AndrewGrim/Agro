@@ -95,7 +95,7 @@
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
             /// end of the children dynamic array.
-            virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, uint proportion = 1);
+            virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
 
             /// This method is used to remove a Widget from parent's children based on the given index.
             virtual Widget* remove(size_t parent_index);
@@ -200,9 +200,9 @@
             /// for any of its children.
             virtual Widget* attachApp(void *app);
 
-            uint proportion();
+            unsigned int proportion();
 
-            Widget* setProportion(uint proportion);
+            Widget* setProportion(unsigned int proportion);
 
             Font* font();
 
@@ -226,7 +226,7 @@
             /// amount of expandable space if its available.
             /// Proportion higher than that, 5 for example, will mean that for every pixel a default
             /// Widget expands this one will expand 5 pixels.
-            uint m_proportion = 1;
+            unsigned int m_proportion = 1;
 
             /// The precomputed sizeHint of the Widget.
             /// Returned when nothing changed that would

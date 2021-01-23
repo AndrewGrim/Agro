@@ -172,11 +172,11 @@ Button* Button::setImage(Image *image) {
     return this;
 }
 
-uint Button::padding() {
+unsigned int Button::padding() {
     return this->m_padding;
 }
 
-Button* Button::setPadding(uint padding) {
+Button* Button::setPadding(unsigned int padding) {
     if (this->m_padding != padding) {
         this->m_padding = padding;
         this->update();
@@ -186,11 +186,11 @@ Button* Button::setPadding(uint padding) {
     return this;
 }
 
-uint Button::borderWidth() {
+unsigned int Button::borderWidth() {
     return this->m_border_width;
 }
 
-Button* Button::setBorderWidth(uint border_width) {
+Button* Button::setBorderWidth(unsigned int border_width) {
     if (this->m_border_width != border_width) {
         this->m_border_width = border_width;
         this->update();

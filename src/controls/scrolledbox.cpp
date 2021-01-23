@@ -365,9 +365,9 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
     // it would be better to simply recalculate whats changed rather than
     // all of it, simply recursivly go up the widget tree and say the layout changed
     // until we hit the top :)
-    uint visible = 0;
-    uint vertical_non_expandable = 0;
-    uint horizontal_non_expandable = 0;
+    unsigned int visible = 0;
+    unsigned int vertical_non_expandable = 0;
+    unsigned int horizontal_non_expandable = 0;
     if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
         Size size = Size();
         if (this->m_align_policy == Align::Horizontal) {

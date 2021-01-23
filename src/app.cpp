@@ -237,7 +237,7 @@ void Application::run() {
     delete this;
 }
 
-Widget* Application::append(Widget* widget, Fill fill_policy, uint proportion) {
+Widget* Application::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
     this->m_main_widget->append(widget, fill_policy, proportion);
     return this->m_main_widget;
 }

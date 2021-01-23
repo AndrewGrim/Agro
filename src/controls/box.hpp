@@ -22,8 +22,8 @@
             /// Align policy dictates in on which axis
             /// the child Widgets will be layed out
             Align m_align_policy;
-            uint m_visible_children = 0;
-            uint m_vertical_non_expandable = 0;
-            uint m_horizontal_non_expandable = 0;
+            unsigned int m_visible_children = 0;
+            unsigned int m_vertical_non_expandable = 0;
+            unsigned int m_horizontal_non_expandable = 0;
     };
 #endif

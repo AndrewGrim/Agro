@@ -15,7 +15,7 @@
         int height = 0;
         int nr_channels = 0;
         unsigned char *data = nullptr;
-        uint ID;
+        unsigned int ID;
         Point top_left = Point(0.0, 1.0);
         Point bottom_left = Point(0.0, 0.0);
         Point bottom_right = Point(1.0, 0.0);
