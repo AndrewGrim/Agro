@@ -40,7 +40,8 @@ void DrawingContext::render() {
 }
 
 void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, float scale) {
-    renderer->fillText(font, text, point, color, scale);
+    Point rounded = Point(round(point.x), round(point.y));
+    renderer->fillText(font, text, rounded, color, scale);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text, float scale) {
@@ -64,24 +65,24 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
     Point pos = Point();
     switch (h_align) {
         case HorizontalAlignment::Left:
-            pos.x = round(rect.x + padding);
+            pos.x = rect.x + padding;
             break;
         case HorizontalAlignment::Right:
-            pos.x = round((rect.x + rect.w) - (this->measureText(font, text).w + padding));
+            pos.x = (rect.x + rect.w) - (this->measureText(font, text).w + padding);
             break;
         case HorizontalAlignment::Center:
-            pos.x = round(rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5));
+            pos.x = rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5);
             break;
     }
     switch (v_align) {
         case VerticalAlignment::Top:
-            pos.y = round(rect.y + padding);
+            pos.y = rect.y + padding;
             break;
         case VerticalAlignment::Bottom:
-            pos.y = round((rect.y + rect.h) - (this->measureText(font, text).h + padding));
+            pos.y = (rect.y + rect.h) - (this->measureText(font, text).h + padding);
             break;
         case VerticalAlignment::Center:
-            pos.y = round(rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5));
+            pos.y = rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5);
             break;
     }
     this->fillText(
