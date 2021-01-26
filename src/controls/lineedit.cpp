@@ -13,6 +13,12 @@ LineEdit::LineEdit(std::string text) : Widget() {
             this->m_process_mouse_event = true;
         }
     };
+    this->onMouseEntered = [&](MouseEvent event) {
+        ((Application*)this->app)->setMouseCursor(Cursor::IBeam);
+    };
+    this->onMouseLeft = [&](MouseEvent event) {
+        ((Application*)this->app)->setMouseCursor(Cursor::Default);
+    };
     this->bind(SDLK_LEFT, Mod::None, [&]{
         this->moveCursorLeft();
     });
