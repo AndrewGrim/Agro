@@ -79,7 +79,8 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     if (!(m_virtual_size.w < rect.w)) {
         rect.x -= m_current_view * (m_virtual_size.w - rect.w);
     }
-    if (!isFocused() && !text().size()) {
+    // Draw placeholder text.
+    if (!text().size()) {
         dc->fillTextAligned(
             this->font() ? this->font() : dc->default_font, 
             this->placeholderText(), 
@@ -89,6 +90,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
             this->m_padding,
             Color(0.7, 0.7, 0.7)
         );
+    // Draw normal text;
     } else {
         dc->fillTextAligned(
             this->font() ? this->font() : dc->default_font, 
