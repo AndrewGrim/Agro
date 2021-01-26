@@ -19,7 +19,7 @@
 
 #include "custom_widget.hpp"
 
-int main() { 
+int main(int argc, char **argv) { 
     Application *app = new Application("Application", Size(500, 500));
     Font *font = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 18, Font::Type::Mono);
     app->onReady = [](Application *app) {
