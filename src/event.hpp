@@ -44,7 +44,7 @@
             this->type = event.type == SDL_MOUSEBUTTONDOWN ? Type::Down : Type::Up;
             this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
             this->click = event.clicks == 1 ? Click::Single : Click::Double; // Note: this only cover single and double click
-            this->button = this->handle_button(event.button);
+            this->button = this->handleButton(event.button);
             this->x = event.x;
             this->y = event.y;
             this->xrel = 0;
@@ -64,7 +64,7 @@
             this->time_since_last_event = time_since_last_event;
         }
 
-        Button handle_button(int button) {
+        Button handleButton(int button) {
             switch (button) {
                 case SDL_BUTTON_LEFT:
                     return Button::Left;
