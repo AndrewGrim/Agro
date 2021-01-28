@@ -84,7 +84,6 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
                 this->onValueChanged();
             }
             this->update();
-            ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::Scroll, Application::EventHandler::Accepted));
         }
     };
 }

@@ -217,7 +217,6 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
     }
 
     this->handleMouseEvent(state, event);
-    ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted));
     return this;
 }
 
@@ -241,7 +240,6 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             if (this->onMouseDown) {
                 this->onMouseDown(event);
             }
-            app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted));
             break;
         case MouseEvent::Type::Up:
             if (state->pressed) {
@@ -253,12 +251,10 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             if (this->onMouseUp) {
                 this->onMouseUp(event);
             }
-            app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseUp, Application::EventHandler::Accepted));
             if (this == state->pressed) {
                 if (this->onMouseClick) {
                     this->onMouseClick(event);
                 }
-                app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseClick, Application::EventHandler::Accepted));
             }
             state->pressed = nullptr;
             break;
@@ -292,7 +288,6 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                     ((Widget*)state->pressed)->onMouseMotion(event);
                 }
             }
-            app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseMotion, Application::EventHandler::Accepted));
             break;
     }
 }

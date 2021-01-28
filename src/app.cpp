@@ -132,14 +132,13 @@ void Application::run() {
         uint32_t frame_start = SDL_GetTicks();
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
-            int64_t time_since_last_event = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - this->m_last_event_time).count();
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
-                    this->m_state->pressed = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
+                    this->m_state->pressed = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button));
                     break;
                 case SDL_MOUSEBUTTONUP:
                     if (m_mouse_inside) {
-                        this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
+                        this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button));
                     } else {
                         if (m_state->pressed) {
                             ((Widget*)m_state->pressed)->setPressed(false);
@@ -151,7 +150,7 @@ void Application::run() {
                     if (event.motion.timestamp >= frame_start) {
                         event.motion.xrel += mouse_movement_x;
                         event.motion.yrel += mouse_movement_y;
-                        this->m_state->hovered = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.motion, time_since_last_event));
+                        this->m_state->hovered = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.motion));
                         mouse_movement_x = 0;
                         mouse_movement_y = 0;
                     } else {
@@ -193,7 +192,7 @@ void Application::run() {
                                 ((Widget*)m_state->hovered)->setHovered(false);
                                 if (((Widget*)m_state->hovered)->onMouseLeft) {
                                     SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
-                                    ((Widget*)m_state->hovered)->onMouseLeft(MouseEvent(event, time_since_last_event));
+                                    ((Widget*)m_state->hovered)->onMouseLeft(MouseEvent(event));
                                 }
                                 m_state->hovered = nullptr;
                             }
@@ -276,9 +275,6 @@ void Application::run() {
                 case SDL_QUIT:
                     quit();
             }
-            if (this->m_last_event.second == EventHandler::Accepted) {
-                this->m_last_event_time = std::chrono::steady_clock::now();
-            }
         }
         if (this->m_needs_update) {
             this->show();
@@ -294,14 +290,6 @@ void Application::run() {
 Widget* Application::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
     this->m_main_widget->append(widget, fill_policy, proportion);
     return this->m_main_widget;
-}
-
-std::pair<Application::Event, Application::EventHandler> Application::lastEvent() {
-    return this->m_last_event;
-}
-
-void Application::setLastEvent(std::pair<Application::Event, Application::EventHandler> event) {
-    this->m_last_event = event;
 }
 
 void Application::update() {

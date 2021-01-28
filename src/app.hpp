@@ -1,7 +1,6 @@
 #ifndef APP_HPP
     #define APP_HPP
 
-    #include <chrono>
     #include <utility>
     #include <functional>
     #include <unordered_map>
@@ -55,24 +54,6 @@
     
     class Application {
         public:
-            // TODO this might be better off in event.hpp
-            enum class Event {
-                None,
-                MouseUp,
-                MouseDown,
-                MouseClick,
-                MouseLeft,
-                MouseEntered,
-                MouseMotion,
-                Scroll, // TODO implement scroll events from mouse
-            };
-
-            // TODO this might be better off in event.hpp
-            enum class EventHandler {
-                Ignored,
-                Accepted,
-            };
-
             /// The dc is used to draw various primitives.
             /// It can also draw as well as measure text.
             /// It is passed to the draw() and sizeHint() methods of each Widget.
@@ -107,20 +88,6 @@
 
             /// Sets the main Widget pointer.
             void setMainWidget(Widget *widget);
-
-            /// Returns the Event, EventHandler pair of the last event.
-            /// Event will be one of the possible events such as MouseDown.
-            /// EventHanlder will be either Accepted or Ignored, which
-            /// tells you if the last event was handled by the widget it was sent to.
-            // TODO actually thats a lie because if there is no callback that doesnt happend?
-            // and this is not true because slider sets the last event directly
-            // the last event should probably be returned by the callback?
-            // but i dont really want to user to have to deal with that
-            std::pair<Event, EventHandler> lastEvent();
-
-            /// Sets the last event.
-            // TODO add more docs
-            void setLastEvent(std::pair<Event, EventHandler> event);
 
             /// Tells the Application to update which causes a redraw.
             void update();
@@ -157,8 +124,6 @@
             State *m_state = new State();
             bool m_needs_update = false;
             bool m_layout_changed = true;
-            std::pair<Event, EventHandler> m_last_event = std::make_pair<Event, EventHandler>(Event::None, EventHandler::Accepted);
-            std::chrono::time_point<std::chrono::steady_clock> m_last_event_time = std::chrono::steady_clock::now();
             // TODO have another map for hotkeys ie menu shortcut keys
             std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
             int m_binding_id = 0;

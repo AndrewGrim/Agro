@@ -94,7 +94,6 @@ void* NoteBookTabBar::propagateMouseEvent(State *state, MouseEvent event) {
     }
 
     this->handleMouseEvent(state, event);
-    ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted));
     return this;
 }
 
@@ -235,7 +234,6 @@ void* NoteBook::propagateMouseEvent(State *state, MouseEvent event) {
     }
 
     this->handleMouseEvent(state, event);
-    ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted));
     return this;
 }
 
