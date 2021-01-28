@@ -156,7 +156,7 @@ void Application::run() {
                         // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
                         // supposedly also triggers when the system changes the window size.
                         case SDL_WINDOWEVENT_SIZE_CHANGED:
-                            // Gets handled in `forcePaintWhileResizing()` on Windows.
+                            // TODO Gets handled in `forcePaintWhileResizing()` so this is probably not needed anymore.
                             this->handleResizeEvent(event.window.data1, event.window.data2);
                             break;
                         case SDL_WINDOWEVENT_LEAVE:
