@@ -166,17 +166,18 @@ void Application::run() {
                     // println(m_state->hovered);
 
                     if (m_state->hovered) {
-                        // println(((Widget*)m_state->hovered)->name());
                         Widget *widget = (Widget*)m_state->hovered;
+                        bool handled = false;
                         while (widget->parent) {
-                            // TODO im not sure this will work for main widget
-                            // in fact im sure that this will not run for main widget
-                            // so it never gets the opportunity to scroll
                             if (!widget->handleScrollEvent(ScrollEvent(event.wheel))) {
                                 widget = widget->parent;
                             } else {
+                                handled = true;
                                 break;
                             }
+                        }
+                        if (!handled) {
+                            widget->handleScrollEvent(ScrollEvent(event.wheel));
                         }
                     } else {
                         // Only happens in NoteBookTabBar in the empty space with no tab buttons!
