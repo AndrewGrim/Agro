@@ -46,7 +46,6 @@
             NoteBook* setCurrentTab(int index);
 
         protected:
-            // TODO need to increment
             int m_tab_index = 0;
             NoteBookTabBar *m_tabs = new NoteBookTabBar();
     };

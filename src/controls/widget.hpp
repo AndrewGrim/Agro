@@ -52,7 +52,6 @@
             
             ///`onMouseUp` gets called when the user releases
             /// **ANY** mouse button over the target Widget.
-            // TODO does this also get called when we release over a layout?? dont think so but check.
             std::function<void(MouseEvent)> onMouseUp = nullptr;
 
             /// `onMouseClick` gets called whenver the user presses
@@ -72,7 +71,7 @@
 
             /// `onMouseMotion` get called whenever the mouse moves
             /// over the area of the Widget.
-            std::function<void(MouseEvent)> onMouseMotion = nullptr; // TODO name it move instead?
+            std::function<void(MouseEvent)> onMouseMotion = nullptr;
 
             /// The constructor is empty.
             Widget();
@@ -147,8 +146,6 @@
             
             /// Used to check if the Widget implements a Scrollable interface.
             virtual bool isScrollable();
-
-            // TODO acceptsInput(); this would be used for text widgets, would it be used for shortcuts as well??
             
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
@@ -185,13 +182,9 @@
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
-            /// Should not be used directly! Let the application call it.
-            // TODO im not a fan of this one and the next one being public
-            // and asking the user not to call. There must be a better way!
             virtual void* propagateMouseEvent(State *state, MouseEvent event);
 
             /// Handles the MouseEvent sent by the Application.
-            /// Should not be used directly! Let the application call it.
             virtual void handleMouseEvent(State *state, MouseEvent event);
 
             virtual void handleTextEvent(DrawingContext *dc, const char *text);
