@@ -222,14 +222,15 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         }
     }
 
-    // TODO I believe we should not be setting the hovered state here
-    // because its should get returned
+    // Release mouse button over a layout. Reset state.
     if (event.type == MouseEvent::Type::Up && state->pressed) {
         ((Widget*)state->pressed)->setPressed(false);
         ((Widget*)state->pressed)->setHovered(false);
-        state->hovered = nullptr;
+        ((Widget*)state->pressed)->setFocused(false);
         state->pressed = nullptr;
+        state->focused = nullptr;
     }
+    // TODO mouse cursor problem
     if (event.type == MouseEvent::Type::Motion && state->hovered) {
         ((Widget*)state->hovered)->setHovered(false);
         if (((Widget*)state->hovered)->onMouseLeft) {
@@ -250,8 +251,6 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
     // Note: The hovered state is not set as it is returned
     // from the propagateMouseEvent function.
 
-    // TODO when the mouse moves outside the window
-    // hovered and pressed should be reset
     Application *app = (Application*)this->app;
     switch (event.type) {
         case MouseEvent::Type::Down:
