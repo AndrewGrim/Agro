@@ -230,14 +230,14 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         state->pressed = nullptr;
         state->focused = nullptr;
     }
-    // TODO mouse cursor problem
-    if (event.type == MouseEvent::Type::Motion && state->hovered) {
+    // Motion event over a layout when something is hovered but NOT pressed.
+    if (event.type == MouseEvent::Type::Motion && (state->hovered && !state->pressed)) {
         ((Widget*)state->hovered)->setHovered(false);
         if (((Widget*)state->hovered)->onMouseLeft) {
             ((Widget*)state->hovered)->onMouseLeft(event);
         }
-        state->hovered = nullptr;
     }
+    // Motion event over a layout when something is pressed.
     if (event.type == MouseEvent::Type::Motion && state->pressed) {
         if (((Widget*)state->pressed)->onMouseMotion) {
             ((Widget*)state->pressed)->onMouseMotion(event);
