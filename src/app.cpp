@@ -159,12 +159,26 @@ void Application::run() {
                             // Gets handled in `forcePaintWhileResizing()` on Windows.
                             this->handleResizeEvent(event.window.data1, event.window.data2);
                             break;
-                        // TODO when the mouse moves outside the window
-                        // hovered and pressed should be reset
-                        case SDL_WINDOWEVENT_ENTER:
-                            println("MOUSE ENTERED");
-                            break;
                         case SDL_WINDOWEVENT_LEAVE:
+                            // TODO handle mouse up
+                            if (m_state->hovered) {
+                                ((Widget*)m_state->hovered)->setHovered(false);
+                                if (((Widget*)m_state->hovered)->onMouseLeft) {
+                                    SDL_MouseMotionEvent event = {
+                                        SDL_MOUSEMOTION,
+                                        SDL_GetTicks(),
+                                        0,
+                                        0,
+                                        SDL_RELEASED,
+                                        -1,
+                                        -1,
+                                        0,
+                                        0,
+                                    };
+                                    ((Widget*)m_state->hovered)->onMouseLeft(MouseEvent(event, time_since_last_event));
+                                }
+                                m_state->hovered = nullptr;
+                            }
                             println("MOUSE LEFT");
                             break;
                     }
