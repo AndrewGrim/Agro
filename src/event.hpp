@@ -72,19 +72,15 @@
 
         Button handleButton(int button) {
             switch (button) {
-                case SDL_BUTTON_LEFT:
-                    return Button::Left;
-                case SDL_BUTTON_MIDDLE:
-                    return Button::Middle;
-                case SDL_BUTTON_RIGHT:
-                    return Button::Right;
-                case SDL_BUTTON_X1:
-                    return Button::X1;
-                case SDL_BUTTON_X2:
-                    return Button::X2;
+                case SDL_BUTTON_LEFT: return Button::Left;
+                case SDL_BUTTON_MIDDLE: return Button::Middle;
+                case SDL_BUTTON_RIGHT: return Button::Right;
+                case SDL_BUTTON_X1: return Button::X1;
+                case SDL_BUTTON_X2: return Button::X2;
             }
-
             return Button::None;
+        }
+    };
         }
     };
 #endif
