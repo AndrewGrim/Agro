@@ -410,3 +410,10 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
         return m_viewport;
     }
 }
+
+bool ScrolledBox::handleScrollEvent(ScrollEvent event) {
+    if (this->m_vertical_scrollbar) {
+        return this->m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+    }
+    return false;
+}

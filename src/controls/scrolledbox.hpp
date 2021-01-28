@@ -18,6 +18,7 @@
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isScrollable() override;
             virtual void layoutChildren(DrawingContext *dc, Rect rect) override;
+            virtual bool handleScrollEvent(ScrollEvent event) override;
             void addScrollBar(Align alignment);
             void removeScrollBar(Align alignment);
             bool hasScrollBar(Align alignment);
