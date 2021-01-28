@@ -93,29 +93,9 @@ void* NoteBookTabBar::propagateMouseEvent(State *state, MouseEvent event) {
         }
     }
 
-    // Release mouse button over a layout. Reset state.
-    if (event.type == MouseEvent::Type::Up && state->pressed) {
-        ((Widget*)state->pressed)->setPressed(false);
-        ((Widget*)state->pressed)->setHovered(false);
-        ((Widget*)state->pressed)->setFocused(false);
-        state->pressed = nullptr;
-        state->focused = nullptr;
-    }
-    // Motion event over a layout when something is hovered but NOT pressed.
-    if (event.type == MouseEvent::Type::Motion && (state->hovered && !state->pressed)) {
-        ((Widget*)state->hovered)->setHovered(false);
-        if (((Widget*)state->hovered)->onMouseLeft) {
-            ((Widget*)state->hovered)->onMouseLeft(event);
-        }
-    }
-    // Motion event over a layout when something is pressed.
-    if (event.type == MouseEvent::Type::Motion && state->pressed) {
-        if (((Widget*)state->pressed)->onMouseMotion) {
-            ((Widget*)state->pressed)->onMouseMotion(event);
-        }
-    }
+    this->handleMouseEvent(state, event);
     ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted));
-    return nullptr;
+    return this;
 }
 
 NoteBook::NoteBook() {
@@ -254,29 +234,9 @@ void* NoteBook::propagateMouseEvent(State *state, MouseEvent event) {
         return last;
     }
 
-    // Release mouse button over a layout. Reset state.
-    if (event.type == MouseEvent::Type::Up && state->pressed) {
-        ((Widget*)state->pressed)->setPressed(false);
-        ((Widget*)state->pressed)->setHovered(false);
-        ((Widget*)state->pressed)->setFocused(false);
-        state->pressed = nullptr;
-        state->focused = nullptr;
-    }
-    // Motion event over a layout when something is hovered but NOT pressed.
-    if (event.type == MouseEvent::Type::Motion && (state->hovered && !state->pressed)) {
-        ((Widget*)state->hovered)->setHovered(false);
-        if (((Widget*)state->hovered)->onMouseLeft) {
-            ((Widget*)state->hovered)->onMouseLeft(event);
-        }
-    }
-    // Motion event over a layout when something is pressed.
-    if (event.type == MouseEvent::Type::Motion && state->pressed) {
-        if (((Widget*)state->pressed)->onMouseMotion) {
-            ((Widget*)state->pressed)->onMouseMotion(event);
-        }
-    }
+    this->handleMouseEvent(state, event);
     ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::None, Application::EventHandler::Accepted));
-    return nullptr;
+    return this;
 }
 
 Widget* NoteBook::attachApp(void *app) {

@@ -163,7 +163,7 @@ void Application::run() {
                     // NOTE: ATM this can be null at application boot time, but
                     // it should not be null at any other time, so do we want to
                     // set the hover state to the main widget on boot? onReady?
-                    // println(m_state->hovered);
+                    println(m_state->hovered);
 
                     if (m_state->hovered) {
                         Widget *widget = (Widget*)m_state->hovered;
@@ -179,10 +179,6 @@ void Application::run() {
                         if (!handled) {
                             widget->handleScrollEvent(ScrollEvent(event.wheel));
                         }
-                    } else {
-                        // Only happens in NoteBookTabBar in the empty space with no tab buttons!
-                        // need to update propagteMouseEvent!
-                        println("`m_state->hovered` SHOULD NOT BE NULL!");
                     }
                     break;
                 case SDL_WINDOWEVENT:
