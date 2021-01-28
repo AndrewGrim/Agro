@@ -258,7 +258,9 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             this->setFocused(true);
             state->focused = (void*)this;
             // TODO maybe add an on_focus callback?
-            if (this->onMouseDown) this->onMouseDown(event);
+            if (this->onMouseDown) {
+                this->onMouseDown(event);
+            }
             app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseDown, Application::EventHandler::Accepted));
             break;
         case MouseEvent::Type::Up:
@@ -268,10 +270,14 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             }
             this->setHovered(true);
             state->hovered = this;
-            if (this->onMouseUp) this->onMouseUp(event);
+            if (this->onMouseUp) {
+                this->onMouseUp(event);
+            }
             app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseUp, Application::EventHandler::Accepted));
             if (this == state->pressed) {
-                if (this->onMouseClick) this->onMouseClick(event);
+                if (this->onMouseClick) {
+                    this->onMouseClick(event);
+                }
                 app->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::MouseClick, Application::EventHandler::Accepted));
             }
             state->pressed = nullptr;
