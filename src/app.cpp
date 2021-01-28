@@ -137,7 +137,14 @@ void Application::run() {
                     this->m_state->pressed = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
                     break;
                 case SDL_MOUSEBUTTONUP:
-                    this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
+                    if (m_mouse_inside) {
+                        this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button, time_since_last_event));
+                    } else {
+                        if (m_state->pressed) {
+                            ((Widget*)m_state->pressed)->setPressed(false);
+                            m_state->pressed = nullptr;
+                        }
+                    }
                     break;
                 case SDL_MOUSEMOTION:
                     if (event.motion.timestamp >= frame_start) {
@@ -172,7 +179,6 @@ void Application::run() {
                                 }
                                 m_state->hovered = nullptr;
                             }
-                            println("MOUSE LEFT");
                             break;
                     }
                     break;
