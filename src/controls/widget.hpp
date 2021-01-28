@@ -189,6 +189,8 @@
 
             virtual void handleTextEvent(DrawingContext *dc, const char *text);
 
+            virtual bool handleScrollEvent(ScrollEvent event);
+
             /// Sets the Application* of the Widget and does the same
             /// for any of its children.
             virtual Widget* attachApp(void *app);

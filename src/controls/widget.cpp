@@ -298,7 +298,15 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
 }
 
 void Widget::handleTextEvent(DrawingContext *dc, const char *text) {
+    // Up to the widget to implement!
+}
 
+bool Widget::handleScrollEvent(ScrollEvent event) {
+    // Up to the widget to implement!
+    // Returns false to let the application know that
+    // this widget doesnt handle scroll events.
+    // Otherwise return true.
+    return false;
 }
 
 Widget* Widget::attachApp(void *app) {
