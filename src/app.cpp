@@ -158,6 +158,32 @@ void Application::run() {
                         mouse_movement_y += event.motion.yrel;
                     }
                     break;
+                case SDL_MOUSEWHEEL:
+                    // TODO
+                    // NOTE: ATM this can be null at application boot time, but
+                    // it should not be null at any other time, so do we want to
+                    // set the hover state to the main widget on boot? onReady?
+                    // println(m_state->hovered);
+
+                    if (m_state->hovered) {
+                        // println(((Widget*)m_state->hovered)->name());
+                        Widget *widget = (Widget*)m_state->hovered;
+                        while (widget->parent) {
+                            // TODO im not sure this will work for main widget
+                            // in fact im sure that this will not run for main widget
+                            // so it never gets the opportunity to scroll
+                            if (!widget->handleScrollEvent(ScrollEvent(event.wheel))) {
+                                widget = widget->parent;
+                            } else {
+                                break;
+                            }
+                        }
+                    } else {
+                        // Only happens in NoteBookTabBar in the empty space with no tab buttons!
+                        // need to update propagteMouseEvent!
+                        println("`m_state->hovered` SHOULD NOT BE NULL!");
+                    }
+                    break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
                         // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
