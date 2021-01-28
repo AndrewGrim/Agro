@@ -3,6 +3,12 @@
 
     #include <SDL2/SDL.h>
 
+    // TODO rework event
+    // base event class?? im not sure what the benefits would be yet
+    // but definitely split mousebutton and mousemotion events to
+    // avoid all this extra state thats really not relevant
+    // motion pressed state is covered by app state anyway
+    // also add timestamp
     struct MouseEvent {
         enum class Type {
             Down,
