@@ -159,6 +159,8 @@ void Application::run() {
                             // Gets handled in `forcePaintWhileResizing()` on Windows.
                             this->handleResizeEvent(event.window.data1, event.window.data2);
                             break;
+                        // TODO when the mouse moves outside the window
+                        // hovered and pressed should be reset
                         case SDL_WINDOWEVENT_ENTER:
                             println("MOUSE ENTERED");
                             break;
