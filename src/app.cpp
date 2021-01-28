@@ -159,8 +159,11 @@ void Application::run() {
                             // TODO Gets handled in `forcePaintWhileResizing()` so this is probably not needed anymore.
                             this->handleResizeEvent(event.window.data1, event.window.data2);
                             break;
+                        case SDL_WINDOWEVENT_ENTER:
+                            m_mouse_inside = true;
+                            break;
                         case SDL_WINDOWEVENT_LEAVE:
-                            // TODO handle mouse up
+                            m_mouse_inside = false;
                             if (m_state->hovered) {
                                 ((Widget*)m_state->hovered)->setHovered(false);
                                 if (((Widget*)m_state->hovered)->onMouseLeft) {

@@ -164,6 +164,7 @@
             int m_binding_id = 0;
             bool m_running = true;
             Cursors *m_cursors = nullptr;
+            bool m_mouse_inside = true;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from
