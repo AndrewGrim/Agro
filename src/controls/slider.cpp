@@ -172,3 +172,24 @@ Slider* Slider::setBackground(Color background) {
 
     return this;
 }
+
+bool Slider::handleScrollEvent(ScrollEvent event) {
+    // TODO should we do this automatically in ScrollEvent() ctor?
+    event.y *= -1;
+    if (this->m_align_policy == Align::Horizontal) {
+        float value = this->m_value + (event.y / (rect.w - this->m_slider_button_size));
+        if (value > this->m_max) value = this->m_max;
+        else if (value < this->m_min) value = this->m_min;
+        this->m_value = value;
+    } else {
+        float value = this->m_value + (event.y / (rect.h - this->m_slider_button_size));
+        if (value > this->m_max) value = this->m_max;
+        else if (value < this->m_min) value = this->m_min;
+        this->m_value = value;
+    }
+    if (this->onValueChanged) {
+        this->onValueChanged();
+    }
+    this->update();
+    return true;
+}

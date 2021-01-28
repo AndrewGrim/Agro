@@ -31,6 +31,7 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
+            virtual bool handleScrollEvent(ScrollEvent event) override;
             virtual Slider* setBackground(Color background) override;
             virtual Slider* setForeground(Color foreground) override;
     };
