@@ -164,17 +164,7 @@ void Application::run() {
                             if (m_state->hovered) {
                                 ((Widget*)m_state->hovered)->setHovered(false);
                                 if (((Widget*)m_state->hovered)->onMouseLeft) {
-                                    SDL_MouseMotionEvent event = {
-                                        SDL_MOUSEMOTION,
-                                        SDL_GetTicks(),
-                                        0,
-                                        0,
-                                        SDL_RELEASED,
-                                        -1,
-                                        -1,
-                                        0,
-                                        0,
-                                    };
+                                    SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
                                     ((Widget*)m_state->hovered)->onMouseLeft(MouseEvent(event, time_since_last_event));
                                 }
                                 m_state->hovered = nullptr;
