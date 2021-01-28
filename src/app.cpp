@@ -124,6 +124,7 @@ void Application::run() {
     if (this->onReady) {
         this->onReady(this);
     }
+    m_state->hovered = m_main_widget;
     int32_t mouse_movement_x = 0;
     int32_t mouse_movement_y = 0;
     SDL_StartTextInput();
@@ -159,12 +160,6 @@ void Application::run() {
                     }
                     break;
                 case SDL_MOUSEWHEEL:
-                    // TODO
-                    // NOTE: ATM this can be null at application boot time, but
-                    // it should not be null at any other time, so do we want to
-                    // set the hover state to the main widget on boot? onReady?
-                    println(m_state->hovered);
-
                     if (m_state->hovered) {
                         Widget *widget = (Widget*)m_state->hovered;
                         bool handled = false;
