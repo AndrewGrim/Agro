@@ -65,16 +65,24 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
             // which would be good for controlling the framerate
             if (this->m_align_policy == Align::Horizontal) {
                 float value = this->m_value + (event.xrel / (rect.w - this->m_slider_button_size));
-                if (value > this->m_max) value = this->m_max;
-                else if (value < this->m_min) value = this->m_min;
+                if (value > this->m_max) {
+                    value = this->m_max;
+                } else if (value < this->m_min) {
+                    value = this->m_min;
+                }
                 this->m_value = value;
             } else {
                 float value = this->m_value + (event.yrel / (rect.h - this->m_slider_button_size));
-                if (value > this->m_max) value = this->m_max;
-                else if (value < this->m_min) value = this->m_min;
+                if (value > this->m_max) {
+                    value = this->m_max;
+                } else if (value < this->m_min) {
+                    value = this->m_min;
+                }
                 this->m_value = value;
             }
-            if (this->onValueChanged) this->onValueChanged();
+            if (this->onValueChanged) {
+                this->onValueChanged();
+            }
             this->update();
             ((Application*)this->app)->setLastEvent(std::make_pair<Application::Event, Application::EventHandler>(Application::Event::Scroll, Application::EventHandler::Accepted));
         }
