@@ -33,11 +33,10 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
 
 Widget* Widget::remove(size_t parent_index) {
     Widget *child = this->children[parent_index];
-    // TODO need to reset the state as well
-    // we could just signal the app to do it??
     child->setPressed(false);
     child->setHovered(false);
     child->setFocused(false);
+    ((Application*)child->app)->removeFromState(child);
     this->children.erase(this->children.begin() + parent_index);
     size_t i = 0;
     for (Widget *child : this->children) {
@@ -176,11 +175,6 @@ Widget* Widget::update() {
 }
 
 Widget* Widget::layout() {
-    // maybe make a method in app to resend the last event?
-    // TODO we might want layout to invalidate the state
-    // right now when we swap widgets they still present themselves
-    // with a hover effect even though they are in a different place
-    // TODO is this even true anymore?
     if (this->app) {
         ((Application*)this->app)->layout();
     }
