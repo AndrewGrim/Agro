@@ -412,8 +412,15 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
 }
 
 bool ScrolledBox::handleScrollEvent(ScrollEvent event) {
-    if (this->m_vertical_scrollbar) {
-        return this->m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+    SDL_Keymod mod = SDL_GetModState();
+    if (mod & Mod::Shift) {
+        if (this->m_horizontal_scrollbar) {
+            return this->m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    } else {
+        if (this->m_vertical_scrollbar) {
+            return this->m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+        }
     }
     return false;
 }
