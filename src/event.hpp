@@ -81,6 +81,20 @@
             return Button::None;
         }
     };
+
+    struct ScrollEvent {
+        Uint32 timestamp;
+        int x;
+        int y;
+
+        ScrollEvent(SDL_MouseWheelEvent event) {
+            this->timestamp = event.timestamp;
+            this->x = event.x;
+            this->y = event.y;
+            if (event.direction) {
+                this->x *= -1;
+                this->y *= -1;
+            }
         }
     };
 #endif
