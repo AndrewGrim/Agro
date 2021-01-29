@@ -21,6 +21,7 @@ test_files = [
     "tests/scrolledbox_outer.cpp",
     "tests/scrolledbox_inner.cpp",
     "tests/scrolledbox_both.cpp",
+    "tests/scrolledbox_inception_clipping.cpp",
 ]
 
 passed = 0

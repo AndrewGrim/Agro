@@ -17,3 +17,5 @@ test_scrolledbox_inner:
 	g++ tests/scrolledbox_inner.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_inner.out && ./scrolledbox_inner.out
 test_scrolledbox_both:
 	g++ tests/scrolledbox_both.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_both.out && ./scrolledbox_both.out
+test_scrolledbox_inception_clipping:
+	g++ tests/scrolledbox_inception_clipping.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_inception_clipping.out && ./scrolledbox_inception_clipping.out
