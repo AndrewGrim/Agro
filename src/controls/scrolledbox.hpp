@@ -11,7 +11,7 @@
             ScrollBar *m_vertical_scrollbar = nullptr;
             ScrollBar *m_horizontal_scrollbar = nullptr;
 
-            ScrolledBox(Align align_policy, Size min_size = Size(50, 50));
+            ScrolledBox(Align align_policy, Size min_size = Size(100, 100));
             ~ScrolledBox();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;

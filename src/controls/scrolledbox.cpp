@@ -22,11 +22,25 @@ const char* ScrolledBox::name() {
 
 void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    dc->fillRect(rect, this->background());
     Rect previous_clip = dc->clip();
-    if (!(rect.x < previous_clip.x || rect.y < previous_clip.y)) {
-        dc->setClip(rect);
+    if (parent) {
+        if (this->name() == this->parent->name()) {
+            Rect p = parent->rect;
+            if (p.y > rect.y) {
+                dc->setClip(Rect(p.x, p.y, rect.w, rect.h - (p.y - rect.y)));
+            } else if (p.x > rect.x) {
+                dc->setClip(Rect(p.x, p.y, rect.w - (p.x - rect.x), rect.h));
+            } else {
+                // This clips the inner ScrolledBox when its fully within
+                // the bounds of ScrolledBox (ie parent sb).
+                dc->setClip(rect);
+            }
+        } else {
+            // Non-inception ScrolledBox
+            dc->setClip(rect);
+        }
     }
+    dc->fillRect(rect, this->background());
     layoutChildren(dc, rect);
     dc->setClip(previous_clip);
 }
