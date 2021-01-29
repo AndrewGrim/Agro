@@ -97,6 +97,13 @@ void* NoteBookTabBar::propagateMouseEvent(State *state, MouseEvent event) {
     return this;
 }
 
+bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
+    if (this->m_horizontal_scrollbar) {
+        return this->m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+    }
+    return false;
+}
+
 NoteBook::NoteBook() {
 
 }

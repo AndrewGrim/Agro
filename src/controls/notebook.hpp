@@ -18,6 +18,7 @@
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isLayout() override;
             virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
+            virtual bool handleScrollEvent(ScrollEvent event) override;
     };
 
     struct NoteBookTab {
