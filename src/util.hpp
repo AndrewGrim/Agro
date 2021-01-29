@@ -1,6 +1,7 @@
 #ifndef UTIL_HPP
     #define UTIL_HPP
     
+        #include <iostream>
         #include <ostream>
 
         template <typename T> void pprint(int indent, T message, bool newline = true) {
