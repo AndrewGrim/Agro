@@ -74,17 +74,17 @@ build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.h
 clean:
 	rm -f build/*.o
 
-# test:
-# 	python3 run_tests.py
-# test_box_vertical:
-# 	$(CXX) tests/box_vertical.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o box_vertical.out && ./box_vertical.out
-# test_box_horizontal:
-# 	$(CXX) tests/box_horizontal.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o box_horizontal.out && ./box_horizontal.out
-# test_scrolledbox_outer:
-# 	$(CXX) tests/scrolledbox_outer.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_outer.out && ./scrolledbox_outer.out
-# test_scrolledbox_inner:
-# 	$(CXX) tests/scrolledbox_inner.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_inner.out && ./scrolledbox_inner.out
-# test_scrolledbox_both:
-# 	$(CXX) tests/scrolledbox_both.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_both.out && ./scrolledbox_both.out
-# test_scrolledbox_inception_clipping:
-# 	$(CXX) tests/scrolledbox_inception_clipping.cpp src/app.cpp src/renderer/glad.c src/renderer/*.cpp src/controls/*.cpp $(INCLUDE) $(LIB) $(LINKER) -o scrolledbox_inception_clipping.out && ./scrolledbox_inception_clipping.out
+test:
+	python3 run_tests.py
+test_box_vertical:
+	$(CXX) tests/box_vertical.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o box_vertical.out && ./box_vertical.out
+test_box_horizontal:
+	$(CXX) tests/box_horizontal.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o box_horizontal.out && ./box_horizontal.out
+test_scrolledbox_outer:
+	$(CXX) tests/scrolledbox_outer.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_outer.out && ./scrolledbox_outer.out
+test_scrolledbox_inner:
+	$(CXX) tests/scrolledbox_inner.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_inner.out && ./scrolledbox_inner.out
+test_scrolledbox_both:
+	$(CXX) tests/scrolledbox_both.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_both.out && ./scrolledbox_both.out
+test_scrolledbox_inception_clipping:
+	$(CXX) tests/scrolledbox_inception_clipping.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_inception_clipping.out && ./scrolledbox_inception_clipping.out
