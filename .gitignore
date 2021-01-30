@@ -1,7 +1,6 @@
+*.o
 *.out
 *.exe
 *.json
 
 /.vscode
-
-main
