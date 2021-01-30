@@ -413,6 +413,9 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
                 }
             }
         }
+        // TODO we might want to compute both always
+        // this way changing the alignment would be a trivial operation
+        // since we would only need to update
         this->m_vertical_non_expandable = vertical_non_expandable;
         this->m_horizontal_non_expandable = horizontal_non_expandable;
         this->m_visible_children = visible;
