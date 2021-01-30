@@ -4,7 +4,6 @@ LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
 CXX = g++
 CXX_FLAGS = -fno-exceptions
 OBJECT_FILES = \
-	build/main.o \
 	build/app.o \
 	build/box.o \
 	build/button.o \
@@ -27,8 +26,8 @@ OUT = main.out
 
 run: build
 	./$(OUT)
-build: $(OBJECT_FILES)
-	$(CXX) $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o $(OUT)
+build: build/main.o $(OBJECT_FILES)
+	$(CXX) build/main.o $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o $(OUT)
 
 # ROOT
 build/main.o: src/main.cpp
