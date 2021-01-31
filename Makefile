@@ -23,11 +23,14 @@ OBJECT_FILES = \
 	build/stb_image.o
 OUT = main.out
 
-
 run: build
 	./$(OUT)
-build: build/main.o $(OBJECT_FILES)
+build: dir build/main.o $(OBJECT_FILES)
 	$(CXX) build/main.o $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o $(OUT)
+
+# BUILD DIRECTORY
+dir:
+	mkdir -p build
 
 # ROOT
 build/main.o: src/main.cpp
