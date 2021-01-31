@@ -70,7 +70,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
 
             // Selection is to the right of the begin
             if (event.x > x) {
-                for (;index < this->text().length();) {
+                while (index < this->text().length()) {
                     char c = this->text()[index];
                     float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
                     if (x + w > (local_rect.x * -1) + event.x) {
