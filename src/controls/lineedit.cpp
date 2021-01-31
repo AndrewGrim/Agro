@@ -68,12 +68,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         m_fg
     );
     // resize rectangle to account for border
-    rect = Rect(
-        rect.x + this->m_border_width, 
-        rect.y + this->m_border_width, 
-        rect.w - this->m_border_width * 2, 
-        rect.h - this->m_border_width * 2
-    );
+    rect.shrink(m_border_width);
 
     dc->fillRect(rect, this->background());
     if (!(m_virtual_size.w < rect.w)) {
