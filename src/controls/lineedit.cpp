@@ -48,21 +48,16 @@ LineEdit::LineEdit(std::string text) : Widget() {
             }
             DrawingContext *dc = ((Application*)this->app)->dc;
 
-            float x = this->m_cursor_position;
-            size_t index = this->m_cursor_index;
+            float x = selection.x_begin;
+            size_t index = selection.begin;
 
             // No x mouse movement.
             if (event.xrel == 0) {
                 return;
             }
-            // Selection going backwards.
-            if (event.xrel < 0) {
-                x = selection.x_begin;
-                index = selection.begin;
-            } 
 
             // Selection is to the right of the origin point.
-            if (event.x > x) {
+            if (event.x >= x) {
                 while (index < this->text().length()) {
                     char c = this->text()[index];
                     float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
