@@ -17,10 +17,10 @@
         }
 
         void shrink(float amount) {   
-            this->x + amount;
-            this->y + amount;
-            this->w - amount * 2;
-            this->h - amount * 2;
+            this->x += amount;
+            this->y += amount;
+            this->w -= amount * 2;
+            this->h -= amount * 2;
         }
 
         friend bool operator==(const Rect &lhs, const Rect &rhs) {
