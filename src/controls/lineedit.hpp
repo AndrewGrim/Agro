@@ -61,5 +61,6 @@
             Size m_virtual_size = Size();
             bool m_text_changed = false;
             Selection selection = Selection();
+            bool m_mouse_event = false;
     };
 #endif
