@@ -260,6 +260,13 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                 if (this->onMouseClick) {
                     this->onMouseClick(event);
                 }
+            } else {
+                if (((Widget*)state->pressed)->onMouseLeft) {
+                    ((Widget*)state->pressed)->onMouseLeft(event);
+                }
+                if (this->onMouseEntered) {
+                    this->onMouseEntered(event);
+                }
             }
             state->pressed = nullptr;
             break;
