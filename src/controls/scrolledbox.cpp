@@ -7,7 +7,7 @@ ScrolledBox::ScrolledBox(Align align_policy, Size min_size) : Box(align_policy) 
 
 ScrolledBox::~ScrolledBox() {
     // ScrollBars are not added to children so if they
-    // exists they need to be delete with the ScrolledBox.
+    // exists they need to be deleted with the ScrolledBox.
     if (m_horizontal_scrollbar) {
         delete m_horizontal_scrollbar;
     }
