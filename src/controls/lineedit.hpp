@@ -44,9 +44,7 @@
 
         protected:
             float m_cursor_position = this->padding() + (this->borderWidth() / 2);
-            unsigned int m_last_mouse_x = 0;
-            unsigned int m_cursor_index = 0;
-            bool m_process_mouse_event = false;
+            size_t m_cursor_index = 0;
             std::string m_text;
             std::string m_placeholder_text;
             unsigned int m_border_width = 2;
