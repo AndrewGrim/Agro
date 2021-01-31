@@ -84,10 +84,10 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 while (index) {
                     char c = this->text()[--index];
                     float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
-                    if (x - w < (local_rect.x * -1) + event.x) {
+                    x -= w;
+                    if (x < (local_rect.x * -1) + event.x) {
                         break;
                     }
-                    x -= w;
                 }
             }
             
