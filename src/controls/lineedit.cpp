@@ -44,9 +44,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
             if (event.xrel == 0) {
                 return;
             }
-            
-            // TODO need to handle when the begin index is higher than end
-            // we probably can just reverse them
+
             Rect local_rect = this->rect;
             if (!(m_virtual_size.w < rect.w)) {
                 local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
