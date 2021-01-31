@@ -150,13 +150,13 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
 
     Rect old_clip = dc->clip();
-    dc->setClip(rect);
     dc->fillRect(
         rect, 
         m_fg
     );
     // resize rectangle to account for border
     rect.shrink(m_border_width);
+    dc->setClip(rect);
 
     dc->fillRect(rect, this->background());
     if (!(m_virtual_size.w < rect.w)) {
