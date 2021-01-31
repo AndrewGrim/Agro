@@ -54,41 +54,29 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
             }
             DrawingContext *dc = ((Application*)this->app)->dc;
+
             float x = this->m_cursor_position;
             size_t index = this->m_cursor_index;
-            float w = dc->measureText(this->font() ? this->font() : dc->default_font, this->text()[selection.end]).w;
-            print(event.x); print(", "); println(selection.x_end + w);
-            // if (event.x < selection.x_end - w) {
-            //     // TODO same as below but backwards?
-            //     // TODO thats nice and all but we need to check against current as well
-            //     // for (;index < this->text().length();) {
-            //     //     char c = this->text()[index];
-            //     //     w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
-            //     //     if (x + w > (local_rect.x * -1) + event.x) {
-            //     //         if (x + (w / 2) < (local_rect.x * -1) + event.x) {
-            //     //             x += w;
-            //     //             index++;
-            //     //         }
-            //     //         break;
-            //     //     }
-            //     //     x += w;
-            //     //     index++;
-            //     // }
-            // } else {
-            // }
+
+            // Selection going backwards.
+            if (event.xrel < 0) {
+                x = selection.x_begin;
+                index = selection.begin;
+            // No x mouse movement.
+            } else if (event.xrel == 0) {
+                return;
+            }
+
             for (;index < this->text().length();) {
                 char c = this->text()[index];
-                w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
                 if (x + w > (local_rect.x * -1) + event.x) {
-                    if (x + (w / 2) < (local_rect.x * -1) + event.x) {
-                        x += w;
-                        index++;
-                    }
                     break;
                 }
                 x += w;
                 index++;
             }
+
             if (!index) {
                 m_current_view = m_min_view;
             } else if (index == this->text().size()) {
@@ -96,7 +84,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
             } else {
                 m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
             }
-
             this->selection.end = index;
             this->selection.x_end = x;
             this->m_cursor_position = x;
