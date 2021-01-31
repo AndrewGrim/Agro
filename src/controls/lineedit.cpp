@@ -105,18 +105,14 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     };
     this->onMouseUp = [&](MouseEvent event) {
-        if (selection.mouse_selection) {
-            this->selection.mouse_selection = false;
-        }
+        this->selection.mouse_selection = false;
     };
     this->onMouseEntered = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::IBeam);
     };
     this->onMouseLeft = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
-        if (selection.mouse_selection) {
-            this->selection.mouse_selection = false;
-        }
+        this->selection.mouse_selection = false;
     };
     this->bind(SDLK_LEFT, Mod::None, [&]{
         this->moveCursorLeft();
