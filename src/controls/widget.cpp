@@ -186,6 +186,11 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
     if (this->isScrollable()) {
         // TODO this should probably be an abstract class that provides a vert
         // and a horizontal scrollbar, so in the future dont cast to scrolledbox
+        // Alternatively could override the propagate method of scrolledbox
+        // struct Scrollable {
+        //     ScrollBar m_horizontal;
+        //     ScrollBar m_vertical;
+        // };
         ScrolledBox *self = (ScrolledBox*)this;
         if (self->m_vertical_scrollbar) {
             if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
