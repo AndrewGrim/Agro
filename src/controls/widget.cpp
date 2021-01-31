@@ -240,7 +240,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                 ((Widget*)state->focused)->setFocused(false);
             }
             this->setFocused(true);
-            state->focused = (void*)this;
+            state->focused = this;
             // TODO maybe add an on_focus callback?
             if (this->onMouseDown) {
                 this->onMouseDown(event);
