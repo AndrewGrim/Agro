@@ -38,8 +38,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
             }
             this->m_cursor_position = x;
             this->m_cursor_index = index;
-            this->selection.temp_x = x;
-            this->selection.temp_index = index;
             
             this->selection.begin = index;
             this->selection.x_begin = x;
@@ -58,9 +56,29 @@ LineEdit::LineEdit(std::string text) : Widget() {
             DrawingContext *dc = ((Application*)this->app)->dc;
             float x = this->m_cursor_position;
             size_t index = this->m_cursor_index;
+            float w = dc->measureText(this->font() ? this->font() : dc->default_font, this->text()[selection.end]).w;
+            print(event.x); print(", "); println(selection.x_end + w);
+            // if (event.x < selection.x_end - w) {
+            //     // TODO same as below but backwards?
+            //     // TODO thats nice and all but we need to check against current as well
+            //     // for (;index < this->text().length();) {
+            //     //     char c = this->text()[index];
+            //     //     w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+            //     //     if (x + w > (local_rect.x * -1) + event.x) {
+            //     //         if (x + (w / 2) < (local_rect.x * -1) + event.x) {
+            //     //             x += w;
+            //     //             index++;
+            //     //         }
+            //     //         break;
+            //     //     }
+            //     //     x += w;
+            //     //     index++;
+            //     // }
+            // } else {
+            // }
             for (;index < this->text().length();) {
                 char c = this->text()[index];
-                float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
                 if (x + w > (local_rect.x * -1) + event.x) {
                     if (x + (w / 2) < (local_rect.x * -1) + event.x) {
                         x += w;
@@ -79,11 +97,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
             }
 
-            // this->selection.begin = this->m_cursor_index;
-            // this->selection.x_begin = this->m_cursor_position;
             this->selection.end = index;
             this->selection.x_end = x;
-
             this->m_cursor_position = x;
             this->m_cursor_index = index;
             update();
@@ -92,8 +107,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->onMouseUp = [&](MouseEvent event) {
         if (m_mouse_event) {
             this->m_mouse_event = false;
-            this->selection.x_begin = this->selection.temp_x;
-            this->selection.begin = this->selection.temp_index;
         }
     };
     this->onMouseEntered = [&](MouseEvent event) {
@@ -103,8 +116,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
         if (m_mouse_event) {
             this->m_mouse_event = false;
-            this->selection.x_begin = this->selection.temp_x;
-            this->selection.begin = this->selection.temp_index;
         }
     };
     this->bind(SDLK_LEFT, Mod::None, [&]{
@@ -180,9 +191,9 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
             text_height += m_padding;
             dc->fillRect(
                 Rect(
-                    rect.x + selection.temp_x, 
+                    rect.x + selection.x_begin, 
                     rect.y + (rect.h / 2) - (text_height / 2), 
-                    selection.x_end - selection.temp_x, 
+                    selection.x_end - selection.x_begin, 
                     text_height
                 ),
                 Color(0.2, 0.5, 1.0)
