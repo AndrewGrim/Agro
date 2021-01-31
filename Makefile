@@ -26,7 +26,7 @@ OUT = main.out
 run: build
 	./$(OUT)
 build: dir build/main.o $(OBJECT_FILES)
-	$(CXX) build/main.o $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) -o $(OUT)
+	$(CXX) build/main.o $(OBJECT_FILES) $(LINK) $(LIBS) -o $(OUT)
 
 # BUILD DIRECTORY
 dir:
