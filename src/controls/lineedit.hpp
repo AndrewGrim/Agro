@@ -11,6 +11,9 @@
         float x_begin = 0.0;
         float x_end = 0.0;
 
+        float temp_x = 0.0;
+        size_t temp_index = 0;
+
         bool hasSelection() {
             return begin != end;
         }
