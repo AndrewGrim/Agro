@@ -39,10 +39,10 @@ LineEdit::LineEdit(std::string text) : Widget() {
             this->m_cursor_position = x;
             this->m_cursor_index = index;
             
-            this->selection.begin = index;
             this->selection.x_begin = x;
-            this->selection.end = index;
+            this->selection.begin = index;
             this->selection.x_end = x;
+            this->selection.end = index;
         }
     };
     this->onMouseMotion = [&](MouseEvent event) {
@@ -68,7 +68,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 index = selection.begin;
             } 
 
-            // Selection is to the right of the begin
+            // Selection is to the right of the origin point.
             if (event.x > x) {
                 while (index < this->text().length()) {
                     char c = this->text()[index];
@@ -79,7 +79,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
                     x += w;
                     index++;
                 }
-            // Selection is to the left of the begin
+            // Selection is to the left of the origin point.
             } else {
                 while (index) {
                     char c = this->text()[--index];
@@ -98,8 +98,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
             } else {
                 m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
             }
-            this->selection.end = index;
             this->selection.x_end = x;
+            this->selection.end = index;
             this->m_cursor_position = x;
             this->m_cursor_index = index;
             update();
