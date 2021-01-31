@@ -29,13 +29,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 x += w;
                 index++;
             }
-            if (!index) {
-                m_current_view = m_min_view;
-            } else if (index == this->text().size()) {
-                m_current_view = m_max_view;
-            } else {
-                m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
-            }
             this->m_cursor_position = x;
             this->m_cursor_index = index;
             
