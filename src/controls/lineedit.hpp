@@ -12,7 +12,7 @@
         float x_end = 0.0;
 
         bool hasSelection() {
-            return !(begin == end);
+            return begin != end;
         }
     };
 
