@@ -9,8 +9,30 @@ LineEdit::LineEdit(std::string text) : Widget() {
         if (!this->text().length()) {
             this->m_cursor_position = this->padding() + (this->borderWidth() / 2);
         } else {
-            this->m_last_mouse_x = event.x;
-            this->m_process_mouse_event = true;
+            DrawingContext *dc = ((Application*)this->app)->dc;
+            float x = this->padding() + (this->borderWidth() / 2);
+            size_t index = 0;
+            for (char c : this->text()) {
+                float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                if (x + w > (rect.x * -1) + event.x) {
+                    if (x + (w / 2) < (rect.x * -1) + event.x) {
+                        x += w;
+                        index++;
+                    }
+                    break;
+                }
+                x += w;
+                index++;
+            }
+            if (!index) {
+                m_current_view = m_min_view;
+            } else if (index == this->text().size()) {
+                m_current_view = m_max_view;
+            } else {
+                m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            }
+            this->m_cursor_position = x;
+            this->m_cursor_index = index;
         }
     };
     this->onMouseEntered = [&](MouseEvent event) {
@@ -98,32 +120,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         );
     }
 
-    if (this->m_process_mouse_event) {
-        float x = this->padding() + (this->borderWidth() / 2);
-        unsigned int index = 0;
-        for (char c : this->text()) {
-            float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
-            if (x + w > (rect.x * -1) + this->m_last_mouse_x) {
-                if (x + (w / 2) < (rect.x * -1) + this->m_last_mouse_x) {
-                    x += w;
-                    index++;
-                }
-                break;
-            }
-            x += w;
-            index++;
-        }
-        if (!index) {
-            m_current_view = m_min_view;
-        } else if (index == text().size()) {
-            m_current_view = m_max_view;
-        } else {
-            m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
-        }
-        this->m_cursor_position = x;
-        this->m_cursor_index = index;
-        this->m_process_mouse_event = false;
-    }
+    // Draw the text insertion cursor.
     if (this->isFocused()) {
         float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
         text_height += m_padding;
