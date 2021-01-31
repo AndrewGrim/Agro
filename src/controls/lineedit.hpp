@@ -8,6 +8,8 @@
     struct Selection {
         size_t begin = 0;
         size_t end = 0;
+        float x_begin = 0.0;
+        float x_end = 0.0;
 
         bool hasSelection() {
             return !(begin == end);
