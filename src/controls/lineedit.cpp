@@ -6,16 +6,47 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->setText(text);
     this->setPlaceholderText("");
     this->onMouseDown = [&](MouseEvent event) {
+        this->m_mouse_event = true;
         if (!this->text().length()) {
             this->m_cursor_position = this->padding() + (this->borderWidth() / 2);
         } else {
+            Rect local_rect = this->rect;
+            if (!(m_virtual_size.w < rect.w)) {
+                local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
+            }
             DrawingContext *dc = ((Application*)this->app)->dc;
             float x = this->padding() + (this->borderWidth() / 2);
             size_t index = 0;
             for (char c : this->text()) {
                 float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
-                if (x + w > (rect.x * -1) + event.x) {
-                    if (x + (w / 2) < (rect.x * -1) + event.x) {
+                if (x + w > (local_rect.x * -1) + event.x) {
+                    if (x + (w / 2) < (local_rect.x * -1) + event.x) {
+                        x += w;
+                        index++;
+                    }
+                    break;
+                }
+                x += w;
+                index++;
+            }
+            if (!index) {
+                m_current_view = m_min_view;
+            } else if (index == this->text().size()) {
+                m_current_view = m_max_view;
+            } else {
+                m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            }
+            this->m_cursor_position = x;
+            this->m_cursor_index = index;
+            this->selection.temp_x = x;
+            this->selection.temp_index = index;
+            
+            this->selection.begin = index;
+            this->selection.x_begin = x;
+            this->selection.end = index;
+            this->selection.x_end = x;
+        }
+    };
                         x += w;
                         index++;
                     }
