@@ -14,6 +14,8 @@
         float temp_x = 0.0;
         size_t temp_index = 0;
 
+        bool mouse_selection = false;
+
         bool hasSelection() {
             return begin != end;
         }
@@ -61,6 +63,5 @@
             Size m_virtual_size = Size();
             bool m_text_changed = false;
             Selection selection = Selection();
-            bool m_mouse_event = false;
     };
 #endif

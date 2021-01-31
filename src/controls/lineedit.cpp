@@ -6,7 +6,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->setText(text);
     this->setPlaceholderText("");
     this->onMouseDown = [&](MouseEvent event) {
-        this->m_mouse_event = true;
+        this->selection.mouse_selection = true;
         if (!this->text().length()) {
             this->m_cursor_position = this->padding() + (this->borderWidth() / 2);
         } else {
@@ -105,8 +105,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     };
     this->onMouseUp = [&](MouseEvent event) {
-        if (m_mouse_event) {
-            this->m_mouse_event = false;
+        if (selection.mouse_selection) {
+            this->selection.mouse_selection = false;
         }
     };
     this->onMouseEntered = [&](MouseEvent event) {
@@ -114,8 +114,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
     };
     this->onMouseLeft = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
-        if (m_mouse_event) {
-            this->m_mouse_event = false;
+        if (selection.mouse_selection) {
+            this->selection.mouse_selection = false;
         }
     };
     this->bind(SDLK_LEFT, Mod::None, [&]{
@@ -186,7 +186,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         );
     // Draw normal text;
     } else {
-        if (m_mouse_event) {
+        if (selection.mouse_selection) {
             float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
             text_height += m_padding;
             dc->fillRect(
