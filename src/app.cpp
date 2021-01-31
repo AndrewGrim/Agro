@@ -188,7 +188,7 @@ void Application::run() {
                             break;
                         case SDL_WINDOWEVENT_LEAVE:
                             m_mouse_inside = false;
-                            if (m_state->hovered) {
+                            if (m_state->hovered && m_state->hovered != m_state->pressed) {
                                 ((Widget*)m_state->hovered)->setHovered(false);
                                 if (((Widget*)m_state->hovered)->onMouseLeft) {
                                     SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
