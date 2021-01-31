@@ -26,7 +26,7 @@ OUT = main.out
 run: build
 	./$(OUT)
 build: dir build/main.o $(OBJECT_FILES)
-	$(CXX) build/main.o $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o $(OUT)
+	$(CXX) build/main.o $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) -o $(OUT)
 
 # BUILD DIRECTORY
 dir:
@@ -34,45 +34,45 @@ dir:
 
 # ROOT
 build/main.o: src/main.cpp
-	$(CXX) -c src/main.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/app.o: src/app.cpp src/app.hpp
-	$(CXX) -c src/app.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/app.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # CONTROLS
 build/box.o: src/controls/box.cpp src/controls/box.hpp
-	$(CXX) -c src/controls/box.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/box.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/button.o: src/controls/button.cpp src/controls/button.hpp
-	$(CXX) -c src/controls/button.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/button.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/image.o: src/controls/image.cpp src/controls/image.hpp
-	$(CXX) -c src/controls/image.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/label.o: src/controls/label.cpp src/controls/label.hpp
-	$(CXX) -c src/controls/label.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/label.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/lineedit.o: src/controls/lineedit.cpp src/controls/lineedit.hpp
-	$(CXX) -c src/controls/lineedit.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/lineedit.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/notebook.o: src/controls/notebook.cpp src/controls/notebook.hpp
-	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrollbar.o: src/controls/scrollbar.cpp src/controls/scrollbar.hpp
-	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrolledbox.o: src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
-	$(CXX) -c src/controls/scrolledbox.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/scrolledbox.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/simplescrollbar.o: src/controls/simplescrollbar.cpp src/controls/simplescrollbar.hpp
-	$(CXX) -c src/controls/simplescrollbar.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/simplescrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/slider.o: src/controls/slider.cpp src/controls/slider.hpp
-	$(CXX) -c src/controls/slider.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/widget.o: src/controls/widget.cpp src/controls/widget.hpp
-	$(CXX) -c src/controls/widget.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # RENDERER
 build/drawing_context.o: src/renderer/drawing_context.cpp src/renderer/drawing_context.hpp
-	$(CXX) -c src/renderer/drawing_context.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/renderer/drawing_context.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/font.o: src/renderer/font.cpp src/renderer/font.hpp
-	$(CXX) -c src/renderer/font.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/renderer/font.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/glad.o: src/renderer/glad.c include/glad/glad.h
-	$(CXX) -c src/renderer/glad.c $(INCLUDE) -o $@
+	$(CXX) -c src/renderer/glad.c $(INCLUDE) $(CXX_FLAGS) -o $@
 build/renderer.o: src/renderer/renderer.cpp src/renderer/renderer.hpp
-	$(CXX) -c src/renderer/renderer.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/renderer/renderer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.h
-	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) -o $@
+	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 clean:
 	rm -f -r build
