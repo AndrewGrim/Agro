@@ -58,24 +58,33 @@ LineEdit::LineEdit(std::string text) : Widget() {
             float x = this->m_cursor_position;
             size_t index = this->m_cursor_index;
 
+            // No x mouse movement.
+            if (event.xrel == 0) {
+                return;
+            }
             // Selection going backwards.
             if (event.xrel < 0) {
                 x = selection.x_begin;
                 index = selection.begin;
-            // No x mouse movement.
-            } else if (event.xrel == 0) {
-                return;
-            }
+            } 
+            print(event.x); print(", "); println(x);
 
-            for (;index < this->text().length();) {
-                char c = this->text()[index];
-                float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
-                if (x + w > (local_rect.x * -1) + event.x) {
-                    break;
+            // Selection is to the right of the begin
+            if (event.x > x) {
+                for (;index < this->text().length();) {
+                    char c = this->text()[index];
+                    float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                    if (x + w > (local_rect.x * -1) + event.x) {
+                        break;
+                    }
+                    x += w;
+                    index++;
                 }
-                x += w;
-                index++;
+            // Selection is to the left of the begin
+            } else {
+
             }
+            
 
             if (!index) {
                 m_current_view = m_min_view;
