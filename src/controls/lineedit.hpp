@@ -5,6 +5,15 @@
 
     #include "widget.hpp"
 
+    struct Selection {
+        size_t begin = 0;
+        size_t end = 0;
+
+        bool hasSelection() {
+            return !(begin == end);
+        }
+    };
+
     class LineEdit : public Widget {
         public:
             LineEdit(std::string text = "");
@@ -48,5 +57,6 @@
             float m_current_view = m_min_view;
             Size m_virtual_size = Size();
             bool m_text_changed = false;
+            Selection selection = Selection();
     };
 #endif
