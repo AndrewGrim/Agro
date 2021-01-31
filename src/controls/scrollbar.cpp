@@ -53,7 +53,7 @@ Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
     return size;
 }
 
-ScrollBarSlider::ScrollBarSlider(Align alignment) : Slider(alignment) {
+ScrollBarSlider::ScrollBarSlider(Align alignment) : Slider(alignment, 0.0) {
     Widget::m_bg = Color(0.7, 0.7, 0.7);
 }
 
