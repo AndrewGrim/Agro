@@ -175,6 +175,31 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         );
     // Draw normal text;
     } else {
+        if (m_mouse_event) {
+            float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
+            text_height += m_padding;
+            dc->fillRect(
+                Rect(
+                    rect.x + selection.temp_x, 
+                    rect.y + (rect.h / 2) - (text_height / 2), 
+                    selection.x_end - selection.temp_x, 
+                    text_height
+                ),
+                Color(0.2, 0.5, 1.0)
+            );
+        } else if (isFocused() && selection.hasSelection()) {
+            float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
+            text_height += m_padding;
+            dc->fillRect(
+                Rect(
+                    rect.x + selection.x_begin, 
+                    rect.y + (rect.h / 2) - (text_height / 2), 
+                    selection.x_end - selection.x_begin, 
+                    text_height
+                ),
+                Color(0.2, 0.5, 1.0)
+            );
+        }
         dc->fillTextAligned(
             this->font() ? this->font() : dc->default_font, 
             this->text(), 
