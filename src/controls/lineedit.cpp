@@ -47,6 +47,22 @@ LineEdit::LineEdit(std::string text) : Widget() {
             this->selection.x_end = x;
         }
     };
+    this->onMouseMotion = [&](MouseEvent event) {
+        if (isPressed()) {
+            // TODO need to handle when the begin index is higher than end
+            // we probably can just reverse them
+            Rect local_rect = this->rect;
+            if (!(m_virtual_size.w < rect.w)) {
+                local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
+            }
+            DrawingContext *dc = ((Application*)this->app)->dc;
+            float x = this->m_cursor_position;
+            size_t index = this->m_cursor_index;
+            for (;index < this->text().length();) {
+                char c = this->text()[index];
+                float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                if (x + w > (local_rect.x * -1) + event.x) {
+                    if (x + (w / 2) < (local_rect.x * -1) + event.x) {
                         x += w;
                         index++;
                     }
@@ -62,8 +78,15 @@ LineEdit::LineEdit(std::string text) : Widget() {
             } else {
                 m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
             }
+
+            // this->selection.begin = this->m_cursor_index;
+            // this->selection.x_begin = this->m_cursor_position;
+            this->selection.end = index;
+            this->selection.x_end = x;
+
             this->m_cursor_position = x;
             this->m_cursor_index = index;
+            update();
         }
     };
     this->onMouseEntered = [&](MouseEvent event) {
