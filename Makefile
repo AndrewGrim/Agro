@@ -72,7 +72,7 @@ build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.h
 	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) -o $@
 
 clean:
-	rm -f build/*.o
+	rm -f -r build
 
 test:
 	python3 run_tests.py
