@@ -91,7 +91,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 }
             }
             
-
             if (!index) {
                 m_current_view = m_min_view;
             } else if (index == this->text().size()) {
