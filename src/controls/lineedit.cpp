@@ -67,7 +67,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 x = selection.x_begin;
                 index = selection.begin;
             } 
-            print(event.x); print(", "); println(x);
 
             // Selection is to the right of the begin
             if (event.x > x) {
@@ -82,7 +81,14 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 }
             // Selection is to the left of the begin
             } else {
-
+                while (index) {
+                    char c = this->text()[--index];
+                    float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                    if (x - w < (local_rect.x * -1) + event.x) {
+                        break;
+                    }
+                    x -= w;
+                }
             }
             
 
