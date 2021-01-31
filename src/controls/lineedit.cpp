@@ -89,11 +89,23 @@ LineEdit::LineEdit(std::string text) : Widget() {
             update();
         }
     };
+    this->onMouseUp = [&](MouseEvent event) {
+        if (m_mouse_event) {
+            this->m_mouse_event = false;
+            this->selection.x_begin = this->selection.temp_x;
+            this->selection.begin = this->selection.temp_index;
+        }
+    };
     this->onMouseEntered = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::IBeam);
     };
     this->onMouseLeft = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
+        if (m_mouse_event) {
+            this->m_mouse_event = false;
+            this->selection.x_begin = this->selection.temp_x;
+            this->selection.begin = this->selection.temp_index;
+        }
     };
     this->bind(SDLK_LEFT, Mod::None, [&]{
         this->moveCursorLeft();
