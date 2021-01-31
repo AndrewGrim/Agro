@@ -40,6 +40,11 @@ LineEdit::LineEdit(std::string text) : Widget() {
     };
     this->onMouseMotion = [&](MouseEvent event) {
         if (isPressed()) {
+            // No x mouse movement.
+            if (event.xrel == 0) {
+                return;
+            }
+            
             // TODO need to handle when the begin index is higher than end
             // we probably can just reverse them
             Rect local_rect = this->rect;
@@ -50,11 +55,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
 
             float x = selection.x_begin;
             size_t index = selection.begin;
-
-            // No x mouse movement.
-            if (event.xrel == 0) {
-                return;
-            }
 
             // Selection is to the right of the origin point.
             if (event.x >= x) {
