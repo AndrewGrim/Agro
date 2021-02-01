@@ -512,14 +512,7 @@ bool LineEdit::isShiftPressed() {
 
 void LineEdit::deleteSelection() {
     // Swap selection when the begin index is higher than the end index.
-    if (selection.begin > selection.end) {
-        float temp_x = selection.x_end;
-        size_t temp = selection.end;
-        selection.x_end = selection.x_begin;
-        selection.end = selection.begin;
-        selection.x_begin = temp_x;
-        selection.begin = temp;
-    }
+    swapSelection();
     // Remove selected text.
     this->setText(this->text().erase(selection.begin, selection.end - selection.begin));
 
