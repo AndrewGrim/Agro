@@ -95,3 +95,5 @@ test_lineedit_search:
 	$(CXX) tests/lineedit_search.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o lineedit_search.out && ./lineedit_search.out
 test_keybindings:
 	$(CXX) tests/keybindings.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o keybindings.out && ./keybindings.out
+test_one_million_labels:
+	$(CXX) tests/one_million_labels.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o one_million_labels.out && ./one_million_labels.out
