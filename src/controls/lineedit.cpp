@@ -143,6 +143,9 @@ LineEdit::LineEdit(std::string text) : Widget() {
     };
     this->bind(SDLK_RIGHT, Mod::Ctrl, jump_right);
     this->bind(SDLK_RIGHT, Mod::Ctrl|Mod::Shift, jump_right);
+    this->bind(SDLK_a, Mod::Ctrl, [&]{
+        this->selectAll();
+    });
 }
 
 LineEdit::~LineEdit() {
@@ -498,4 +501,13 @@ void LineEdit::deleteSelection() {
     // Reset selection after deletion.
     selection.x_end = selection.x_begin;
     selection.end = selection.begin;
+}
+
+void LineEdit::selectAll() {
+    selection.x_begin = this->padding() + (this->borderWidth() / 2);
+    selection.begin = 0;
+    selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
+    selection.end = text().size();
+    m_current_view = m_max_view;
+    update();
 }

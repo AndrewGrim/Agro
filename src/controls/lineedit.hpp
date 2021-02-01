@@ -51,6 +51,7 @@
             LineEdit* jumpWordRight();
             bool isShiftPressed();
             void deleteSelection();
+            void selectAll();
 
         protected:
             std::string m_text;
