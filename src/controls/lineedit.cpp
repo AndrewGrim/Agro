@@ -8,7 +8,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->onMouseDown = [&](MouseEvent event) {
         this->selection.mouse_selection = true;
         if (!this->text().length()) {
-            this->m_cursor_position = this->padding() + (this->borderWidth() / 2);
+            this->selection.x_begin = this->padding() + (this->borderWidth() / 2);
         } else {
             Rect local_rect = this->rect;
             if (!(m_virtual_size.w < rect.w)) {
@@ -29,9 +29,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 x += w;
                 index++;
             }
-            this->m_cursor_position = x;
-            this->m_cursor_index = index;
-            
             this->selection.x_begin = x;
             this->selection.begin = index;
             this->selection.x_end = x;
@@ -86,8 +83,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
             }
             this->selection.x_end = x;
             this->selection.end = index;
-            this->m_cursor_position = x;
-            this->m_cursor_index = index;
             update();
         }
     };
@@ -114,9 +109,9 @@ LineEdit::LineEdit(std::string text) : Widget() {
         this->moveCursorEnd();
     });
     this->bind(SDLK_BACKSPACE, Mod::None, [&]{
-        if (m_cursor_index) {
+        if (selection.begin) {
             this->moveCursorLeft();
-            this->deleteAt(m_cursor_index);
+            this->deleteAt(selection.begin);
             this->updateView();
         }
     });
@@ -138,10 +133,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
             // Reset selection after deletion.
             selection.x_end = selection.x_begin;
             selection.end = selection.begin;
-            this->m_cursor_position = selection.x_begin;
-            this->m_cursor_index = selection.begin;
         } else {
-            this->deleteAt(m_cursor_index);
+            this->deleteAt(selection.begin);
         }
         this->updateView();
     });
@@ -232,7 +225,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         text_height += m_padding;
         dc->fillRect(
             Rect(
-                rect.x + this->m_cursor_position, 
+                rect.x + this->selection.x_end, 
                 rect.y + (rect.h / 2) - (text_height / 2), 
                 1, 
                 text_height
@@ -308,16 +301,16 @@ LineEdit* LineEdit::setPadding(unsigned int padding) {
 }
 
 void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
-    m_text.insert(m_cursor_index, text);
+    m_text.insert(selection.begin, text);
     // TODO add our own insert? just a wrapper? so that it calls text_changed automatically
     m_text_changed = true;
 
-    m_cursor_index += strlen(text);
-    m_cursor_position += dc->measureText(font() ? font() : dc->default_font, text).w;
-    if (m_cursor_index == this->text().size()) {
+    selection.begin += strlen(text);
+    selection.x_begin += dc->measureText(font() ? font() : dc->default_font, text).w;
+    if (selection.begin == this->text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
 }
@@ -338,15 +331,15 @@ LineEdit* LineEdit::setMinLength(float length) {
 }
 
 LineEdit* LineEdit::moveCursorLeft() {
-    if (m_cursor_index && app) {
+    if (selection.begin && app) {
         DrawingContext *dc = ((Application*)this->app)->dc;
-        m_cursor_index--;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
-        m_cursor_position -= char_size;
-        if (!m_cursor_index) {
+        selection.begin--;
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.begin]).w;
+        selection.x_begin -= char_size;
+        if (!selection.begin) {
             m_current_view = m_min_view;
         } else {
-            m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         update();
     }
@@ -355,15 +348,15 @@ LineEdit* LineEdit::moveCursorLeft() {
 }
 
 LineEdit* LineEdit::moveCursorRight() {
-    if (m_cursor_index < text().size() && app) {
+    if (selection.begin < text().size() && app) {
         DrawingContext *dc = ((Application*)this->app)->dc;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_cursor_index]).w;
-        m_cursor_position += char_size;
-        m_cursor_index++;
-        if (m_cursor_index == text().size()) {
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.begin]).w;
+        selection.x_begin += char_size;
+        selection.begin++;
+        if (selection.begin == text().size()) {
             m_current_view = m_max_view;
         } else {
-            m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         update();
     }
@@ -372,8 +365,8 @@ LineEdit* LineEdit::moveCursorRight() {
 }
 
 LineEdit* LineEdit::moveCursorBegin() {
-    m_cursor_position = this->padding() + (this->borderWidth() / 2);
-    m_cursor_index = 0;
+    selection.x_begin = this->padding() + (this->borderWidth() / 2);
+    selection.begin = 0;
     m_current_view = m_min_view;
     update();
     
@@ -381,8 +374,8 @@ LineEdit* LineEdit::moveCursorBegin() {
 }
 
 LineEdit* LineEdit::moveCursorEnd() {
-    m_cursor_position = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
-    m_cursor_index = text().size();
+    selection.x_begin = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
+    selection.begin = text().size();
     m_current_view = m_max_view;
     update();
     
@@ -402,8 +395,8 @@ LineEdit* LineEdit::deleteAt(int index) {
 LineEdit* LineEdit::clear() {
     m_text.clear();
     m_text_changed = true;
-    m_cursor_index = 0;
-    m_cursor_position = padding() + (borderWidth() / 2);
+    selection.begin = 0;
+    selection.x_begin = padding() + (borderWidth() / 2);
     m_current_view = m_min_view;
     update();
 
@@ -422,21 +415,21 @@ std::string LineEdit::placeholderText() {
 }
 
 LineEdit* LineEdit::updateView() {
-    if (!m_cursor_index) {
+    if (!selection.begin) {
         m_current_view = m_min_view;
-    } else if (m_cursor_index == text().size()) {
+    } else if (selection.begin == text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (m_cursor_position - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
     return this;
 }
 
 LineEdit* LineEdit::jumpWordLeft() {
-    while (m_cursor_index) {
+    while (selection.begin) {
         moveCursorLeft();
-        if (text()[m_cursor_index] == ' ') {
+        if (text()[selection.begin] == ' ') {
             break;
         }
     }
@@ -445,9 +438,9 @@ LineEdit* LineEdit::jumpWordLeft() {
 }
 
 LineEdit* LineEdit::jumpWordRight() {
-    while (m_cursor_index < text().size()) {
+    while (selection.begin < text().size()) {
         moveCursorRight();
-        if (text()[m_cursor_index] == ' ') {
+        if (text()[selection.begin] == ' ') {
             break;
         }
     }

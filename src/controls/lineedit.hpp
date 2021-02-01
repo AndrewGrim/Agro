@@ -51,8 +51,6 @@
             LineEdit* jumpWordRight();
 
         protected:
-            float m_cursor_position = this->padding() + (this->borderWidth() / 2);
-            size_t m_cursor_index = 0;
             std::string m_text;
             std::string m_placeholder_text;
             unsigned int m_border_width = 2;
