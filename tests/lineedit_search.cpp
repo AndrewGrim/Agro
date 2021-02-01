@@ -7,7 +7,7 @@
 #include "../src/controls/label.hpp"
 
 int main() { 
-    Application *app = new Application("ScrolledBox Inception Clipping Test", Size(400, 400));
+    Application *app = new Application("LineEdit Search Test", Size(400, 400));
         std::vector<std::string> monster_names = {
             "Great Jagras", "Kulu-Ya-Ku", "Pukei-Pukei", "Barroth",
             "Jyuratodus", "Tobi-Kadachi", "Anjanath", "Rathian",
