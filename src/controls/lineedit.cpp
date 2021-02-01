@@ -156,9 +156,11 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     });
     this->bind(SDLK_c, Mod::Ctrl, [&]{
-        swapSelection();
-        std::string s = this->text().substr(selection.begin, selection.end);
-        SDL_SetClipboardText(s.c_str());
+        if (selection.hasSelection()) {
+            swapSelection();
+            std::string s = this->text().substr(selection.begin, selection.end);
+            SDL_SetClipboardText(s.c_str());
+        }
     });
 }
 
