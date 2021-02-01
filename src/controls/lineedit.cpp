@@ -437,12 +437,16 @@ std::string LineEdit::placeholderText() {
 }
 
 LineEdit* LineEdit::updateView() {
-    if (!selection.begin) {
+    // TODO investigate at some point, it used to use begin
+    // but the result is the same with begin and end
+    // and it shouldnt be????
+    // so changed it to end so its consistent with the rest of the file
+    if (!selection.end) {
         m_current_view = m_min_view;
-    } else if (selection.begin == text().size()) {
+    } else if (selection.end == text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
     return this;
