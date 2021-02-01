@@ -303,23 +303,7 @@ LineEdit* LineEdit::setPadding(unsigned int padding) {
 }
 
 void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
-    if (selection.hasSelection()) {
-        deleteSelection();
-    }
-    m_text.insert(selection.end, text);
-    // TODO add our own insert? just a wrapper? so that it calls text_changed automatically
-    m_text_changed = true;
-
-    selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
-    selection.end += strlen(text);
-    selection.x_begin = selection.x_end;
-    selection.begin = selection.end;
-    if (selection.end == this->text().size()) {
-        m_current_view = m_max_view;
-    } else {
-        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
-    }
-    update();
+    insert(selection.end, text);
 }
 
 float LineEdit::minLength() {
@@ -539,4 +523,26 @@ void LineEdit::swapSelection() {
         selection.x_begin = temp_x;
         selection.begin = temp;
     }
+}
+
+void LineEdit::insert(size_t index, const char *text) {
+    if (selection.hasSelection()) {
+        deleteSelection();
+    }
+
+    m_text.insert(selection.end, text);
+    m_text_changed = true;
+
+    DrawingContext *dc = ((Application*)this->app)->dc;
+    selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
+    selection.end += strlen(text);
+    selection.x_begin = selection.x_end;
+    selection.begin = selection.end;
+
+    if (selection.end == this->text().size()) {
+        m_current_view = m_max_view;
+    } else {
+        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+    }
+    update();
 }

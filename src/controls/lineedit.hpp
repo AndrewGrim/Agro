@@ -53,6 +53,7 @@
             void deleteSelection();
             void selectAll();
             void swapSelection();
+            void insert(size_t index, const char *text);
 
         protected:
             std::string m_text;
