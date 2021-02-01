@@ -331,15 +331,15 @@ LineEdit* LineEdit::setMinLength(float length) {
 }
 
 LineEdit* LineEdit::moveCursorLeft() {
-    if (selection.begin && app) {
+    if (selection.end && app) {
         DrawingContext *dc = ((Application*)this->app)->dc;
-        selection.begin--;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.begin]).w;
-        selection.x_begin -= char_size;
-        if (!selection.begin) {
+        selection.end--;
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
+        selection.x_end -= char_size;
+        if (!selection.end) {
             m_current_view = m_min_view;
         } else {
-            m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         update();
     }
@@ -348,15 +348,15 @@ LineEdit* LineEdit::moveCursorLeft() {
 }
 
 LineEdit* LineEdit::moveCursorRight() {
-    if (selection.begin < text().size() && app) {
+    if (selection.end < text().size() && app) {
         DrawingContext *dc = ((Application*)this->app)->dc;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.begin]).w;
-        selection.x_begin += char_size;
-        selection.begin++;
-        if (selection.begin == text().size()) {
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
+        selection.x_end += char_size;
+        selection.end++;
+        if (selection.end == text().size()) {
             m_current_view = m_max_view;
         } else {
-            m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+            m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
         }
         update();
     }
@@ -365,8 +365,8 @@ LineEdit* LineEdit::moveCursorRight() {
 }
 
 LineEdit* LineEdit::moveCursorBegin() {
-    selection.x_begin = this->padding() + (this->borderWidth() / 2);
-    selection.begin = 0;
+    selection.x_end = this->padding() + (this->borderWidth() / 2);
+    selection.end = 0;
     m_current_view = m_min_view;
     update();
     
@@ -374,8 +374,8 @@ LineEdit* LineEdit::moveCursorBegin() {
 }
 
 LineEdit* LineEdit::moveCursorEnd() {
-    selection.x_begin = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
-    selection.begin = text().size();
+    selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
+    selection.end = text().size();
     m_current_view = m_max_view;
     update();
     
