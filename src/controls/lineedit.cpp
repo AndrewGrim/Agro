@@ -109,11 +109,13 @@ LineEdit::LineEdit(std::string text) : Widget() {
         this->moveCursorEnd();
     });
     this->bind(SDLK_BACKSPACE, Mod::None, [&]{
-        if (selection.begin) {
+        if (selection.hasSelection()) {
+            this->deleteSelection();
+        } else if (selection.begin) {
             this->moveCursorLeft();
             this->deleteAt(selection.begin);
-            this->updateView();
         }
+        this->updateView();
     });
     this->bind(SDLK_DELETE, Mod::None, [&]{
         if (selection.hasSelection()) {
