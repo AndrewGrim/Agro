@@ -52,6 +52,7 @@
             bool isShiftPressed();
             void deleteSelection();
             void selectAll();
+            void swapSelection();
 
         protected:
             std::string m_text;

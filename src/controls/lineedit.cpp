@@ -511,3 +511,14 @@ void LineEdit::selectAll() {
     m_current_view = m_max_view;
     update();
 }
+
+void LineEdit::swapSelection() {
+    if (selection.begin > selection.end) {
+        float temp_x = selection.x_end;
+        size_t temp = selection.end;
+        selection.x_end = selection.x_begin;
+        selection.end = selection.begin;
+        selection.x_begin = temp_x;
+        selection.begin = temp;
+    }
+}
