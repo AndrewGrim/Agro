@@ -338,7 +338,19 @@ LineEdit* LineEdit::setMinLength(float length) {
 }
 
 LineEdit* LineEdit::moveCursorLeft() {
-    if (selection.end && app) {
+    if (selection.end == 0) {
+       if (selection.hasSelection()) {
+            swapSelection();
+            selection.x_end = selection.x_begin;
+            selection.end = selection.begin;
+        }
+    } else if (selection.end && app) {
+        if (selection.hasSelection() && !isShiftPressed()) {
+            swapSelection();
+            selection.x_end = selection.x_begin;
+            selection.end = selection.begin;
+            goto END;
+        }
         DrawingContext *dc = ((Application*)this->app)->dc;
         selection.end--;
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
@@ -347,19 +359,31 @@ LineEdit* LineEdit::moveCursorLeft() {
             selection.x_begin = selection.x_end;
             selection.begin = selection.end;
         }
-        if (!selection.end) {
-            m_current_view = m_min_view;
-        } else {
-            m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
-        }
-        update();
     }
+    END:;
+    if (!selection.end) {
+        m_current_view = m_min_view;
+    } else {
+        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+    }
+    update();
 
     return this;
 }
 
 LineEdit* LineEdit::moveCursorRight() {
-    if (selection.end < text().size() && app) {
+    if (selection.end == text().size()) {
+       if (selection.hasSelection()) {
+            selection.x_begin = selection.x_end;
+            selection.begin = selection.end;
+        }
+    } else if (selection.end < text().size() && app) {
+        if (selection.hasSelection() && !isShiftPressed()) {
+            swapSelection();
+            selection.x_begin = selection.x_end;
+            selection.begin = selection.end;
+            goto END;
+        }
         DrawingContext *dc = ((Application*)this->app)->dc;
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
         selection.x_end += char_size;
@@ -368,13 +392,14 @@ LineEdit* LineEdit::moveCursorRight() {
             selection.x_begin = selection.x_end;
             selection.begin = selection.end;
         }
-        if (selection.end == text().size()) {
-            m_current_view = m_max_view;
-        } else {
-            m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
-        }
-        update();
     }
+    END:;
+    if (selection.end == text().size()) {
+        m_current_view = m_max_view;
+    } else {
+        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+    }
+    update();
 
     return this;
 }
