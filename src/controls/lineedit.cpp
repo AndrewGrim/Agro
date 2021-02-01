@@ -116,7 +116,6 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     });
     this->bind(SDLK_DELETE, Mod::None, [&]{
-        print(selection.begin); print(", "); println(selection.end);
         if (selection.hasSelection()) {
             this->deleteSelection();
         } else {
