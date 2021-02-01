@@ -429,9 +429,9 @@ LineEdit* LineEdit::updateView() {
 }
 
 LineEdit* LineEdit::jumpWordLeft() {
-    while (selection.begin) {
+    while (selection.end) {
         moveCursorLeft();
-        if (text()[selection.begin] == ' ') {
+        if (text()[selection.end] == ' ') {
             break;
         }
     }
@@ -440,9 +440,9 @@ LineEdit* LineEdit::jumpWordLeft() {
 }
 
 LineEdit* LineEdit::jumpWordRight() {
-    while (selection.begin < text().size()) {
+    while (selection.end < text().size()) {
         moveCursorRight();
-        if (text()[selection.begin] == ' ') {
+        if (text()[selection.end] == ' ') {
             break;
         }
     }
