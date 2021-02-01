@@ -3,7 +3,7 @@
 #include "../src/controls/button.hpp"
 
 int main() { 
-    Application *app = new Application("LineEdit Search Test", Size(400, 400));
+    Application *app = new Application("Keybindings Test", Size(400, 400));
         int map_key = app->bind(
             SDLK_q,
             Mod::None, 
