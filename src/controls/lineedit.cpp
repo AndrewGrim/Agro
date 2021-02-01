@@ -447,3 +447,11 @@ LineEdit* LineEdit::jumpWordRight() {
     update();
     return this;
 }
+
+bool LineEdit::isShiftPressed() {
+    SDL_Keymod mod = SDL_GetModState();
+    if (mod & Mod::Shift) {
+        return true;
+    }
+    return false;
+}

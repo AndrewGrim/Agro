@@ -49,6 +49,7 @@
             LineEdit* updateView();
             LineEdit* jumpWordLeft();
             LineEdit* jumpWordRight();
+            bool isShiftPressed();
 
         protected:
             std::string m_text;
