@@ -287,12 +287,17 @@ LineEdit* LineEdit::setPadding(unsigned int padding) {
 }
 
 void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
+    if (selection.hasSelection()) {
+        deleteSelection();
+    }
     m_text.insert(selection.end, text);
     // TODO add our own insert? just a wrapper? so that it calls text_changed automatically
     m_text_changed = true;
 
-    selection.end += strlen(text);
     selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
+    selection.end += strlen(text);
+    selection.x_begin = selection.x_end;
+    selection.begin = selection.end;
     if (selection.end == this->text().size()) {
         m_current_view = m_max_view;
     } else {
