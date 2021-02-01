@@ -301,16 +301,16 @@ LineEdit* LineEdit::setPadding(unsigned int padding) {
 }
 
 void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
-    m_text.insert(selection.begin, text);
+    m_text.insert(selection.end, text);
     // TODO add our own insert? just a wrapper? so that it calls text_changed automatically
     m_text_changed = true;
 
-    selection.begin += strlen(text);
-    selection.x_begin += dc->measureText(font() ? font() : dc->default_font, text).w;
-    if (selection.begin == this->text().size()) {
+    selection.end += strlen(text);
+    selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
+    if (selection.end == this->text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (selection.x_begin - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
 }
