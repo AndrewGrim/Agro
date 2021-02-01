@@ -121,7 +121,28 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     });
     this->bind(SDLK_DELETE, Mod::None, [&]{
-        this->deleteAt(m_cursor_index);
+        print(selection.begin); print(", "); println(selection.end);
+        if (selection.hasSelection()) {
+            // Swap selection when the begin index is higher than the end index.
+            if (selection.begin > selection.end) {
+                float temp_x = selection.x_end;
+                size_t temp = selection.end;
+                selection.x_end = selection.x_begin;
+                selection.end = selection.begin;
+                selection.x_begin = temp_x;
+                selection.begin = temp;
+            }
+            // Remove selected text.
+            this->setText(this->text().erase(selection.begin, selection.end - selection.begin));
+
+            // Reset selection after deletion.
+            selection.x_end = selection.x_begin;
+            selection.end = selection.begin;
+            this->m_cursor_position = selection.x_begin;
+            this->m_cursor_index = selection.begin;
+        } else {
+            this->deleteAt(m_cursor_index);
+        }
         this->updateView();
     });
     this->bind(SDLK_LEFT, Mod::Ctrl, [&]{
