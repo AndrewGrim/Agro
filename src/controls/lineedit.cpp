@@ -96,18 +96,26 @@ LineEdit::LineEdit(std::string text) : Widget() {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
         this->selection.mouse_selection = false;
     };
-    this->bind(SDLK_LEFT, Mod::None, [&]{
+    auto left = [&]{
         this->moveCursorLeft();
-    });
-    this->bind(SDLK_RIGHT, Mod::None, [&]{
+    };
+    this->bind(SDLK_LEFT, Mod::None, left);
+    this->bind(SDLK_LEFT, Mod::Shift, left);
+    auto right = [&]{
         this->moveCursorRight();
-    });
-    this->bind(SDLK_HOME, Mod::None, [&]{
+    };
+    this->bind(SDLK_RIGHT, Mod::None, right);
+    this->bind(SDLK_RIGHT, Mod::Shift, right);
+    auto home = [&]{
         this->moveCursorBegin();
-    });
-    this->bind(SDLK_END, Mod::None, [&]{
+    };
+    this->bind(SDLK_HOME, Mod::None, home);
+    this->bind(SDLK_HOME, Mod::Shift, home);
+    auto end = [&]{
         this->moveCursorEnd();
-    });
+    };
+    this->bind(SDLK_END, Mod::None, end);
+    this->bind(SDLK_END, Mod::Shift, end);
     this->bind(SDLK_BACKSPACE, Mod::None, [&]{
         if (selection.hasSelection()) {
             this->deleteSelection();
@@ -125,12 +133,16 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
         this->updateView();
     });
-    this->bind(SDLK_LEFT, Mod::Ctrl, [&]{
+    auto jump_left = [&]{
         this->jumpWordLeft();
-    });
-    this->bind(SDLK_RIGHT, Mod::Ctrl, [&]{
+    };
+    this->bind(SDLK_LEFT, Mod::Ctrl, jump_left);
+    this->bind(SDLK_LEFT, Mod::Ctrl|Mod::Shift, jump_left);
+    auto jump_right = [&]{
         this->jumpWordRight();
-    });
+    };
+    this->bind(SDLK_RIGHT, Mod::Ctrl, jump_right);
+    this->bind(SDLK_RIGHT, Mod::Ctrl|Mod::Shift, jump_right);
 }
 
 LineEdit::~LineEdit() {
@@ -328,6 +340,10 @@ LineEdit* LineEdit::moveCursorLeft() {
         selection.end--;
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
         selection.x_end -= char_size;
+        if (!isShiftPressed()) {
+            selection.x_begin = selection.x_end;
+            selection.begin = selection.end;
+        }
         if (!selection.end) {
             m_current_view = m_min_view;
         } else {
@@ -345,6 +361,10 @@ LineEdit* LineEdit::moveCursorRight() {
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
         selection.x_end += char_size;
         selection.end++;
+        if (!isShiftPressed()) {
+            selection.x_begin = selection.x_end;
+            selection.begin = selection.end;
+        }
         if (selection.end == text().size()) {
             m_current_view = m_max_view;
         } else {
@@ -359,6 +379,10 @@ LineEdit* LineEdit::moveCursorRight() {
 LineEdit* LineEdit::moveCursorBegin() {
     selection.x_end = this->padding() + (this->borderWidth() / 2);
     selection.end = 0;
+    if (!isShiftPressed()) {
+        selection.x_begin = selection.x_end;
+        selection.begin = selection.end;
+    }
     m_current_view = m_min_view;
     update();
     
@@ -368,6 +392,10 @@ LineEdit* LineEdit::moveCursorBegin() {
 LineEdit* LineEdit::moveCursorEnd() {
     selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
     selection.end = text().size();
+    if (!isShiftPressed()) {
+        selection.x_begin = selection.x_end;
+        selection.begin = selection.end;
+    }
     m_current_view = m_max_view;
     update();
     
