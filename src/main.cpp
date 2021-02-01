@@ -34,14 +34,14 @@ int main(int argc, char **argv) {
     // for (int i = 0; i < 1000000; i++) {
     //     app->append(new Button(std::to_string(i)), Fill::Both);
     // }
-    int map_key = app->bind(
-        SDLK_q,
-        Mod::None, 
-        [&]{
-            println("Q");
-            app->resize(800, 800);
-        }
-    );
+    // int map_key = app->bind(
+    //     SDLK_q,
+    //     Mod::None, 
+    //     [&]{
+    //         println("Q");
+    //         app->resize(800, 800);
+    //     }
+    // );
     // app->unbind(map_key);
     app->bind(
         SDLK_q,
@@ -83,9 +83,9 @@ int main(int argc, char **argv) {
                         _b->setBackground(Color(1, 0, 1, 1));
                         LineEdit *ln = new LineEdit("Fill::None");
                             // ln->setMinLength(80);
-                            ln->bind(SDLK_a, Mod::Ctrl, []{
-                                println("Ctrl+A");
-                            });
+                            // ln->bind(SDLK_a, Mod::Ctrl, []{
+                            //     println("Ctrl+A");
+                            // });
                         _b->append(ln, Fill::None);
                         LineEdit *lb = new LineEdit("Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both Fill::Both");
                             lb->setPlaceholderText("Nothing to see here!");
