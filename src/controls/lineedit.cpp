@@ -395,8 +395,10 @@ LineEdit* LineEdit::deleteAt(int index) {
 LineEdit* LineEdit::clear() {
     m_text.clear();
     m_text_changed = true;
-    selection.begin = 0;
     selection.x_begin = padding() + (borderWidth() / 2);
+    selection.begin = 0;
+    selection.x_end = selection.x_begin;
+    selection.end = selection.begin;
     m_current_view = m_min_view;
     update();
 
