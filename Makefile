@@ -93,3 +93,5 @@ test_scrolledbox_inception_clipping:
 	$(CXX) tests/scrolledbox_inception_clipping.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_inception_clipping.out && ./scrolledbox_inception_clipping.out
 test_lineedit_search:
 	$(CXX) tests/lineedit_search.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o lineedit_search.out && ./lineedit_search.out
+test_keybindings:
+	$(CXX) tests/keybindings.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o keybindings.out && ./keybindings.out
