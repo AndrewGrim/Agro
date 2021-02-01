@@ -146,6 +146,15 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->bind(SDLK_a, Mod::Ctrl, [&]{
         this->selectAll();
     });
+    this->bind(SDLK_v, Mod::Ctrl, [&]{
+        if (SDL_HasClipboardText()) {
+            char *s = SDL_GetClipboardText();
+            if (s) {
+                this->insert(selection.end, s);
+                SDL_free(s);
+            }
+        }
+    });
 }
 
 LineEdit::~LineEdit() {
