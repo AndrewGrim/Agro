@@ -12,6 +12,11 @@
         float x_end = 0.0;
         bool mouse_selection = false;
 
+        Selection(float padding_and_border) {
+            x_begin = padding_and_border;
+            x_end = padding_and_border;
+        }
+
         bool hasSelection() {
             return begin != end;
         }
@@ -58,6 +63,6 @@
             float m_current_view = m_min_view;
             Size m_virtual_size = Size();
             bool m_text_changed = false;
-            Selection selection = Selection();
+            Selection selection = Selection(this->padding() + (this->borderWidth() / 2));
     };
 #endif
