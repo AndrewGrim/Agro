@@ -435,6 +435,9 @@ LineEdit* LineEdit::deleteAt(int index) {
         m_text.erase(index, 1);
         m_text_changed = true;
         update();
+        if (onTextChanged) {
+            onTextChanged();
+        }
     }
 
     return this;
@@ -449,6 +452,9 @@ LineEdit* LineEdit::clear() {
     selection.end = selection.begin;
     m_current_view = m_min_view;
     update();
+    if (onTextChanged) {
+        onTextChanged();
+    }
 
     return this;
 }
@@ -519,6 +525,9 @@ void LineEdit::deleteSelection() {
     // Reset selection after deletion.
     selection.x_end = selection.x_begin;
     selection.end = selection.begin;
+    if (onTextChanged) {
+        onTextChanged();
+    }
 }
 
 void LineEdit::selectAll() {
@@ -561,4 +570,7 @@ void LineEdit::insert(size_t index, const char *text) {
         m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
+    if (onTextChanged) {
+        onTextChanged();
+    }
 }

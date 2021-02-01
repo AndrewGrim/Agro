@@ -24,6 +24,8 @@
 
     class LineEdit : public Widget {
         public:
+            std::function<void()> onTextChanged = nullptr;
+
             LineEdit(std::string text = "");
             ~LineEdit();
             virtual const char* name() override;
