@@ -20,6 +20,7 @@
         std::vector<HistoryItem> items;
         size_t index = 0;
         bool undo_end = true;
+        bool redo_end = true;
 
         History() {
 
