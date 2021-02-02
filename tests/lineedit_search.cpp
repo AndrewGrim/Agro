@@ -27,11 +27,15 @@ int main() {
                     results_view->children[0]->destroy();
                 }
                 for (auto m : monster_names) {
-                    auto compare = m;
-                    std::transform(compare.begin(), compare.end(), compare.begin(), [](unsigned char c){
+                    auto monster = m;
+                    std::transform(monster.begin(), monster.end(), monster.begin(), [](unsigned char c){
                         return std::tolower(c);
                     });
-                    if (compare.find(edit->text()) != std::string::npos || !edit->text().size()) {
+                    auto search_phrase = edit->text();
+                    std::transform(search_phrase.begin(), search_phrase.end(), search_phrase.begin(), [](unsigned char c){
+                        return std::tolower(c);
+                    });
+                    if (monster.find(search_phrase) != std::string::npos || !search_phrase.size()) {
                         results_view->append(new Label(m));
                     }
                 }
