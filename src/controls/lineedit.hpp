@@ -97,6 +97,8 @@
             void swapSelection();
             void insert(size_t index, const char *text, bool skip = false);
             void setCursor(size_t index);
+            void undo();
+            void redo();
 
         protected:
             std::string m_text;
