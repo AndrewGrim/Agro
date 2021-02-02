@@ -601,7 +601,7 @@ void LineEdit::swapSelection() {
 
 void LineEdit::insert(size_t index, const char *text, bool skip) {
     if (m_selection.hasSelection()) {
-        deleteSelection();
+        deleteSelection(skip);
     }
 
     if (!skip) {
