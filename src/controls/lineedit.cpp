@@ -163,7 +163,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     });
     this->bind(SDLK_z, Mod::Ctrl, [&]{
-        if (!history.done) {
+        if (!history.undo_end) {
             HistoryItem item = history.get(history.index);
             if (item.action == HistoryItem::Action::Delete) {
                 insert(item.index, item.text.c_str(), true);
@@ -175,7 +175,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 setCursor(item.index);
             }
             if (!history.index) {
-                history.done = true;
+                history.undo_end = true;
             } else {
                 history.index--;
             }
@@ -194,7 +194,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 setCursor(item.index + item.text.size());
             }
             if (!history.index) {
-                history.done = false;
+                history.undo_end = false;
             }
             if (history.index < history.items.size() - 1) {
                 history.index++;

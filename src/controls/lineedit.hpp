@@ -19,7 +19,7 @@
     struct History {
         std::vector<HistoryItem> items;
         size_t index = 0;
-        bool done = true;
+        bool undo_end = true;
 
         History() {
 
@@ -34,13 +34,13 @@
         void append(HistoryItem item) {
             if (index && index < items.size() - 1) {
                 items.erase(items.begin() + index + 1, items.end());
-            } else if (done) {
+            } else if (undo_end) {
                 items.erase(items.begin(), items.end());
             }
 
             items.push_back(item);
             index = !items.size() ? items.size() : items.size() - 1;
-            done = false;
+            undo_end = false;
         }
     };
 
