@@ -5,6 +5,45 @@
 
     #include "widget.hpp"
 
+    struct HistoryItem {
+        enum class Action {
+            Delete,
+            Insert,
+        };
+
+        Action action;
+        std::string text = "";
+        size_t index;
+    };
+
+    struct History {
+        std::vector<HistoryItem> items;
+        size_t index = 0;
+        bool done = true;
+
+        History() {
+
+        }
+
+        HistoryItem get(size_t index) {
+            HistoryItem item = items[index];
+            index = !index ? index : items.size() - 1;
+            return item;
+        }
+
+        void append(HistoryItem item) {
+            if (index && index < items.size() - 1) {
+                items.erase(items.begin() + index + 1, items.end());
+            } else if (done) {
+                items.erase(items.begin(), items.end());
+            }
+
+            items.push_back(item);
+            index = !items.size() ? items.size() : items.size() - 1;
+            done = false;
+        }
+    };
+
     struct Selection {
         size_t begin = 0;
         size_t end = 0;
@@ -69,5 +108,6 @@
             Size m_virtual_size = Size();
             bool m_text_changed = false;
             Selection selection = Selection(this->padding() + (this->borderWidth() / 2));
+            History history = History();
     };
 #endif
