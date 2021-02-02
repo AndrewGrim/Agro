@@ -583,3 +583,33 @@ void LineEdit::insert(size_t index, const char *text, bool skip) {
         onTextChanged();
     }
 }
+
+void LineEdit::setCursor(size_t index) {
+    if (!index) {
+        this->selection.x_begin = this->padding() + (this->borderWidth() / 2);
+        this->selection.begin = 0;
+        this->selection.x_end = this->selection.x_begin;
+        this->selection.end = 0;
+    } else {
+        Rect local_rect = this->rect;
+        if (!(m_virtual_size.w < rect.w)) {
+            local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
+        }
+        DrawingContext *dc = ((Application*)this->app)->dc;
+        float x = this->padding() + (this->borderWidth() / 2);
+        size_t local_index = 0;
+        for (char c : this->text()) {
+            float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+            x += w;
+            local_index++;
+            if (index == local_index) {
+                break;
+            }
+        }
+        this->selection.x_begin = x;
+        this->selection.begin = local_index;
+        this->selection.x_end = x;
+        this->selection.end = local_index;
+    }
+    update();
+}
