@@ -26,6 +26,7 @@
         Action action;
         std::string text = "";
         size_t index;
+        Selection selection;
     };
 
     struct History {
@@ -54,23 +55,6 @@
             items.push_back(item);
             index = !items.size() ? items.size() : items.size() - 1;
             undo_end = false;
-        }
-    };
-
-    struct Selection {
-        size_t begin = 0;
-        size_t end = 0;
-        float x_begin = 0.0;
-        float x_end = 0.0;
-        bool mouse_selection = false;
-
-        Selection(float padding_and_border) {
-            x_begin = padding_and_border;
-            x_end = padding_and_border;
-        }
-
-        bool hasSelection() {
-            return begin != end;
         }
     };
 
