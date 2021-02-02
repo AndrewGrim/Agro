@@ -169,6 +169,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 insert(item.index, item.text.c_str(), true);
                 setCursor(item.index + item.text.size());
             } else {
+                // TODO handles more than one char
+                // like when pasting from clipboard
                 deleteAt(item.index, true);
                 setCursor(item.index);
             }
