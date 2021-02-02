@@ -5,6 +5,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
     Widget::m_bg = Color(1, 1, 1);
     this->setText(text);
     this->setPlaceholderText("");
+    this->m_selection.x_begin = padding() + (borderWidth() / 2);
+    this->m_selection.x_end = padding() + (borderWidth() / 2);
     this->onMouseDown = [&](MouseEvent event) {
         this->m_selection.mouse_selection = true;
         if (!this->text().length()) {

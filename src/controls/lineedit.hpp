@@ -5,6 +5,18 @@
 
     #include "widget.hpp"
 
+    struct Selection {
+        size_t begin = 0;
+        size_t end = 0;
+        float x_begin = 0.0;
+        float x_end = 0.0;
+        bool mouse_selection = false;
+
+        bool hasSelection() {
+            return begin != end;
+        }
+    };
+
     struct HistoryItem {
         enum class Action {
             Delete,
@@ -111,7 +123,7 @@
             float m_current_view = m_min_view;
             Size m_virtual_size = Size();
             bool m_text_changed = false;
-            Selection m_selection = Selection(this->padding() + (this->borderWidth() / 2));
-            History m_history = History();
+            Selection m_selection;
+            History m_history;
     };
 #endif
