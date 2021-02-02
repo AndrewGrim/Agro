@@ -6,9 +6,9 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->setText(text);
     this->setPlaceholderText("");
     this->onMouseDown = [&](MouseEvent event) {
-        this->selection.mouse_selection = true;
+        this->m_selection.mouse_selection = true;
         if (!this->text().length()) {
-            this->selection.x_begin = this->padding() + (this->borderWidth() / 2);
+            this->m_selection.x_begin = this->padding() + (this->borderWidth() / 2);
         } else {
             Rect local_rect = this->rect;
             if (!(m_virtual_size.w < rect.w)) {
@@ -29,10 +29,10 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 x += w;
                 index++;
             }
-            this->selection.x_begin = x;
-            this->selection.begin = index;
-            this->selection.x_end = x;
-            this->selection.end = index;
+            this->m_selection.x_begin = x;
+            this->m_selection.begin = index;
+            this->m_selection.x_end = x;
+            this->m_selection.end = index;
         }
     };
     this->onMouseMotion = [&](MouseEvent event) {
@@ -48,8 +48,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
             }
             DrawingContext *dc = ((Application*)this->app)->dc;
 
-            float x = selection.x_begin;
-            size_t index = selection.begin;
+            float x = m_selection.x_begin;
+            size_t index = m_selection.begin;
 
             // Selection is to the right of the origin point.
             if (event.x >= x) {
@@ -81,20 +81,20 @@ LineEdit::LineEdit(std::string text) : Widget() {
             } else {
                 m_current_view = (x - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
             }
-            this->selection.x_end = x;
-            this->selection.end = index;
+            this->m_selection.x_end = x;
+            this->m_selection.end = index;
             update();
         }
     };
     this->onMouseUp = [&](MouseEvent event) {
-        this->selection.mouse_selection = false;
+        this->m_selection.mouse_selection = false;
     };
     this->onMouseEntered = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::IBeam);
     };
     this->onMouseLeft = [&](MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
-        this->selection.mouse_selection = false;
+        this->m_selection.mouse_selection = false;
     };
     auto left = [&]{
         this->moveCursorLeft();
@@ -117,19 +117,19 @@ LineEdit::LineEdit(std::string text) : Widget() {
     this->bind(SDLK_END, Mod::None, end);
     this->bind(SDLK_END, Mod::Shift, end);
     this->bind(SDLK_BACKSPACE, Mod::None, [&]{
-        if (selection.hasSelection()) {
+        if (m_selection.hasSelection()) {
             this->deleteSelection();
-        } else if (selection.begin) {
+        } else if (m_selection.begin) {
             this->moveCursorLeft();
-            this->deleteAt(selection.begin);
+            this->deleteAt(m_selection.begin);
         }
         this->updateView();
     });
     this->bind(SDLK_DELETE, Mod::None, [&]{
-        if (selection.hasSelection()) {
+        if (m_selection.hasSelection()) {
             this->deleteSelection();
         } else {
-            this->deleteAt(selection.begin);
+            this->deleteAt(m_selection.begin);
         }
         this->updateView();
     });
@@ -150,15 +150,15 @@ LineEdit::LineEdit(std::string text) : Widget() {
         if (SDL_HasClipboardText()) {
             char *s = SDL_GetClipboardText();
             if (s) {
-                this->insert(selection.end, s);
+                this->insert(m_selection.end, s);
                 SDL_free(s);
             }
         }
     });
     this->bind(SDLK_c, Mod::Ctrl, [&]{
-        if (selection.hasSelection()) {
+        if (m_selection.hasSelection()) {
             swapSelection();
-            std::string s = this->text().substr(selection.begin, selection.end);
+            std::string s = this->text().substr(m_selection.begin, m_selection.end);
             SDL_SetClipboardText(s.c_str());
         }
     });
@@ -244,26 +244,26 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         );
     // Draw normal text;
     } else {
-        if (selection.mouse_selection) {
+        if (m_selection.mouse_selection) {
             float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
             text_height += m_padding;
             dc->fillRect(
                 Rect(
-                    rect.x + selection.x_begin, 
+                    rect.x + m_selection.x_begin, 
                     rect.y + (rect.h / 2) - (text_height / 2), 
-                    selection.x_end - selection.x_begin, 
+                    m_selection.x_end - m_selection.x_begin, 
                     text_height
                 ),
                 Color(0.2, 0.5, 1.0)
             );
-        } else if (isFocused() && selection.hasSelection()) {
+        } else if (isFocused() && m_selection.hasSelection()) {
             float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
             text_height += m_padding;
             dc->fillRect(
                 Rect(
-                    rect.x + selection.x_begin, 
+                    rect.x + m_selection.x_begin, 
                     rect.y + (rect.h / 2) - (text_height / 2), 
-                    selection.x_end - selection.x_begin, 
+                    m_selection.x_end - m_selection.x_begin, 
                     text_height
                 ),
                 Color(0.2, 0.5, 1.0)
@@ -286,7 +286,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
         text_height += m_padding;
         dc->fillRect(
             Rect(
-                rect.x + this->selection.x_end, 
+                rect.x + this->m_selection.x_end, 
                 rect.y + (rect.h / 2) - (text_height / 2), 
                 1, 
                 text_height
@@ -362,7 +362,7 @@ LineEdit* LineEdit::setPadding(unsigned int padding) {
 }
 
 void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
-    insert(selection.end, text);
+    insert(m_selection.end, text);
 }
 
 float LineEdit::minLength() {
@@ -381,33 +381,33 @@ LineEdit* LineEdit::setMinLength(float length) {
 }
 
 LineEdit* LineEdit::moveCursorLeft() {
-    if (selection.end == 0) {
-       if (selection.hasSelection()) {
+    if (m_selection.end == 0) {
+       if (m_selection.hasSelection()) {
             swapSelection();
-            selection.x_end = selection.x_begin;
-            selection.end = selection.begin;
+            m_selection.x_end = m_selection.x_begin;
+            m_selection.end = m_selection.begin;
         }
-    } else if (selection.end && app) {
-        if (selection.hasSelection() && !isShiftPressed()) {
+    } else if (m_selection.end && app) {
+        if (m_selection.hasSelection() && !isShiftPressed()) {
             swapSelection();
-            selection.x_end = selection.x_begin;
-            selection.end = selection.begin;
+            m_selection.x_end = m_selection.x_begin;
+            m_selection.end = m_selection.begin;
             goto END;
         }
         DrawingContext *dc = ((Application*)this->app)->dc;
-        selection.end--;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
-        selection.x_end -= char_size;
+        m_selection.end--;
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_selection.end]).w;
+        m_selection.x_end -= char_size;
         if (!isShiftPressed()) {
-            selection.x_begin = selection.x_end;
-            selection.begin = selection.end;
+            m_selection.x_begin = m_selection.x_end;
+            m_selection.begin = m_selection.end;
         }
     }
     END:;
-    if (!selection.end) {
+    if (!m_selection.end) {
         m_current_view = m_min_view;
     } else {
-        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (m_selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
 
@@ -415,32 +415,32 @@ LineEdit* LineEdit::moveCursorLeft() {
 }
 
 LineEdit* LineEdit::moveCursorRight() {
-    if (selection.end == text().size()) {
-       if (selection.hasSelection()) {
-            selection.x_begin = selection.x_end;
-            selection.begin = selection.end;
+    if (m_selection.end == text().size()) {
+       if (m_selection.hasSelection()) {
+            m_selection.x_begin = m_selection.x_end;
+            m_selection.begin = m_selection.end;
         }
-    } else if (selection.end < text().size() && app) {
-        if (selection.hasSelection() && !isShiftPressed()) {
+    } else if (m_selection.end < text().size() && app) {
+        if (m_selection.hasSelection() && !isShiftPressed()) {
             swapSelection();
-            selection.x_begin = selection.x_end;
-            selection.begin = selection.end;
+            m_selection.x_begin = m_selection.x_end;
+            m_selection.begin = m_selection.end;
             goto END;
         }
         DrawingContext *dc = ((Application*)this->app)->dc;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[selection.end]).w;
-        selection.x_end += char_size;
-        selection.end++;
+        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_selection.end]).w;
+        m_selection.x_end += char_size;
+        m_selection.end++;
         if (!isShiftPressed()) {
-            selection.x_begin = selection.x_end;
-            selection.begin = selection.end;
+            m_selection.x_begin = m_selection.x_end;
+            m_selection.begin = m_selection.end;
         }
     }
     END:;
-    if (selection.end == text().size()) {
+    if (m_selection.end == text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (m_selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
 
@@ -448,11 +448,11 @@ LineEdit* LineEdit::moveCursorRight() {
 }
 
 LineEdit* LineEdit::moveCursorBegin() {
-    selection.x_end = this->padding() + (this->borderWidth() / 2);
-    selection.end = 0;
+    m_selection.x_end = this->padding() + (this->borderWidth() / 2);
+    m_selection.end = 0;
     if (!isShiftPressed()) {
-        selection.x_begin = selection.x_end;
-        selection.begin = selection.end;
+        m_selection.x_begin = m_selection.x_end;
+        m_selection.begin = m_selection.end;
     }
     m_current_view = m_min_view;
     update();
@@ -461,11 +461,11 @@ LineEdit* LineEdit::moveCursorBegin() {
 }
 
 LineEdit* LineEdit::moveCursorEnd() {
-    selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
-    selection.end = text().size();
+    m_selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
+    m_selection.end = text().size();
     if (!isShiftPressed()) {
-        selection.x_begin = selection.x_end;
-        selection.begin = selection.end;
+        m_selection.x_begin = m_selection.x_end;
+        m_selection.begin = m_selection.end;
     }
     m_current_view = m_max_view;
     update();
@@ -492,10 +492,10 @@ LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
 LineEdit* LineEdit::clear() {
     m_text.clear();
     m_text_changed = true;
-    selection.x_begin = padding() + (borderWidth() / 2);
-    selection.begin = 0;
-    selection.x_end = selection.x_begin;
-    selection.end = selection.begin;
+    m_selection.x_begin = padding() + (borderWidth() / 2);
+    m_selection.begin = 0;
+    m_selection.x_end = m_selection.x_begin;
+    m_selection.end = m_selection.begin;
     m_current_view = m_min_view;
     update();
     if (onTextChanged) {
@@ -521,21 +521,21 @@ LineEdit* LineEdit::updateView() {
     // but the result is the same with begin and end
     // and it shouldnt be????
     // so changed it to end so its consistent with the rest of the file
-    if (!selection.end) {
+    if (!m_selection.end) {
         m_current_view = m_min_view;
-    } else if (selection.end == text().size()) {
+    } else if (m_selection.end == text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (m_selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
     return this;
 }
 
 LineEdit* LineEdit::jumpWordLeft() {
-    while (selection.end) {
+    while (m_selection.end) {
         moveCursorLeft();
-        if (text()[selection.end] == ' ') {
+        if (text()[m_selection.end] == ' ') {
             break;
         }
     }
@@ -544,9 +544,9 @@ LineEdit* LineEdit::jumpWordLeft() {
 }
 
 LineEdit* LineEdit::jumpWordRight() {
-    while (selection.end < text().size()) {
+    while (m_selection.end < text().size()) {
         moveCursorRight();
-        if (text()[selection.end] == ' ') {
+        if (text()[m_selection.end] == ' ') {
             break;
         }
     }
@@ -566,60 +566,60 @@ void LineEdit::deleteSelection(bool skip) {
     // Swap selection when the begin index is higher than the end index.
     swapSelection();
     if (!skip) {
-        m_history.append({HistoryItem::Action::Delete, m_text.substr(selection.begin, selection.end - selection.begin), selection.begin});
+        m_history.append({HistoryItem::Action::Delete, m_text.substr(m_selection.begin, m_selection.end - m_selection.begin), m_selection.begin});
     }
     // Remove selected text.
-    this->setText(this->text().erase(selection.begin, selection.end - selection.begin));
+    this->setText(this->text().erase(m_selection.begin, m_selection.end - m_selection.begin));
 
     // Reset selection after deletion.
-    selection.x_end = selection.x_begin;
-    selection.end = selection.begin;
+    m_selection.x_end = m_selection.x_begin;
+    m_selection.end = m_selection.begin;
     if (onTextChanged) {
         onTextChanged();
     }
 }
 
 void LineEdit::selectAll() {
-    selection.x_begin = this->padding() + (this->borderWidth() / 2);
-    selection.begin = 0;
-    selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
-    selection.end = text().size();
+    m_selection.x_begin = this->padding() + (this->borderWidth() / 2);
+    m_selection.begin = 0;
+    m_selection.x_end = m_virtual_size.w - (this->padding() + (this->borderWidth() / 2));
+    m_selection.end = text().size();
     m_current_view = m_max_view;
     update();
 }
 
 void LineEdit::swapSelection() {
-    if (selection.begin > selection.end) {
-        float temp_x = selection.x_end;
-        size_t temp = selection.end;
-        selection.x_end = selection.x_begin;
-        selection.end = selection.begin;
-        selection.x_begin = temp_x;
-        selection.begin = temp;
+    if (m_selection.begin > m_selection.end) {
+        float temp_x = m_selection.x_end;
+        size_t temp = m_selection.end;
+        m_selection.x_end = m_selection.x_begin;
+        m_selection.end = m_selection.begin;
+        m_selection.x_begin = temp_x;
+        m_selection.begin = temp;
     }
 }
 
 void LineEdit::insert(size_t index, const char *text, bool skip) {
-    if (selection.hasSelection()) {
+    if (m_selection.hasSelection()) {
         deleteSelection();
     }
 
     if (!skip) {
-        m_history.append({HistoryItem::Action::Insert, text, selection.end});
+        m_history.append({HistoryItem::Action::Insert, text, m_selection.end});
     }
-    m_text.insert(selection.end, text);
+    m_text.insert(m_selection.end, text);
     m_text_changed = true;
 
     DrawingContext *dc = ((Application*)this->app)->dc;
-    selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
-    selection.end += strlen(text);
-    selection.x_begin = selection.x_end;
-    selection.begin = selection.end;
+    m_selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
+    m_selection.end += strlen(text);
+    m_selection.x_begin = m_selection.x_end;
+    m_selection.begin = m_selection.end;
 
-    if (selection.end == this->text().size()) {
+    if (m_selection.end == this->text().size()) {
         m_current_view = m_max_view;
     } else {
-        m_current_view = (selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
+        m_current_view = (m_selection.x_end - m_padding - (m_border_width / 2)) / (m_virtual_size.w - m_padding - (m_border_width / 2));
     }
     update();
     if (onTextChanged) {
@@ -629,10 +629,10 @@ void LineEdit::insert(size_t index, const char *text, bool skip) {
 
 void LineEdit::setCursor(size_t index) {
     if (!index) {
-        this->selection.x_begin = this->padding() + (this->borderWidth() / 2);
-        this->selection.begin = 0;
-        this->selection.x_end = this->selection.x_begin;
-        this->selection.end = 0;
+        this->m_selection.x_begin = this->padding() + (this->borderWidth() / 2);
+        this->m_selection.begin = 0;
+        this->m_selection.x_end = this->m_selection.x_begin;
+        this->m_selection.end = 0;
     } else {
         Rect local_rect = this->rect;
         if (!(m_virtual_size.w < rect.w)) {
@@ -649,10 +649,10 @@ void LineEdit::setCursor(size_t index) {
                 break;
             }
         }
-        this->selection.x_begin = x;
-        this->selection.begin = local_index;
-        this->selection.x_end = x;
-        this->selection.end = local_index;
+        this->m_selection.x_begin = x;
+        this->m_selection.begin = local_index;
+        this->m_selection.x_end = x;
+        this->m_selection.end = local_index;
     }
     update();
 }
