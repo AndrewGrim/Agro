@@ -162,6 +162,26 @@ LineEdit::LineEdit(std::string text) : Widget() {
             SDL_SetClipboardText(s.c_str());
         }
     });
+    this->bind(SDLK_z, Mod::Ctrl, [&]{
+        if (!history.done) {
+            HistoryItem item = history.get(history.index);
+            if (item.action == HistoryItem::Action::Delete) {
+                insert(item.index, item.text.c_str(), true);
+                setCursor(item.index + item.text.size());
+            } else {
+                deleteAt(item.index, true);
+                setCursor(item.index);
+            }
+            if (!history.index) {
+                history.done = true;
+            } else {
+                history.index--;
+            }
+        }
+    });
+    this->bind(SDLK_y, Mod::Ctrl, [&]{
+        // TODO implement
+    });
 }
 
 LineEdit::~LineEdit() {
