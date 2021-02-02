@@ -83,7 +83,7 @@
             LineEdit* moveCursorRight();
             LineEdit* moveCursorBegin();
             LineEdit* moveCursorEnd();
-            LineEdit* deleteAt(size_t index);
+            LineEdit* deleteAt(size_t index, bool skip = false);
             LineEdit* clear();
             LineEdit* setPlaceholderText(std::string text);
             std::string placeholderText();
@@ -91,10 +91,10 @@
             LineEdit* jumpWordLeft();
             LineEdit* jumpWordRight();
             bool isShiftPressed();
-            void deleteSelection();
+            void deleteSelection(bool skip = false);
             void selectAll();
             void swapSelection();
-            void insert(size_t index, const char *text);
+            void insert(size_t index, const char *text, bool skip = false);
 
         protected:
             std::string m_text;

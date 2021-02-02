@@ -430,8 +430,11 @@ LineEdit* LineEdit::moveCursorEnd() {
     return this;
 }
 
-LineEdit* LineEdit::deleteAt(size_t index) {
-    if (index > -1 && index < text().size()) {
+LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
+    if (index >= 0 && index < text().size()) {
+        if (!skip) {
+            history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), index});
+        }
         m_text.erase(index, 1);
         m_text_changed = true;
         update();
@@ -516,9 +519,12 @@ bool LineEdit::isShiftPressed() {
     return false;
 }
 
-void LineEdit::deleteSelection() {
+void LineEdit::deleteSelection(bool skip) {
     // Swap selection when the begin index is higher than the end index.
     swapSelection();
+    if (!skip) {
+        history.append({HistoryItem::Action::Delete, m_text.substr(selection.begin, selection.end - selection.begin), selection.begin});
+    }
     // Remove selected text.
     this->setText(this->text().erase(selection.begin, selection.end - selection.begin));
 
@@ -550,11 +556,14 @@ void LineEdit::swapSelection() {
     }
 }
 
-void LineEdit::insert(size_t index, const char *text) {
+void LineEdit::insert(size_t index, const char *text, bool skip) {
     if (selection.hasSelection()) {
         deleteSelection();
     }
 
+    if (!skip) {
+        history.append({HistoryItem::Action::Insert, text, selection.end});
+    }
     m_text.insert(selection.end, text);
     m_text_changed = true;
 
