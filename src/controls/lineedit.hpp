@@ -110,6 +110,6 @@
             Size m_virtual_size = Size();
             bool m_text_changed = false;
             Selection selection = Selection(this->padding() + (this->borderWidth() / 2));
-            History history = History();
+            History m_history = History();
     };
 #endif

@@ -163,8 +163,8 @@ LineEdit::LineEdit(std::string text) : Widget() {
         }
     });
     this->bind(SDLK_z, Mod::Ctrl, [&]{
-        if (!history.undo_end) {
-            HistoryItem item = history.get(history.index);
+        if (!m_history.undo_end) {
+            HistoryItem item = m_history.get(m_history.index);
             if (item.action == HistoryItem::Action::Delete) {
                 insert(item.index, item.text.c_str(), true);
                 setCursor(item.index + item.text.size());
@@ -174,17 +174,17 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 }
                 setCursor(item.index);
             }
-            if (!history.index) {
-                history.undo_end = true;
+            if (!m_history.index) {
+                m_history.undo_end = true;
             } else {
-                history.index--;
+                m_history.index--;
             }
-            history.redo_end = false;
+            m_history.redo_end = false;
         }
     });
     this->bind(SDLK_y, Mod::Ctrl, [&]{
-        if (history.index < history.items.size() && !history.redo_end) {
-            HistoryItem item = history.get(history.index);
+        if (m_history.index < m_history.items.size() && !m_history.redo_end) {
+            HistoryItem item = m_history.get(m_history.index);
             if (item.action == HistoryItem::Action::Delete) {
                 for (char c : item.text) {
                     deleteAt(item.index, true);
@@ -194,13 +194,13 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 insert(item.index, item.text.c_str(), true);
                 setCursor(item.index + item.text.size());
             }
-            if (!history.index) {
-                history.undo_end = false;
+            if (!m_history.index) {
+                m_history.undo_end = false;
             }
-            if (history.index < history.items.size() - 1) {
-                history.index++;
+            if (m_history.index < m_history.items.size() - 1) {
+                m_history.index++;
             } else {
-                history.redo_end = true;
+                m_history.redo_end = true;
             }
 
         }
@@ -476,7 +476,7 @@ LineEdit* LineEdit::moveCursorEnd() {
 LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
     if (index >= 0 && index < text().size()) {
         if (!skip) {
-            history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), index});
+            m_history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), index});
         }
         m_text.erase(index, 1);
         m_text_changed = true;
@@ -566,7 +566,7 @@ void LineEdit::deleteSelection(bool skip) {
     // Swap selection when the begin index is higher than the end index.
     swapSelection();
     if (!skip) {
-        history.append({HistoryItem::Action::Delete, m_text.substr(selection.begin, selection.end - selection.begin), selection.begin});
+        m_history.append({HistoryItem::Action::Delete, m_text.substr(selection.begin, selection.end - selection.begin), selection.begin});
     }
     // Remove selected text.
     this->setText(this->text().erase(selection.begin, selection.end - selection.begin));
@@ -605,7 +605,7 @@ void LineEdit::insert(size_t index, const char *text, bool skip) {
     }
 
     if (!skip) {
-        history.append({HistoryItem::Action::Insert, text, selection.end});
+        m_history.append({HistoryItem::Action::Insert, text, selection.end});
     }
     m_text.insert(selection.end, text);
     m_text_changed = true;
