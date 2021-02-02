@@ -169,6 +169,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 insert(item.index, item.text.c_str(), true);
                 setCursor(item.index + item.text.size());
             } else {
+                // TODO probably switch to delete selection since this will create multiple onTextChanged events
                 for (char c : item.text) {
                     deleteAt(item.index, true);
                 }
@@ -186,6 +187,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
         if (m_history.index < m_history.items.size() && !m_history.redo_end) {
             HistoryItem item = m_history.get(m_history.index);
             if (item.action == HistoryItem::Action::Delete) {
+                // TODO probably switch to delete selection since this will create multiple onTextChanged events
                 for (char c : item.text) {
                     deleteAt(item.index, true);
                 }
