@@ -169,9 +169,9 @@ LineEdit::LineEdit(std::string text) : Widget() {
                 insert(item.index, item.text.c_str(), true);
                 setCursor(item.index + item.text.size());
             } else {
-                // TODO handles more than one char
-                // like when pasting from clipboard
-                deleteAt(item.index, true);
+                for (char c : item.text) {
+                    deleteAt(item.index, true);
+                }
                 setCursor(item.index);
             }
             if (!history.index) {
@@ -185,9 +185,9 @@ LineEdit::LineEdit(std::string text) : Widget() {
         if (history.index < history.items.size()) {
             HistoryItem item = history.get(history.index);
             if (item.action == HistoryItem::Action::Delete) {
-                // TODO handles more than one char
-                // like when pasting from clipboard
-                deleteAt(item.index, true);
+                for (char c : item.text) {
+                    deleteAt(item.index, true);
+                }
                 setCursor(item.index);
             } else {
                 insert(item.index, item.text.c_str(), true);
