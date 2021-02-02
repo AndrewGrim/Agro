@@ -430,7 +430,7 @@ LineEdit* LineEdit::moveCursorEnd() {
     return this;
 }
 
-LineEdit* LineEdit::deleteAt(int index) {
+LineEdit* LineEdit::deleteAt(size_t index) {
     if (index > -1 && index < text().size()) {
         m_text.erase(index, 1);
         m_text_changed = true;

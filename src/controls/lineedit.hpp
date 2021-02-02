@@ -44,7 +44,7 @@
             LineEdit* moveCursorRight();
             LineEdit* moveCursorBegin();
             LineEdit* moveCursorEnd();
-            LineEdit* deleteAt(int index);
+            LineEdit* deleteAt(size_t index);
             LineEdit* clear();
             LineEdit* setPlaceholderText(std::string text);
             std::string placeholderText();
