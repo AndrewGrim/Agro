@@ -104,6 +104,76 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
     return false;
 }
 
+NoteBookTabButton::NoteBookTabButton(std::string text, Image *image) : Button(text) {
+    setBorderWidth(1);
+}
+
+NoteBookTabButton::~NoteBookTabButton() {
+
+}
+
+const char* NoteBookTabButton::name() {
+    return "NoteBookTabButton";
+}
+
+void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
+    this->rect = rect;
+    Color color; 
+    // TODO isActive??
+    if (this->isPressed() && this->isHovered()) {
+        color = this->m_pressed_bg; 
+    } else if (this->isHovered()) {
+        color = this->m_hovered_bg;
+    } else {
+        color = this->background();
+    }
+    
+    // Draw border and shrink rectangle to prevent drawing over the border
+    dc->fillRect(rect, foreground());
+    rect.shrink(m_border_width);
+
+    dc->fillRect(rect, color);
+    // Pad the rectangle with some empty space.
+    rect.shrink(m_padding);
+    Size text_size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+    if (this->m_image) {
+        Size image_size = m_image->sizeHint(dc);
+        dc->drawImageAtSize(
+            Point(
+                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
+            ),
+            image_size,
+            m_image,
+            m_image->foreground()
+        );
+        // Resize rect to account for image before the label is drawn.
+        rect.x += image_size.w;
+        rect.w -= image_size.w;
+    }
+    HorizontalAlignment h_text_align = m_horizontal_align;
+    VerticalAlignment v_text_align = m_vertical_align;
+    if (m_image) {
+        h_text_align = HorizontalAlignment::Center;
+        v_text_align = VerticalAlignment::Center;
+    }
+    if (this->m_text.length()) {
+        dc->fillTextAligned(
+            this->font() ? this->font() : dc->default_font,
+            this->m_text,
+            h_text_align,
+            v_text_align,
+            rect,
+            0,
+            this->m_fg
+        );
+    }
+}
+
+// Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
+
+// }
+
 NoteBook::NoteBook() {
 
 }
@@ -153,7 +223,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon) {
         root->attachApp(app);
     }
     this->append(root, Fill::Both);
-    Button *tab_button = new Button(text);
+    NoteBookTabButton *tab_button = new NoteBookTabButton(text);
     tab_button->onMouseClick = [=](MouseEvent event) {
         this->setCurrentTab(tab_button->parent_index);
     };

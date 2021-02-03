@@ -21,10 +21,15 @@
             virtual bool handleScrollEvent(ScrollEvent event) override;
     };
 
-    struct NoteBookTab {
-        Widget *root;
-        std::string text;
-        Image *icon;
+    class NoteBookTabButton : public Button {
+        public:
+            NoteBookTabButton(std::string text, Image *image = nullptr);
+            ~NoteBookTabButton();
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            // virtual Size sizeHint(DrawingContext *dc) override;
+            // TODO maybe override event prop for the close tab button
+            // virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
     };
 
     class NoteBook : public Widget {
