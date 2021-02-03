@@ -335,30 +335,20 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
     return this;
 }
 
-NoteBook* NoteBook::insertTab(Widget *root, std::string text, Image *icon) {
-    // TODO implement
-    return this;
-}
+// NoteBook* NoteBook::insertTab(Widget *root, std::string text, Image *icon) {
+//     // TODO implement
+//     return this;
+// }
 
 NoteBook* NoteBook::removeTab(int index) {
     // TODO implement
     return this;
 }
 
-NoteBook* NoteBook::setTabWidget(Widget *root) {
-    // TODO implement
-    return this;
-}
-
-NoteBook* NoteBook::setTabText(std::string text) {
-    // TODO implement
-    return this;
-}
-
-NoteBook* NoteBook::setTabIcon(Image *icon) {
-    // TODO implement
-    return this;
-}
+// NoteBook* NoteBook::setTabWidget(Widget *root) {
+//     // TODO implement
+//     return this;
+// }
 
 int NoteBook::currentTab() {
     return m_tab_index;

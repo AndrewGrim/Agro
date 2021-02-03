@@ -52,11 +52,9 @@
             virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
             virtual Widget* attachApp(void *app) override;
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
-            NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr);
+            // NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
             NoteBook* removeTab(int index);
-            NoteBook* setTabWidget(Widget *root);
-            NoteBook* setTabText(std::string text);
-            NoteBook* setTabIcon(Image *icon);
+            // NoteBook* setTabWidget(Widget *root);
             int currentTab();
             NoteBook* setCurrentTab(int index);
 
