@@ -28,8 +28,8 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
-            // TODO maybe override event prop for the close tab button
-            // virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
+            virtual bool isLayout() override;
+            virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
             bool isActive();
             void setActive(bool is_active);
             bool hasCloseButton();

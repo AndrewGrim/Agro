@@ -111,6 +111,11 @@ NoteBookTabButton::NoteBookTabButton(std::string text, Image *image,  bool close
     }
     setCloseButton(close_button);
     m_close_image = (new Image("close_thin.png"))->setForeground(Color());
+    m_close_image->onMouseClick = [&](MouseEvent event) {
+        println("Close");
+        // TODO we need to get rid of the tab here!
+    };
+    this->append(m_close_image);
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
@@ -183,13 +188,9 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         rect.x += text_size.w;
     }
     if (m_close_button) {
-        dc->drawImageAligned(
-            Rect(rect.x, rect.y, 22, rect.h),
-            HorizontalAlignment::Center,
-            VerticalAlignment::Center,
-            m_close_image,
-            m_close_image->foreground()
-        );
+        // TODO the rect isnt quite right
+        // because thats the alignment rect not a minimal rect
+        m_close_image->draw(dc, Rect(rect.x, rect.y, 22, rect.h));
     }
 }
 
@@ -223,6 +224,21 @@ Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
     } else {
         return this->m_size;
     }
+}
+
+bool NoteBookTabButton::isLayout() {
+    return true;
+}
+
+void* NoteBookTabButton::propagateMouseEvent(State *state, MouseEvent event) {
+    if ((event.x >= m_close_image->rect.x && event.x <= m_close_image->rect.x + m_close_image->rect.w) &&
+        (event.y >= m_close_image->rect.y && event.y <= m_close_image->rect.y + m_close_image->rect.h)) {
+        m_close_image->handleMouseEvent(state, event);
+        return m_close_image;
+    }
+
+    this->handleMouseEvent(state, event);
+    return this;
 }
 
 bool NoteBookTabButton::isActive() {
