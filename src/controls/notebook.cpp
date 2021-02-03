@@ -119,8 +119,9 @@ const char* NoteBookTabButton::name() {
 void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Color color; 
-    // TODO isActive??
-    if (this->isPressed() && this->isHovered()) {
+    if (isActive()) {
+        color = Color(0.5, 0.5, 0.5);
+    } else if (this->isPressed() && this->isHovered()) {
         color = this->m_pressed_bg; 
     } else if (this->isHovered()) {
         color = this->m_hovered_bg;
@@ -173,6 +174,17 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
 // Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
 
 // }
+
+bool NoteBookTabButton::isActive() {
+    return m_is_active;
+}
+
+void NoteBookTabButton::setActive(bool is_active) {
+    if (m_is_active != is_active) {
+        m_is_active = is_active;
+        update();
+    }
+}
 
 NoteBook::NoteBook() {
 
@@ -238,6 +250,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon) {
     m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
         m_size_changed = true;
+        tab_button->setActive(true);
         update();
         layout();
     } else {
@@ -277,6 +290,8 @@ int NoteBook::currentTab() {
 
 NoteBook* NoteBook::setCurrentTab(int index) {
     if (m_tab_index != index) {
+        ((NoteBookTabButton*)m_tabs->children[m_tab_index])->setActive(false);
+        ((NoteBookTabButton*)m_tabs->children[index])->setActive(true);
         m_tab_index = index;
         m_size_changed = true;
         update();

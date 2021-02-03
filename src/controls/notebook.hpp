@@ -30,6 +30,10 @@
             // virtual Size sizeHint(DrawingContext *dc) override;
             // TODO maybe override event prop for the close tab button
             // virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
+            bool isActive();
+            void setActive(bool is_active);
+        protected:
+            bool m_is_active = false;
     };
 
     class NoteBook : public Widget {
