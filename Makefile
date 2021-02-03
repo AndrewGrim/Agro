@@ -1,8 +1,8 @@
 INCLUDE = -Iinclude -I/usr/include -I/usr/include/freetype2
-LINK = -Llib -L/usr/lib/i386-linux-gnu -L/usr/lib
-LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
+LINK = -Llib -L/usr/lib/i386-linux-gnu -L/usr/lib -Lbuild
+LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl -lgui
 CXX = g++
-CXX_FLAGS = -fno-exceptions
+CXX_FLAGS = -fno-exceptions -fPIC
 OBJECT_FILES = \
 	build/app.o \
 	build/box.o \
@@ -23,14 +23,23 @@ OBJECT_FILES = \
 	build/stb_image.o
 OUT = main.out
 
-run: build
+run: local_build
 	./$(OUT)
-build: dir build/main.o $(OBJECT_FILES)
-	$(CXX) build/main.o $(OBJECT_FILES) $(LINK) $(LIBS) -o $(OUT)
+install: build/libgui.so
+	sudo cp build/libgui.so /usr/lib
+	sudo ldconfig
 
 # BUILD DIRECTORY
 dir:
 	mkdir -p build
+
+# BUILD lib and main
+local_build: dir build/main.o $(OBJECT_FILES)
+	$(CXX) build/main.o $(OBJECT_FILES) $(LINK) $(LIBS) -o $(OUT)
+build: build/libgui.so build/main.o
+	$(CXX) build/main.o $(LINK) $(LIBS) -o $(OUT)
+build/libgui.so: dir $(OBJECT_FILES)
+	$(CXX) $(OBJECT_FILES) $(LINK) $(LIBS) -shared -o build/libgui.so
 
 # ROOT
 build/main.o: src/main.cpp
