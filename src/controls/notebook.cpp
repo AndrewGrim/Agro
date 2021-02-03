@@ -190,9 +190,7 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         rect.x += text_size.w;
     }
     if (m_close_button) {
-        // TODO the rect isnt quite right
-        // because thats the alignment rect not a minimal rect
-        m_close_image->draw(dc, Rect(rect.x, rect.y, 22, rect.h));
+        m_close_image->draw(dc, Rect(rect.x + 10, rect.y + padding(), 12, 12));
     }
 }
 
