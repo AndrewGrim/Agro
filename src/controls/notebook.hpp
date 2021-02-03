@@ -38,6 +38,7 @@
         protected:
             bool m_is_active = false;
             bool m_close_button = false;
+            Image *m_close_image = nullptr;
     };
 
     class NoteBook : public Widget {

@@ -110,6 +110,7 @@ NoteBookTabButton::NoteBookTabButton(std::string text, Image *image,  bool close
         setImage(image);
     }
     setCloseButton(close_button);
+    m_close_image = (new Image("close.png"))->setForeground(Color());
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
@@ -143,9 +144,13 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
     Size text_size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
+        float width = rect.w;
+        if (m_close_button) {
+            width -= 22;
+        }
         dc->drawImageAtSize(
             Point(
-                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(rect.x + (width / 2 - text_size.w / 2) - image_size.w / 2), 
                 round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
@@ -155,6 +160,9 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         // Resize rect to account for image before the label is drawn.
         rect.x += image_size.w;
         rect.w -= image_size.w;
+        if (m_close_button) {
+            rect.w -= 22;
+        }
     }
     HorizontalAlignment h_text_align = m_horizontal_align;
     VerticalAlignment v_text_align = m_vertical_align;
@@ -171,6 +179,16 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
             rect,
             0,
             this->m_fg
+        );
+        rect.x += text_size.w;
+    }
+    if (m_close_button) {
+        dc->drawImageAligned(
+            Rect(rect.x, rect.y, 22, rect.h),
+            HorizontalAlignment::Center,
+            VerticalAlignment::Center,
+            m_close_image,
+            m_close_image->foreground()
         );
     }
 }
@@ -195,7 +213,7 @@ Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
             if (size.h < 12) {
                 size.h = 12;
             }
-            size.w += 12;
+            size.w += 22;
         }
 
         this->m_size = size;
