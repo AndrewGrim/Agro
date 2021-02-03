@@ -110,7 +110,7 @@ void ScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
 ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
-    m_begin_button = new ScrollBarArrowButton((new Image("scrollbar_arrow.png"))->setForeground(Color()));
+    m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
     m_begin_button->setPadding(1);
     m_begin_button->onMouseClick = [&](MouseEvent event) {
         this->m_slider->m_value -= 0.05f; // TODO should be a customizable step
@@ -127,7 +127,7 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     // to inherit its parents color for the line below to do anything
     // m_slider->setBackground(m_slider->parent->background());
 
-    m_end_button = new ScrollBarArrowButton((new Image("scrollbar_arrow.png"))->setForeground(Color()));
+    m_end_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
     m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();
     m_end_button->onMouseClick = [&](MouseEvent event) {
