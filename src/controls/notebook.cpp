@@ -175,6 +175,9 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         v_text_align = VerticalAlignment::Center;
     }
     if (this->m_text.length()) {
+        if (m_close_button && !m_image) {
+            rect.w -= 22;
+        }
         dc->fillTextAligned(
             this->font() ? this->font() : dc->default_font,
             this->m_text,
