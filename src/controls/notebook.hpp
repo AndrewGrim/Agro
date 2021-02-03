@@ -21,26 +21,6 @@
             virtual bool handleScrollEvent(ScrollEvent event) override;
     };
 
-    class NoteBookTabButton : public Button {
-        public:
-            NoteBookTabButton(std::string text, Image *image = nullptr, bool close_button = false);
-            ~NoteBookTabButton();
-            virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
-            virtual bool isLayout() override;
-            virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
-            bool isActive();
-            void setActive(bool is_active);
-            bool hasCloseButton();
-            void setCloseButton(bool close_button);
-
-        protected:
-            bool m_is_active = false;
-            bool m_close_button = false;
-            Image *m_close_image = nullptr;
-    };
-
     class NoteBook : public Widget {
         public:
             NoteBook();
@@ -61,5 +41,25 @@
         protected:
             int m_tab_index = 0;
             NoteBookTabBar *m_tabs = new NoteBookTabBar();
+    };
+
+    class NoteBookTabButton : public Button {
+        public:
+            NoteBookTabButton(NoteBook *notebook, std::string text, Image *image = nullptr, bool close_button = false);
+            ~NoteBookTabButton();
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual bool isLayout() override;
+            virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
+            bool isActive();
+            void setActive(bool is_active);
+            bool hasCloseButton();
+            void setCloseButton(bool close_button);
+
+        protected:
+            bool m_is_active = false;
+            bool m_close_button = false;
+            Image *m_close_image = nullptr;
     };
 #endif
