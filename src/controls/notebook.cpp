@@ -340,8 +340,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
 //     return this;
 // }
 
-NoteBook* NoteBook::removeTab(int index) {
-    // TODO implement
+NoteBook* NoteBook::destroyTab(int index) {
     return this;
 }
 
