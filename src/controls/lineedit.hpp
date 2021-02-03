@@ -25,7 +25,6 @@
 
         Action action;
         std::string text = "";
-        size_t index;
         Selection selection;
     };
 
