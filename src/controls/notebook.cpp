@@ -171,9 +171,37 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-// Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
+Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
+    if (this->m_size_changed) {
+        Size size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+        if (m_image) {
+            Size i = m_image->sizeHint(dc);
+            size.w += i.w;
+            if (i.h > size.h) {
+                size.h = i.h;
+            }
+        }
+        // Note: full padding is applied on both sides but
+        // border width is divided in half for each side
+        size.w += this->m_padding * 2 + this->m_border_width;
+        size.h += this->m_padding * 2 + this->m_border_width;
 
-// }
+        // Account for the close button if present;
+        if (m_close_button) {
+            if (size.h < 12) {
+                size.h = 12;
+            }
+            size.w += 12;
+        }
+
+        this->m_size = size;
+        this->m_size_changed = false;
+
+        return size;
+    } else {
+        return this->m_size;
+    }
+}
 
 bool NoteBookTabButton::isActive() {
     return m_is_active;
@@ -183,6 +211,19 @@ void NoteBookTabButton::setActive(bool is_active) {
     if (m_is_active != is_active) {
         m_is_active = is_active;
         update();
+    }
+}
+
+bool NoteBookTabButton::hasCloseButton() {
+    return m_close_button;
+}
+
+void NoteBookTabButton::setCloseButton(bool close_button) {
+    if (m_close_button != close_button) {
+        m_close_button = close_button;
+        m_size_changed = true;
+        update();
+        layout();
     }
 }
 
@@ -228,14 +269,14 @@ Size NoteBook::sizeHint(DrawingContext *dc) {
     }
 }
 
-NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon) {
+NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool close_button) {
     // We need to attach app at run time to new tabs / tab buttons.
     if (app) {
         root->app = app;
         root->attachApp(app);
     }
     this->append(root, Fill::Both);
-    NoteBookTabButton *tab_button = new NoteBookTabButton(text);
+    NoteBookTabButton *tab_button = new NoteBookTabButton(text, icon, close_button);
     tab_button->onMouseClick = [=](MouseEvent event) {
         this->setCurrentTab(tab_button->parent_index);
     };
