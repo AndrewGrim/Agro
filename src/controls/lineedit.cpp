@@ -441,7 +441,7 @@ LineEdit* LineEdit::moveCursorEnd() {
 LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
     if (index >= 0 && index < text().size()) {
         if (!skip) {
-            m_history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), index});
+            m_history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), index, m_selection});
         }
         m_text.erase(index, 1);
         m_text_changed = true;
@@ -531,7 +531,7 @@ void LineEdit::deleteSelection(bool skip) {
     // Swap selection when the begin index is higher than the end index.
     swapSelection();
     if (!skip) {
-        m_history.append({HistoryItem::Action::Delete, m_text.substr(m_selection.begin, m_selection.end - m_selection.begin), m_selection.begin});
+        m_history.append({HistoryItem::Action::Delete, m_text.substr(m_selection.begin, m_selection.end - m_selection.begin), m_selection.begin, m_selection});
     }
     // Remove selected text.
     this->setText(this->text().erase(m_selection.begin, m_selection.end - m_selection.begin));
@@ -565,19 +565,22 @@ void LineEdit::swapSelection() {
 }
 
 void LineEdit::insert(size_t index, const char *text, bool skip) {
+    DrawingContext *dc = ((Application*)this->app)->dc;
+
     if (m_selection.hasSelection()) {
         deleteSelection(skip);
     }
 
-    if (!skip) {
-        m_history.append({HistoryItem::Action::Insert, text, m_selection.end});
-    }
-    m_text.insert(m_selection.end, text);
-    m_text_changed = true;
-
-    DrawingContext *dc = ((Application*)this->app)->dc;
     m_selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
     m_selection.end += strlen(text);
+    if (!skip) {
+        // Pass a fake selection for the new text.
+        // This is needed for properly deleting it when calling undo.
+        m_history.append({HistoryItem::Action::Insert, text, m_selection.end, m_selection});
+    }
+    m_text.insert(m_selection.begin, text);
+    m_text_changed = true;
+
     m_selection.x_begin = m_selection.x_end;
     m_selection.begin = m_selection.end;
 
