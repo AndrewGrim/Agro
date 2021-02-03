@@ -341,6 +341,14 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
 // }
 
 NoteBook* NoteBook::destroyTab(int index) {
+    // TODO we probably need to add some logic
+    // to activate the current tab afterwards
+    // if not already active
+    if (index < this->children.size()) {
+        m_tabs->children[index]->destroy();
+        this->children[index]->destroy();
+    }
+
     return this;
 }
 
