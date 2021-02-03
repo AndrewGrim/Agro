@@ -189,8 +189,10 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         );
         rect.x += text_size.w;
     }
-    if (m_close_button) {
+    if (m_close_button && m_image) {
         m_close_image->draw(dc, Rect(rect.x + 10, rect.y + padding(), 12, 12));
+    } else if (m_close_button) {
+        m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, 12));
     }
 }
 
