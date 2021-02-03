@@ -628,15 +628,15 @@ void LineEdit::setCursor(size_t index) {
 void LineEdit::undo() {
     if (!m_history.undo_end) {
         HistoryItem item = m_history.get(m_history.index);
+        m_selection = item.selection;
         if (item.action == HistoryItem::Action::Delete) {
-            insert(item.index, item.text.c_str(), true);
-            setCursor(item.index + item.text.size());
+            insert(m_selection.begin, item.text.c_str(), true);
         } else {
-            // TODO probably switch to delete selection since this will create multiple onTextChanged events
-            for (char c : item.text) {
-                deleteAt(item.index, true);
+            if (m_selection.hasSelection()) {
+                deleteSelection(true);
+            } else {
+                deleteAt(m_selection.begin, true);
             }
-            setCursor(item.index);
         }
         if (!m_history.index) {
             m_history.undo_end = true;
@@ -650,15 +650,15 @@ void LineEdit::undo() {
 void LineEdit::redo() {
     if (m_history.index < m_history.items.size() && !m_history.redo_end) {
         HistoryItem item = m_history.get(m_history.index);
+        m_selection = item.selection;
         if (item.action == HistoryItem::Action::Delete) {
-            // TODO probably switch to delete selection since this will create multiple onTextChanged events
-            for (char c : item.text) {
-                deleteAt(item.index, true);
+            if (m_selection.hasSelection()) {
+                deleteSelection(true);
+            } else {
+                deleteAt(m_selection.begin, true);
             }
-            setCursor(item.index);
         } else {
-            insert(item.index, item.text.c_str(), true);
-            setCursor(item.index + item.text.size());
+            insert(m_selection.begin, item.text.c_str(), true);
         }
         if (!m_history.index) {
             m_history.undo_end = false;
@@ -668,6 +668,5 @@ void LineEdit::redo() {
         } else {
             m_history.redo_end = true;
         }
-
     }
 }
