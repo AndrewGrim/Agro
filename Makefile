@@ -99,3 +99,5 @@ test_one_million_labels:
 	$(CXX) tests/one_million_labels.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o one_million_labels.out && ./one_million_labels.out
 test_callbacks:
 	$(CXX) tests/callbacks.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o callbacks.out && ./callbacks.out
+test_notebook:
+	$(CXX) tests/notebook.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o notebook.out && ./notebook.out
