@@ -110,7 +110,7 @@ NoteBookTabButton::NoteBookTabButton(std::string text, Image *image,  bool close
         setImage(image);
     }
     setCloseButton(close_button);
-    m_close_image = (new Image("close.png"))->setForeground(Color());
+    m_close_image = (new Image("close_thin.png"))->setForeground(Color());
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
