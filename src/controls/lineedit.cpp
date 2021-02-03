@@ -462,6 +462,7 @@ LineEdit* LineEdit::clear() {
     m_selection.x_end = m_selection.x_begin;
     m_selection.end = m_selection.begin;
     m_current_view = m_min_view;
+    m_history = History();
     update();
     if (onTextChanged) {
         onTextChanged();
