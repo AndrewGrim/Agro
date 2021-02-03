@@ -104,16 +104,15 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
     return false;
 }
 
-NoteBookTabButton::NoteBookTabButton(std::string text, Image *image,  bool close_button) : Button(text) {
+NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image *image,  bool close_button) : Button(text) {
     setBorderWidth(1);
     if (image) {
         setImage(image);
     }
     setCloseButton(close_button);
     m_close_image = (new Image("close_thin.png"))->setForeground(Color());
-    m_close_image->onMouseClick = [&](MouseEvent event) {
-        println("Close");
-        // TODO we need to get rid of the tab here!
+    m_close_image->onMouseClick = [=](MouseEvent event) {
+        notebook->destroyTab(m_close_image->parent->parent_index);
     };
     this->append(m_close_image);
 }
@@ -314,7 +313,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
         root->attachApp(app);
     }
     this->append(root, Fill::Both);
-    NoteBookTabButton *tab_button = new NoteBookTabButton(text, icon, close_button);
+    NoteBookTabButton *tab_button = new NoteBookTabButton(this, text, icon, close_button);
     tab_button->onMouseClick = [=](MouseEvent event) {
         this->setCurrentTab(tab_button->parent_index);
     };
