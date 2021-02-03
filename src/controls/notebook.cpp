@@ -104,8 +104,12 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
     return false;
 }
 
-NoteBookTabButton::NoteBookTabButton(std::string text, Image *image) : Button(text) {
+NoteBookTabButton::NoteBookTabButton(std::string text, Image *image,  bool close_button) : Button(text) {
     setBorderWidth(1);
+    if (image) {
+        setImage(image);
+    }
+    setCloseButton(close_button);
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
@@ -284,9 +288,6 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
     if (app) {
         tab_button->app = app;
         tab_button->attachApp(app);
-    }
-    if (icon) {
-        tab_button->setImage(icon);
     }
     m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
