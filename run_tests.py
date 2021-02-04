@@ -46,8 +46,7 @@ else:
             "g++",
             f"tests/{test}",
         ]
-        objects = str(object_files).replace("[", "").replace("]", "").replace(",", "").replace("'", "")
-        for obj in objects.split(" "):
+        for obj in object_files:
             command.append(f"build/{obj}")
         other_commands = [
             "-DTEST",
