@@ -42,21 +42,19 @@ else:
     for test in filter(lambda f: f.endswith(".cpp"), test_files):
         filename = test.replace(".cpp", "")
 
+        index = 2
         command = [
             "g++",
             f"tests/{test}",
-        ]
-        for obj in object_files:
-            command.append(f"build/{obj}")
-        other_commands = [
             "-DTEST",
             "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
             "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
             "-lGL", "-lSDL2", "-lfreetype", "-lX11", "-lpthread", "-lXrandr", "-lXi", "-ldl",
             "-o", f"{filename}.out",
         ]
-        for com in other_commands:
-            command.append(com)
+        for obj in object_files:
+            command.insert(index, f"build/{obj}")
+            index += 1
 
         run = [
             f"./{filename}.out",
