@@ -1,4 +1,5 @@
 import subprocess
+import os
 
 ESCAPE_RED = "\033[91m"
 ESCAPE_GREEN = "\033[96m"
@@ -15,69 +16,81 @@ def success(message):
 def warn(message):
     return f"{ESCAPE_YELLOW}{ESCAPE_BOLD}{message}{ESCAPE_END}"
 
-test_files = [
-    "tests/box_vertical.cpp",
-    "tests/box_horizontal.cpp",
-    "tests/scrolledbox_outer.cpp",
-    "tests/scrolledbox_inner.cpp",
-    "tests/scrolledbox_both.cpp",
-    "tests/scrolledbox_inception_clipping.cpp",
-]
-
 passed = 0
 failed = 0
 
-for test in test_files:
-    filename = test.replace("tests/", "").replace(".cpp", "")
+test_files = os.listdir("tests")
 
-    command = [
-        "g++",
-        f"{test}",
-        "src/app.cpp",
-        "src/renderer/glad.c",
-        "src/renderer/renderer.cpp", "src/renderer/drawing_context.cpp",
-        "src/renderer/stb_image.cpp", "src/renderer/font.cpp",
-        "src/controls/widget.cpp", "src/controls/scrollbar.cpp", "src/controls/slider.cpp", 
-        "src/controls/box.cpp", "src/controls/scrolledbox.cpp", "src/controls/label.cpp", 
-        "src/controls/image.cpp", "src/controls/button.cpp",
-        "-DTEST",
-        "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
-        "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
-        "-lGL", "-lSDL2", "-lfreetype", "-lX11", "-lpthread", "-lXrandr", "-lXi", "-ldl",
-        "-o", f"{filename}.out",
-    ]
+# Run `make local_build` which creates all required .o files and the build dir 
+command = ["make", "local_build"]
+p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+p.wait()
+if p.returncode != 0 and p.returncode != None:
+    print(f"{error('Compilation Error')}: ")
+    while True:
+        line = p.stderr.readline()
+        if not line:
+            break
+        print(warn(line.rstrip().decode("UTF-8")))
+    print(f"Occured when running command: '{command}'")
+else:
+    object_files = os.listdir("build")
+    for obj in object_files:
+        if not obj.endswith(".o") or obj == "main.o":
+            object_files.remove(obj)
 
-    run = [
-        f"./{filename}.out",
-    ]
+    for test in filter(lambda f: f.endswith(".cpp"), test_files):
+        filename = test.replace(".cpp", "")
 
-    p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    p.wait()
-    if p.returncode != 0 and p.returncode != None:
-        print(f"{error('Compilation Error')}: '{test}")
-        while True:
-            line = p.stderr.readline()
-            if not line:
-                break
-            print(warn(line.rstrip().decode("UTF-8")))
-        print(f"Occured when running command: '{command}'")
-    else:
-        p = subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        command = [
+            "g++",
+            f"tests/{test}",
+        ]
+        objects = str(object_files).replace("[", "").replace("]", "").replace(",", "").replace("'", "")
+        for obj in objects.split(" "):
+            command.append(f"build/{obj}")
+        other_commands = [
+            "-DTEST",
+            "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
+            "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
+            "-lGL", "-lSDL2", "-lfreetype", "-lX11", "-lpthread", "-lXrandr", "-lXi", "-ldl",
+            "-o", f"{filename}.out",
+        ]
+        for com in other_commands:
+            command.append(com)
+
+        run = [
+            f"./{filename}.out",
+        ]
+
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         p.wait()
         if p.returncode != 0 and p.returncode != None:
-            print(f"{{{error(' FAIL ')}}} '{test}'")
+            print(f"{error('Compilation Error')}: '{test}'")
             while True:
                 line = p.stderr.readline()
                 if not line:
                     break
                 print(warn(line.rstrip().decode("UTF-8")))
+            print(f"Occured when running command: '{command}'")
             failed += 1
         else:
-            print(f"{{{success(' PASS ')}}} '{test}'")
-            passed += 1
+            p = subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p.wait()
+            if p.returncode != 0 and p.returncode != None:
+                print(f"{{{error(' FAIL ')}}} '{test}'")
+                while True:
+                    line = p.stderr.readline()
+                    if not line:
+                        break
+                    print(warn(line.rstrip().decode("UTF-8")))
+                failed += 1
+            else:
+                print(f"{{{success(' PASS ')}}} '{test}'")
+                passed += 1
 
-print(f"Passed: {success(passed)}/{passed + failed}")
-if failed > 0:
-    print(f"Failed: {error(failed)}/{passed + failed}")
-else:
-    print(f"Failed: {failed}/{passed + failed}")
+    print(f"Passed: {success(passed)}/{passed + failed}")
+    if failed > 0:
+        print(f"Failed: {error(failed)}/{passed + failed}")
+    else:
+        print(f"Failed: {failed}/{passed + failed}")
