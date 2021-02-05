@@ -80,6 +80,7 @@ void TestTree::draw(DrawingContext *dc, Rect rect) {
             Color()
         );
         pos.y += 28;
+        // TODO only paints whats currently visible
     }
     if (m_vertical_scrollbar) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
