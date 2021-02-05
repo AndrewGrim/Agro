@@ -307,16 +307,16 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                     size.h
                 ));
             }
-            }
-            if (m_vertical_scrollbar && m_horizontal_scrollbar) {
-                dc->fillRect(Rect(
-                    rect.x + rect.w, 
-                    rect.y + rect.h, 
-                    m_vertical_scrollbar->sizeHint(dc).w, 
-                    m_horizontal_scrollbar->sizeHint(dc).h), 
-                    m_vertical_scrollbar->m_begin_button->background()
-                );
-            }
+        }
+        if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+            dc->fillRect(Rect(
+                rect.x + rect.w, 
+                rect.y + rect.h, 
+                m_vertical_scrollbar->sizeHint(dc).w, 
+                m_horizontal_scrollbar->sizeHint(dc).h), 
+                m_vertical_scrollbar->m_begin_button->background()
+            );
+        }
     // }
     // TODO provide a more efficient drawing operation
     // when the layout hasnt changed
