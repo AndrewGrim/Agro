@@ -19,6 +19,8 @@ const char* TestTree::name() {
 
 void TestTree::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
+    Rect old_clip = dc->clip();
+    dc->setClip(rect);
     int records[270] = {};
     int total_height = 270 * 28;
     int total_width = 1000;
@@ -123,6 +125,7 @@ void TestTree::draw(DrawingContext *dc, Rect rect) {
             m_vertical_scrollbar->background()
         );
     }
+    dc->setClip(old_clip);
 }
 
 Size TestTree::sizeHint(DrawingContext *dc) {
