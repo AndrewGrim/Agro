@@ -12,8 +12,12 @@
 
 int main(int argc, char **argv) { 
     Application *app = new Application("Application", Size(500, 500));
-        TestTree *tt = new TestTree();
-        app->append(tt, Fill::Both);
+        app->append(new Button("Top"), Fill::Horizontal);
+        Box *box = new Box(Align::Horizontal);
+            box->append(new Button("Left"), Fill::Vertical);
+            TestTree *tt = new TestTree();
+            box->append(tt, Fill::Both);
+        app->append(box, Fill::Both);
     app->run();
 
     return 0;
