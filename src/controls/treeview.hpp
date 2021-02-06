@@ -4,55 +4,117 @@
     #include "widget.hpp"
     #include "scrollable.hpp"
 
-    // // TODO implement
-    // class CellRenderer;
+    // // // TODO implement
+    class CellRenderer {
+        public:
+            std::string text;
 
-    // // TODO implement
-    // class TreeIter;
+            CellRenderer(std::string text) {
+                this->text = text;
+            }
+
+            ~CellRenderer() {
+
+            }
+    };
+
+    // // // TODO implement
+    class TreeIter {
+        public:
+            std::vector<size_t> path;
+
+            TreeIter() {
+            
+            }
+
+            TreeIter(size_t *iter, size_t iter_count) {
+                for (size_t i = 0; i < iter_count; i++) {
+                    path.push_back(iter[i]);
+                }
+            }
+
+            ~TreeIter() {
+
+            }
+    };
 
     // struct ExampleHiddenStruct {
     //     size_t id;
     // };
 
-    // template <typename T> class TreeNode {
-    //     public:
-    //         std::vector<CellRenderer> columns;
-    //         T hidden;
-    //         std::vector<TreeNode> children;
-    //         bool is_visible;
-    //         bool is_collapsed;
-    //         TreeIter iter; // TODO not too sure about this, could maybe make it just a naked std::array?
-    //         // especially considering that in the ts version its just TreeIter{path: number[]}
+    template <typename T> class TreeNode {
+        public:
+            std::vector<CellRenderer> columns;
+            T hidden;
+            // TreeNode<T> *parent;
+            std::vector<TreeNode<T>> children;
+            bool is_visible;
+            bool is_collapsed;
+            TreeIter iter; // TODO not too sure about this, could maybe make it just a naked std::array?
+            // especially considering that in the ts version its just TreeIter{path: number[]}
+            // also consider that these get invalidated by sort
 
-    //         // TODO not too sure about children in ctor, i dont think we really used this
-    //         // method of constructing within the ts project
-    //         TreeNode(std::vector<CellRenderer> columns, T hidden, std::vector<TreeNode> children) {
+            // TODO not too sure about children in ctor, i dont think we really used this
+            // method of constructing within the ts project
+            TreeNode(std::vector<CellRenderer> columns, T hidden) {//, std::vector<TreeNode> children) {
+                this->columns = columns;
+                this->hidden = hidden;
+            }
 
-    //         }
+            ~TreeNode() {
 
-    //         ~TreeNode() {
+            }
+    };
 
-    //         }
-    // };
+    template <typename T> class Tree {
+        public:
+            std::vector<TreeNode<T>> roots;
 
-    // template <typename T> class Tree {
-    //     public:
-    //         std::vector<TreeNode<T>> roots;
+            Tree() {
 
-    //         Tree();  
+            }
 
-    //         ~Tree();
+            ~Tree() {
 
-    //         // TODO note iter needs to be nullable or optional? hint hint
-    //         // but also why just not like have an append on a TreeNode instead? or both
-    //         TreeIter append(TreeIter iter, TreeNode node);
-    //         // Goes down the tree using the iterator
-    //         TreeNode get(TreeIter iter);
-    //         // Goes down the tree using row (skips non visible nodes)
-    //         TreeNode getRow(size_t row);
-    //         TreeNode descend(TreeNode root, std::function<void(TreeNode node)> callback = nullptr);
-    //         TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
-    // };
+            }
+
+            // // TODO note iter needs to be nullable or optional? hint hint
+            // // but also why just not like have an append on a TreeNode instead? or both
+            TreeIter append(TreeIter *iter, TreeNode<T> node) {
+                if (!iter) {
+                    size_t size = roots.size();
+                    node.iter = TreeIter(&size, 1);
+                    // node.parent = null;
+                    roots.push_back(node); 
+                    
+                    return node.iter;
+                } else {
+                    TreeNode<T> *root = &roots[iter->path[0]];
+                    for (size_t i = 1; i < iter->path.size(); i++) {
+                        if (root->children.size()) {
+                            root = &root->children[iter->path[i]];
+                        } else {
+                            break;
+                        }
+                    }
+
+                    root->children.push_back(node);
+                    size_t last_index = root->children.size() - 1;
+                    TreeIter new_iter = *iter;
+                    new_iter.path.push_back(last_index);
+                    node.iter = new_iter;
+                    // node.parent = root;
+
+                    return *iter;
+                }
+            }
+            // // Goes down the tree using the iterator
+            // TreeNode get(TreeIter iter);
+            // // Goes down the tree using row (skips non visible nodes)
+            // TreeNode getRow(size_t row);
+            // TreeNode descend(TreeNode root, std::function<void(TreeNode node)> callback = nullptr);
+            // TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
+    };
 
     // // TODO event for TreeView?? only one atm (onRowSelected) i guess could also have other ones
     // // like onRowHovered, onModelChanged, onNodeCollapsed etc.

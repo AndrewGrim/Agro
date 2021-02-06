@@ -26,6 +26,17 @@ int main(int argc, char **argv) {
             }
             box->append(tt, Fill::Both);
         app->append(box, Fill::Both);
+
+        Tree<void*> model;
+        {
+            std::vector<CellRenderer> columns;
+                columns.push_back(CellRenderer("Root Node!"));
+            TreeNode<void*> node = TreeNode<void*>(columns, nullptr);
+            model.append(nullptr, node);
+        }
+        println(model.roots.size());
+        println(model.roots[0].columns[0].text);
+
     app->run();
 
     return 0;
