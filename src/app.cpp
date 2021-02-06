@@ -50,14 +50,6 @@ Application::Application(const char* title, Size size) {
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
     SDL_SetEventFilter(forcePaintWhileResizing, this);
-    // TODO dont capture the mouse all the time only when pressed
-    // and capture long enough to reset hover when exiting window
-    // NOTE: Does not work on X11.
-    // UPDATE: Does not work until window has focus, but on X11
-    // its super important to release the mouse because you cant
-    // even click the close window decorator.
-    // NOTE: mouse left and entered dont work when capturing on X11
-    SDL_CaptureMouse(SDL_TRUE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
@@ -134,10 +126,28 @@ void Application::run() {
         if (SDL_WaitEvent(&event)) {
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
+                    m_is_mouse_captured = true;
+                    SDL_CaptureMouse(SDL_TRUE);
                     this->m_state->pressed = this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button));
                     break;
                 case SDL_MOUSEBUTTONUP:
                     if (m_mouse_inside) {
+                        if (m_is_mouse_captured) {
+                            m_is_mouse_captured = false;
+                            SDL_CaptureMouse(SDL_FALSE);
+                            if ((event.button.x < 0 || event.button.x > m_size.w) ||
+                                (event.button.y < 0 || event.button.y > m_size.w)) {
+                                if (m_state->pressed) {
+                                    ((Widget*)m_state->pressed)->setPressed(false);
+                                    m_state->pressed = nullptr;
+                                }
+                                if (m_state->hovered) {
+                                    ((Widget*)m_state->hovered)->setHovered(false);
+                                    m_state->hovered = nullptr;
+                                }
+                                break;
+                            }
+                        }
                         this->m_main_widget->propagateMouseEvent(this->m_state, MouseEvent(event.button));
                     } else {
                         if (m_state->pressed) {

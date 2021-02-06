@@ -130,6 +130,7 @@
             bool m_running = true;
             Cursors *m_cursors = nullptr;
             bool m_mouse_inside = true;
+            bool m_is_mouse_captured = false;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from
