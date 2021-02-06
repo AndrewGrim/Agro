@@ -9,11 +9,18 @@
             SimpleScrollBar *m_horizontal_scrollbar = nullptr;
             SimpleScrollBar *m_vertical_scrollbar = nullptr;
 
+            Scrollable(Size min_size = Size(400, 400));
+            ~Scrollable();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isLayout() override;
+            virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
+            virtual bool handleScrollEvent(ScrollEvent event) override;
             Point automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size);
             void drawScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size);
+
+        protected:
+            Size m_viewport = Size();
     };
 #endif

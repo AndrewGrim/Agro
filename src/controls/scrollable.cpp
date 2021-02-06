@@ -1,5 +1,18 @@
 #include "scrollable.hpp"
 
+Scrollable::Scrollable(Size min_size) {
+    m_viewport = min_size;
+}
+
+Scrollable::~Scrollable() {
+    if (m_horizontal_scrollbar) {
+        delete m_horizontal_scrollbar;
+    }
+    if (m_vertical_scrollbar) {
+        delete m_vertical_scrollbar;
+    }
+}
+
 const char* Scrollable::name() {
     return "Scrollable";
 }
@@ -9,11 +22,7 @@ void Scrollable::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size Scrollable::sizeHint(DrawingContext *dc) {
-    return Size(0, 0);
-}
-
-bool Scrollable::isLayout() {
-    return true;
+    return m_viewport;
 }
 
 Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size) {
@@ -110,4 +119,53 @@ void Scrollable::drawScrollBars(DrawingContext *dc, Rect &rect, Size virtual_siz
             m_vertical_scrollbar->background()
         );
     }
+}
+
+bool Scrollable::isLayout() {
+    return true;
+}
+
+void* Scrollable::propagateMouseEvent(State *state, MouseEvent event) {
+    if (m_vertical_scrollbar) {
+        if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
+            (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+            return (void*)m_vertical_scrollbar->propagateMouseEvent(state, event);
+        }
+    }
+    if (m_horizontal_scrollbar) {
+        if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+            (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
+            return (void*)m_horizontal_scrollbar->propagateMouseEvent(state, event);
+        }
+    }
+    for (Widget *child : children) {
+        if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+            (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+            void *last = nullptr;
+            if (child->isLayout()) {
+                last = (void*)child->propagateMouseEvent(state, event);
+            } else {
+                child->handleMouseEvent(state, event);
+                last = (void*)child;
+            }
+            return last;
+        }
+    }
+
+    this->handleMouseEvent(state, event);
+    return this;
+}
+
+bool Scrollable::handleScrollEvent(ScrollEvent event) {
+    SDL_Keymod mod = SDL_GetModState();
+    if (mod & Mod::Shift) {
+        if (this->m_horizontal_scrollbar) {
+            return this->m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    } else {
+        if (this->m_vertical_scrollbar) {
+            return this->m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    }
+    return false;
 }
