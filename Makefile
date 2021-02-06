@@ -11,6 +11,7 @@ OBJECT_FILES = \
 	build/label.o \
 	build/lineedit.o \
 	build/notebook.o \
+	build/scrollable.o \
 	build/scrollbar.o \
 	build/scrolledbox.o \
 	build/simplescrollbar.o \
@@ -61,6 +62,8 @@ build/lineedit.o: src/controls/lineedit.cpp src/controls/lineedit.hpp
 	$(CXX) -c src/controls/lineedit.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/notebook.o: src/controls/notebook.cpp src/controls/notebook.hpp
 	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/scrollable.o: src/controls/scrollable.cpp src/controls/scrollable.hpp
+	$(CXX) -c src/controls/scrollable.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrollbar.o: src/controls/scrollbar.cpp src/controls/scrollbar.hpp
 	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrolledbox.o: src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
