@@ -19,6 +19,8 @@
             virtual bool handleScrollEvent(ScrollEvent event) override;
             Point automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size);
             void drawScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size);
+            Size minSize();
+            void setMinSize(Size min_size);
 
         protected:
             Size m_viewport = Size();

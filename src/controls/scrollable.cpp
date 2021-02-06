@@ -169,3 +169,13 @@ bool Scrollable::handleScrollEvent(ScrollEvent event) {
     }
     return false;
 }
+
+Size Scrollable::minSize() {
+    return m_viewport;
+}
+
+void Scrollable::setMinSize(Size min_size) {
+    m_viewport = min_size;
+    update();
+    layout();
+}
