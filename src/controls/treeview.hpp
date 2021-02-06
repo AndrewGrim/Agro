@@ -2,7 +2,7 @@
     #define TREEVIEW_HPP
 
     #include "widget.hpp"
-    #include "simplescrollbar.hpp"
+    #include "scrollable.hpp"
 
     // // TODO implement
     // class CellRenderer;
@@ -122,22 +122,11 @@
     //         ~TreeView();
     // };
 
-    class TestTree : public Widget {
+    class TestTree : public Scrollable {
         public:
-            SimpleScrollBar *m_vertical_scrollbar = nullptr;
-            SimpleScrollBar *m_horizontal_scrollbar = nullptr;
-
             TestTree(Size min_size = Size(400, 400));
             ~TestTree();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
-            virtual bool isLayout() override;
-            virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
-            virtual Widget* attachApp(void *app) override;
-            virtual bool handleScrollEvent(ScrollEvent event) override;
-
-        protected:
-            Size m_viewport = Size();
     };
 #endif
