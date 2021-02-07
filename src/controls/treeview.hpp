@@ -58,13 +58,13 @@
 
     template <typename T> class TreeNode {
         public:
-            std::vector<CellRenderer> columns;
+            std::vector<CellRenderer*> columns;
             T *hidden;
             TreeNode<T> *parent;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
 
-            TreeNode(std::vector<CellRenderer> columns, T *hidden) {
+            TreeNode(std::vector<CellRenderer*> columns, T *hidden) {
                 this->columns = columns;
                 this->hidden = hidden;
             }
@@ -72,6 +72,9 @@
             ~TreeNode() {
                 for (TreeNode<T> *child : children) {
                     delete child;
+                }
+                for (CellRenderer *renderer : columns) {
+                    delete renderer;
                 }
                 delete hidden;
             }
