@@ -12,6 +12,50 @@
             virtual Size sizeHint(DrawingContext *dc) = 0;
     };
 
+    class TextCellRenderer : public CellRenderer {
+        public:
+            std::string text;
+            int padding;
+            Color foreground;
+            Color background;
+
+            TextCellRenderer(
+                    std::string text, 
+                    Color foreground = Color(), 
+                    Color background = Color(0, 0, 0, 0), 
+                    int padding = 10
+                ) {
+                this->text = text;
+                this->foreground = foreground;
+                this->background = background;
+                this->padding = padding;
+            }
+
+            ~TextCellRenderer() {
+
+            }
+
+            virtual void draw(DrawingContext *dc, Rect rect) override {
+                dc->fillRect(rect, background);
+                dc->fillTextAligned(
+                    dc->default_font,
+                    text,
+                    HorizontalAlignment::Center,
+                    VerticalAlignment::Center,
+                    rect,
+                    padding,
+                    foreground
+                );
+            }
+
+            virtual Size sizeHint(DrawingContext *dc) override {
+                Size s = dc->measureText(dc->default_font, text);
+                    s.w += padding * 2;
+                    s.h += padding * 2;
+                return s;
+            }
+    };
+
     template <typename T> class TreeNode {
         public:
             std::vector<CellRenderer> columns;
