@@ -262,7 +262,7 @@
                 drawScrollBars(dc, rect, virtual_size);
             }
 
-            void setModel(Tree<TreeNode<T>> *model) {
+            void setModel(Tree<T> *model) {
                 m_model = model;
             }
 
@@ -273,6 +273,6 @@
             }
 
         protected:
-            Tree<TreeNode<T>> *m_model = nullptr;
+            Tree<T> *m_model = nullptr;
     };
 #endif
