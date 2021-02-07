@@ -18,6 +18,7 @@
             int padding;
             Color foreground;
             Color background;
+            Font *font = nullptr;
 
             TextCellRenderer(
                     std::string text, 
@@ -38,7 +39,7 @@
             virtual void draw(DrawingContext *dc, Rect rect) override {
                 dc->fillRect(rect, background);
                 dc->fillTextAligned(
-                    dc->default_font,
+                    font ? font : dc->default_font,
                     text,
                     HorizontalAlignment::Center,
                     VerticalAlignment::Center,
@@ -49,7 +50,7 @@
             }
 
             virtual Size sizeHint(DrawingContext *dc) override {
-                Size s = dc->measureText(dc->default_font, text);
+                Size s = dc->measureText(font ? font : dc->default_font, text);
                     s.w += padding * 2;
                     s.h += padding * 2;
                 return s;

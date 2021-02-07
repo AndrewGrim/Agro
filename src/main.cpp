@@ -26,6 +26,11 @@ struct Hidden {
 
 int main(int argc, char **argv) { 
     Application *app = new Application("Application", Size(500, 500));
+        Font *mono = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 14, Font::Type::Mono);
+        app->onQuit = [&](Application *app) {
+            delete mono;
+            return true;
+        };
         app->append(new Button("Top"), Fill::Horizontal);
         app->bind(SDLK_q, Mod::Ctrl, [&]{
             app->quit();
@@ -42,18 +47,22 @@ int main(int argc, char **argv) {
                     TreeNode<Hidden> *root = nullptr;
                     for (int i = 0; i < 100; i++) {
                         std::vector<CellRenderer*> columns;
-                            columns.push_back(new TextCellRenderer("Root: " + std::to_string(i)));
-                            columns.push_back(new TextCellRenderer("Column 2"));
-                            columns.push_back(new TextCellRenderer("Column 3"));
-                            columns.push_back(new TextCellRenderer("Column 4"));
+                            TextCellRenderer *renderer = new TextCellRenderer("Root: " + std::to_string(i));
+                                renderer->font = mono;
+                            columns.push_back(renderer);
+                            for (int i = 2; i < 5; i++) {
+                                TextCellRenderer *renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                    renderer->font = mono;
+                                columns.push_back(renderer);
+                            }
                         TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
                         root = model->append(nullptr, node);
                         for (int i = 0; i < 5; i++) {
                             std::vector<CellRenderer*> columns;
                                 columns.push_back(new TextCellRenderer("Second Gen: " + std::to_string(i)));
-                                columns.push_back(new TextCellRenderer("2"));
-                                columns.push_back(new TextCellRenderer("3"));
-                                columns.push_back(new TextCellRenderer("4"));
+                                columns.push_back(new TextCellRenderer("Column " + std::to_string(i)));
+                                columns.push_back(new TextCellRenderer("Column " + std::to_string(i)));
+                                columns.push_back(new TextCellRenderer("Column " + std::to_string(i)));
                             TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));       
                             model->append(root, node);
                         }
