@@ -1,6 +1,6 @@
 INCLUDE = -Iinclude -I/usr/include -I/usr/include/freetype2
 LINK = -Llib -L/usr/lib/i386-linux-gnu -L/usr/lib -Lbuild
-LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl -lgui
+LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
 CXX = g++
 CXX_FLAGS = -fno-exceptions -fPIC
 OBJECT_FILES = \
@@ -37,8 +37,8 @@ dir:
 # BUILD lib and main
 local_build: dir build/main.o $(OBJECT_FILES)
 	$(CXX) build/main.o $(OBJECT_FILES) $(LINK) $(LIBS) -o $(OUT)
-build: build/libgui.so build/main.o
-	$(CXX) build/main.o $(LINK) $(LIBS) -o $(OUT)
+build: install build/main.o
+	$(CXX) build/main.o $(LINK) $(LIBS) -lgui -o $(OUT)
 build/libgui.so: dir $(OBJECT_FILES)
 	$(CXX) $(OBJECT_FILES) $(LINK) $(LIBS) -shared -o build/libgui.so
 
