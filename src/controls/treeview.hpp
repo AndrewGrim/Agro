@@ -4,18 +4,12 @@
     #include "widget.hpp"
     #include "scrollable.hpp"
 
-    // TODO implement
     class CellRenderer {
         public:
-            std::string text;
-
-            CellRenderer(std::string text) {
-                this->text = text;
-            }
-
-            ~CellRenderer() {
-
-            }
+            CellRenderer();
+            ~CellRenderer();
+            virtual void draw(DrawingContext *dc, Rect rect) = 0;
+            virtual Size sizeHint(DrawingContext *dc) = 0;
     };
 
     template <typename T> class TreeNode {
