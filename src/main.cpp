@@ -32,13 +32,13 @@ int main(int argc, char **argv) {
         });
         Box *box = new Box(Align::Horizontal);
             box->append(new Button("Left"), Fill::Vertical);
-            TestTree *tt = new TestTree();
+            TreeView<Hidden> *tv = new TreeView<Hidden>();
             {
                 for (int i = 0; i < 5; i++) {
-                    tt->append(new Button("Header: Col. " + std::to_string(i)));
+                    tv->append(new Button("Header: Col. " + std::to_string(i)));
                 }
             }
-            box->append(tt, Fill::Both);
+            box->append(tv, Fill::Both);
         app->append(box, Fill::Both);
 
         Tree<Hidden> *model = new Tree<Hidden>();
