@@ -114,6 +114,21 @@
                 }
                 roots.clear();
             }
+
+            TreeNode<T>* descend(TreeNode<T> *root, std::function<void(TreeNode<T> *node)> fn = nullptr) {
+                if (fn) {
+                    fn(root);
+                }
+                if (root->children.size()) {
+                    TreeNode<T> *last = nullptr;
+                    for (TreeNode<T> *child : root->children) {
+                        last = descend(child, fn);
+                    }
+                    return last;
+                } else {
+                    return root;
+                }
+            }
             // // Goes down the tree using the iterator
             // TreeNode get(TreeIter iter);
             // // Goes down the tree using row (skips non visible nodes)
@@ -216,15 +231,18 @@
                     }
                 }
                 // TODO so now we have to implement drawing those cellrenderers
-                // basically add the model to the tree
-                // make sure to delete model in the destructor!
                 // when we add a model we need to compute the size for each column and row
                 // so that we know the total size
                 // expand any column headers as needed ?option?
                 // finally draw all the rows by iterating over the tree clip as necessary
                 // TODO take into account the collapsed status of nodes and their hierarchy
                 // TODO then maybe next step is to make the columns resizable using the mouse?
-                Size virtual_size = Size(children_size.w, 270 * 28);
+                Size virtual_size = Size(children_size.w, 0);
+                for (TreeNode<T> *root : m_model->roots) {
+                    m_model->descend(root, [&](TreeNode<T> *node) {
+                        println(node->columns[0]->sizeHint(dc));
+                    });
+                }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 dc->fillRect(rect, Color(0.6, 0.0, 0.2));
                 Rect local = rect;
