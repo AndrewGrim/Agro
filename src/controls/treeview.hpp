@@ -238,9 +238,6 @@
                 local.y += children_size.h;
                 local.h -= children_size.h;
                 dc->setClip(Rect(rect.x, local.y, rect.w, local.h));
-                // TODO so at this point we need to figure out drawing the rows themselves
-                // which shouldnt be that difficult but for that we need to have a usable tree
-                // then we just iterate over the tree and draw visible nodes
                 for (int i = 0; i < 270; i++) {
                     if (pos.y + 28 > local.y) {
                         dc->fillTextAligned(
