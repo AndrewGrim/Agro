@@ -223,8 +223,10 @@
                 this->rect = rect;
                 Rect old_clip = dc->clip();
                 Size children_size = Size();
+                std::vector<float> column_widths;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
+                    column_widths.push_back(s.w);
                     children_size.w += s.w;
                     if (s.h > children_size.h) {
                         children_size.h = s.h;
@@ -237,41 +239,42 @@
                 // finally draw all the rows by iterating over the tree clip as necessary
                 // TODO take into account the collapsed status of nodes and their hierarchy
                 // TODO then maybe next step is to make the columns resizable using the mouse?
-                Size virtual_size = Size(children_size.w, 0);
+                Size virtual_size = children_size;
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node) {
-                        println(node->columns[0]->sizeHint(dc));
+                        virtual_size.h += node->columns[0]->sizeHint(dc).h;
                     });
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 dc->fillRect(rect, Color(0.6, 0.0, 0.2));
-                Rect local = rect;
                 float local_pos_x = pos.x;
-                dc->setClip(local);
+                dc->setClip(rect);
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
-                    child->draw(dc, Rect(local_pos_x, local.y, s.w, children_size.h));
+                    child->draw(dc, Rect(local_pos_x, rect.y, s.w, children_size.h));
                     local_pos_x += s.w;
                 }
-                local.y += children_size.h;
-                local.h -= children_size.h;
-                dc->setClip(Rect(rect.x, local.y, rect.w, local.h));
-                for (int i = 0; i < 270; i++) {
-                    if (pos.y + 28 > local.y) {
-                        dc->fillTextAligned(
-                            dc->default_font,
-                            std::to_string(i) + ". The quick brown fox jumps over the lazy dog!",
-                            HorizontalAlignment::Left,
-                            VerticalAlignment::Center,
-                            Rect(pos.x, pos.y, virtual_size.w, 28),
-                            10,
-                            Color()
-                        );
-                        if (pos.y + 28 > local.y + local.h) {
-                            break;
+                pos.y += children_size.h;
+                dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h - children_size.h));
+                for (TreeNode<T> *root : m_model->roots) {
+                    m_model->descend(root, [&](TreeNode<T> *node) {
+                        float cell_start = pos.x;
+                        float row_height = 0.0;
+                        for (size_t i = 0; i < node->columns.size(); i++) {
+                            // TODO need to clip each column
+                            // TODO because we dont query the size beforehand yet
+                            // if the text in a cell is longer than the column header width
+                            // the cell will center text incorrectly
+                            CellRenderer *renderer = node->columns[i];
+                            Size s = renderer->sizeHint(dc);
+                            if (s.h > row_height) {
+                                row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
+                            }
+                            renderer->draw(dc, Rect(cell_start, pos.y, column_widths[i], s.h));
+                            cell_start += column_widths[i];
                         }
-                    }
-                    pos.y += 28;
+                        pos.y += row_height;
+                    });
                 }
                 dc->setClip(old_clip);
                 drawScrollBars(dc, rect, virtual_size);
