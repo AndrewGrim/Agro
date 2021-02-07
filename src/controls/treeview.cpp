@@ -1,18 +1,18 @@
 #include "treeview.hpp"
 
-TestTree::TestTree(Size min_size) : Scrollable(min_size) {
+TreeView::TreeView(Size min_size) : Scrollable(min_size) {
 
 }
 
-TestTree::~TestTree() {
+TreeView::~TreeView() {
 
 }
 
-const char* TestTree::name() {
-    return "TestTree";
+const char* TreeView::name() {
+    return "TreeView";
 }
 
-void TestTree::draw(DrawingContext *dc, Rect rect) {
+void TreeView::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Rect old_clip = dc->clip();
     Size children_size = Size();
@@ -23,6 +23,15 @@ void TestTree::draw(DrawingContext *dc, Rect rect) {
             children_size.h = s.h;
         }
     }
+    // TODO so now we have to implement drawing those cellrenderers
+    // basically add the model to the tree
+    // make sure to delete model in the destructor!
+    // when we add a model we need to compute the size for each column and row
+    // so that we know the total size
+    // expand any column headers as needed ?option?
+    // finally draw all the rows by iterating over the tree clip as necessary
+    // TODO take into account the collapsed status of nodes and their hierarchy
+    // TODO then maybe next step is to make the columns resizable using the mouse?
     Size virtual_size = Size(children_size.w, 270 * 28);
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
     dc->fillRect(rect, Color(0.6, 0.0, 0.2));

@@ -190,10 +190,10 @@
     //         ~TreeView();
     // };
 
-    class TestTree : public Scrollable {
+    class TreeView : public Scrollable {
         public:
-            TestTree(Size min_size = Size(400, 400));
-            ~TestTree();
+            TreeView(Size min_size = Size(400, 400));
+            ~TreeView();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
     };
