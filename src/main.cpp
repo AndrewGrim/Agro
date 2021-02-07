@@ -43,11 +43,17 @@ int main(int argc, char **argv) {
                     for (int i = 0; i < 100; i++) {
                         std::vector<CellRenderer*> columns;
                             columns.push_back(new TextCellRenderer("Root: " + std::to_string(i)));
+                            columns.push_back(new TextCellRenderer("Column 2"));
+                            columns.push_back(new TextCellRenderer("Column 3"));
+                            columns.push_back(new TextCellRenderer("Column 4"));
                         TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
                         root = model->append(nullptr, node);
                         for (int i = 0; i < 5; i++) {
                             std::vector<CellRenderer*> columns;
                                 columns.push_back(new TextCellRenderer("Second Gen: " + std::to_string(i)));
+                                columns.push_back(new TextCellRenderer("2"));
+                                columns.push_back(new TextCellRenderer("3"));
+                                columns.push_back(new TextCellRenderer("4"));
                             TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));       
                             model->append(root, node);
                         }
