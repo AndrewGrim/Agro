@@ -4,7 +4,7 @@
     #include "widget.hpp"
     #include "scrollable.hpp"
 
-    // // // TODO implement
+    // TODO implement
     class CellRenderer {
         public:
             std::string text;
@@ -18,95 +18,60 @@
             }
     };
 
-    // // // TODO implement
-    class TreeIter {
-        public:
-            std::vector<size_t> path;
-
-            TreeIter() {
-            
-            }
-
-            TreeIter(size_t *iter, size_t iter_count) {
-                for (size_t i = 0; i < iter_count; i++) {
-                    path.push_back(iter[i]);
-                }
-            }
-
-            ~TreeIter() {
-
-            }
-    };
-
-    // struct ExampleHiddenStruct {
-    //     size_t id;
-    // };
-
     template <typename T> class TreeNode {
         public:
             std::vector<CellRenderer> columns;
-            T hidden;
-            // TreeNode<T> *parent;
-            std::vector<TreeNode<T>> children;
-            bool is_visible;
-            bool is_collapsed;
-            TreeIter iter; // TODO not too sure about this, could maybe make it just a naked std::array?
-            // especially considering that in the ts version its just TreeIter{path: number[]}
-            // also consider that these get invalidated by sort
+            T *hidden;
+            TreeNode<T> *parent;
+            std::vector<TreeNode<T>*> children;
+            bool is_collapsed = false;
 
-            // TODO not too sure about children in ctor, i dont think we really used this
-            // method of constructing within the ts project
-            TreeNode(std::vector<CellRenderer> columns, T hidden) {//, std::vector<TreeNode> children) {
+            TreeNode(std::vector<CellRenderer> columns, T *hidden) {
                 this->columns = columns;
                 this->hidden = hidden;
             }
 
             ~TreeNode() {
-
+                for (TreeNode<T> *child : children) {
+                    delete child;
+                }
+                delete hidden;
             }
     };
 
     template <typename T> class Tree {
         public:
-            std::vector<TreeNode<T>> roots;
+            std::vector<TreeNode<T>*> roots;
 
             Tree() {
 
             }
 
-            ~Tree() {
-
+            ~Tree() { // TODO this will probably be handled by the treeview itself.
+                for (TreeNode<T> *root : roots) {
+                    delete root;
+                }
             }
 
-            // // TODO note iter needs to be nullable or optional? hint hint
-            // // but also why just not like have an append on a TreeNode instead? or both
-            TreeIter append(TreeIter *iter, TreeNode<T> node) {
-                if (!iter) {
-                    size_t size = roots.size();
-                    node.iter = TreeIter(&size, 1);
-                    // node.parent = null;
+            TreeNode<T>* append(TreeNode<T> *parent_node, TreeNode<T> *node) {
+                if (!parent_node) {
+                    node->parent = nullptr;
                     roots.push_back(node); 
                     
-                    return node.iter;
+                    return node;
                 } else {
-                    TreeNode<T> *root = &roots[iter->path[0]];
-                    for (size_t i = 1; i < iter->path.size(); i++) {
-                        if (root->children.size()) {
-                            root = &root->children[iter->path[i]];
-                        } else {
-                            break;
-                        }
-                    }
+                    parent_node->children.push_back(node);
+                    node->parent = parent_node;
 
-                    root->children.push_back(node);
-                    size_t last_index = root->children.size() - 1;
-                    TreeIter new_iter = *iter;
-                    new_iter.path.push_back(last_index);
-                    node.iter = new_iter;
-                    // node.parent = root;
-
-                    return *iter;
+                    return node;
                 }
+            }
+
+            void clear() {
+                for (TreeNode<T> *root : roots) {
+                    delete root;
+                }
+                roots.clear();
             }
             // // Goes down the tree using the iterator
             // TreeNode get(TreeIter iter);
@@ -145,7 +110,7 @@
     //         // allow to drag columns to resize them?? (low priority)
     //         // current sorted column
     //         // sort type ie asc, desc
-    //         // tooltips (kinda importan since we want some headings to be image only), but treeview specific or lib wide?
+    //         // tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
             
 
     //         // TODO design of the widget itself
