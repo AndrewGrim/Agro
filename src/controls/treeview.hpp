@@ -88,7 +88,7 @@
 
             }
 
-            ~Tree() { // TODO this will probably be handled by the treeview itself.
+            ~Tree() {
                 for (TreeNode<T> *root : roots) {
                     delete root;
                 }
