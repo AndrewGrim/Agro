@@ -6,8 +6,8 @@
 
     class CellRenderer {
         public:
-            CellRenderer();
-            ~CellRenderer();
+            CellRenderer() {}
+            virtual ~CellRenderer() {}
             virtual void draw(DrawingContext *dc, Rect rect) = 0;
             virtual Size sizeHint(DrawingContext *dc) = 0;
     };
