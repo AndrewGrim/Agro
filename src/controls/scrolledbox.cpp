@@ -130,14 +130,13 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             if (rect.h < generic_total_layout_length) {
                 this->addScrollBar(Align::Vertical);
                 if (!vert) {
-                    vert = true;
                     rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
                 }
             }
         } else {
             this->removeScrollBar(Align::Horizontal);
         }
-        if (!vert) {
+        if (!(rect.h < generic_total_layout_length)) {
             this->removeScrollBar(Align::Vertical);
         }
         if (this->hasScrollBar(Align::Vertical)) {

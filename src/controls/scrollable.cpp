@@ -51,7 +51,6 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &r
                 m_vertical_scrollbar->app = app;
                 m_vertical_scrollbar->attachApp(app);
                 if (!vert) {
-                    vert = true;
                     rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
                 }
             }
@@ -62,7 +61,7 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &r
             m_horizontal_scrollbar = nullptr;
         }
     }
-    if (!vert) {
+    if (!(rect.h < virtual_size.h)) {
         if (m_vertical_scrollbar) {
             delete m_vertical_scrollbar;
             m_vertical_scrollbar = nullptr;
