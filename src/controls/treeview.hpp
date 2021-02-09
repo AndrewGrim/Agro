@@ -243,14 +243,13 @@
                         children_size.h = s.h;
                     }
                 }
-                // TODO so now we have to implement drawing those cellrenderers
-                // when we add a model we need to compute the size for each column and row
+                // TODO when we add a model we need to compute the size for each column and row
                 // so that we know the total size
                 // expand any column headers as needed ?option?
-                // finally draw all the rows by iterating over the tree clip as necessary
                 // TODO take into account the collapsed status of nodes and their hierarchy
                 // TODO then maybe next step is to make the columns resizable using the mouse?
                 Size virtual_size = children_size;
+                // TODO recomputing the size on every draw call lel
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node) {
                         virtual_size.h += node->columns[0]->sizeHint(dc).h;
@@ -267,17 +266,20 @@
                 }
                 pos.y += children_size.h;
                 dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h - children_size.h));
+                int count = 0;
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node) {
                         float cell_start = pos.x;
                         float row_height = 0.0;
                         for (size_t i = 0; i < node->columns.size(); i++) {
+                            // TODO go over each row until we hit the visible rows and only draw those
                             float col_width = column_widths[i];
                             CellRenderer *renderer = node->columns[i];
                             Size s = renderer->sizeHint(dc);
                             if (s.h > row_height) {
                                 row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
                             }
+                            // TODO we could also clip the rows instead of just the columns
                             if (cell_start + col_width > rect.x) {
                                 if (cell_start > rect.x) {
                                     dc->setClip(Rect(cell_start, rect.y + children_size.h, col_width, rect.h - children_size.h));
@@ -297,6 +299,7 @@
                         pos.y += row_height;
                     });
                 }
+                println(count); // TODO 2400 lul
                 dc->setClip(old_clip);
                 drawScrollBars(dc, rect, virtual_size);
             }
