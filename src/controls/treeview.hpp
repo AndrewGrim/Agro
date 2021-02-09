@@ -279,35 +279,37 @@
                         float cell_start = pos.x;
                         float row_height = 0.0;
                         for (size_t i = 0; i < node->columns.size(); i++) {
-                            // TODO go over each row until we hit the visible rows and only draw those
                             float col_width = column_widths[i];
                             CellRenderer *renderer = node->columns[i];
                             Size s = renderer->sizeHint(dc);
                             if (s.h > row_height) {
                                 row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
                             }
-                            // TODO we could also clip the rows instead of just the columns
-                            if (cell_start + col_width > rect.x) {
-                                if (cell_start > rect.x) {
-                                    dc->setClip(Rect(cell_start, rect.y + children_size.h, col_width, rect.h - children_size.h));
-                                } else {
-                                    dc->setClip(Rect(rect.x, rect.y + children_size.h, cell_start + col_width - rect.x, rect.h - children_size.h));
+                            if (pos.y + row_height > rect.y && pos.y < rect.y + rect.h) {
+                                // TODO we could also clip the rows instead of just the columns
+                                if (cell_start + col_width > rect.x) {
+                                    if (cell_start > rect.x) {
+                                        dc->setClip(Rect(cell_start, rect.y + children_size.h, col_width, rect.h - children_size.h));
+                                    } else {
+                                        dc->setClip(Rect(rect.x, rect.y + children_size.h, cell_start + col_width - rect.x, rect.h - children_size.h));
+                                    }
                                 }
+                                renderer->draw(
+                                    dc, 
+                                    Rect(
+                                        cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
+                                    )
+                                );
+                                cell_start += col_width;
                             }
-                            renderer->draw(
-                                dc, 
-                                Rect(
-                                    cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
-                                )
-                            );
-                            count++;
-                            cell_start += col_width;
                         }
                         pos.y += row_height;
+                        if (pos.y > rect.y + rect.h) {
+                            return false;
+                        }
                         return true;
                     });
                 }
-                println(count); // TODO 2400 lul
                 dc->setClip(old_clip);
                 drawScrollBars(dc, rect, virtual_size);
             }
