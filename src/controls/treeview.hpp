@@ -126,9 +126,11 @@
                 roots.clear();
             }
 
-            TreeNode<T>* descend(TreeNode<T> *root, std::function<void(TreeNode<T> *node)> fn = nullptr) {
+            TreeNode<T>* descend(TreeNode<T> *root, std::function<bool(TreeNode<T> *node)> fn = nullptr) {
                 if (fn) {
-                    fn(root);
+                    if (!fn(root)) {
+                        return root;
+                    }
                 }
                 if (root->children.size()) {
                     TreeNode<T> *last = nullptr;
@@ -252,6 +254,7 @@
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) {
                             virtual_size.h += node->columns[0]->sizeHint(dc).h;
+                            return true;
                         });
                     }
                     m_virtual_size = virtual_size;
@@ -272,7 +275,7 @@
                 dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h - children_size.h));
                 int count = 0;
                 for (TreeNode<T> *root : m_model->roots) {
-                    m_model->descend(root, [&](TreeNode<T> *node) {
+                    m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                         float cell_start = pos.x;
                         float row_height = 0.0;
                         for (size_t i = 0; i < node->columns.size(); i++) {
@@ -301,6 +304,7 @@
                             cell_start += col_width;
                         }
                         pos.y += row_height;
+                        return true;
                     });
                 }
                 println(count); // TODO 2400 lul
