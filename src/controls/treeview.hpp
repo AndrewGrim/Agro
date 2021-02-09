@@ -272,23 +272,27 @@
                         float cell_start = pos.x;
                         float row_height = 0.0;
                         for (size_t i = 0; i < node->columns.size(); i++) {
-                            // TODO because we dont query the size beforehand yet
-                            // if the text in a cell is longer than the column header width
-                            // the cell will center text incorrectly
+                            float col_width = column_widths[i];
                             CellRenderer *renderer = node->columns[i];
                             Size s = renderer->sizeHint(dc);
                             if (s.h > row_height) {
                                 row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
                             }
-                            if (cell_start + column_widths[i] > rect.x) {
+                            if (cell_start + col_width > rect.x) {
                                 if (cell_start > rect.x) {
-                                    dc->setClip(Rect(cell_start, rect.y + children_size.h, column_widths[i], rect.h - children_size.h));
+                                    dc->setClip(Rect(cell_start, rect.y + children_size.h, col_width, rect.h - children_size.h));
                                 } else {
-                                    dc->setClip(Rect(rect.x, rect.y + children_size.h, cell_start + column_widths[i] - rect.x, rect.h - children_size.h));
+                                    dc->setClip(Rect(rect.x, rect.y + children_size.h, cell_start + col_width - rect.x, rect.h - children_size.h));
                                 }
                             }
-                            renderer->draw(dc, Rect(cell_start, pos.y, column_widths[i], s.h));
-                            cell_start += column_widths[i];
+                            renderer->draw(
+                                dc, 
+                                Rect(
+                                    cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
+                                )
+                            );
+                            count++;
+                            cell_start += col_width;
                         }
                         pos.y += row_height;
                     });
