@@ -243,17 +243,21 @@
                         children_size.h = s.h;
                     }
                 }
-                // TODO when we add a model we need to compute the size for each column and row
-                // so that we know the total size
                 // expand any column headers as needed ?option?
                 // TODO take into account the collapsed status of nodes and their hierarchy
                 // TODO then maybe next step is to make the columns resizable using the mouse?
                 Size virtual_size = children_size;
-                // TODO recomputing the size on every draw call lel
-                for (TreeNode<T> *root : m_model->roots) {
-                    m_model->descend(root, [&](TreeNode<T> *node) {
-                        virtual_size.h += node->columns[0]->sizeHint(dc).h;
-                    });
+                if (m_virtual_size_changed) {
+                    // TODO note that this doesnt take into account when the columns themselves change
+                    for (TreeNode<T> *root : m_model->roots) {
+                        m_model->descend(root, [&](TreeNode<T> *node) {
+                            virtual_size.h += node->columns[0]->sizeHint(dc).h;
+                        });
+                    }
+                    m_virtual_size = virtual_size;
+                    m_virtual_size_changed = false;
+                } else {
+                    virtual_size = m_virtual_size;
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 dc->fillRect(rect, Color(0.6, 0.0, 0.2));
@@ -306,15 +310,21 @@
 
             void setModel(Tree<T> *model) {
                 m_model = model;
+                m_virtual_size_changed = true;
+                update();
             }
 
             void clear() {
                 if (m_model) {
                     m_model->clear();
+                    m_virtual_size_changed = true;
+                    update();
                 }
             }
 
         protected:
             Tree<T> *m_model = nullptr;
+            Size m_virtual_size;
+            bool m_virtual_size_changed = false;
     };
 #endif
