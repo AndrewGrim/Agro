@@ -263,7 +263,7 @@
                     virtual_size = m_virtual_size;
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
-                dc->fillRect(rect, Color(0.6, 0.0, 0.2));
+                dc->fillRect(rect, Color(1, 1, 1));
                 float local_pos_x = pos.x;
                 dc->setClip(rect);
                 for (Widget *child : children) {
