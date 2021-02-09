@@ -310,6 +310,11 @@
                         return true;
                     });
                 }
+                dc->setClip(rect);
+                for (float width : column_widths) {
+                    dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, rect.h - children_size.h), Color());
+                    pos.x += width;
+                }
                 dc->setClip(old_clip);
                 drawScrollBars(dc, rect, virtual_size);
             }
