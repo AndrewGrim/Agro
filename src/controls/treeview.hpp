@@ -14,6 +14,7 @@
 
     class TextCellRenderer : public CellRenderer {
         public:
+            // TODO setters for text, padding, font to set m_size_changed
             std::string text;
             int padding;
             Color foreground;
@@ -50,11 +51,20 @@
             }
 
             virtual Size sizeHint(DrawingContext *dc) override {
-                Size s = dc->measureText(font ? font : dc->default_font, text);
-                    s.w += padding * 2;
-                    s.h += padding * 2;
-                return s;
+                if (m_size_changed) {
+                    Size s = dc->measureText(font ? font : dc->default_font, text);
+                        s.w += padding * 2;
+                        s.h += padding * 2;
+                    m_size = s;
+                    return s;
+                } else {
+                    return m_size;
+                }
             }
+
+        protected:
+            Size m_size;
+            bool m_size_changed = true;
     };
 
     template <typename T> class TreeNode {
