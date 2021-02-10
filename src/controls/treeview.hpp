@@ -310,6 +310,7 @@
                             }
                         }
                         pos.y += row_height;
+                        // Clip and draw row grid line.
                         dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
                         dc->fillRect(Rect(rect.x, pos.y - 1, rect.w, 1), Color(0.85, 0.85, 0.85));
                         if (pos.y > rect.y + rect.h) {
@@ -318,6 +319,7 @@
                         return true;
                     });
                 }
+                // Clip and draw column grid lines.
                 dc->setClip(rect);
                 for (float width : column_widths) {
                     dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, rect.h - children_size.h), Color(0.85, 0.85, 0.85));
