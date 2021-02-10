@@ -295,10 +295,16 @@
                                             cell_clip.w = cell_start + col_width - rect.x;
                                         }
                                     }
+                                    if (pos.y + s.h > rect.y + children_size.h) {
+                                        if (pos.y > rect.y + children_size.h) {
+                                            // NO OP
+                                        } else {
+                                            cell_clip.y = rect.y + children_size.h;
+                                            cell_clip.h = pos.y + s.h - rect.y - children_size.h;
+                                        }
+                                    }
                                     dc->setClip(cell_clip);
                                     renderer->draw(
-                                        dc,
-                                    dc, 
                                         dc,
                                         Rect(
                                             cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
