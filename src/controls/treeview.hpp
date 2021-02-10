@@ -287,21 +287,13 @@
                             if (pos.y + row_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
                                 if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
                                     Rect cell_clip = Rect(cell_start, pos.y, col_width, s.h);
-                                    if (cell_start + col_width > rect.x) {
-                                        if (cell_start > rect.x) {
-                                            // NO OP
-                                        } else {
-                                            cell_clip.x = rect.x;
-                                            cell_clip.w = cell_start + col_width - rect.x;
-                                        }
+                                    if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
+                                        cell_clip.x = rect.x;
+                                        cell_clip.w = cell_start + col_width - rect.x;
                                     }
-                                    if (pos.y + s.h > rect.y + children_size.h) {
-                                        if (pos.y > rect.y + children_size.h) {
-                                            // NO OP
-                                        } else {
-                                            cell_clip.y = rect.y + children_size.h;
-                                            cell_clip.h = pos.y + s.h - rect.y - children_size.h;
-                                        }
+                                    if (pos.y + s.h > rect.y + children_size.h && !(pos.y > rect.y + children_size.h)) {
+                                        cell_clip.y = rect.y + children_size.h;
+                                        cell_clip.h = pos.y + s.h - rect.y - children_size.h;
                                     }
                                     dc->setClip(cell_clip);
                                     renderer->draw(
