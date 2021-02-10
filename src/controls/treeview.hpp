@@ -285,6 +285,7 @@
                                 row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
                             }
                             if (pos.y + row_height > rect.y && pos.y < rect.y + rect.h) {
+                                if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
                                     Rect cell_clip = Rect(cell_start, pos.y, col_width, s.h);
                                     if (cell_start + col_width > rect.x) {
                                         if (cell_start > rect.x) {
@@ -295,13 +296,19 @@
                                         }
                                     }
                                     dc->setClip(cell_clip);
-                                renderer->draw(
+                                    renderer->draw(
+                                        dc,
                                     dc, 
-                                    Rect(
-                                        cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
-                                    )
-                                );
+                                        dc,
+                                        Rect(
+                                            cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
+                                        )
+                                    );
+                                }
                                 cell_start += col_width;
+                                if (cell_start > rect.x + rect.w) {
+                                    break;
+                                }
                             }
                         }
                         pos.y += row_height;
