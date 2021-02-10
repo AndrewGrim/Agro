@@ -284,7 +284,7 @@
                             if (s.h > row_height) {
                                 row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
                             }
-                            if (pos.y + row_height > rect.y && pos.y < rect.y + rect.h) {
+                            if (pos.y + row_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
                                 if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
                                     Rect cell_clip = Rect(cell_start, pos.y, col_width, s.h);
                                     if (cell_start + col_width > rect.x) {
