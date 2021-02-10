@@ -272,7 +272,6 @@
                     local_pos_x += s.w;
                 }
                 pos.y += children_size.h;
-                dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h - children_size.h));
                 int count = 0;
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
