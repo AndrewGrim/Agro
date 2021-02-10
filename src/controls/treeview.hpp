@@ -233,6 +233,7 @@
             }
 
             virtual void draw(DrawingContext *dc, Rect rect) override {
+                assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 Rect old_clip = dc->clip();
                 Size children_size = Size();
