@@ -312,7 +312,7 @@
                         pos.y += row_height;
                         // Clip and draw row grid line.
                         dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
-                        dc->fillRect(Rect(rect.x, pos.y - 1, rect.w, 1), Color(0.85, 0.85, 0.85));
+                        dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));
                         if (pos.y > rect.y + rect.h) {
                             return false;
                         }
