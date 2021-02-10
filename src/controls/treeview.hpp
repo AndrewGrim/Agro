@@ -319,11 +319,13 @@
                         return true;
                     });
                 }
-                // Clip and draw column grid lines.
-                dc->setClip(rect);
-                for (float width : column_widths) {
-                    dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, rect.h - children_size.h), Color(0.85, 0.85, 0.85));
-                    pos.x += width;
+                if (m_model->roots.size()) {
+                    // Clip and draw column grid lines.
+                    dc->setClip(rect);
+                    for (float width : column_widths) {
+                        dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, rect.h - children_size.h), Color(0.85, 0.85, 0.85));
+                        pos.x += width;
+                    }
                 }
                 dc->setClip(old_clip);
                 drawScrollBars(dc, rect, virtual_size);
