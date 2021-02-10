@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
                             TextCellRenderer *renderer = new TextCellRenderer("Root: " + std::to_string(i));
                                 renderer->font = mono;
                             columns.push_back(renderer);
-                            for (int i = 1; i < 4; i++) {
+                            for (int i = 1; i < 7; i++) {
                                 TextCellRenderer *renderer = new TextCellRenderer("Column " + std::to_string(i));
                                     renderer->font = mono;
                                 columns.push_back(renderer);
@@ -63,6 +63,9 @@ int main(int argc, char **argv) {
                         for (int i = 0; i < 5; i++) {
                             std::vector<CellRenderer*> columns;
                                 columns.push_back(new TextCellRenderer("Second Gen: " + std::to_string(i)));
+                                columns.push_back(new TextCellRenderer("Row " + std::to_string(i)));
+                                columns.push_back(new TextCellRenderer("Row " + std::to_string(i)));
+                                columns.push_back(new TextCellRenderer("Row " + std::to_string(i)));
                                 columns.push_back(new TextCellRenderer("Row " + std::to_string(i)));
                                 columns.push_back(new TextCellRenderer("Row " + std::to_string(i)));
                                 columns.push_back(new TextCellRenderer("Row " + std::to_string(i)));
