@@ -285,11 +285,11 @@
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                         float cell_start = pos.x;
-                        for (size_t i = 0; i < node->columns.size(); i++) {
-                            float col_width = column_widths[i];
-                            CellRenderer *renderer = node->columns[i];
-                            Size s = renderer->sizeHint(dc);
-                            if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                        if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                            for (size_t i = 0; i < node->columns.size(); i++) {
+                                float col_width = column_widths[i];
+                                CellRenderer *renderer = node->columns[i];
+                                Size s = renderer->sizeHint(dc);
                                 if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
                                     Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
                                     if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {

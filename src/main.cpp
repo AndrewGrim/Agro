@@ -45,12 +45,12 @@ int main(int argc, char **argv) {
                 });
             {
                 for (int i = 0; i < 7; i++) {
-                    tv->append(new Button("Column: " + std::to_string(i)));
+                    tv->append(new Button("=== Column: " + std::to_string(i) + " ==="));
                 }
                 Tree<Hidden> *model = new Tree<Hidden>();
                 {
                     TreeNode<Hidden> *root = nullptr;
-                    for (int i = 0; i < 100; i++) {
+                    for (int i = 0; i < 50000; i++) {
                         std::vector<CellRenderer*> columns;
                             TextCellRenderer *renderer = new TextCellRenderer("Root: " + std::to_string(i));
                                 renderer->font = mono;
