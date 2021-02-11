@@ -14,12 +14,13 @@
 
     class TextCellRenderer : public CellRenderer {
         public:
-            // TODO setters for text, padding, font to set m_size_changed
+            // TODO setters for text, alignment, padding, font to set m_size_changed
             std::string text;
-            int padding;
             Color foreground;
             Color background;
+            int padding;
             Font *font = nullptr;
+            HorizontalAlignment align = HorizontalAlignment::Left;
 
             TextCellRenderer(
                     std::string text, 
@@ -42,7 +43,7 @@
                 dc->fillTextAligned(
                     font ? font : dc->default_font,
                     text,
-                    HorizontalAlignment::Center,
+                    align,
                     VerticalAlignment::Center,
                     rect,
                     padding,
