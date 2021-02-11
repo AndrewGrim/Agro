@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
                 Tree<Hidden> *model = new Tree<Hidden>();
                 {
                     TreeNode<Hidden> *root = nullptr;
-                    for (int i = 0; i < 1000; i++) {
+                    for (int i = 0; i < 5; i++) {
                         std::vector<CellRenderer*> columns;
                             TextCellRenderer *renderer = new TextCellRenderer("Root: " + std::to_string(i));
                                 renderer->font = mono;
@@ -72,19 +72,82 @@ int main(int argc, char **argv) {
                             }
                         TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
                         root = model->append(nullptr, node);
-                        for (int i = 0; i < 5; i++) {
-                            TreeNode<Hidden> *last = root;
-                            for (int j = 0; j < 5; j++) {
-                                std::vector<CellRenderer*> columns;
-                                    TextCellRenderer *renderer = new TextCellRenderer("Gen: " + std::to_string(i));
+                        {
+                            std::vector<CellRenderer*> columns;
+                            TextCellRenderer *renderer = new TextCellRenderer("Gen: 1");
+                            columns.push_back(renderer);
+                            for (int i = 1; i < 7; i++) {
+                                renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                    renderer->align = HorizontalAlignment::Center;
+                                columns.push_back(renderer);
+                            }
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                            TreeNode<Hidden> *last = model->append(root, node);
+                            {
+                                for (int j = 0; j < 3; j++) {
+                                    std::vector<CellRenderer*> columns;
+                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 1");
                                     columns.push_back(renderer);
                                     for (int i = 1; i < 7; i++) {
-                                        TextCellRenderer *renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                        renderer = new TextCellRenderer("Column " + std::to_string(i));
                                             renderer->align = HorizontalAlignment::Center;
                                         columns.push_back(renderer);
                                     }
-                                TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));       
-                                last = model->append(last, node);
+                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                    model->append(last, node);
+                                }
+                            }
+                        }
+                        {
+                            std::vector<CellRenderer*> columns;
+                            TextCellRenderer *renderer = new TextCellRenderer("Gen: 2");
+                            columns.push_back(renderer);
+                            for (int i = 1; i < 7; i++) {
+                                renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                    renderer->align = HorizontalAlignment::Center;
+                                columns.push_back(renderer);
+                            }
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
+                            TreeNode<Hidden> *last = model->append(root, node);
+                            {
+                                for (int j = 0; j < 3; j++) {
+                                    std::vector<CellRenderer*> columns;
+                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 1");
+                                    columns.push_back(renderer);
+                                    for (int i = 1; i < 7; i++) {
+                                        renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                            renderer->align = HorizontalAlignment::Center;
+                                        columns.push_back(renderer);
+                                    }
+                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                    model->append(last, node);
+                                }
+                            }
+                        }
+                        {
+                            std::vector<CellRenderer*> columns;
+                            TextCellRenderer *renderer = new TextCellRenderer("Gen: 3");
+                            columns.push_back(renderer);
+                            for (int i = 1; i < 7; i++) {
+                                renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                    renderer->align = HorizontalAlignment::Center;
+                                columns.push_back(renderer);
+                            }
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
+                            TreeNode<Hidden> *last = model->append(root, node);
+                            {
+                                for (int j = 0; j < 3; j++) {
+                                    std::vector<CellRenderer*> columns;
+                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 1");
+                                    columns.push_back(renderer);
+                                    for (int i = 1; i < 7; i++) {
+                                        renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                            renderer->align = HorizontalAlignment::Center;
+                                        columns.push_back(renderer);
+                                    }
+                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                    model->append(last, node);
+                                }
                             }
                         }
                     }
