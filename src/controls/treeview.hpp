@@ -222,6 +222,8 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
+            float indent = 16;
+
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
 
             }
@@ -249,7 +251,7 @@
                     }
                 }
                 // expand any column headers as needed ?option?
-                // TODO take into account the collapsed status of nodes and their hierarchy
+                // TODO take into account the collapsed status of nodes
                 // TODO then maybe next step is to make the columns resizable using the mouse?
                 Size virtual_size = children_size;
                 if (m_virtual_size_changed) {
@@ -283,8 +285,22 @@
                     local_pos_x += s.w;
                 }
                 pos.y += children_size.h;
+                std::unordered_map<void*, int> depth_map;
                 for (TreeNode<T> *root : m_model->roots) {
+                    depth_map.clear();
+                    int depth = 1;
+                    void *previous_parent = nullptr;
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                        if (node->parent != previous_parent) {
+                            std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
+                            if (iter != depth_map.end()) {
+                                depth = iter->second;
+                            } else {
+                                depth += 1;
+                                depth_map.insert(std::make_pair(node->parent, depth));
+                            }
+                            previous_parent = node->parent;
+                        }
                         float cell_start = pos.x;
                         if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
                             for (size_t i = 0; i < node->columns.size(); i++) {
@@ -302,10 +318,14 @@
                                         cell_clip.h = pos.y + node->max_cell_height - rect.y - children_size.h;
                                     }
                                     dc->setClip(cell_clip);
+                                    float cell_x = cell_start;
+                                    if (!i) {
+                                        cell_x += depth * indent;
+                                    }
                                     renderer->draw(
                                         dc,
                                         Rect(
-                                            cell_start, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
+                                            cell_x, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
                                         )
                                     );
                                 }
