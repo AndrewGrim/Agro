@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
                             {
                                 for (int j = 0; j < 3; j++) {
                                     std::vector<CellRenderer*> columns;
-                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 1");
+                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 2");
                                     columns.push_back(renderer);
                                     for (int i = 1; i < 7; i++) {
                                         renderer = new TextCellRenderer("Column " + std::to_string(i));
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
                             {
                                 for (int j = 0; j < 3; j++) {
                                     std::vector<CellRenderer*> columns;
-                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 1");
+                                    TextCellRenderer *renderer = new TextCellRenderer("Inner Gen: 3");
                                     columns.push_back(renderer);
                                     for (int i = 1; i < 7; i++) {
                                         renderer = new TextCellRenderer("Column " + std::to_string(i));
