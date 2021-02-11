@@ -74,6 +74,7 @@
             TreeNode<T> *parent;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
+            float max_cell_height = 0.0;
 
             TreeNode(std::vector<CellRenderer*> columns, T *hidden) {
                 this->columns = columns;
@@ -254,7 +255,15 @@
                     // TODO note that this doesnt take into account when the columns themselves change
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) {
-                            virtual_size.h += node->columns[0]->sizeHint(dc).h;
+                            float max_row_height = node->max_cell_height;
+                            for (CellRenderer *renderer : node->columns) {
+                                Size s = renderer->sizeHint(dc);
+                                if (s.h > max_row_height) {
+                                    max_row_height = s.h;
+                                    node->max_cell_height = s.h;
+                                }
+                            }
+                            virtual_size.h += max_row_height;
                             return true;
                         });
                     }
