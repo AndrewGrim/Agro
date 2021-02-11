@@ -25,7 +25,7 @@ struct Hidden {
 };
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("Application", Size(500, 500));
+    Application *app = new Application("Application", Size(1600, 1000));
         Font *mono = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 16, Font::Type::Mono);
         Font *small = new Font("fonts/DejaVu/DejaVuSans.ttf", 12, Font::Type::Sans);
         Font *big = new Font("fonts/DejaVu/DejaVuSans-Bold.ttf", 22, Font::Type::Sans);
@@ -70,7 +70,8 @@ int main(int argc, char **argv) {
                                 }
                                 columns.push_back(renderer);
                             }
-                        TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
+                        TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                            // node->is_collapsed = true;
                         root = model->append(nullptr, node);
                         {
                             std::vector<CellRenderer*> columns;
@@ -82,6 +83,7 @@ int main(int argc, char **argv) {
                                 columns.push_back(renderer);
                             }
                             TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                // node->is_collapsed = true;
                             TreeNode<Hidden> *last = model->append(root, node);
                             {
                                 for (int j = 0; j < 3; j++) {
@@ -94,7 +96,19 @@ int main(int argc, char **argv) {
                                         columns.push_back(renderer);
                                     }
                                     TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
-                                    model->append(last, node);
+                                        // node->is_collapsed = true;
+                                    TreeNode<Hidden> *bruh = model->append(last, node);
+                                    {
+                                        std::vector<CellRenderer*> columns;
+                                        TextCellRenderer *renderer = new TextCellRenderer("Too Many Gens: 1");
+                                        columns.push_back(renderer);
+                                        for (int i = 1; i < 7; i++) {
+                                            renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                                renderer->align = HorizontalAlignment::Center;
+                                            columns.push_back(renderer);
+                                        }
+                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(i)));
+                                    }
                                 }
                             }
                         }
@@ -107,7 +121,8 @@ int main(int argc, char **argv) {
                                     renderer->align = HorizontalAlignment::Center;
                                 columns.push_back(renderer);
                             }
-                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                // node->is_collapsed = true;
                             TreeNode<Hidden> *last = model->append(root, node);
                             {
                                 for (int j = 0; j < 3; j++) {
@@ -120,7 +135,19 @@ int main(int argc, char **argv) {
                                         columns.push_back(renderer);
                                     }
                                     TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
-                                    model->append(last, node);
+                                        // node->is_collapsed = true;
+                                    TreeNode<Hidden> *bruh = model->append(last, node);
+                                    {
+                                        std::vector<CellRenderer*> columns;
+                                        TextCellRenderer *renderer = new TextCellRenderer("Too Many Gens: 2");
+                                        columns.push_back(renderer);
+                                        for (int i = 1; i < 7; i++) {
+                                            renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                                renderer->align = HorizontalAlignment::Center;
+                                            columns.push_back(renderer);
+                                        }
+                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(i)));
+                                    }
                                 }
                             }
                         }
@@ -133,7 +160,8 @@ int main(int argc, char **argv) {
                                     renderer->align = HorizontalAlignment::Center;
                                 columns.push_back(renderer);
                             }
-                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));  
+                                // node->is_collapsed = true;
                             TreeNode<Hidden> *last = model->append(root, node);
                             {
                                 for (int j = 0; j < 3; j++) {
@@ -146,7 +174,19 @@ int main(int argc, char **argv) {
                                         columns.push_back(renderer);
                                     }
                                     TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
-                                    model->append(last, node);
+                                        // node->is_collapsed = true;
+                                    TreeNode<Hidden> *bruh = model->append(last, node);
+                                    {
+                                        std::vector<CellRenderer*> columns;
+                                        TextCellRenderer *renderer = new TextCellRenderer("Too Many Gens: 3");
+                                        columns.push_back(renderer);
+                                        for (int i = 1; i < 7; i++) {
+                                            renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                                renderer->align = HorizontalAlignment::Center;
+                                            columns.push_back(renderer);
+                                        }
+                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(i)));
+                                    }
                                 }
                             }
                         }

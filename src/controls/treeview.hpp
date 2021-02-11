@@ -222,7 +222,7 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
-            float indent = 16;
+            float indent = 24;
 
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
 
@@ -290,6 +290,9 @@
                     depth_map.clear();
                     int depth = 1;
                     void *previous_parent = nullptr;
+                    bool collapsed = false;
+                    int collapsed_depth = -1;
+
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                         if (node->parent != previous_parent) {
                             std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
@@ -301,44 +304,55 @@
                             }
                             previous_parent = node->parent;
                         }
-                        if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
-                            float cell_start = pos.x;
-                            for (size_t i = 0; i < node->columns.size(); i++) {
-                                float col_width = column_widths[i];
-                                CellRenderer *renderer = node->columns[i];
-                                Size s = renderer->sizeHint(dc);
-                                if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
-                                    Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
-                                    if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
-                                        cell_clip.x = rect.x;
-                                        cell_clip.w = cell_start + col_width - rect.x;
+                        if (depth <= collapsed_depth) {
+                            collapsed = false;
+                            collapsed_depth = -1;
+                        }
+                        if (!collapsed) {
+                            if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                                float cell_start = pos.x;
+                                for (size_t i = 0; i < node->columns.size(); i++) {
+                                    float col_width = column_widths[i];
+                                    CellRenderer *renderer = node->columns[i];
+                                    Size s = renderer->sizeHint(dc);
+                                    if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
+                                        Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
+                                        if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
+                                            cell_clip.x = rect.x;
+                                            cell_clip.w = cell_start + col_width - rect.x;
+                                        }
+                                        if (pos.y + node->max_cell_height > rect.y + children_size.h && !(pos.y > rect.y + children_size.h)) {
+                                            cell_clip.y = rect.y + children_size.h;
+                                            cell_clip.h = pos.y + node->max_cell_height - rect.y - children_size.h;
+                                        }
+                                        dc->setClip(cell_clip);
+                                        float cell_x = cell_start;
+                                        if (!i) {
+                                            cell_x += depth * indent;
+                                        }
+                                        renderer->draw(
+                                            dc,
+                                            Rect(
+                                                cell_x, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
+                                            )
+                                        );
                                     }
-                                    if (pos.y + node->max_cell_height > rect.y + children_size.h && !(pos.y > rect.y + children_size.h)) {
-                                        cell_clip.y = rect.y + children_size.h;
-                                        cell_clip.h = pos.y + node->max_cell_height - rect.y - children_size.h;
+                                    cell_start += col_width;
+                                    if (cell_start > rect.x + rect.w) {
+                                        break;
                                     }
-                                    dc->setClip(cell_clip);
-                                    float cell_x = cell_start;
-                                    if (!i) {
-                                        cell_x += depth * indent;
-                                    }
-                                    renderer->draw(
-                                        dc,
-                                        Rect(
-                                            cell_x, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
-                                        )
-                                    );
-                                }
-                                cell_start += col_width;
-                                if (cell_start > rect.x + rect.w) {
-                                    break;
                                 }
                             }
+                            pos.y += node->max_cell_height;
+                            // Clip and draw row grid line.
+                            dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
+                            dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));
                         }
-                        pos.y += node->max_cell_height;
-                        // Clip and draw row grid line.
-                        dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
-                        dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));
+
+                        if (node->is_collapsed && !collapsed) {
+                            collapsed = true;
+                            collapsed_depth = depth;
+                        }
                         if (pos.y > rect.y + rect.h) {
                             return false;
                         }
@@ -347,9 +361,9 @@
                 }
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
-                    dc->setClip(rect);
+                    dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
                     for (float width : column_widths) {
-                        dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, rect.h - children_size.h), Color(0.85, 0.85, 0.85));
+                        dc->fillRect(Rect(pos.x + width - 1, rect.y, 1, pos.y - children_size.h), Color(0.85, 0.85, 0.85));
                         pos.x += width;
                     }
                 }
