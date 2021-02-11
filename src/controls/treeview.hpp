@@ -301,8 +301,8 @@
                             }
                             previous_parent = node->parent;
                         }
-                        float cell_start = pos.x;
                         if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                            float cell_start = pos.x;
                             for (size_t i = 0; i < node->columns.size(); i++) {
                                 float col_width = column_widths[i];
                                 CellRenderer *renderer = node->columns[i];
