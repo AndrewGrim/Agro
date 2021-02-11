@@ -285,30 +285,26 @@
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                         float cell_start = pos.x;
-                        float row_height = 0.0;
                         for (size_t i = 0; i < node->columns.size(); i++) {
                             float col_width = column_widths[i];
                             CellRenderer *renderer = node->columns[i];
                             Size s = renderer->sizeHint(dc);
-                            if (s.h > row_height) {
-                                row_height = s.h; // TODO we should check that in advance so we can give each cell more space when possible
-                            }
-                            if (pos.y + row_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                            if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
                                 if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
-                                    Rect cell_clip = Rect(cell_start, pos.y, col_width, s.h);
+                                    Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
                                     if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
                                         cell_clip.x = rect.x;
                                         cell_clip.w = cell_start + col_width - rect.x;
                                     }
-                                    if (pos.y + s.h > rect.y + children_size.h && !(pos.y > rect.y + children_size.h)) {
+                                    if (pos.y + node->max_cell_height > rect.y + children_size.h && !(pos.y > rect.y + children_size.h)) {
                                         cell_clip.y = rect.y + children_size.h;
-                                        cell_clip.h = pos.y + s.h - rect.y - children_size.h;
+                                        cell_clip.h = pos.y + node->max_cell_height - rect.y - children_size.h;
                                     }
                                     dc->setClip(cell_clip);
                                     renderer->draw(
                                         dc,
                                         Rect(
-                                            cell_start, pos.y, col_width > s.w ? col_width : s.w, s.h
+                                            cell_start, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
                                         )
                                     );
                                 }
@@ -318,7 +314,7 @@
                                 }
                             }
                         }
-                        pos.y += row_height;
+                        pos.y += node->max_cell_height;
                         // Clip and draw row grid line.
                         dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
                         dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));

@@ -27,6 +27,8 @@ struct Hidden {
 int main(int argc, char **argv) { 
     Application *app = new Application("Application", Size(500, 500));
         Font *mono = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 16, Font::Type::Mono);
+        Font *small = new Font("fonts/DejaVu/DejaVuSans.ttf", 12, Font::Type::Sans);
+        Font *big = new Font("fonts/DejaVu/DejaVuSans-Bold.ttf", 22, Font::Type::Sans);
         app->onQuit = [&](Application *app) {
             delete mono;
             return true;
@@ -55,7 +57,13 @@ int main(int argc, char **argv) {
                             columns.push_back(renderer);
                             for (int i = 1; i < 7; i++) {
                                 TextCellRenderer *renderer = new TextCellRenderer("Column " + std::to_string(i));
+                                if (i == 2) {
+                                    renderer->font = small;
+                                } else if (i == 3) {
+                                    renderer->font = big;
+                                } else {
                                     renderer->font = mono;
+                                }
                                 columns.push_back(renderer);
                             }
                         TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));                    
