@@ -229,7 +229,6 @@
 
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
                 this->onMouseMotion = [&](MouseEvent event) {
-                    int count = 0;
                     float y = rect.y;
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
@@ -256,7 +255,14 @@
                                     update();
                                 }
                             }
-                            count++;
+                            y += node->max_cell_height;
+                            if (node->is_collapsed) {
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+                };
                             y += node->max_cell_height;
                             if (node->is_collapsed) {
                                 return false;
