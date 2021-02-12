@@ -287,12 +287,22 @@
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (selected != node) {
-                                    selected = node;
-                                    update();
+                                if (event.x >= rect.x + (node->depth - 1) * indent && event.x <= rect.x + node->depth * indent) {
+                                    if (node->is_collapsed) {
+                                        node->is_collapsed = false;
+                                        update();
+                                    } else {
+                                        node->is_collapsed = true;
+                                        update();
+                                    }
                                 } else {
-                                    selected = nullptr;
-                                    update();
+                                    if (selected != node) {
+                                        selected = node;
+                                        update();
+                                    } else {
+                                        selected = nullptr;
+                                        update();
+                                    }
                                 }
                             }
                             y += node->max_cell_height;
