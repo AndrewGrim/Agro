@@ -289,6 +289,9 @@
                                 if (selected != node) {
                                     selected = node;
                                     update();
+                                } else {
+                                    selected = nullptr;
+                                    update();
                                 }
                             }
                             y += node->max_cell_height;
