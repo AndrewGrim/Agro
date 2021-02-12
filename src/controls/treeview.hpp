@@ -388,7 +388,7 @@
                     int collapsed_depth = -1;
 
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
-                        if (node->parent != previous_parent) {
+                        if (node->parent != previous_parent || !node->parent) {
                             std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
                             if (iter != depth_map.end()) {
                                 depth = iter->second;
