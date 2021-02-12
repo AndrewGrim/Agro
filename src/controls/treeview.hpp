@@ -76,6 +76,7 @@
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
             float max_cell_height = 0.0;
+            int depth = 0;
 
             TreeNode(std::vector<CellRenderer*> columns, T *hidden) {
                 this->columns = columns;
@@ -375,9 +376,11 @@
                             std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
                             if (iter != depth_map.end()) {
                                 depth = iter->second;
+                                node->depth = depth;
                             } else {
                                 depth += 1;
                                 depth_map.insert(std::make_pair(node->parent, depth));
+                                node->depth = depth;
                             }
                             previous_parent = node->parent;
                         }
