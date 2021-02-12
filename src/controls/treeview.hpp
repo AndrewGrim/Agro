@@ -266,7 +266,11 @@
                     }
                 };
                 this->onMouseClick = [&](MouseEvent event) {
+                    float x = rect.x;
                     float y = rect.y;
+                    if (m_horizontal_scrollbar) {
+                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - rect.w);
+                    }
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
                     }
@@ -287,13 +291,15 @@
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (event.x >= rect.x + (node->depth - 1) * indent && event.x <= rect.x + node->depth * indent) {
-                                    if (node->is_collapsed) {
-                                        node->is_collapsed = false;
-                                        update();
-                                    } else {
-                                        node->is_collapsed = true;
-                                        update();
+                                if (event.x >= x + (node->depth - 1) * indent && event.x <= x + node->depth * indent) {
+                                    if (node->children.size()) {
+                                        if (node->is_collapsed) {
+                                            node->is_collapsed = false;
+                                            update();
+                                        } else {
+                                            node->is_collapsed = true;
+                                            update();
+                                        }
                                     }
                                 } else {
                                     if (selected != node) {
