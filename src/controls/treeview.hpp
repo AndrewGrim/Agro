@@ -224,8 +224,7 @@
     template <typename T> class TreeView : public Scrollable {
         public:
             float indent = 24;
-            // TODO hovered should be reset when programatically collapsing nodes
-            // TODO also maybe reset when a column header gets hovered
+            // TODO reset when a column header gets hovered?
             TreeNode<T> *hovered = nullptr;
             TreeNode<T> *selected = nullptr;
 
@@ -406,13 +405,30 @@
                         }
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
-                                if (selected == node) {
+                                // Clip and draw selection and or hover. 
+                                if (selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
                                     dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
                                     dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0, 0.5, 1));
                                 } else if (hovered == node) {
                                     dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
                                     dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
                                 }
+                                // Clip and draw the collapsible "button".
+                                dc->setClip(
+                                    Rect(
+                                        rect.x, 
+                                        pos.y > rect.y + children_size.h ? pos.y : rect.y + children_size.h, 
+                                        node->depth * indent, 
+                                        node->max_cell_height
+                                    )
+                                );
+                                // End of the line.
+                                if (node->children.size()) {
+                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * indent, pos.y, indent, node->max_cell_height), Color(0, 1));
+                                } else {
+                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * indent, pos.y, indent, node->max_cell_height), Color(1, 0, 1));
+                                }
+
                                 float cell_start = pos.x;
                                 for (size_t i = 0; i < node->columns.size(); i++) {
                                     float col_width = column_widths[i];
