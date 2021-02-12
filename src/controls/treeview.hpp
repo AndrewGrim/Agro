@@ -223,9 +223,48 @@
     template <typename T> class TreeView : public Scrollable {
         public:
             float indent = 24;
+            // TODO hovered should be reset when programatically collapsing nodes
+            // TODO also maybe reset when a column header gets hovered
+            TreeNode<T> *hovered = nullptr;
 
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
-
+                this->onMouseMotion = [&](MouseEvent event) {
+                    int count = 0;
+                    float y = rect.y;
+                    if (m_vertical_scrollbar) {
+                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
+                    }
+                    Size children_size = Size();
+                    std::vector<float> column_widths;
+                    DrawingContext *dc = ((Application*)this->app)->dc;
+                    for (Widget *child : children) {
+                        // TODO take collapse status into account, trigger virtual size changed member
+                        // TODO we could probably store this somewhere
+                        Size s = child->sizeHint(dc);
+                        column_widths.push_back(s.w);
+                        children_size.w += s.w;
+                        if (s.h > children_size.h) {
+                            children_size.h = s.h;
+                        }
+                    }
+                    y += children_size.h;
+                    for (TreeNode<T> *root : m_model->roots) {
+                        m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                            if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
+                                if (hovered != node) {
+                                    hovered = node;
+                                    update();
+                                }
+                            }
+                            count++;
+                            y += node->max_cell_height;
+                            if (node->is_collapsed) {
+                                return false;
+                            }
+                            return true;
+                        });
+                    }
+                };
             }
 
             ~TreeView() {
@@ -243,6 +282,7 @@
                 Size children_size = Size();
                 std::vector<float> column_widths;
                 for (Widget *child : children) {
+                    // TODO take collapse status into account, trigger virtual size changed member
                     Size s = child->sizeHint(dc);
                     column_widths.push_back(s.w);
                     children_size.w += s.w;
@@ -310,6 +350,10 @@
                         }
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                                if (hovered == node) {
+                                    dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
+                                    dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
+                                }
                                 float cell_start = pos.x;
                                 for (size_t i = 0; i < node->columns.size(); i++) {
                                     float col_width = column_widths[i];
@@ -381,6 +425,7 @@
                 if (m_model) {
                     m_model->clear();
                     m_virtual_size_changed = true;
+                    hovered = nullptr;
                     update();
                 }
             }
