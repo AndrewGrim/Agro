@@ -408,7 +408,7 @@
                                 // Clip and draw selection and or hover. 
                                 if (selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
                                     dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
-                                    dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0, 0.5, 1));
+                                    dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
                                 } else if (hovered == node) {
                                     dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
                                     dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
