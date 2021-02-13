@@ -252,8 +252,8 @@
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (hovered != node) {
-                                    hovered = node;
+                                if (m_hovered != node) {
+                                    m_hovered = node;
                                     update();
                                 }
                             }
@@ -301,11 +301,11 @@
                                         }
                                     }
                                 } else {
-                                    if (selected != node) {
-                                        selected = node;
+                                    if (m_selected != node) {
+                                        m_selected = node;
                                         update();
                                     } else {
-                                        selected = nullptr;
+                                        m_selected = nullptr;
                                         update();
                                     }
                                 }
@@ -411,10 +411,10 @@
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
                                 // Clip and draw selection and or hover. 
-                                if (selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
+                                if (m_selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
                                     dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
                                     dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
-                                } else if (hovered == node) {
+                                } else if (m_hovered == node) {
                                     dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
                                     dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
                                 }
@@ -510,8 +510,8 @@
                 if (m_model) {
                     m_model->clear();
                     m_virtual_size_changed = true;
-                    hovered = nullptr;
-                    selected = nullptr;
+                    m_hovered = nullptr;
+                    m_selected = nullptr;
                     update();
                 }
             }
@@ -525,6 +525,16 @@
                 return m_grid_lines;
             }
 
+            /// Can return null.
+            const TreeNode<T>* hovered() {
+                return m_hovered;
+            }
+
+            /// Can return null.
+            const TreeNode<T>* selected() {
+                return m_selected;
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
@@ -533,8 +543,8 @@
             // TODO encapsulate the below
             float indent = 24;
             // TODO reset when a column header gets hovered?
-            TreeNode<T> *hovered = nullptr;
-            TreeNode<T> *selected = nullptr;
+            TreeNode<T> *m_hovered = nullptr;
+            TreeNode<T> *m_selected = nullptr;
             GridLines m_grid_lines = GridLines::Both; 
     };
 #endif
