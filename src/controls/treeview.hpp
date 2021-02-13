@@ -238,8 +238,7 @@
                     std::vector<float> column_widths;
                     DrawingContext *dc = ((Application*)this->app)->dc;
                     for (Widget *child : children) {
-                        // TODO take collapse status into account, trigger virtual size changed member
-                        // TODO we could probably store this somewhere
+                        // TODO we could probably store this somewhere, so we dont have to recompute it all the time
                         Size s = child->sizeHint(dc);
                         column_widths.push_back(s.w);
                         children_size.w += s.w;
@@ -277,7 +276,6 @@
                     std::vector<float> column_widths;
                     DrawingContext *dc = ((Application*)this->app)->dc;
                     for (Widget *child : children) {
-                        // TODO take collapse status into account, trigger virtual size changed member
                         // TODO we could probably store this somewhere
                         Size s = child->sizeHint(dc);
                         column_widths.push_back(s.w);
@@ -335,7 +333,6 @@
                 Size children_size = Size();
                 std::vector<float> column_widths;
                 for (Widget *child : children) {
-                    // TODO take collapse status into account, trigger virtual size changed member
                     Size s = child->sizeHint(dc);
                     column_widths.push_back(s.w);
                     children_size.w += s.w;
@@ -343,12 +340,11 @@
                         children_size.h = s.h;
                     }
                 }
-                // expand any column headers as needed ?option?
-                // TODO take into account the collapsed status of nodes
+                // TODO expand any column headers as needed ?option? ie if the content of the cell is longer than the column header do you want to expand the column header?
                 // TODO then maybe next step is to make the columns resizable using the mouse?
                 Size virtual_size = children_size;
+                // TODO note that this doesnt take into account when the columns themselves change
                 if (m_virtual_size_changed) {
-                    // TODO note that this doesnt take into account when the columns themselves change
                     std::unordered_map<void*, int> depth_map;
                     for (TreeNode<T> *root : m_model->roots) {
                         depth_map.clear();
