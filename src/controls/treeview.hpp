@@ -442,6 +442,7 @@
                                             cell_clip.y = rect.y + children_size.h;
                                             cell_clip.h = pos.y + node->max_cell_height - rect.y - children_size.h;
                                         }
+                                        // Clip and draw the current cell.
                                         dc->setClip(cell_clip);
                                         float cell_x = cell_start;
                                         if (!i) {
