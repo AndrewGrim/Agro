@@ -489,12 +489,12 @@
             }
 
             /// Can return null.
-            const TreeNode<T>* hovered() {
+            TreeNode<T>* hovered() {
                 return m_hovered;
             }
 
             /// Can return null.
-            const TreeNode<T>* selected() {
+            TreeNode<T>* selected() {
                 return m_selected;
             }
 
