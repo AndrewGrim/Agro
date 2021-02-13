@@ -381,21 +381,27 @@
                 std::unordered_map<void*, int> depth_map;
                 for (TreeNode<T> *root : m_model->roots) {
                     depth_map.clear();
-                    int depth = 1;
+                    int depth = 0;
                     void *previous_parent = nullptr;
                     bool collapsed = false;
                     int collapsed_depth = -1;
 
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                         if (node->parent != previous_parent || !node->parent) {
-                            std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
-                            if (iter != depth_map.end()) {
-                                depth = iter->second;
-                                node->depth = depth;
-                            } else {
+                            if (!node->parent) {
                                 depth += 1;
                                 depth_map.insert(std::make_pair(node->parent, depth));
                                 node->depth = depth;
+                            } else {
+                                std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
+                                if (iter != depth_map.end()) {
+                                    depth = iter->second;
+                                    node->depth = depth;
+                                } else {
+                                    depth += 1;
+                                    depth_map.insert(std::make_pair(node->parent, depth));
+                                    node->depth = depth;
+                                }
                             }
                             previous_parent = node->parent;
                         }
