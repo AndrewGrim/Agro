@@ -151,14 +151,10 @@
             // TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
     };
 
-    // TODO event for TreeView?? only one atm (onRowSelected) i guess could also have other ones
-    // like onRowHovered, onModelChanged, onNodeCollapsed etc.
-
     // min col width
     // expand col to content??
     // image cache / manager
     // headings / columns
-    // callbacks ie onRowSelected etc.
     // allow to drag columns to resize them?? (low priority)
     // current sorted column
     // sort type ie asc, desc
@@ -173,6 +169,12 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
+            std::function<void(TreeNode<T>*)> onNodeHovered = nullptr;
+            std::function<void(TreeNode<T>*)> onNodeSelected = nullptr;
+            std::function<void(TreeNode<T>*)> onNodeDeselected = nullptr;
+            std::function<void(TreeNode<T>*)> onNodeCollapsed = nullptr;
+            std::function<void(TreeNode<T>*)> onNodeExpanded = nullptr;
+
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
                 this->onMouseMotion = [&](MouseEvent event) {
                     float y = rect.y;
@@ -197,6 +199,9 @@
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
                                 if (m_hovered != node) {
                                     m_hovered = node;
+                                    if (onNodeHovered) {
+                                        onNodeHovered(node);
+                                    }
                                     update();
                                 }
                             }
@@ -237,18 +242,33 @@
                                     if (node->children.size()) {
                                         if (node->is_collapsed) {
                                             node->is_collapsed = false;
+                                            if (onNodeExpanded) {
+                                                onNodeExpanded(node);
+                                            }
                                             update();
                                         } else {
                                             node->is_collapsed = true;
+                                            if (onNodeCollapsed) {
+                                                onNodeCollapsed(node);
+                                            }
                                             update();
                                         }
                                     }
                                 } else {
                                     if (m_selected != node) {
+                                        if (m_selected && onNodeDeselected) {
+                                            onNodeDeselected(node);
+                                        }
                                         m_selected = node;
+                                        if (onNodeSelected) {
+                                            onNodeSelected(node);
+                                        }
                                         update();
                                     } else {
                                         m_selected = nullptr;
+                                        if (onNodeDeselected) {
+                                            onNodeDeselected(node);
+                                        }
                                         update();
                                     }
                                 }

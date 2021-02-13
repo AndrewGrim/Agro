@@ -41,12 +41,28 @@ int main(int argc, char **argv) {
         });
         Box *box = new Box(Align::Horizontal);
             box->append(new Button("Left"), Fill::Vertical);
+            int id = 0;
             TreeView<Hidden> *tv = new TreeView<Hidden>();
                 // tv->setGridLines(GridLines::None);
                 // tv->setIndent(12);
-                tv->bind(SDLK_SPACE, Mod::Ctrl, [&]{
-                    tv->clear();
-                });
+                // tv->onNodeHovered = [&](TreeNode<Hidden> *node) {
+                //     println("Hovered ID: " + std::to_string(node->hidden->id));
+                // };
+                // tv->onNodeSelected = [&](TreeNode<Hidden> *node) {
+                //     println("Selected ID: " + std::to_string(node->hidden->id));
+                // };
+                // tv->onNodeDeselected = [&](TreeNode<Hidden> *node) {
+                //     println("Deselected ID: " + std::to_string(node->hidden->id));
+                // };
+                // tv->onNodeCollapsed = [&](TreeNode<Hidden> *node) {
+                //     println("Collapsed ID: " + std::to_string(node->hidden->id));
+                // };
+                // tv->onNodeExpanded = [&](TreeNode<Hidden> *node) {
+                //     println("Expanded ID: " + std::to_string(node->hidden->id));
+                // };
+                // tv->bind(SDLK_SPACE, Mod::Ctrl, [&]{
+                //     tv->clear();
+                // });
             {
                 tv->append(new Button("============ Column: " + std::to_string(0) + " ============"));
                 for (int i = 1; i < 7; i++) {
@@ -72,7 +88,7 @@ int main(int argc, char **argv) {
                                 }
                                 columns.push_back(renderer);
                             }
-                        TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                        TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));
                             // node->is_collapsed = true;
                         root = model->append(nullptr, node);
                         {
@@ -84,7 +100,7 @@ int main(int argc, char **argv) {
                                     renderer->align = HorizontalAlignment::Center;
                                 columns.push_back(renderer);
                             }
-                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));
                                 // node->is_collapsed = true;
                             TreeNode<Hidden> *last = model->append(root, node);
                             {
@@ -97,7 +113,7 @@ int main(int argc, char **argv) {
                                             renderer->align = HorizontalAlignment::Center;
                                         columns.push_back(renderer);
                                     }
-                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));
                                         // node->is_collapsed = true;
                                     TreeNode<Hidden> *bruh = model->append(last, node);
                                     {
@@ -109,7 +125,7 @@ int main(int argc, char **argv) {
                                                 renderer->align = HorizontalAlignment::Center;
                                             columns.push_back(renderer);
                                         }
-                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(i)));
+                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(id++)));
                                     }
                                 }
                             }
@@ -123,7 +139,7 @@ int main(int argc, char **argv) {
                                     renderer->align = HorizontalAlignment::Center;
                                 columns.push_back(renderer);
                             }
-                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));
                                 // node->is_collapsed = true;
                             TreeNode<Hidden> *last = model->append(root, node);
                             {
@@ -136,7 +152,7 @@ int main(int argc, char **argv) {
                                             renderer->align = HorizontalAlignment::Center;
                                         columns.push_back(renderer);
                                     }
-                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));
                                         // node->is_collapsed = true;
                                     TreeNode<Hidden> *bruh = model->append(last, node);
                                     {
@@ -148,7 +164,7 @@ int main(int argc, char **argv) {
                                                 renderer->align = HorizontalAlignment::Center;
                                             columns.push_back(renderer);
                                         }
-                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(i)));
+                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(id++)));
                                     }
                                 }
                             }
@@ -162,7 +178,7 @@ int main(int argc, char **argv) {
                                     renderer->align = HorizontalAlignment::Center;
                                 columns.push_back(renderer);
                             }
-                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));  
+                            TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));  
                                 // node->is_collapsed = true;
                             TreeNode<Hidden> *last = model->append(root, node);
                             {
@@ -175,7 +191,7 @@ int main(int argc, char **argv) {
                                             renderer->align = HorizontalAlignment::Center;
                                         columns.push_back(renderer);
                                     }
-                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
+                                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(id++));
                                         // node->is_collapsed = true;
                                     TreeNode<Hidden> *bruh = model->append(last, node);
                                     {
@@ -187,7 +203,7 @@ int main(int argc, char **argv) {
                                                 renderer->align = HorizontalAlignment::Center;
                                             columns.push_back(renderer);
                                         }
-                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(i)));
+                                        model->append(bruh, new TreeNode<Hidden>(columns, new Hidden(id++)));
                                     }
                                 }
                             }
