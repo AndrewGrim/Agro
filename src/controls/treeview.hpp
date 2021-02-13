@@ -239,38 +239,9 @@
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
                                 if (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent) {
-                                    if (node->children.size()) {
-                                        if (node->is_collapsed) {
-                                            node->is_collapsed = false;
-                                            if (onNodeExpanded) {
-                                                onNodeExpanded(node);
-                                            }
-                                            update();
-                                        } else {
-                                            node->is_collapsed = true;
-                                            if (onNodeCollapsed) {
-                                                onNodeCollapsed(node);
-                                            }
-                                            update();
-                                        }
-                                    }
+                                    collapse(node);
                                 } else {
-                                    if (m_selected != node) {
-                                        if (m_selected && onNodeDeselected) {
-                                            onNodeDeselected(node);
-                                        }
-                                        m_selected = node;
-                                        if (onNodeSelected) {
-                                            onNodeSelected(node);
-                                        }
-                                        update();
-                                    } else {
-                                        m_selected = nullptr;
-                                        if (onNodeDeselected) {
-                                            onNodeDeselected(node);
-                                        }
-                                        update();
-                                    }
+                                    select(node);
                                 }
                             }
                             y += node->max_cell_height;
@@ -509,6 +480,75 @@
                 }
             }
 
+            void select(TreeNode<T> *node) {
+                if (m_selected != node) {
+                    deselect();
+                    m_selected = node;
+                    if (onNodeSelected) {
+                        onNodeSelected(node);
+                    }
+                    update();
+                } else {
+                    deselect();
+                }
+            }
+
+            void deselect() {
+                if (m_selected) {
+                    if (onNodeDeselected) {
+                        onNodeDeselected(m_selected);
+                    }
+                    m_selected = nullptr;
+                    update();
+                }
+            }
+
+            void collapse(TreeNode<T> *node) {
+                if (node && node->children.size()) {
+                    if (node->is_collapsed) {
+                        node->is_collapsed = false;
+                        if (onNodeExpanded) {
+                            onNodeExpanded(node);
+                        }
+                        update();
+                    } else {
+                        node->is_collapsed = true;
+                        if (onNodeCollapsed) {
+                            onNodeCollapsed(node);
+                        }
+                        update();
+                    }
+                }
+            }
+
+            void collapseRecursively(TreeNode<T> *node) {
+                collapseOrExpandRecursively(node, true);
+            }
+
+            void collapseAll() {
+                collapseOrExpandAll(true);
+            }
+
+            void expand(TreeNode<T> *node) {
+                if (node) {
+                    if (node->children.size()) {
+                        node->is_collapsed = false;
+                        if (onNodeExpanded) {
+                            onNodeExpanded(node);
+                        }
+                        update();
+                    }
+                }
+            }
+ 
+            void expandRecursively(TreeNode<T> *node) {
+                collapseOrExpandRecursively(node, false);
+            }
+
+            void expandAll() {
+                collapseOrExpandAll(false);
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
@@ -517,6 +557,26 @@
             // TODO reset when a column header gets hovered?
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_selected = nullptr;
-            GridLines m_grid_lines = GridLines::Both; 
+            GridLines m_grid_lines = GridLines::Both;
+
+            void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
+                if (node) {
+                    m_model->descend(node, [&](TreeNode<T> *_node){
+                        _node->is_collapsed = is_collapsed;
+                        return true;
+                    });
+                    update();
+                }
+            }
+
+            void collapseOrExpandAll(bool is_collapsed) {
+                for (TreeNode<T> *root : m_model->roots) {
+                    m_model->descend(root, [&](TreeNode<T> *node){
+                        node->is_collapsed = is_collapsed;
+                        return true;
+                    });
+                }
+                update();
+            }
     };
 #endif
