@@ -223,11 +223,6 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
-            float indent = 24;
-            // TODO reset when a column header gets hovered?
-            TreeNode<T> *hovered = nullptr;
-            TreeNode<T> *selected = nullptr;
-
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
                 this->onMouseMotion = [&](MouseEvent event) {
                     float y = rect.y;
@@ -513,5 +508,11 @@
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
             bool m_virtual_size_changed = false;
+
+            // TODO encapsulate the below
+            float indent = 24;
+            // TODO reset when a column header gets hovered?
+            TreeNode<T> *hovered = nullptr;
+            TreeNode<T> *selected = nullptr;
     };
 #endif
