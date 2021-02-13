@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
         Box *box = new Box(Align::Horizontal);
             box->append(new Button("Left"), Fill::Vertical);
             TreeView<Hidden> *tv = new TreeView<Hidden>();
+                // tv->setGridLines(GridLines::None);
                 tv->bind(SDLK_SPACE, Mod::Ctrl, [&]{
                     tv->clear();
                 });

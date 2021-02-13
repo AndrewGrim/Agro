@@ -221,6 +221,13 @@
     //         ~TreeView();
     // };
 
+    enum class GridLines {
+        None,
+        Horizontal,
+        Vertical,
+        Both,
+    };
+
     template <typename T> class TreeView : public Scrollable {
         public:
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
@@ -463,8 +470,10 @@
                             }
                             pos.y += node->max_cell_height;
                             // Clip and draw row grid line.
-                            dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
-                            dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));
+                            if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
+                                dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
+                                dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));
+                            }
                         }
 
                         if (node->is_collapsed && !collapsed) {
@@ -479,10 +488,12 @@
                 }
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
-                    dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
-                    for (float width : column_widths) {
-                        dc->fillRect(Rect(pos.x + width - 1, rect.y, 1, pos.y - children_size.h), Color(0.85, 0.85, 0.85));
-                        pos.x += width;
+                    if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
+                        dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
+                        for (float width : column_widths) {
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y, 1, pos.y - children_size.h), Color(0.85, 0.85, 0.85));
+                            pos.x += width;
+                        }
                     }
                 }
                 dc->setClip(old_clip);
@@ -505,6 +516,15 @@
                 }
             }
 
+            void setGridLines(GridLines grid_lines) {
+                m_grid_lines = grid_lines;
+                update();
+            }
+
+            GridLines gridLines() {
+                return m_grid_lines;
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
@@ -515,5 +535,6 @@
             // TODO reset when a column header gets hovered?
             TreeNode<T> *hovered = nullptr;
             TreeNode<T> *selected = nullptr;
+            GridLines m_grid_lines = GridLines::Both; 
     };
 #endif
