@@ -405,7 +405,7 @@
                             }
                             previous_parent = node->parent;
                         }
-                        if (depth <= collapsed_depth) {
+                        if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
                         }
@@ -476,7 +476,7 @@
 
                         if (node->is_collapsed && !collapsed) {
                             collapsed = true;
-                            collapsed_depth = depth;
+                            collapsed_depth = node->depth;
                         }
                         if (pos.y > rect.y + rect.h) {
                             return false;
