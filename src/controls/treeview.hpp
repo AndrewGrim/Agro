@@ -290,7 +290,7 @@
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (event.x >= x + (node->depth - 1) * indent && event.x <= x + node->depth * indent) {
+                                if (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent) {
                                     if (node->children.size()) {
                                         if (node->is_collapsed) {
                                             node->is_collapsed = false;
@@ -423,15 +423,15 @@
                                     Rect(
                                         rect.x, 
                                         pos.y > rect.y + children_size.h ? pos.y : rect.y + children_size.h, 
-                                        node->depth * indent, 
+                                        node->depth * m_indent, 
                                         node->max_cell_height
                                     )
                                 );
                                 // End of the line.
                                 if (node->children.size()) {
-                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * indent, pos.y, indent, node->max_cell_height), Color(0, 1));
+                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(0, 1));
                                 } else {
-                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * indent, pos.y, indent, node->max_cell_height), Color(1, 0, 1));
+                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(1, 0, 1));
                                 }
 
                                 float cell_start = pos.x;
@@ -453,7 +453,7 @@
                                         dc->setClip(cell_clip);
                                         float cell_x = cell_start;
                                         if (!i) {
-                                            cell_x += node->depth * indent;
+                                            cell_x += node->depth * m_indent;
                                         }
                                         renderer->draw(
                                             dc,
@@ -535,13 +535,22 @@
                 return m_selected;
             }
 
+            uint8_t indent() {
+                return m_indent;
+            }
+
+            void setIndent(uint8_t indent_width) {
+                if (indent_width >= 12) {
+                    m_indent = indent_width;
+                    update();
+                }
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
             bool m_virtual_size_changed = false;
-
-            // TODO encapsulate the below
-            float indent = 24;
+            uint8_t m_indent = 24;
             // TODO reset when a column header gets hovered?
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_selected = nullptr;
