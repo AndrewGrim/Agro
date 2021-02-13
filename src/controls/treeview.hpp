@@ -239,7 +239,11 @@
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
                                 if (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent) {
-                                    collapse(node);
+                                    if (node->is_collapsed) {
+                                        expand(node);
+                                    } else {
+                                        collapse(node);
+                                    }
                                 } else {
                                     select(node);
                                 }
@@ -505,19 +509,11 @@
 
             void collapse(TreeNode<T> *node) {
                 if (node && node->children.size()) {
-                    if (node->is_collapsed) {
-                        node->is_collapsed = false;
-                        if (onNodeExpanded) {
-                            onNodeExpanded(node);
-                        }
-                        update();
-                    } else {
-                        node->is_collapsed = true;
-                        if (onNodeCollapsed) {
-                            onNodeCollapsed(node);
-                        }
-                        update();
+                    node->is_collapsed = true;
+                    if (onNodeCollapsed) {
+                        onNodeCollapsed(node);
                     }
+                    update();
                 }
             }
 
@@ -530,14 +526,12 @@
             }
 
             void expand(TreeNode<T> *node) {
-                if (node) {
-                    if (node->children.size()) {
-                        node->is_collapsed = false;
-                        if (onNodeExpanded) {
-                            onNodeExpanded(node);
-                        }
-                        update();
+                if (node && node->children.size()) {
+                    node->is_collapsed = false;
+                    if (onNodeExpanded) {
+                        onNodeExpanded(node);
                     }
+                    update();
                 }
             }
  
