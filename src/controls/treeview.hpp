@@ -349,17 +349,40 @@
                 Size virtual_size = children_size;
                 if (m_virtual_size_changed) {
                     // TODO note that this doesnt take into account when the columns themselves change
+                    std::unordered_map<void*, int> depth_map;
                     for (TreeNode<T> *root : m_model->roots) {
+                        depth_map.clear();
+                        int depth = 0;
+                        void *previous_parent = nullptr;
                         m_model->descend(root, [&](TreeNode<T> *node) {
-                            float max_row_height = node->max_cell_height;
+                            // Check and set the depth of each node.
+                            if (node->parent != previous_parent || !node->parent) {
+                                if (!node->parent) {
+                                    depth += 1;
+                                    depth_map.insert(std::make_pair(node->parent, depth));
+                                    node->depth = depth;
+                                } else {
+                                    std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
+                                    if (iter != depth_map.end()) {
+                                        depth = iter->second;
+                                        node->depth = depth;
+                                    } else {
+                                        depth += 1;
+                                        depth_map.insert(std::make_pair(node->parent, depth));
+                                        node->depth = depth;
+                                    }
+                                }
+                                previous_parent = node->parent;
+                            }
+
+                            // Check and set the max height of the node.
                             for (CellRenderer *renderer : node->columns) {
                                 Size s = renderer->sizeHint(dc);
-                                if (s.h > max_row_height) {
-                                    max_row_height = s.h;
+                                if (s.h > node->max_cell_height) {
                                     node->max_cell_height = s.h;
                                 }
                             }
-                            virtual_size.h += max_row_height;
+                            virtual_size.h += node->max_cell_height;
                             return true;
                         });
                     }
@@ -378,33 +401,11 @@
                     local_pos_x += s.w;
                 }
                 pos.y += children_size.h;
-                std::unordered_map<void*, int> depth_map;
                 for (TreeNode<T> *root : m_model->roots) {
-                    depth_map.clear();
-                    int depth = 0;
-                    void *previous_parent = nullptr;
                     bool collapsed = false;
                     int collapsed_depth = -1;
 
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
-                        if (node->parent != previous_parent || !node->parent) {
-                            if (!node->parent) {
-                                depth += 1;
-                                depth_map.insert(std::make_pair(node->parent, depth));
-                                node->depth = depth;
-                            } else {
-                                std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
-                                if (iter != depth_map.end()) {
-                                    depth = iter->second;
-                                    node->depth = depth;
-                                } else {
-                                    depth += 1;
-                                    depth_map.insert(std::make_pair(node->parent, depth));
-                                    node->depth = depth;
-                                }
-                            }
-                            previous_parent = node->parent;
-                        }
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
@@ -453,7 +454,7 @@
                                         dc->setClip(cell_clip);
                                         float cell_x = cell_start;
                                         if (!i) {
-                                            cell_x += depth * indent;
+                                            cell_x += node->depth * indent;
                                         }
                                         renderer->draw(
                                             dc,
