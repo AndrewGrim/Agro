@@ -16,6 +16,7 @@ OBJECT_FILES = \
 	build/scrolledbox.o \
 	build/simplescrollbar.o \
 	build/slider.o \
+	build/spacer.o \
 	build/widget.o \
 	build/drawing_context.o \
 	build/font.o \
@@ -71,6 +72,8 @@ build/simplescrollbar.o: src/controls/simplescrollbar.cpp src/controls/simplescr
 	$(CXX) -c src/controls/simplescrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/slider.o: src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/spacer.o: src/controls/spacer.cpp src/controls/spacer.hpp
+	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/widget.o: src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 

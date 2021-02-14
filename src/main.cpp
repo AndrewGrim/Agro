@@ -9,10 +9,11 @@
 #include "controls/button.hpp"
 #include "controls/notebook.hpp"
 #include "controls/treeview.hpp"
+#include "controls/spacer.hpp"
 
 // Example `hidden` struct within a TreeNode
 // this can be used for storing data that is not
-// meant to be show but is still useful to keep
+// meant to be shown but is still useful to keep
 // around. Furthermore, it can be used for sorting
 // columns that are not sortable based on what they
 // draw.
@@ -54,8 +55,8 @@ int main(int argc, char **argv) {
                 };
             box->append(expand_all);
 
-            Label *space = new Label("");
-            box->append(space, Fill::Both);
+            Spacer *spacer = new Spacer();
+            box->append(spacer, Fill::Both);
 
             Button *collapse = new Button("Collapse Selected");
                 collapse->onMouseClick = [&](MouseEvent event) {
