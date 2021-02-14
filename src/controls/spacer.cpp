@@ -14,6 +14,7 @@ const char* Spacer::name() {
 }
 
 void Spacer::draw(DrawingContext *dc, Rect rect) {
+    this->rect = rect;
     dc->fillRect(rect, m_bg);
 }
 
