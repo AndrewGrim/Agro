@@ -3,7 +3,7 @@
 #include "../src/controls/button.hpp"
 #include "../src/controls/notebook.hpp"
 
-int main() { 
+int main(int argc, char **argv) { 
     Application *app = new Application("Keybindings Test", Size(400, 400));
         NoteBook *nb = new NoteBook();
         {

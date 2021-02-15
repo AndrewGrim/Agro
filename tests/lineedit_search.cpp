@@ -6,7 +6,7 @@
 #include "../src/controls/scrolledbox.hpp"
 #include "../src/controls/label.hpp"
 
-int main() { 
+int main(int argc, char **argv) { 
     Application *app = new Application("LineEdit Search Test", Size(400, 400));
         std::vector<std::string> monster_names = {
             "Great Jagras", "Kulu-Ya-Ku", "Pukei-Pukei", "Barroth",

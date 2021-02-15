@@ -34,7 +34,7 @@ void onApplicationReady(Application *self) {
     // assert(self->mainWidget()->children[1]->rect == Rect(0, 400, 800, 400));
 }
 
-int main() { 
+int main(int argc, char **argv) { 
     Application *app = new Application("ScrolledBox Both Test", Size(500, 500));
         app->onReady = onApplicationReady;
 

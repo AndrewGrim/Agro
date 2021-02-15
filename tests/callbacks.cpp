@@ -2,7 +2,7 @@
 #include "../src/app.hpp"
 #include "../src/controls/button.hpp"
 
-int main() { 
+int main(int argc, char **argv) { 
     Application *app = new Application("Keybindings Test", Size(400, 400));
     app->onReady = [](Application *app) {
         println("READY");

@@ -51,7 +51,7 @@ void onApplicationReady(Application *self) {
     //     assert(self->mainWidget()->children[3]->children[3]->rect == Rect(702, 231, 298, 169));
 }
 
-int main() { 
+int main(int argc, char **argv) { 
     Application *app = new Application("Box Horizontal Test", Size(1000, 400));
         app->onReady = onApplicationReady;
 
