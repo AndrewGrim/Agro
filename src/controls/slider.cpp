@@ -55,7 +55,7 @@ Slider::Slider(Align alignment, float value) : Box(alignment) {
         this->append(this->m_slider_button, Fill::Vertical);
     }
     this->m_slider_button->parent = this;
-    this->m_slider_button->onMouseMotion = [&](MouseEvent event) {
+    this->m_slider_button->onMouseMotion = [&](Widget *widget, MouseEvent event) {
         SliderButton *self = this->m_slider_button;
         Rect rect = this->rect;
         if (self->isPressed()) {

@@ -111,7 +111,7 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     }
     setCloseButton(close_button);
     m_close_image = (new Image("close_thin.png"))->setForeground(Color());
-    m_close_image->onMouseClick = [=](MouseEvent event) {
+    m_close_image->onMouseClick = [=](Widget *widget,MouseEvent event) {
         notebook->destroyTab(m_close_image->parent->parent_index);
     };
     this->append(m_close_image);
@@ -317,7 +317,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
     }
     this->append(root, Fill::Both);
     NoteBookTabButton *tab_button = new NoteBookTabButton(this, text, icon, close_button);
-    tab_button->onMouseClick = [=](MouseEvent event) {
+    tab_button->onMouseClick = [=](Widget *widget, MouseEvent event) {
         this->setCurrentTab(tab_button->parent_index);
     };
     // We need to attach app at run time to new tabs / tab buttons.
