@@ -242,9 +242,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             this->setFocused(true);
             state->focused = this;
             // TODO maybe add an on_focus callback?
-            if (this->onMouseDown) {
-                this->onMouseDown(this, event);
-            }
+            onMouseDown.notify(this, event);
             break;
         case MouseEvent::Type::Up:
             if (state->pressed) {

@@ -15,6 +15,23 @@
     #include "../common/point.hpp"
     #include "../renderer/drawing_context.hpp"
 
+    class Widget;
+
+    class EventListener {
+        public:
+            std::vector<std::function<void(Widget *widget, MouseEvent event)>> listeners;
+
+            void notify(Widget *widget, MouseEvent event) {
+                for (auto callback : listeners) {
+                    callback(widget, event);
+                }
+            }
+
+            void addEventListener(std::function<void(Widget *widget, MouseEvent event)> fn) {
+                listeners.push_back(fn);
+            }
+    };
+
     class Widget {
         public:
             /// A rectangle representing the Widget position and size.
@@ -48,7 +65,7 @@
             
             /// `onMouseDown` gets called when the user presses
             /// down **ANY** mouse button over the target Widget. 
-            std::function<void(Widget *widget, MouseEvent event)> onMouseDown = nullptr;
+            EventListener onMouseDown = EventListener();
             
             ///`onMouseUp` gets called when the user releases
             /// **ANY** mouse button over the target Widget.
