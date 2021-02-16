@@ -243,7 +243,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             state->focused = this;
             // TODO maybe add an on_focus callback?
             if (this->onMouseDown) {
-                this->onMouseDown(event);
+                this->onMouseDown(this, event);
             }
             break;
         case MouseEvent::Type::Up:
@@ -254,20 +254,20 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             this->setHovered(true);
             state->hovered = this;
             if (this->onMouseUp) {
-                this->onMouseUp(event);
+                this->onMouseUp(this, event);
             }
             if (this == state->pressed) {
                 if (this->onMouseClick) {
-                    this->onMouseClick(event);
+                    this->onMouseClick(this, event);
                 }
             } else {
                 if (state->pressed) {
                     if (((Widget*)state->pressed)->onMouseLeft) {
-                        ((Widget*)state->pressed)->onMouseLeft(event);
+                        ((Widget*)state->pressed)->onMouseLeft(this, event);
                     }
                 }
                 if (this->onMouseEntered) {
-                    this->onMouseEntered(event);
+                    this->onMouseEntered(this, event);
                 }
             }
             state->pressed = nullptr;
@@ -278,20 +278,20 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                     if (this != state->hovered) {
                         ((Widget*)state->hovered)->setHovered(false);
                         if (((Widget*)state->hovered)->onMouseLeft) {
-                            ((Widget*)state->hovered)->onMouseLeft(event);
+                            ((Widget*)state->hovered)->onMouseLeft(this, event);
                         }
                         this->setHovered(true);
                         if (this->onMouseEntered) {
-                            this->onMouseEntered(event);
+                            this->onMouseEntered(this, event);
                         }
                     }
                 } else {
                     this->setHovered(true);
                     if (this->onMouseEntered) {
-                        this->onMouseEntered(event);
+                        this->onMouseEntered(this, event);
                     }
                 }
-                if (this->onMouseMotion) this->onMouseMotion(event);
+                if (this->onMouseMotion) this->onMouseMotion(this, event);
             } else {
                 if (state->pressed == state->hovered) {
                     ((Widget*)state->pressed)->setHovered(true);
@@ -299,7 +299,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                     ((Widget*)state->pressed)->setHovered(false);
                 }
                 if (((Widget*)state->pressed)->onMouseMotion) {
-                    ((Widget*)state->pressed)->onMouseMotion(event);
+                    ((Widget*)state->pressed)->onMouseMotion(this, event);
                 }
             }
             break;

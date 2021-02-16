@@ -48,30 +48,30 @@
             
             /// `onMouseDown` gets called when the user presses
             /// down **ANY** mouse button over the target Widget. 
-            std::function<void(MouseEvent)> onMouseDown = nullptr;
+            std::function<void(Widget *widget, MouseEvent event)> onMouseDown = nullptr;
             
             ///`onMouseUp` gets called when the user releases
             /// **ANY** mouse button over the target Widget.
-            std::function<void(MouseEvent)> onMouseUp = nullptr;
+            std::function<void(Widget *widget, MouseEvent event)> onMouseUp = nullptr;
 
             /// `onMouseClick` gets called whenver the user presses
             /// down on a Widget and the releases the button over
             /// the same Widget.
             // TODO this will likely trigger when the mouse events come from different buttons
             // i dont think that behaviour is very intuitive and so should be changed.
-            std::function<void(MouseEvent)> onMouseClick = nullptr;
+            std::function<void(Widget *widget, MouseEvent event)> onMouseClick = nullptr;
 
             /// `onMouseLeft` get called whenever the mouse leaves
             /// the area of the Widget.
-            std::function<void(MouseEvent)> onMouseLeft = nullptr;
+            std::function<void(Widget *widget, MouseEvent event)> onMouseLeft = nullptr;
 
             /// `onMouseEntered` get called whenever the mouse
             /// enters the area of the Widget.
-            std::function<void(MouseEvent)> onMouseEntered = nullptr;
+            std::function<void(Widget *widget, MouseEvent event)> onMouseEntered = nullptr;
 
             /// `onMouseMotion` get called whenever the mouse moves
             /// over the area of the Widget.
-            std::function<void(MouseEvent)> onMouseMotion = nullptr;
+            std::function<void(Widget *widget, MouseEvent event)> onMouseMotion = nullptr;
 
             /// The constructor is empty.
             Widget();
