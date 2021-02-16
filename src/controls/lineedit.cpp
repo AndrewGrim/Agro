@@ -37,7 +37,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
             this->m_selection.end = index;
         }
     });
-    this->onMouseMotion = [&](Widget *widget, MouseEvent event) {
+    this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
             // No x mouse movement.
             if (event.xrel == 0) {
@@ -87,17 +87,17 @@ LineEdit::LineEdit(std::string text) : Widget() {
             this->m_selection.end = index;
             update();
         }
-    };
-    this->onMouseUp = [&](Widget *widget, MouseEvent event) {
+    });
+    this->onMouseUp.addEventListener([&](Widget *widget, MouseEvent event) {
         this->m_selection.mouse_selection = false;
-    };
-    this->onMouseEntered = [&](Widget *widget, MouseEvent event) {
+    });
+    this->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::IBeam);
-    };
-    this->onMouseLeft = [&](Widget *widget, MouseEvent event) {
+    });
+    this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
         ((Application*)this->app)->setMouseCursor(Cursor::Default);
         this->m_selection.mouse_selection = false;
-    };
+    });
     auto left = [&]{
         this->moveCursorLeft();
     };

@@ -14,25 +14,25 @@ int main(int argc, char **argv) {
         // return false to not quit or true to quit
     };
         Button *button = new Button("Click Me!");
-            button->onMouseDown = [&](MouseEvent event) {
+            button->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
                 button->setText("Mouse Down!");
-            };
-            button->onMouseUp = [&](MouseEvent event) {
+            });
+            button->onMouseUp.addEventListener([&](Widget *widget, MouseEvent event) {
                 button->setText("Mouse Up!");
-            };
+            });
             // onMouseClick would happend immediately after onMouseUp.
-            // button->onMouseClick = [&](MouseEvent event) {
+            // button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
             //     button->setText("Mouse Click!");
-            // };
-            button->onMouseEntered = [&](MouseEvent event) {
+            // });
+            button->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
                 button->setText("Mouse Entered!");
-            };
-            button->onMouseLeft = [&](MouseEvent event) {
+            });
+            button->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
                 button->setText("Mouse Left!");
-            };
+            });
         app->append(button, Fill::Both);
         Button *disable_enable_quit = new Button("Disable Quit");
-            disable_enable_quit->onMouseClick = [&](MouseEvent event) {
+            disable_enable_quit->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                 if (quit) {
                     disable_enable_quit->setText("Enable Quit");
                     quit = false;
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
                     disable_enable_quit->setText("Disable Quit");
                     quit = true;
                 }
-            };
+            });
         app->append(disable_enable_quit, Fill::Both);
 
     #ifdef TEST

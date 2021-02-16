@@ -33,9 +33,9 @@ int main(int argc, char **argv) {
             }
         );
         Button *unbind_button = new Button("Unbind `Q`");
-            unbind_button->onMouseClick = [=](MouseEvent event) {
+            unbind_button->onMouseClick.addEventListener([=](Widget *widget, MouseEvent event) {
                 app->unbind(map_key);
-            };
+            });
         app->append(unbind_button, Fill::Both);
 
     #ifdef TEST

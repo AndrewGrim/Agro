@@ -251,22 +251,14 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
             }
             this->setHovered(true);
             state->hovered = this;
-            if (this->onMouseUp) {
-                this->onMouseUp(this, event);
-            }
+            onMouseUp.notify(this, event);
             if (this == state->pressed) {
-                if (this->onMouseClick) {
-                    this->onMouseClick(this, event);
-                }
+                onMouseClick.notify(this, event);
             } else {
                 if (state->pressed) {
-                    if (((Widget*)state->pressed)->onMouseLeft) {
-                        ((Widget*)state->pressed)->onMouseLeft(this, event);
-                    }
+                    ((Widget*)state->pressed)->onMouseLeft.notify(this, event);
                 }
-                if (this->onMouseEntered) {
-                    this->onMouseEntered(this, event);
-                }
+                onMouseEntered.notify(this, event);
             }
             state->pressed = nullptr;
             break;
@@ -275,30 +267,21 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                 if (state->hovered) {
                     if (this != state->hovered) {
                         ((Widget*)state->hovered)->setHovered(false);
-                        if (((Widget*)state->hovered)->onMouseLeft) {
-                            ((Widget*)state->hovered)->onMouseLeft(this, event);
-                        }
+                        ((Widget*)state->hovered)->onMouseLeft.notify(this, event);
                         this->setHovered(true);
-                        if (this->onMouseEntered) {
-                            this->onMouseEntered(this, event);
-                        }
+                        onMouseEntered.notify(this, event);
                     }
                 } else {
                     this->setHovered(true);
-                    if (this->onMouseEntered) {
-                        this->onMouseEntered(this, event);
-                    }
+                    onMouseEntered.notify(this, event);
                 }
-                if (this->onMouseMotion) this->onMouseMotion(this, event);
             } else {
                 if (state->pressed == state->hovered) {
                     ((Widget*)state->pressed)->setHovered(true);
                 } else {
                     ((Widget*)state->pressed)->setHovered(false);
                 }
-                if (((Widget*)state->pressed)->onMouseMotion) {
-                    ((Widget*)state->pressed)->onMouseMotion(this, event);
-                }
+                ((Widget*)state->pressed)->onMouseMotion.notify(this, event);
             }
             break;
     }

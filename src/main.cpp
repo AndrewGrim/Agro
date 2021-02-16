@@ -40,38 +40,38 @@ int main(int argc, char **argv) {
         Box *box = new Box(Align::Horizontal);
         {
             Button *expand = new Button("Expand Selected");
-                expand->onMouseClick = [&](MouseEvent event) {
+                expand->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     tv->expand(tv->selected());
-                };
+                });
             box->append(expand);
             Button *expand_recursive = new Button("Expand Recursively");
-                expand_recursive->onMouseClick = [&](MouseEvent event) {
+                expand_recursive->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     tv->expandRecursively(tv->selected());
-                };
+                });
             box->append(expand_recursive);
             Button *expand_all = new Button("Expand All");
-                expand_all->onMouseClick = [&](MouseEvent event) {
+                expand_all->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     tv->expandAll();
-                };
+                });
             box->append(expand_all);
 
             Spacer *spacer = new Spacer();
             box->append(spacer, Fill::Both);
 
             Button *collapse = new Button("Collapse Selected");
-                collapse->onMouseClick = [&](MouseEvent event) {
+                collapse->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     tv->collapse(tv->selected());
-                };
+                });
             box->append(collapse);
             Button *collapse_recursive = new Button("Collapse Recursively");
-                collapse_recursive->onMouseClick = [&](MouseEvent event) {
+                collapse_recursive->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     tv->collapseRecursively(tv->selected());
-                };
+                });
             box->append(collapse_recursive);
             Button *collapse_all = new Button("Collapse All");
-                collapse_all->onMouseClick = [&](MouseEvent event) {
+                collapse_all->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     tv->collapseAll();
-                };
+                });
             box->append(collapse_all);
         }
         app->append(box, Fill::Horizontal);
@@ -82,28 +82,37 @@ int main(int argc, char **argv) {
         tv = new TreeView<Hidden>();
             // tv->setGridLines(GridLines::None);
             // tv->setIndent(12);
-            // tv->onNodeHovered = [&](TreeNode<Hidden> *node) {
+            // tv->onNodeHovered = [&](TreeView<Hidden> *treeview, TreeNode<Hidden> *node) {
             //     println("Hovered ID: " + std::to_string(node->hidden->id));
             // };
-            // tv->onNodeSelected = [&](TreeNode<Hidden> *node) {
+            // tv->onNodeSelected = [&](TreeView<Hidden> *treeview, TreeNode<Hidden> *node) {
             //     println("Selected ID: " + std::to_string(node->hidden->id));
             // };
-            // tv->onNodeDeselected = [&](TreeNode<Hidden> *node) {
+            // tv->onNodeDeselected = [&](TreeView<Hidden> *treeview, TreeNode<Hidden> *node) {
             //     println("Deselected ID: " + std::to_string(node->hidden->id));
             // };
-            // tv->onNodeCollapsed = [&](TreeNode<Hidden> *node) {
+            // tv->onNodeCollapsed = [&](TreeView<Hidden> *treeview, TreeNode<Hidden> *node) {
             //     println("Collapsed ID: " + std::to_string(node->hidden->id));
             // };
-            // tv->onNodeExpanded = [&](TreeNode<Hidden> *node) {
+            // tv->onNodeExpanded = [&](TreeView<Hidden> *treeview, TreeNode<Hidden> *node) {
             //     println("Expanded ID: " + std::to_string(node->hidden->id));
             // };
             // tv->bind(SDLK_SPACE, Mod::Ctrl, [&]{
             //     tv->clear();
             // });
         {
-            tv->append(new Button("============ Column: " + std::to_string(0) + " ============"));
+            Column<Hidden> *col = new Column<Hidden>(
+                [](TreeNode<Hidden> *node) {
+                    return true;
+                }, 
+                Align::Horizontal
+            );
+            // Column<Hidden> *col = new Column<Hidden>(nullptr, Align::Horizontal);
+                col->append(new Image("notes.png"), Fill::Both);
+                col->append(new Label("============ Column: " + std::to_string(0) + " ============"), Fill::Both);
+            tv->append(col);
             for (int i = 1; i < 7; i++) {
-                tv->append(new Button("=== Column: " + std::to_string(i) + " ==="));
+                tv->Widget::append(new Button("=== Column: " + std::to_string(i) + " ==="));
             }
             Tree<Hidden> *model = new Tree<Hidden>();
             {
