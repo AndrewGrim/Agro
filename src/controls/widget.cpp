@@ -275,6 +275,7 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
                     this->setHovered(true);
                     onMouseEntered.notify(this, event);
                 }
+                this->onMouseMotion.notify(this, event);
             } else {
                 if (state->pressed == state->hovered) {
                     ((Widget*)state->pressed)->setHovered(true);
