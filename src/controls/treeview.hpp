@@ -1,6 +1,8 @@
 #ifndef TREEVIEW_HPP
     #define TREEVIEW_HPP
 
+    #include <algorithm>
+
     #include "widget.hpp"
     #include "scrollable.hpp"
 
@@ -159,9 +161,9 @@
 
     template <typename T> class Column : public Box {
         public:
-            std::function<bool(TreeNode<T> *node)> sort_fn = nullptr;
+            std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_fn = nullptr;
 
-            Column(std::function<bool(TreeNode<T> *node)> sort_function = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
+            Column(std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
                 Widget::m_bg = Color(0.9, 0.9, 0.9);
                 this->sort_fn = sort_function;
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -223,7 +225,7 @@
                         m_sort = sort;
                     }
                     // TODO programmatically invoke sort
-                    // sort_fn()
+                    // std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
                 }
             }
 
@@ -649,6 +651,7 @@
                         if (this->m_last_sort && this->m_last_sort != col) {
                             this->m_last_sort->sort(Sort::None);
                         }
+                        std::sort(m_model->roots.begin(), m_model->roots.end(), col->sort_fn);
                         this->m_last_sort = col;
                     }
                 });

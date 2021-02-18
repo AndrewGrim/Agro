@@ -101,29 +101,34 @@ int main(int argc, char **argv) {
             //     tv->clear();
             // });
         {
-            Column<Hidden> *col = new Column<Hidden>(
-                [](TreeNode<Hidden> *node) {
-                    return true;
+            Column<Hidden> *first_col = new Column<Hidden>(
+                [&](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                    if (first_col->isSorted() == Sort::Ascending) {
+                        return lhs->hidden->id < rhs->hidden->id;
+                    }
+                    return lhs->hidden->id > rhs->hidden->id;
                 }, 
                 Align::Horizontal
             );
-            // Column<Hidden> *col = new Column<Hidden>(nullptr, Align::Horizontal);
-                col->append(new Image("notes.png"), Fill::Both);
-                col->append(new Label("============ Column: " + std::to_string(0) + " ============"), Fill::Both);
-            tv->append(col);
+                first_col->append(new Image("notes.png"), Fill::Both);
+                first_col->append(new Label("============ Column: " + std::to_string(0) + " ============"), Fill::Both);
+            tv->append(first_col);
             for (int i = 1; i < 6; i++) {
-                col = new Column<Hidden>(nullptr, Align::Horizontal);
-                    col->append(new Label("=== Column: " + std::to_string(i) + " ==="), Fill::Both);
-                tv->append(col);
+                Column<Hidden> *c = new Column<Hidden>(nullptr, Align::Horizontal);
+                    c->append(new Label("=== Column: " + std::to_string(i) + " ==="), Fill::Both);
+                tv->append(c);
             }
-            col = new Column<Hidden>(
-                [](TreeNode<Hidden> *node) {
-                    return true;
+            Column<Hidden> *last_col = new Column<Hidden>(
+                [&](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                    if (last_col->isSorted() == Sort::Ascending) {
+                        return lhs->hidden->id < rhs->hidden->id;
+                    }
+                    return lhs->hidden->id > rhs->hidden->id;
                 }, 
                 Align::Horizontal
             );
-                col->append(new Label("=== Column: " + std::to_string(6) + " ==="), Fill::Both);
-            tv->append(col);
+                last_col->append(new Label("=== Column: " + std::to_string(6) + " ==="), Fill::Both);
+            tv->append(last_col);
             Tree<Hidden> *model = new Tree<Hidden>();
             {
                 TreeNode<Hidden> *root = nullptr;
