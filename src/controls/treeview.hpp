@@ -628,6 +628,9 @@
                         sort_icon->hide();
                     column->append(sort_icon, Fill::Both);
                 }
+                column->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
+                    this->m_hovered = nullptr;
+                });
                 children.push_back(column);
                 column->parent_index = children.size() - 1;
                 if (app) column->app = app;
@@ -643,7 +646,6 @@
             Size m_virtual_size;
             bool m_virtual_size_changed = false;
             uint8_t m_indent = 24;
-            // TODO reset when a column header gets hovered?
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_selected = nullptr;
             GridLines m_grid_lines = GridLines::Both;
