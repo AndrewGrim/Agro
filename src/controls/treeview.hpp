@@ -159,20 +159,13 @@
 
     template <typename T> class Column : public Box {
         public:
-            std::function<bool(TreeNode<T> *node)> sort = nullptr;
+            std::function<bool(TreeNode<T> *node)> sort_fn = nullptr;
 
-            Column(std::function<bool(TreeNode<T> *node)> sort_fn = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
+            Column(std::function<bool(TreeNode<T> *node)> sort_function = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
                 Widget::m_bg = Color(0.9, 0.9, 0.9);
-                this->sort = sort_fn;
+                this->sort_fn = sort_function;
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-                    if (sort) {
-                        // TODO this commented out block needs to go into treeview listener
-                        // TreeView<T> *tv = ((TreeView<T>*)parent);
-                        // if (tv->m_last_sort && tv->m_last_sort != this) {
-                        //     tv->m_last_sort->flipVertically();
-                        //     tv->m_last_sort->hide();
-                        // }
-                        // tv->m_last_sort = this;
+                    if (sort_fn) {
                         if (m_sort == Sort::None) {
                             children[children.size() - 1]->show();
                             m_sort = Sort::Ascending;
@@ -185,8 +178,8 @@
                                 sort_icon->flipVertically();
                             m_sort = Sort::Ascending;
                         }
+                        sort(m_sort);
                     }
-                    // TODO also perform the actual sort :^)
                 });
             }
 
@@ -217,6 +210,25 @@
 
             virtual bool isLayout() override {
                 return false;
+            }
+
+            void sort(Sort sort) {
+                if (sort_fn) {
+                    if (sort == Sort::None) {
+                        Image *sort_icon = (Image*)children[children.size() - 1];
+                            sort_icon->hide();
+                        if (m_sort == Sort::Descending) {
+                            sort_icon->flipVertically();
+                        }
+                        m_sort = sort;
+                    }
+                    // TODO programmatically invoke sort
+                    // sort_fn()
+                }
+            }
+
+            Sort isSorted() {
+                return m_sort;
             }
 
         protected:
@@ -621,7 +633,7 @@
                 }
                 column->parent = this;
                 // TODO the below might be better off in column ctor instead
-                if (column->sort) {
+                if (column->sort_fn) {
                     Image *sort_icon = (new Image("up_arrow.png"))->setForeground(Color());
                         sort_icon->width = 12;
                         sort_icon->height = 12;
@@ -630,6 +642,15 @@
                 }
                 column->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
                     this->m_hovered = nullptr;
+                });
+                column->onMouseClick.addEventListener([&](Widget *column, MouseEvent event) {
+                    Column<T> *col = (Column<T>*)column;
+                    if (col->sort_fn) {
+                        if (this->m_last_sort && this->m_last_sort != col) {
+                            this->m_last_sort->sort(Sort::None);
+                        }
+                        this->m_last_sort = col;
+                    }
                 });
                 children.push_back(column);
                 column->parent_index = children.size() - 1;

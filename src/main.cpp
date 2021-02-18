@@ -111,9 +111,19 @@ int main(int argc, char **argv) {
                 col->append(new Image("notes.png"), Fill::Both);
                 col->append(new Label("============ Column: " + std::to_string(0) + " ============"), Fill::Both);
             tv->append(col);
-            for (int i = 1; i < 7; i++) {
-                tv->Widget::append(new Button("=== Column: " + std::to_string(i) + " ==="));
+            for (int i = 1; i < 6; i++) {
+                col = new Column<Hidden>(nullptr, Align::Horizontal);
+                    col->append(new Label("=== Column: " + std::to_string(i) + " ==="), Fill::Both);
+                tv->append(col);
             }
+            col = new Column<Hidden>(
+                [](TreeNode<Hidden> *node) {
+                    return true;
+                }, 
+                Align::Horizontal
+            );
+                col->append(new Label("=== Column: " + std::to_string(6) + " ==="), Fill::Both);
+            tv->append(col);
             Tree<Hidden> *model = new Tree<Hidden>();
             {
                 TreeNode<Hidden> *root = nullptr;
