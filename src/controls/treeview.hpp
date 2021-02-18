@@ -151,6 +151,78 @@
             // TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
     };
 
+    enum class Sort {
+        None,
+        Ascending,
+        Descending
+    };
+
+    template <typename T> class Column : public Box {
+        public:
+            std::function<bool(TreeNode<T> *node)> sort = nullptr;
+
+            Column(std::function<bool(TreeNode<T> *node)> sort_fn = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
+                Widget::m_bg = Color(0.9, 0.9, 0.9);
+                this->sort = sort_fn;
+                this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
+                    if (sort) {
+                        // TODO this commented out block needs to go into treeview listener
+                        // TreeView<T> *tv = ((TreeView<T>*)parent);
+                        // if (tv->m_last_sort && tv->m_last_sort != this) {
+                        //     tv->m_last_sort->flipVertically();
+                        //     tv->m_last_sort->hide();
+                        // }
+                        // tv->m_last_sort = this;
+                        if (m_sort == Sort::None) {
+                            children[children.size() - 1]->show();
+                            m_sort = Sort::Ascending;
+                        } else if (m_sort == Sort::Ascending) {
+                            Image *sort_icon = (Image*)children[children.size() - 1];
+                                sort_icon->flipVertically();
+                            m_sort = Sort::Descending;
+                        } else {
+                            Image *sort_icon = (Image*)children[children.size() - 1];
+                                sort_icon->flipVertically();
+                            m_sort = Sort::Ascending;
+                        }
+                    }
+                    // TODO also perform the actual sort :^)
+                });
+            }
+
+            ~Column() {
+
+            }
+
+            virtual const char* name() override {
+                return "Column";
+            }
+
+            virtual void draw(DrawingContext *dc, Rect rect) override {
+                this->rect = rect;
+                Color color; 
+                if (this->isPressed() && this->isHovered()) {
+                    color = this->m_pressed_bg; 
+                } else if (this->isHovered()) {
+                    color = this->m_hovered_bg;
+                } else {
+                    color = this->background();
+                }
+                // TODO border, for now we are skipping working on this
+                // because ideally i would like to add padding, border, margins
+                // to all widgets through a styling system.
+                dc->fillRect(rect, color);
+                layoutChildren(dc, rect);
+            }
+
+            virtual bool isLayout() override {
+                return false;
+            }
+
+        protected:
+            Sort m_sort = Sort::None;
+    };
+
     // min col width
     // expand col to content??
     // image cache / manager
@@ -543,6 +615,29 @@
                 collapseOrExpandAll(false);
             }
 
+            TreeView* append(Column<T> *column) {
+                if (column->parent) {
+                    column->parent->remove(column->parent_index);
+                }
+                column->parent = this;
+                // TODO the below might be better off in column ctor instead
+                if (column->sort) {
+                    Image *sort_icon = (new Image("up_arrow.png"))->setForeground(Color());
+                        sort_icon->width = 12;
+                        sort_icon->height = 12;
+                        sort_icon->hide();
+                    column->append(sort_icon, Fill::Both);
+                }
+                children.push_back(column);
+                column->parent_index = children.size() - 1;
+                if (app) column->app = app;
+                m_size_changed = true;
+                update();
+                layout();
+
+                return this;
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
@@ -552,6 +647,7 @@
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_selected = nullptr;
             GridLines m_grid_lines = GridLines::Both;
+            Column<T> *m_last_sort = nullptr;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
