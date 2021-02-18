@@ -169,14 +169,14 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
-            std::function<void(TreeNode<T>*)> onNodeHovered = nullptr;
-            std::function<void(TreeNode<T>*)> onNodeSelected = nullptr;
-            std::function<void(TreeNode<T>*)> onNodeDeselected = nullptr;
-            std::function<void(TreeNode<T>*)> onNodeCollapsed = nullptr;
-            std::function<void(TreeNode<T>*)> onNodeExpanded = nullptr;
+            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeHovered = nullptr;
+            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeSelected = nullptr;
+            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeDeselected = nullptr;
+            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeCollapsed = nullptr;
+            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeExpanded = nullptr;
 
             TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
-                this->onMouseMotion = [&](MouseEvent event) {
+                this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     float y = rect.y;
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
@@ -200,7 +200,7 @@
                                 if (m_hovered != node) {
                                     m_hovered = node;
                                     if (onNodeHovered) {
-                                        onNodeHovered(node);
+                                        onNodeHovered(this, node);
                                     }
                                     update();
                                 }
@@ -212,8 +212,8 @@
                             return true;
                         });
                     }
-                };
-                this->onMouseClick = [&](MouseEvent event) {
+                });
+                this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                     float x = rect.x;
                     float y = rect.y;
                     if (m_horizontal_scrollbar) {
@@ -255,7 +255,7 @@
                             return true;
                         });
                     }
-                };
+                });
             }
 
             ~TreeView() {
@@ -489,7 +489,7 @@
                     deselect();
                     m_selected = node;
                     if (onNodeSelected) {
-                        onNodeSelected(node);
+                        onNodeSelected(this, node);
                     }
                     update();
                 } else {
@@ -500,7 +500,7 @@
             void deselect() {
                 if (m_selected) {
                     if (onNodeDeselected) {
-                        onNodeDeselected(m_selected);
+                        onNodeDeselected(this, m_selected);
                     }
                     m_selected = nullptr;
                     update();
@@ -511,7 +511,7 @@
                 if (node && node->children.size()) {
                     node->is_collapsed = true;
                     if (onNodeCollapsed) {
-                        onNodeCollapsed(node);
+                        onNodeCollapsed(this, node);
                     }
                     update();
                 }
@@ -529,7 +529,7 @@
                 if (node && node->children.size()) {
                     node->is_collapsed = false;
                     if (onNodeExpanded) {
-                        onNodeExpanded(node);
+                        onNodeExpanded(this, node);
                     }
                     update();
                 }
