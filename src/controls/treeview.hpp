@@ -223,9 +223,10 @@
                             sort_icon->flipVertically();
                         }
                         m_sort = sort;
+                    } else {
+                        assert(m_model && "Model cannot be null when sorting! Only sort once youve set the model.");
+                        std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
                     }
-                    // TODO programmatically invoke sort
-                    // std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
                 }
             }
 
@@ -233,8 +234,13 @@
                 return m_sort;
             }
 
+            void setModel(Tree<T> *model) {
+                m_model = model;
+            }
+
         protected:
             Sort m_sort = Sort::None;
+            Tree<T> *m_model = nullptr;
     };
 
     // min col width
@@ -526,8 +532,15 @@
 
             void setModel(Tree<T> *model) {
                 m_model = model;
+                for (Widget *widget : children) {
+                    ((Column<T>*)widget)->setModel(model);
+                }
                 m_virtual_size_changed = true;
                 update();
+            }
+
+            void sort(size_t column_index, Sort sort_type) {
+                ((Column<T>*)children[column_index])->sort(sort_type);
             }
 
             void clear() {
@@ -650,8 +663,9 @@
                     if (col->sort_fn) {
                         if (this->m_last_sort && this->m_last_sort != col) {
                             this->m_last_sort->sort(Sort::None);
+                        } else {
+                            col->sort(col->isSorted());
                         }
-                        std::sort(m_model->roots.begin(), m_model->roots.end(), col->sort_fn);
                         this->m_last_sort = col;
                     }
                 });

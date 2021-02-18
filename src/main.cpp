@@ -272,6 +272,8 @@ int main(int argc, char **argv) {
                 }
             }
             tv->setModel(model);
+            tv->collapseAll();
+            tv->sort(0, Sort::Descending);
         }
         app->append(tv, Fill::Both);
     app->run();
