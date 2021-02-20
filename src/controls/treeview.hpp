@@ -202,7 +202,6 @@
                         if (m_custom_width < m_min_width) {
                             m_custom_width = m_min_width; 
                         }
-                        m_size_changed = true;
                         update();
                     } else {
                         if (event.x >= (rect.x + rect.w) - 5) {
