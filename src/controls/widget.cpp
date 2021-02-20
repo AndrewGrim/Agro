@@ -180,6 +180,11 @@ Widget* Widget::layout() {
     return this;
 }
 
+void Widget::parentLayout() {
+    parent->m_size_changed = true;
+    update();
+}
+
 void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
     if (this->isScrollable()) {
         // TODO this should probably be an abstract class that provides a vert

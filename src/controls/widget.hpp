@@ -196,6 +196,7 @@
 
             /// Tells the Application that it needs to recalculate its layout. // TODO outdated
             Widget* layout();
+            void parentLayout();
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
