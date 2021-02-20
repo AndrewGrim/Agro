@@ -286,10 +286,10 @@
                 unsigned int visible = 0;
                 unsigned int vertical_non_expandable = 0;
                 unsigned int horizontal_non_expandable = 0;
-                if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
+                if (m_size_changed) {
                     Size size = Size();
-                    if (this->m_align_policy == Align::Horizontal) {
-                        for (Widget* child : this->children) {
+                    if (m_align_policy == Align::Horizontal) {
+                        for (Widget* child : children) {
                             if (child->isVisible()) {
                                 Size s = child->sizeHint(dc);
                                 size.w += s.w;
@@ -303,7 +303,7 @@
                             }
                         }
                     } else {
-                        for (Widget* child : this->children) {
+                        for (Widget* child : children) {
                             if (child->isVisible()) {
                                 Size s = child->sizeHint(dc);
                                 size.h += s.h;
@@ -317,11 +317,11 @@
                             }
                         }
                     }
-                    this->m_vertical_non_expandable = vertical_non_expandable;
-                    this->m_horizontal_non_expandable = horizontal_non_expandable;
-                    this->m_visible_children = visible;
-                    this->m_size = size;
-                    this->m_size_changed = false;
+                    m_vertical_non_expandable = vertical_non_expandable;
+                    m_horizontal_non_expandable = horizontal_non_expandable;
+                    m_visible_children = visible;
+                    m_size = size;
+                    m_size_changed = false;
 
                     if (m_custom_size) {
                         return Size(m_custom_width, m_size.h);
@@ -331,7 +331,7 @@
                     if (m_custom_size) {
                         return Size(m_custom_width, m_size.h);
                     }
-                    return this->m_size;
+                    return m_size;
                 }
             }
 
