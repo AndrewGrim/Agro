@@ -745,7 +745,7 @@
                         sort_icon->width = 12;
                         sort_icon->height = 12;
                         sort_icon->hide();
-                    column->append(sort_icon, Fill::Both);
+                    column->append(sort_icon, Fill::Vertical);
                 }
                 column->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
                     this->m_hovered = nullptr;
