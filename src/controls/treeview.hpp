@@ -166,8 +166,16 @@
             Column(std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
                 Widget::m_bg = Color(0.9, 0.9, 0.9);
                 this->sort_fn = sort_function;
+                this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+                    if (event.x >= (rect.x + rect.w) - 5) {
+                        m_dragging = true;
+                        m_custom_width = m_custom_size ? m_custom_width : m_size.w;
+                        m_custom_size = true;
+                        ((Application*)app)->setMouseCursor(Cursor::SizeWE);
+                    }
+                });
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-                    if (sort_fn) {
+                    if (!m_dragging && sort_fn) {
                         if (m_sort == Sort::None) {
                             children[children.size() - 1]->show();
                             m_sort = Sort::Ascending;
@@ -181,7 +189,34 @@
                             m_sort = Sort::Ascending;
                         }
                         sort(m_sort);
+                    } else {
+                        m_dragging = false;
+                        ((Application*)app)->setMouseCursor(Cursor::Default);
                     }
+                });
+                this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+                    if (m_dragging) {
+                        m_custom_width = event.x - rect.x;
+                        // TODO when changing the width we need to notify tv
+                        // so that it can recalculate the virtual width 
+                        if (m_custom_width < m_min_width) {
+                            m_custom_width = m_min_width; 
+                        }
+                        m_size_changed = true;
+                        update();
+                    } else {
+                        if (event.x >= (rect.x + rect.w) - 5) {
+                            ((Application*)app)->setMouseCursor(Cursor::SizeWE);
+                        } else {
+                            ((Application*)app)->setMouseCursor(Cursor::Default);
+                        }
+                    }
+                });
+                this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
+                    if (m_dragging) {
+                        m_dragging = false;
+                    }
+                    ((Application*)app)->setMouseCursor(Cursor::Default);
                 });
             }
 
@@ -195,8 +230,10 @@
 
             virtual void draw(DrawingContext *dc, Rect rect) override {
                 this->rect = rect;
-                Color color; 
-                if (this->isPressed() && this->isHovered()) {
+                Color color;
+                if (m_dragging) {
+                    color = this->background();
+                } else if (this->isPressed() && this->isHovered()) {
                     color = this->m_pressed_bg; 
                 } else if (this->isHovered()) {
                     color = this->m_hovered_bg;
@@ -206,8 +243,11 @@
                 // TODO border, for now we are skipping working on this
                 // because ideally i would like to add padding, border, margins
                 // to all widgets through a styling system.
+                Rect old_clip = dc->clip();
+                dc->setClip(rect);
                 dc->fillRect(rect, color);
                 layoutChildren(dc, rect);
+                dc->setClip(old_clip);
             }
 
             virtual bool isLayout() override {
@@ -238,9 +278,66 @@
                 m_model = model;
             }
 
+            virtual Size sizeHint(DrawingContext *dc) override {
+                unsigned int visible = 0;
+                unsigned int vertical_non_expandable = 0;
+                unsigned int horizontal_non_expandable = 0;
+                if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
+                    Size size = Size();
+                    if (this->m_align_policy == Align::Horizontal) {
+                        for (Widget* child : this->children) {
+                            if (child->isVisible()) {
+                                Size s = child->sizeHint(dc);
+                                size.w += s.w;
+                                if (s.h > size.h) {
+                                    size.h = s.h;
+                                }
+                                visible += child->proportion();
+                                if (child->fillPolicy() == Fill::Vertical || child->fillPolicy() == Fill::None) {
+                                    horizontal_non_expandable++;
+                                }
+                            }
+                        }
+                    } else {
+                        for (Widget* child : this->children) {
+                            if (child->isVisible()) {
+                                Size s = child->sizeHint(dc);
+                                size.h += s.h;
+                                if (s.w > size.w) {
+                                    size.w = s.w;
+                                }
+                                visible += child->proportion();
+                                if (child->fillPolicy() == Fill::Horizontal || child->fillPolicy() == Fill::None) {
+                                    vertical_non_expandable++;
+                                }
+                            }
+                        }
+                    }
+                    this->m_vertical_non_expandable = vertical_non_expandable;
+                    this->m_horizontal_non_expandable = horizontal_non_expandable;
+                    this->m_visible_children = visible;
+                    this->m_size = size;
+                    this->m_size_changed = false;
+
+                    if (m_custom_size) {
+                        return Size(m_custom_width, m_size.h);
+                    }
+                    return size;
+                } else {
+                    if (m_custom_size) {
+                        return Size(m_custom_width, m_size.h);
+                    }
+                    return this->m_size;
+                }
+            }
+
         protected:
             Sort m_sort = Sort::None;
             Tree<T> *m_model = nullptr;
+            bool m_dragging = false;
+            bool m_custom_size = false;
+            float m_custom_width = 0.0;
+            float m_min_width = 15;
     };
 
     // min col width
@@ -359,6 +456,8 @@
             }
 
             virtual void draw(DrawingContext *dc, Rect rect) override {
+                // TODO tree expand icon goes through column if the column isnt wide enough
+                // TODO column lines are a bit too long and continue slightly past the table
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 Rect old_clip = dc->clip();
