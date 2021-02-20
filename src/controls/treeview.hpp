@@ -228,6 +228,11 @@
             }
 
             virtual void draw(DrawingContext *dc, Rect rect) override {
+                // TODO at this point i think we would be better off with completely custom behaviour
+                // bascically what button is doing, so maybe in the future we could just use a button
+                // and not draw the border
+                // but anyway the image and label should expand together (the image should be right next to the label)
+                // the sort icon would probably be better off being drawn on top if the column isnt wide enough
                 this->rect = rect;
                 Color color;
                 if (m_dragging) {
