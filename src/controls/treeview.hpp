@@ -451,8 +451,6 @@
             }
 
             virtual void draw(DrawingContext *dc, Rect rect) override {
-                // TODO tree expand icon goes through column if the column isnt wide enough
-                // TODO column lines are a bit too long and continue slightly past the table
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 Rect old_clip = dc->clip();
@@ -547,7 +545,7 @@
                                     Rect(
                                         rect.x, 
                                         pos.y > rect.y + children_size.h ? pos.y : rect.y + children_size.h, 
-                                        node->depth * m_indent, 
+                                        column_widths[0], 
                                         node->max_cell_height
                                     )
                                 );
