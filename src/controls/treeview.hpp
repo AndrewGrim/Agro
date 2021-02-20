@@ -467,9 +467,9 @@
                     }
                 }
                 // TODO expand any column headers as needed ?option? ie if the content of the cell is longer than the column header do you want to expand the column header?
-                // TODO then maybe next step is to make the columns resizable using the mouse?
                 Size virtual_size = children_size;
                 // TODO note that this doesnt take into account when the columns themselves change
+                // like when making the sort icon visible
                 if (m_virtual_size_changed) {
                     std::unordered_map<void*, int> depth_map;
                     for (TreeNode<T> *root : m_model->roots) {
@@ -613,9 +613,9 @@
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
+                        dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, pos.y - (children_size.h * 2)));
                         for (float width : column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y, 1, pos.y - children_size.h), Color(0.85, 0.85, 0.85));
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, pos.y - (children_size.h * 2) - 4), Color(0.85, 0.85, 0.85));
                             pos.x += width;
                         }
                     }
