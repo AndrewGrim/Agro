@@ -196,13 +196,12 @@
                 });
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_dragging) {
-                        m_custom_width = event.x - rect.x;
-                        // TODO when changing the width we need to notify tv
-                        // so that it can recalculate the virtual width 
+                        m_custom_width = event.x - rect.x; // TODO take scroll into account?
                         if (m_custom_width < m_min_width) {
                             m_custom_width = m_min_width; 
+                            return;
                         }
-                        update();
+                        parentLayout();
                     } else {
                         if (event.x >= (rect.x + rect.w) - 5) {
                             ((Application*)app)->setMouseCursor(Cursor::SizeWE);
@@ -369,22 +368,10 @@
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
                     }
-                    Size children_size = Size();
-                    std::vector<float> column_widths;
-                    DrawingContext *dc = ((Application*)this->app)->dc;
-                    for (Widget *child : children) {
-                        // TODO we could probably store this somewhere, so we dont have to recompute it all the time
-                        Size s = child->sizeHint(dc);
-                        column_widths.push_back(s.w);
-                        children_size.w += s.w;
-                        if (s.h > children_size.h) {
-                            children_size.h = s.h;
-                        }
-                    }
-                    y += children_size.h;
+                    y += m_children_size.h;
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
-                            if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
+                            if (event.x <= rect.x + m_children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
                                 if (m_hovered != node) {
                                     m_hovered = node;
                                     if (onNodeHovered) {
@@ -410,22 +397,10 @@
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
                     }
-                    Size children_size = Size();
-                    std::vector<float> column_widths;
-                    DrawingContext *dc = ((Application*)this->app)->dc;
-                    for (Widget *child : children) {
-                        // TODO we could probably store this somewhere
-                        Size s = child->sizeHint(dc);
-                        column_widths.push_back(s.w);
-                        children_size.w += s.w;
-                        if (s.h > children_size.h) {
-                            children_size.h = s.h;
-                        }
-                    }
-                    y += children_size.h;
+                    y += m_children_size.h;
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
-                            if (event.x <= rect.x + children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
+                            if (event.x <= rect.x + m_children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
                                 if (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent) {
                                     if (node->is_collapsed) {
                                         expand(node);
@@ -458,20 +433,8 @@
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 Rect old_clip = dc->clip();
-                Size children_size = Size();
-                std::vector<float> column_widths;
-                for (Widget *child : children) {
-                    Size s = child->sizeHint(dc);
-                    column_widths.push_back(s.w);
-                    children_size.w += s.w;
-                    if (s.h > children_size.h) {
-                        children_size.h = s.h;
-                    }
-                }
                 // TODO expand any column headers as needed ?option? ie if the content of the cell is longer than the column header do you want to expand the column header?
-                Size virtual_size = children_size;
-                // TODO note that this doesnt take into account when the columns themselves change
-                // like when making the sort icon visible
+                Size virtual_size = m_children_size;
                 if (m_virtual_size_changed) {
                     std::unordered_map<void*, int> depth_map;
                     for (TreeNode<T> *root : m_model->roots) {
@@ -521,10 +484,10 @@
                 dc->setClip(rect);
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
-                    child->draw(dc, Rect(local_pos_x, rect.y, s.w, children_size.h));
+                    child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
-                pos.y += children_size.h;
+                pos.y += m_children_size.h;
                 for (TreeNode<T> *root : m_model->roots) {
                     bool collapsed = false;
                     int collapsed_depth = -1;
@@ -535,21 +498,21 @@
                             collapsed_depth = -1;
                         }
                         if (!collapsed) {
-                            if (pos.y + node->max_cell_height > rect.y + children_size.h && pos.y < rect.y + rect.h) {
+                            if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
                                 // Clip and draw selection and or hover. 
                                 if (m_selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
-                                    dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
-                                    dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
+                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_children_size.w, rect.h));
+                                    dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
                                 } else if (m_hovered == node) {
-                                    dc->setClip(Rect(rect.x, rect.y + children_size.h, children_size.w, rect.h));
-                                    dc->fillRect(Rect(rect.x, pos.y, children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
+                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_children_size.w, rect.h));
+                                    dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
                                 }
                                 // Clip and draw the collapsible "button".
                                 dc->setClip(
                                     Rect(
                                         rect.x, 
-                                        pos.y > rect.y + children_size.h ? pos.y : rect.y + children_size.h, 
-                                        column_widths[0], 
+                                        pos.y > rect.y + m_children_size.h ? pos.y : rect.y + m_children_size.h, 
+                                        m_column_widths[0], 
                                         node->max_cell_height
                                     )
                                 );
@@ -562,7 +525,7 @@
 
                                 float cell_start = pos.x;
                                 for (size_t i = 0; i < node->columns.size(); i++) {
-                                    float col_width = column_widths[i];
+                                    float col_width = m_column_widths[i];
                                     CellRenderer *renderer = node->columns[i];
                                     Size s = renderer->sizeHint(dc);
                                     if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
@@ -571,9 +534,9 @@
                                             cell_clip.x = rect.x;
                                             cell_clip.w = cell_start + col_width - rect.x;
                                         }
-                                        if (pos.y + node->max_cell_height > rect.y + children_size.h && !(pos.y > rect.y + children_size.h)) {
-                                            cell_clip.y = rect.y + children_size.h;
-                                            cell_clip.h = pos.y + node->max_cell_height - rect.y - children_size.h;
+                                        if (pos.y + node->max_cell_height > rect.y + m_children_size.h && !(pos.y > rect.y + m_children_size.h)) {
+                                            cell_clip.y = rect.y + m_children_size.h;
+                                            cell_clip.h = pos.y + node->max_cell_height - rect.y - m_children_size.h;
                                         }
                                         // Clip and draw the current cell.
                                         dc->setClip(cell_clip);
@@ -597,8 +560,8 @@
                             pos.y += node->max_cell_height;
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
-                                dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, rect.h));
-                                dc->fillRect(Rect(rect.x, pos.y - 1, children_size.w, 1), Color(0.85, 0.85, 0.85));
+                                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h));
+                                dc->fillRect(Rect(rect.x, pos.y - 1, m_children_size.w, 1), Color(0.85, 0.85, 0.85));
                             }
                         }
 
@@ -615,9 +578,9 @@
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + children_size.h, rect.w, pos.y - (children_size.h * 2)));
-                        for (float width : column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + children_size.h, 1, pos.y - (children_size.h * 2) - 4), Color(0.85, 0.85, 0.85));
+                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, pos.y - (m_children_size.h * 2)));
+                        for (float width : m_column_widths) {
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, pos.y - (m_children_size.h * 2) - 4), Color(0.85, 0.85, 0.85));
                             pos.x += width;
                         }
                     }
@@ -768,11 +731,28 @@
                 children.push_back(column);
                 column->parent_index = children.size() - 1;
                 if (app) column->app = app;
-                m_size_changed = true;
-                update();
                 layout();
 
                 return this;
+            }
+
+            virtual Size sizeHint(DrawingContext *dc) override {
+                if (m_size_changed) { // TODO this will be slow for a large number of columns
+                    m_virtual_size.w = 0.0;
+                    m_column_widths.clear();
+                    Size size = Size();
+                    for (Widget *child : children) {
+                        Size s = child->sizeHint(dc);
+                        m_column_widths.push_back(s.w);
+                        size.w += s.w;
+                        if (s.h > size.h) {
+                            size.h = s.h;
+                        }
+                    }
+                    m_children_size = size;
+                    m_virtual_size.w = size.w;
+                }
+                return m_viewport;
             }
 
         protected:
@@ -784,6 +764,8 @@
             TreeNode<T> *m_selected = nullptr;
             GridLines m_grid_lines = GridLines::Both;
             Column<T> *m_last_sort = nullptr;
+            Size m_children_size = Size();
+            std::vector<float> m_column_widths;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
