@@ -340,13 +340,8 @@
             float m_min_width = 15;
     };
 
-    // min col width
     // expand col to content??
     // image cache / manager
-    // headings / columns
-    // allow to drag columns to resize them?? (low priority)
-    // current sorted column
-    // sort type ie asc, desc
     // tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
 
     enum class GridLines {
