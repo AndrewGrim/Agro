@@ -138,6 +138,8 @@ void Application::run() {
                             if ((event.button.x < 0 || event.button.x > m_size.w) ||
                                 (event.button.y < 0 || event.button.y > m_size.w)) {
                                 if (m_state->pressed) {
+                                    SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
+                                    ((Widget*)m_state->pressed)->onMouseLeft.notify(((Widget*)m_state->pressed), MouseEvent(event));
                                     ((Widget*)m_state->pressed)->setPressed(false);
                                     m_state->pressed = nullptr;
                                 }
