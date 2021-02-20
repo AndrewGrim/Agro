@@ -67,8 +67,6 @@ Label* Label::setText(std::string text) {
     // assume that if someone is setting the text
     // its going to be different.
     this->m_text = text;
-    this->m_size_changed = true;
-    this->update();
     this->layout();
 
     return this;

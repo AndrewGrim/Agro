@@ -303,8 +303,6 @@ unsigned int LineEdit::borderWidth() {
 LineEdit* LineEdit::setBorderWidth(unsigned int border_width) {
     if (m_border_width != border_width) {
         m_border_width = border_width;
-        this->m_size_changed = true;
-        this->update();
         this->layout();
     }
 
@@ -318,8 +316,6 @@ unsigned int LineEdit::padding() {
 LineEdit* LineEdit::setPadding(unsigned int padding) {
     if (m_padding != padding) {
         m_padding = padding;
-        this->m_size_changed = true;
-        this->update();
         this->layout();
     }
     
@@ -337,8 +333,6 @@ float LineEdit::minLength() {
 LineEdit* LineEdit::setMinLength(float length) {
     if (m_min_length != length) {
         m_min_length = length;
-        m_size_changed = true;
-        update();
         layout();
     }
 

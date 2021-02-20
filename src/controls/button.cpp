@@ -124,8 +124,6 @@ Button* Button::setText(std::string text) {
     // assume that if someone is setting the text
     // its going to be different.
     this->m_text = text;
-    this->m_size_changed = true;
-    this->update();
     this->layout();
 
     return this;
@@ -166,7 +164,6 @@ Button* Button::setImage(Image *image) {
         delete m_image;
     }
     this->m_image = image;
-    this->update();
     this->layout();
 
     return this;
@@ -179,7 +176,6 @@ unsigned int Button::padding() {
 Button* Button::setPadding(unsigned int padding) {
     if (this->m_padding != padding) {
         this->m_padding = padding;
-        this->update();
         this->layout();
     }
 
@@ -193,7 +189,6 @@ unsigned int Button::borderWidth() {
 Button* Button::setBorderWidth(unsigned int border_width) {
     if (this->m_border_width != border_width) {
         this->m_border_width = border_width;
-        this->update();
         this->layout();
     }
 

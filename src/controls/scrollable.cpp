@@ -176,6 +176,5 @@ Size Scrollable::minSize() {
 
 void Scrollable::setMinSize(Size min_size) {
     m_viewport = min_size;
-    update();
     layout();
 }

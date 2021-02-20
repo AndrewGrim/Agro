@@ -92,12 +92,6 @@
             /// Tells the Application to update which causes a redraw.
             void update();
 
-            /// Tells the Application to recompute its layout.
-            void layout();
-
-            /// Returns whether the Application layout has been invalidated.
-            bool hasLayoutChanged();
-
             /// Starts the Application, calls `onReady` and enters the event loop.
             void run();
 
@@ -123,7 +117,6 @@
             Widget *m_main_widget = new ScrolledBox(Align::Vertical);
             State *m_state = new State();
             bool m_needs_update = false;
-            bool m_layout_changed = true;
             // TODO have another map for hotkeys ie menu shortcut keys
             std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
             int m_binding_id = 0;

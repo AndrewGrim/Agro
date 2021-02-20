@@ -289,7 +289,6 @@ void Application::run() {
         if (this->m_needs_update) {
             this->show();
             this->m_needs_update = false;
-            this->m_layout_changed = false;
         }
     }
     SDL_StopTextInput();
@@ -304,16 +303,6 @@ Widget* Application::append(Widget* widget, Fill fill_policy, unsigned int propo
 
 void Application::update() {
     this->m_needs_update = true;
-}
-
-void Application::layout() {
-    // TODO i think it would make sense if layout
-    // also called update
-    this->m_layout_changed = true;
-}
-
-bool Application::hasLayoutChanged() {
-    return this->m_layout_changed;
 }
 
 void Application::removeFromState(void *widget) {
@@ -413,7 +402,6 @@ void Application::handleResizeEvent(int width, int height) {
     SDL_GL_GetDrawableSize(this->m_win, &w, &h);
     glViewport(0, 0, w, h);
     this->m_needs_update = true;
-    this->m_layout_changed = true;
     this->show();
 }
 

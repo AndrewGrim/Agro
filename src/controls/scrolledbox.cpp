@@ -147,179 +147,175 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
         }
     }
     pos = Point(content_x, content_y);
-    // if (((Application*)this->app)->hasLayoutChanged()) {
-        int child_count = this->m_visible_children - generic_non_expandable_widgets;
-        if (!child_count) {
-            child_count = 1; // Protects from division by zero
-        }
-        float expandable_length = (*rect_length - generic_total_layout_length) / child_count;
-        float expandable_opposite_length = *rect_opposite_length > generic_max_layout_length ? *rect_opposite_length : generic_max_layout_length;
-        if (expandable_length < 0) {
-            expandable_length = 0;
-        }
-        for (Widget* child : this->children) {
-            Size child_hint = child->sizeHint(dc);
-            switch (parent_layout) {
-                case Align::Vertical:
-                    switch (child->fillPolicy()) {
-                        case Fill::Both: {
-                            // Just leaving a little note here:
-                            // expandable_opposite_length used to be rect.w, i think this is
-                            // the behaviour we want but honestly we just gotta build something
-                            // so that we can see the difference between these
+    int child_count = this->m_visible_children - generic_non_expandable_widgets;
+    if (!child_count) {
+        child_count = 1; // Protects from division by zero
+    }
+    float expandable_length = (*rect_length - generic_total_layout_length) / child_count;
+    float expandable_opposite_length = *rect_opposite_length > generic_max_layout_length ? *rect_opposite_length : generic_max_layout_length;
+    if (expandable_length < 0) {
+        expandable_length = 0;
+    }
+    for (Widget* child : this->children) {
+        Size child_hint = child->sizeHint(dc);
+        switch (parent_layout) {
+            case Align::Vertical:
+                switch (child->fillPolicy()) {
+                    case Fill::Both: {
+                        // Just leaving a little note here:
+                        // expandable_opposite_length used to be rect.w, i think this is
+                        // the behaviour we want but honestly we just gotta build something
+                        // so that we can see the difference between these
+                        size = Size { 
+                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
+                            child_hint.h + (expandable_length * child->proportion())
+                        };
+                        break;
+                    }
+                    case Fill::Vertical: {
+                        size = Size { 
+                            child_hint.w, 
+                            child_hint.h + (expandable_length * child->proportion())
+                        };
+                        break;
+                    }
+                    case Fill::Horizontal:
+                        size = Size { 
+                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
+                            child_hint.h 
+                        };
+                        break;
+                    case Fill::None:
+                    default:
+                        size = child_hint;
+                }
+                break;
+            case Align::Horizontal:
+                switch (child->fillPolicy()) {
+                    case Fill::Both: {
                             size = Size { 
-                                expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
-                                child_hint.h + (expandable_length * child->proportion())
+                                child_hint.w + (expandable_length * child->proportion()), 
+                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                             };
                             break;
                         }
-                        case Fill::Vertical: {
+                        case Fill::Vertical:
                             size = Size { 
                                 child_hint.w, 
-                                child_hint.h + (expandable_length * child->proportion())
+                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h 
+                            };
+                            break;
+                        case Fill::Horizontal: {
+                            size = Size { 
+                                child_hint.w + (expandable_length * child->proportion()), 
+                                child_hint.h
                             };
                             break;
                         }
-                        case Fill::Horizontal:
-                            size = Size { 
-                                expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
-                                child_hint.h 
-                            };
-                            break;
                         case Fill::None:
                         default:
                             size = child_hint;
-                    }
-                    break;
-                case Align::Horizontal:
-                    switch (child->fillPolicy()) {
-                        case Fill::Both: {
-                                size = Size { 
-                                    child_hint.w + (expandable_length * child->proportion()), 
-                                    expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
-                                };
-                                break;
-                            }
-                            case Fill::Vertical:
-                                size = Size { 
-                                    child_hint.w, 
-                                    expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h 
-                                };
-                                break;
-                            case Fill::Horizontal: {
-                                size = Size { 
-                                    child_hint.w + (expandable_length * child->proportion()), 
-                                    child_hint.h
-                                };
-                                break;
-                            }
-                            case Fill::None:
-                            default:
-                                size = child_hint;
-                        break;
-                    }
-            }
-            Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-            // TODO shouldnt we set widget rect for all widgets?
-            // especially since its calculated anyway?
-            // and would that allow use to not set rect in draw??? (i dont think so??)
-            if ((*generic_position_coord + *generic_length) < *generic_rect_coord) {
-                child->rect = widget_rect;
-            } else {
-                if (child->isVisible()) {
-                    child->draw(dc, widget_rect);
-                }
-                if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
                     break;
                 }
-            }
-            if (child->isVisible()) {
-                *generic_position_coord += *generic_length;
-            }
         }
-        if (parent_layout == Align::Vertical) {
-            if (m_vertical_scrollbar) {
-                Size size = m_vertical_scrollbar->sizeHint(dc);
-                float slider_size = rect.h * ((rect.h - size.h / 2) / generic_total_layout_length);
-                float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
-                if (slider_size < 20) {
-                    slider_size = 20;
-                } else if (slider_size > (rect.h - buttons_size - 10)) {
-                    slider_size = rect.h - buttons_size - 10;
-                }
-                m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
-                m_vertical_scrollbar->draw(dc, Rect(
-                    rect.x + rect.w, 
-                    rect.y, 
-                    size.w, 
-                    rect.h > size.h ? rect.h : size.h
-                ));
-            }
-            if (m_horizontal_scrollbar) {
-                Size size = m_horizontal_scrollbar->sizeHint(dc);
-                float slider_size = rect.w * ((rect.w - size.w / 2) / generic_max_layout_length);
-                float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
-                if (slider_size < 20) {
-                    slider_size = 20;
-                } else if (slider_size > (rect.w - buttons_size - 10)) {
-                    slider_size = rect.w - buttons_size - 10;
-                }
-                m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-                m_horizontal_scrollbar->draw(dc, Rect(
-                    rect.x, 
-                    rect.y + rect.h, 
-                    rect.w > size.w ? rect.w : size.w, 
-                    size.h
-                ));
-            }
+        Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
+        // TODO shouldnt we set widget rect for all widgets?
+        // especially since its calculated anyway?
+        // and would that allow use to not set rect in draw??? (i dont think so??)
+        if ((*generic_position_coord + *generic_length) < *generic_rect_coord) {
+            child->rect = widget_rect;
         } else {
-            if (m_vertical_scrollbar) {
-                Size size = m_vertical_scrollbar->sizeHint(dc);
-                float slider_size = rect.h * ((rect.h - size.h / 2) / generic_max_layout_length);
-                float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
-                if (slider_size < 20) {
-                    slider_size = 20;
-                } else if (slider_size > (rect.h - buttons_size - 10)) {
-                    slider_size = rect.h - buttons_size - 10;
-                }
-                m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
-                m_vertical_scrollbar->draw(dc, Rect(
-                    rect.x + rect.w, 
-                    rect.y, 
-                    size.w, 
-                    rect.h > size.h ? rect.h : size.h
-                ));
+            if (child->isVisible()) {
+                child->draw(dc, widget_rect);
             }
-            if (m_horizontal_scrollbar) {
-                Size size = m_horizontal_scrollbar->sizeHint(dc);
-                float slider_size = rect.w * ((rect.w - size.w / 2) / generic_total_layout_length);
-                float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
-                if (slider_size < 20) {
-                    slider_size = 20;
-                } else if (slider_size > (rect.w - buttons_size - 10)) {
-                    slider_size = rect.w - buttons_size - 10;
-                }
-                m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-                m_horizontal_scrollbar->draw(dc, Rect(
-                    rect.x, 
-                    rect.y + rect.h, 
-                    rect.w > size.w ? rect.w : size.w, 
-                    size.h
-                ));
+            if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
+                break;
             }
         }
-        if (m_vertical_scrollbar && m_horizontal_scrollbar) {
-            dc->fillRect(Rect(
+        if (child->isVisible()) {
+            *generic_position_coord += *generic_length;
+        }
+    }
+    if (parent_layout == Align::Vertical) {
+        if (m_vertical_scrollbar) {
+            Size size = m_vertical_scrollbar->sizeHint(dc);
+            float slider_size = rect.h * ((rect.h - size.h / 2) / generic_total_layout_length);
+            float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
+            if (slider_size < 20) {
+                slider_size = 20;
+            } else if (slider_size > (rect.h - buttons_size - 10)) {
+                slider_size = rect.h - buttons_size - 10;
+            }
+            m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
+            m_vertical_scrollbar->draw(dc, Rect(
                 rect.x + rect.w, 
-                rect.y + rect.h, 
-                m_vertical_scrollbar->sizeHint(dc).w, 
-                m_horizontal_scrollbar->sizeHint(dc).h), 
-                m_vertical_scrollbar->m_begin_button->background()
-            );
+                rect.y, 
+                size.w, 
+                rect.h > size.h ? rect.h : size.h
+            ));
         }
-    // }
-    // TODO provide a more efficient drawing operation
-    // when the layout hasnt changed
+        if (m_horizontal_scrollbar) {
+            Size size = m_horizontal_scrollbar->sizeHint(dc);
+            float slider_size = rect.w * ((rect.w - size.w / 2) / generic_max_layout_length);
+            float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
+            if (slider_size < 20) {
+                slider_size = 20;
+            } else if (slider_size > (rect.w - buttons_size - 10)) {
+                slider_size = rect.w - buttons_size - 10;
+            }
+            m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
+            m_horizontal_scrollbar->draw(dc, Rect(
+                rect.x, 
+                rect.y + rect.h, 
+                rect.w > size.w ? rect.w : size.w, 
+                size.h
+            ));
+        }
+    } else {
+        if (m_vertical_scrollbar) {
+            Size size = m_vertical_scrollbar->sizeHint(dc);
+            float slider_size = rect.h * ((rect.h - size.h / 2) / generic_max_layout_length);
+            float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
+            if (slider_size < 20) {
+                slider_size = 20;
+            } else if (slider_size > (rect.h - buttons_size - 10)) {
+                slider_size = rect.h - buttons_size - 10;
+            }
+            m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
+            m_vertical_scrollbar->draw(dc, Rect(
+                rect.x + rect.w, 
+                rect.y, 
+                size.w, 
+                rect.h > size.h ? rect.h : size.h
+            ));
+        }
+        if (m_horizontal_scrollbar) {
+            Size size = m_horizontal_scrollbar->sizeHint(dc);
+            float slider_size = rect.w * ((rect.w - size.w / 2) / generic_total_layout_length);
+            float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
+            if (slider_size < 20) {
+                slider_size = 20;
+            } else if (slider_size > (rect.w - buttons_size - 10)) {
+                slider_size = rect.w - buttons_size - 10;
+            }
+            m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
+            m_horizontal_scrollbar->draw(dc, Rect(
+                rect.x, 
+                rect.y + rect.h, 
+                rect.w > size.w ? rect.w : size.w, 
+                size.h
+            ));
+        }
+    }
+    if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+        dc->fillRect(Rect(
+            rect.x + rect.w, 
+            rect.y + rect.h, 
+            m_vertical_scrollbar->sizeHint(dc).w, 
+            m_horizontal_scrollbar->sizeHint(dc).h), 
+            m_vertical_scrollbar->m_begin_button->background()
+        );
+    }
 }
 
 void ScrolledBox::addScrollBar(Align alignment) {
@@ -373,19 +369,13 @@ bool ScrolledBox::isScrollable() {
 }
 
 Size ScrolledBox::sizeHint(DrawingContext *dc) {
-    // `hasLayoutChanged()` is necessary here because the Box won't know
-    // that it's sizeHint() needs to be recalculated because of it's children.
-    // TODO ideally now that every widget should have a parent (except main_widget?)
-    // it would be better to simply recalculate whats changed rather than
-    // all of it, simply recursivly go up the widget tree and say the layout changed
-    // until we hit the top :)
     unsigned int visible = 0;
     unsigned int vertical_non_expandable = 0;
     unsigned int horizontal_non_expandable = 0;
-    if (this->m_size_changed || ((Application*)this->app)->hasLayoutChanged()) {
+    if (m_size_changed) {
         Size size = Size();
-        if (this->m_align_policy == Align::Horizontal) {
-            for (Widget* child : this->children) {
+        if (m_align_policy == Align::Horizontal) {
+            for (Widget* child : children) {
                 if (child->isVisible()) {
                     Size s = child->sizeHint(dc);
                     size.w += s.w;
@@ -399,7 +389,7 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
                 }
             }
         } else {
-            for (Widget* child : this->children) {
+            for (Widget* child : children) {
                 if (child->isVisible()) {
                     Size s = child->sizeHint(dc);
                     size.h += s.h;
@@ -413,14 +403,11 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
                 }
             }
         }
-        // TODO we might want to compute both always
-        // this way changing the alignment would be a trivial operation
-        // since we would only need to update
-        this->m_vertical_non_expandable = vertical_non_expandable;
-        this->m_horizontal_non_expandable = horizontal_non_expandable;
-        this->m_visible_children = visible;
-        this->m_size = size;
-        this->m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
+        m_vertical_non_expandable = vertical_non_expandable;
+        m_horizontal_non_expandable = horizontal_non_expandable;
+        m_visible_children = visible;
+        m_size = size;
+        m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
 
         return m_viewport;
     } else {

@@ -49,9 +49,6 @@ const char* NoteBookTabBar::name() {
 }
 
 Size NoteBookTabBar::sizeHint(DrawingContext *dc) {
-    // TODO probably need `|| ((Application*)this->app)->hasLayoutChanged()`
-    // but for that to matter we will need the ability to change the tab
-    // buttons at runtime
     if (m_size_changed) {
         Size size = Size();
         for (Widget *child : children) {
@@ -261,8 +258,6 @@ bool NoteBookTabButton::hasCloseButton() {
 void NoteBookTabButton::setCloseButton(bool close_button) {
     if (m_close_button != close_button) {
         m_close_button = close_button;
-        m_size_changed = true;
-        update();
         layout();
     }
 }
@@ -309,6 +304,8 @@ Size NoteBook::sizeHint(DrawingContext *dc) {
     }
 }
 
+// TODO maybe overwrite append just like TreeView
+// internally we could still use Widget::append
 NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool close_button) {
     // We need to attach app at run time to new tabs / tab buttons.
     if (app) {
@@ -327,9 +324,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
     }
     m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
-        m_size_changed = true;
         tab_button->setActive(true);
-        update();
         layout();
     } else {
         update();
@@ -379,8 +374,6 @@ NoteBook* NoteBook::setCurrentTab(int index) {
         ((NoteBookTabButton*)m_tabs->children[index])->setActive(true);
     }
     m_tab_index = index;
-    m_size_changed = true;
-    update();
     layout();
 
     return this;

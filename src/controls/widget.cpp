@@ -24,8 +24,6 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
     this->children.push_back(widget);
     widget->parent_index = this->children.size() - 1;
     if (this->app) widget->app = this->app;
-    this->m_size_changed = true;
-    this->update();
     this->layout();
 
     return this;
@@ -43,8 +41,6 @@ Widget* Widget::remove(size_t parent_index) {
         child->parent_index = i;
         i++;
     }
-    this->m_size_changed = true;
-    this->update();
     this->layout();
 
     return child;
@@ -87,7 +83,6 @@ Widget* Widget::setForeground(Color foreground) {
 Widget* Widget::setFillPolicy(Fill fill_policy) {
     if (this->m_fill_policy != fill_policy) {
         this->m_fill_policy = fill_policy;
-        this->update();
         this->layout();
         // TODO maybe instead of layout manually change
         // expandable and non expandable widgets for parent?
@@ -104,8 +99,6 @@ Fill Widget::fillPolicy() {
 Widget* Widget::show() {
     if (!this->m_is_visible) {
         this->m_is_visible = true;
-        this->m_size_changed = true;
-        this->update();
         this->layout();
     }
     
@@ -115,8 +108,6 @@ Widget* Widget::show() {
 Widget* Widget::hide() {
     if (this->m_is_visible) {
         this->m_is_visible = false;
-        this->m_size_changed = true;
-        this->update();
         this->layout();
     }
     
@@ -175,9 +166,16 @@ Widget* Widget::update() {
 }
 
 Widget* Widget::layout() {
-    if (this->app) {
-        ((Application*)this->app)->layout();
+    m_size_changed = true;
+    Widget *parent = this->parent;
+    while (parent) {
+        if (parent->m_size_changed) {
+            break;
+        }
+        parent->m_size_changed = true;
+        parent = parent->parent;
     }
+    update();
     
     return this;
 }
@@ -324,7 +322,6 @@ unsigned int Widget::proportion() {
 Widget* Widget::setProportion(unsigned int proportion) {
     if (this->m_proportion != proportion) {
         this->m_proportion = proportion ? proportion : 1;
-        this->update();
         this->layout();
     }
     
@@ -338,8 +335,6 @@ Font* Widget::font() {
 Widget* Widget::setFont(Font *font) {
     if (this->m_font != font) {
         this->m_font = font;
-        this->m_size_changed = true;
-        this->update();
         this->layout();
     }
     

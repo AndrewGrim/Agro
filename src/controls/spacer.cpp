@@ -28,6 +28,5 @@ Size Spacer::minSize() {
 
 void Spacer::setMinSize(Size min_size) {
     m_size = min_size;
-    update();
     layout();
 }

@@ -194,7 +194,7 @@
             /// Tells the Application that it needs to redraw.
             Widget* update();
 
-            /// Tells the Application that it needs to recalculate its layout.
+            /// Tells the Application that it needs to recalculate its layout. // TODO outdated
             Widget* layout();
 
             /// Passes the event further down the Widget tree until
