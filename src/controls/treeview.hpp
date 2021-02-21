@@ -334,6 +334,21 @@
                 }
             }
 
+            float width() {
+                if (m_custom_size) {
+                    return m_custom_width;
+                }
+                return m_size.w;
+            }
+
+            void setWidth(float width) {
+                if (width < m_min_width) {
+                    return;
+                }
+                m_custom_size = true;
+                m_custom_width = width;
+            }
+
         protected:
             Sort m_sort = Sort::None;
             Tree<T> *m_model = nullptr;
@@ -463,11 +478,22 @@
                             }
 
                             // Check and set the max height of the node.
+                            int index = 0;
                             for (CellRenderer *renderer : node->columns) {
                                 Size s = renderer->sizeHint(dc);
+                                Column<T> *col = (Column<T>*)children[index];
+                                float col_width = col->width();
+                                if (!index) {
+                                    col_width += depth * indent();
+                                }
+                                
+                                if (s.w > col_width) {
+                                    col->setWidth(s.w);
+                                }
                                 if (s.h > node->max_cell_height) {
                                     node->max_cell_height = s.h;
                                 }
+                                index++;
                             }
                             virtual_size.h += node->max_cell_height;
                             return true;
