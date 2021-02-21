@@ -764,6 +764,9 @@
 
             virtual Size sizeHint(DrawingContext *dc) override {
                 if (m_size_changed) { // TODO this will be slow for a large number of columns
+                    // TODO this will need to behave differently
+                    // we set the width based on the sizeHint of the column
+                    // with no bearing on its content
                     m_virtual_size.w = 0.0;
                     m_column_widths.clear();
                     Size size = Size();
