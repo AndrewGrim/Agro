@@ -342,7 +342,7 @@
                 }
                 m_custom_size = true;
                 m_custom_width = width;
-                parentLayout();
+                parentLayout(); // TODO ideally this would only affect the column on which it is called
             }
 
         protected:
