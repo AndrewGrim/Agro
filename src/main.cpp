@@ -111,11 +111,11 @@ int main(int argc, char **argv) {
                 Align::Horizontal
             );
                 first_col->append(new Image("notes.png"), Fill::Both);
-                first_col->append(new Label("============ Column: " + std::to_string(0) + " ============"), Fill::Both);
+                first_col->append(new Label("Column: " + std::to_string(0)), Fill::Both);
             tv->append(first_col);
             for (int i = 1; i < 6; i++) {
                 Column<Hidden> *c = new Column<Hidden>(nullptr, Align::Horizontal);
-                    c->append(new Label("=== Column: " + std::to_string(i) + " ==="), Fill::Both);
+                    c->append(new Label("Column: " + std::to_string(i)), Fill::Both);
                 tv->append(c);
             }
             Column<Hidden> *last_col = new Column<Hidden>(
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
                 }, 
                 Align::Horizontal
             );
-                last_col->append(new Label("=== Column: " + std::to_string(6) + " ==="), Fill::Both);
+                last_col->append(new Label("Column: " + std::to_string(6)), Fill::Both);
             tv->append(last_col);
             Tree<Hidden> *model = new Tree<Hidden>();
             {

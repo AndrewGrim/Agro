@@ -196,12 +196,7 @@
                 });
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_dragging) {
-                        m_custom_width = event.x - rect.x; // TODO take scroll into account?
-                        if (m_custom_width < m_min_width) {
-                            m_custom_width = m_min_width; 
-                            return;
-                        }
-                        parentLayout();
+                        setWidth(event.x - rect.x); // TODO take scroll into account?
                     } else {
                         if (event.x >= (rect.x + rect.w) - 5) {
                             ((Application*)app)->setMouseCursor(Cursor::SizeWE);
@@ -347,6 +342,7 @@
                 }
                 m_custom_size = true;
                 m_custom_width = width;
+                parentLayout();
             }
 
         protected:
@@ -358,7 +354,6 @@
             float m_min_width = 15;
     };
 
-    // expand col to content??
     // image cache / manager
     // tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
 
@@ -448,7 +443,6 @@
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 Rect old_clip = dc->clip();
-                // TODO expand any column headers as needed ?option? ie if the content of the cell is longer than the column header do you want to expand the column header?
                 Size virtual_size = m_children_size;
                 if (m_virtual_size_changed) {
                     std::unordered_map<void*, int> depth_map;
@@ -482,13 +476,19 @@
                             for (CellRenderer *renderer : node->columns) {
                                 Size s = renderer->sizeHint(dc);
                                 Column<T> *col = (Column<T>*)children[index];
-                                float col_width = col->width();
                                 if (!index) {
-                                    col_width += depth * indent();
+                                    s.w += depth * indent();
                                 }
                                 
-                                if (s.w > col_width) {
+                                if (s.w > col->width()) {
                                     col->setWidth(s.w);
+                                    // The below is necessary because sizeHint won't run
+                                    // again until the next update().
+                                    m_children_size.w += s.w - m_column_widths[index];
+                                    m_column_widths[index] = s.w;
+                                    // We don't need to recalculate here specifically
+                                    // because we already update the values manually.
+                                    m_size_changed = false;
                                 }
                                 if (s.h > node->max_cell_height) {
                                     node->max_cell_height = s.h;
