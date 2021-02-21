@@ -780,6 +780,7 @@
                     }
                     m_children_size = size;
                     m_virtual_size.w = size.w;
+                    m_size_changed = false;
                 }
                 return m_viewport;
             }
