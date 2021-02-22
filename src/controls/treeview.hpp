@@ -113,12 +113,14 @@
             TreeNode<T>* append(TreeNode<T> *parent_node, TreeNode<T> *node) {
                 if (!parent_node) {
                     node->parent = nullptr;
+                    node->depth = 1;
                     roots.push_back(node); 
                     
                     return node;
                 } else {
                     parent_node->children.push_back(node);
                     node->parent = parent_node;
+                    node->depth = node->parent->depth + 1;
 
                     return node;
                 }
@@ -445,35 +447,12 @@
                 Rect old_clip = dc->clip();
                 Size virtual_size = m_children_size;
                 if (m_virtual_size_changed) {
-                    std::unordered_map<void*, int> depth_map;
                     for (TreeNode<T> *root : m_model->roots) {
-                        depth_map.clear();
-                        int depth = 0;
                         void *previous_parent = nullptr;
                         bool collapsed = false;
                         int collapsed_depth = -1;
 
                         m_model->descend(root, [&](TreeNode<T> *node) {
-                            // Check and set the depth of each node.
-                            if (node->parent != previous_parent || !node->parent) {
-                                if (!node->parent) {
-                                    depth += 1;
-                                    depth_map.insert(std::make_pair(node->parent, depth));
-                                    node->depth = depth;
-                                } else {
-                                    std::unordered_map<void*, int>::iterator iter = depth_map.find(node->parent);
-                                    if (iter != depth_map.end()) {
-                                        depth = iter->second;
-                                        node->depth = depth;
-                                    } else {
-                                        depth += 1;
-                                        depth_map.insert(std::make_pair(node->parent, depth));
-                                        node->depth = depth;
-                                    }
-                                }
-                                previous_parent = node->parent;
-                            }
-
                             if (node->depth <= collapsed_depth) {
                                 collapsed = false;
                                 collapsed_depth = -1;
@@ -485,7 +464,7 @@
                                     Size s = renderer->sizeHint(dc);
                                     Column<T> *col = (Column<T>*)children[index];
                                     if (!index) {
-                                        s.w += depth * indent();
+                                        s.w += node->depth * indent();
                                     }
                                     
                                     if (s.w > col->width()) {
