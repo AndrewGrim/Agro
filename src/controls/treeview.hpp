@@ -450,6 +450,9 @@
                         depth_map.clear();
                         int depth = 0;
                         void *previous_parent = nullptr;
+                        bool collapsed = false;
+                        int collapsed_depth = -1;
+
                         m_model->descend(root, [&](TreeNode<T> *node) {
                             // Check and set the depth of each node.
                             if (node->parent != previous_parent || !node->parent) {
@@ -471,31 +474,42 @@
                                 previous_parent = node->parent;
                             }
 
-                            // Check and set the max height of the node.
-                            int index = 0;
-                            for (CellRenderer *renderer : node->columns) {
-                                Size s = renderer->sizeHint(dc);
-                                Column<T> *col = (Column<T>*)children[index];
-                                if (!index) {
-                                    s.w += depth * indent();
-                                }
-                                
-                                if (s.w > col->width()) {
-                                    col->setWidth(s.w);
-                                    // The below is necessary because sizeHint won't run
-                                    // again until the next update().
-                                    m_children_size.w += s.w - m_column_widths[index];
-                                    m_column_widths[index] = s.w;
-                                    // We don't need to recalculate here specifically
-                                    // because we already update the values manually.
-                                    m_size_changed = false;
-                                }
-                                if (s.h > node->max_cell_height) {
-                                    node->max_cell_height = s.h;
-                                }
-                                index++;
+                            if (node->depth <= collapsed_depth) {
+                                collapsed = false;
+                                collapsed_depth = -1;
                             }
-                            virtual_size.h += node->max_cell_height;
+                            if (!collapsed) {
+                                // Check and set the max height of the node.
+                                int index = 0;
+                                for (CellRenderer *renderer : node->columns) {
+                                    Size s = renderer->sizeHint(dc);
+                                    Column<T> *col = (Column<T>*)children[index];
+                                    if (!index) {
+                                        s.w += depth * indent();
+                                    }
+                                    
+                                    if (s.w > col->width()) {
+                                        col->setWidth(s.w);
+                                        // The below is necessary because sizeHint won't run
+                                        // again until the next update().
+                                        m_children_size.w += s.w - m_column_widths[index];
+                                        m_column_widths[index] = s.w;
+                                        // We don't need to recalculate here specifically
+                                        // because we already update the values manually.
+                                        m_size_changed = false;
+                                    }
+                                    if (s.h > node->max_cell_height) {
+                                        node->max_cell_height = s.h;
+                                    }
+                                    index++;
+                                }
+                                virtual_size.h += node->max_cell_height;
+                            }
+
+                            if (node->is_collapsed && !collapsed) {
+                                collapsed = true;
+                                collapsed_depth = node->depth;
+                            }
                             return true;
                         });
                     }
@@ -697,6 +711,7 @@
                     if (onNodeCollapsed) {
                         onNodeCollapsed(this, node);
                     }
+                    m_virtual_size_changed = true;
                     update();
                 }
             }
@@ -715,6 +730,7 @@
                     if (onNodeExpanded) {
                         onNodeExpanded(this, node);
                     }
+                    m_virtual_size_changed = true;
                     update();
                 }
             }
@@ -803,6 +819,7 @@
                         _node->is_collapsed = is_collapsed;
                         return true;
                     });
+                    m_virtual_size_changed = true;
                     update();
                 }
             }
@@ -814,6 +831,7 @@
                         return true;
                     });
                 }
+                m_virtual_size_changed = true;
                 update();
             }
     };
