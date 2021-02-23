@@ -551,9 +551,9 @@
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, pos.y - (m_children_size.h * 2)));
+                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, m_virtual_size.h - m_children_size.h));
                         for (float width : m_column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, pos.y - (m_children_size.h * 2) - 4), Color(0.85, 0.85, 0.85));
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
                             pos.x += width;
                         }
                     }
