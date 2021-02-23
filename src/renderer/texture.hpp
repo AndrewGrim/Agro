@@ -40,9 +40,12 @@
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                // println("nr_channels: " + std::to_string(nr_channels)); // this tells us if we need rgb or rgba for example
-                // TODO we might want to do GL_RGB for jpgs but GL_RGBA for pngs
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->data);
+                assert((nr_channels == 3 || nr_channels == 4) && "Unsupported number of channels!");
+                if (nr_channels == 4) {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->data);
+                } else {
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->data);
+                }
                 glGenerateMipmap(GL_TEXTURE_2D);
             } else {
                 println("Error: Failed to load texture! '" + file_path + "'");
