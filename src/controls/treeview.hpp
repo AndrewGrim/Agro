@@ -356,8 +356,8 @@
             float m_min_width = 15;
     };
 
-    // image cache / manager
-    // tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
+    // TODO image cache / manager
+    // TODO tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
 
     enum class GridLines {
         None,
@@ -445,55 +445,9 @@
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 Rect old_clip = dc->clip();
-                Size virtual_size = m_children_size;
+                Size virtual_size;
                 if (m_virtual_size_changed) {
-                    for (TreeNode<T> *root : m_model->roots) {
-                        void *previous_parent = nullptr;
-                        bool collapsed = false;
-                        int collapsed_depth = -1;
-
-                        m_model->descend(root, [&](TreeNode<T> *node) {
-                            if (node->depth <= collapsed_depth) {
-                                collapsed = false;
-                                collapsed_depth = -1;
-                            }
-                            if (!collapsed) {
-                                // Check and set the max height of the node.
-                                int index = 0;
-                                for (CellRenderer *renderer : node->columns) {
-                                    Size s = renderer->sizeHint(dc);
-                                    Column<T> *col = (Column<T>*)children[index];
-                                    if (!index) {
-                                        s.w += node->depth * indent();
-                                    }
-                                    
-                                    if (s.w > col->width()) {
-                                        col->setWidth(s.w);
-                                        // The below is necessary because sizeHint won't run
-                                        // again until the next update().
-                                        m_children_size.w += s.w - m_column_widths[index];
-                                        m_column_widths[index] = s.w;
-                                        // We don't need to recalculate here specifically
-                                        // because we already update the values manually.
-                                        m_size_changed = false;
-                                    }
-                                    if (s.h > node->max_cell_height) {
-                                        node->max_cell_height = s.h;
-                                    }
-                                    index++;
-                                }
-                                virtual_size.h += node->max_cell_height;
-                            }
-
-                            if (node->is_collapsed && !collapsed) {
-                                collapsed = true;
-                                collapsed_depth = node->depth;
-                            }
-                            return true;
-                        });
-                    }
-                    m_virtual_size = virtual_size;
-                    m_virtual_size_changed = false;
+                    virtual_size = calculateVirtualSize(dc);
                 } else {
                     virtual_size = m_virtual_size;
                 }
@@ -614,6 +568,7 @@
                     ((Column<T>*)widget)->setModel(model);
                 }
                 m_virtual_size_changed = true;
+                m_auto_size_columns = true;
                 update();
             }
 
@@ -791,6 +746,7 @@
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
             std::vector<float> m_column_widths;
+            bool m_auto_size_columns = false;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
@@ -812,6 +768,62 @@
                 }
                 m_virtual_size_changed = true;
                 update();
+            }
+
+            Size calculateVirtualSize(DrawingContext *dc) {
+                Size virtual_size = m_children_size;
+                for (TreeNode<T> *root : m_model->roots) {
+                    void *previous_parent = nullptr;
+                    bool collapsed = false;
+                    int collapsed_depth = -1;
+
+                    m_model->descend(root, [&](TreeNode<T> *node) {
+                        if (node->depth <= collapsed_depth) {
+                            collapsed = false;
+                            collapsed_depth = -1;
+                        }
+                        if (!collapsed) {
+                            // Check and set the max height of the node.
+                            int index = 0;
+                            for (CellRenderer *renderer : node->columns) {
+                                Size s = renderer->sizeHint(dc);
+                                Column<T> *col = (Column<T>*)children[index];
+                                if (!index) {
+                                    s.w += node->depth * indent();
+                                }
+                                
+                                // Automatically set the columns to be wide
+                                // enough for their contents.
+                                if (m_auto_size_columns && s.w > col->width()) {
+                                    col->setWidth(s.w);
+                                    // The below is necessary because sizeHint won't run
+                                    // again until the next update().
+                                    m_children_size.w += s.w - m_column_widths[index];
+                                    m_column_widths[index] = s.w;
+                                    // We don't need to recalculate here specifically
+                                    // because we already update the values manually.
+                                    m_size_changed = false;
+                                }
+                                if (s.h > node->max_cell_height) {
+                                    node->max_cell_height = s.h;
+                                }
+                                index++;
+                            }
+                            virtual_size.h += node->max_cell_height;
+                        }
+
+                        if (node->is_collapsed && !collapsed) {
+                            collapsed = true;
+                            collapsed_depth = node->depth;
+                        }
+                        return true;
+                    });
+                }
+                m_virtual_size = virtual_size;
+                m_virtual_size_changed = false;
+                m_auto_size_columns = false;
+
+                return virtual_size;
             }
     };
 #endif
