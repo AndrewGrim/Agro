@@ -413,7 +413,7 @@
                     for (TreeNode<T> *root : m_model->roots) {
                         m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                             if (event.x <= rect.x + m_children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent) {
+                                if (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent)) {
                                     if (node->is_collapsed) {
                                         expand(node);
                                     } else {
@@ -480,20 +480,23 @@
                                     dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_children_size.w, rect.h));
                                     dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
                                 }
-                                // Clip and draw the collapsible "button".
-                                dc->setClip(
-                                    Rect(
-                                        rect.x, 
-                                        pos.y > rect.y + m_children_size.h ? pos.y : rect.y + m_children_size.h, 
-                                        m_column_widths[0], 
-                                        node->max_cell_height
-                                    )
-                                );
-                                // End of the line.
-                                if (node->children.size()) {
-                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(0, 1));
-                                } else {
-                                    dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(1, 0, 1));
+
+                                if (!m_table) {
+                                    // Clip and draw the collapsible "button".
+                                    dc->setClip(
+                                        Rect(
+                                            rect.x, 
+                                            pos.y > rect.y + m_children_size.h ? pos.y : rect.y + m_children_size.h, 
+                                            m_column_widths[0], 
+                                            node->max_cell_height
+                                        )
+                                    );
+                                    // End of the line.
+                                    if (node->children.size()) {
+                                        dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(0, 1));
+                                    } else {
+                                        dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(1, 0, 1));
+                                    }
                                 }
 
                                 float cell_start = pos.x;
@@ -514,7 +517,7 @@
                                         // Clip and draw the current cell.
                                         dc->setClip(cell_clip);
                                         float cell_x = cell_start;
-                                        if (!i) {
+                                        if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
                                         }
                                         renderer->draw(
@@ -735,6 +738,15 @@
                 return m_viewport;
             }
 
+            bool isTable() {
+                return m_table;
+            }
+
+            void setTableMode(bool table) {
+                m_table = table;
+                update();
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
@@ -747,6 +759,7 @@
             Size m_children_size = Size();
             std::vector<float> m_column_widths;
             bool m_auto_size_columns = false;
+            bool m_table = false;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
@@ -788,7 +801,7 @@
                             for (CellRenderer *renderer : node->columns) {
                                 Size s = renderer->sizeHint(dc);
                                 Column<T> *col = (Column<T>*)children[index];
-                                if (!index) {
+                                if (!m_table && !index) {
                                     s.w += node->depth * indent();
                                 }
                                 
