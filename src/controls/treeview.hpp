@@ -819,6 +819,7 @@
                         return true;
                     });
                 }
+                virtual_size.w = m_children_size.w;
                 m_virtual_size = virtual_size;
                 m_virtual_size_changed = false;
                 m_auto_size_columns = false;
