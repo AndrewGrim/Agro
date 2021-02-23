@@ -3,6 +3,8 @@ LINK = -Llib -L/usr/lib/i386-linux-gnu -L/usr/lib -Lbuild
 LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
 CXX = g++
 CXX_FLAGS = -fno-exceptions -fPIC
+# TODO add a release version of cxx flags
+# which also disables asserts
 OBJECT_FILES = \
 	build/app.o \
 	build/box.o \
@@ -17,6 +19,7 @@ OBJECT_FILES = \
 	build/simplescrollbar.o \
 	build/slider.o \
 	build/spacer.o \
+	build/treeview.o \
 	build/widget.o \
 	build/drawing_context.o \
 	build/font.o \
@@ -44,7 +47,7 @@ build/libgui.so: dir $(OBJECT_FILES)
 	$(CXX) $(OBJECT_FILES) $(LINK) $(LIBS) -shared -o build/libgui.so
 
 # ROOT
-build/main.o: src/main.cpp
+build/main.o: src/main.cpp $(OBJECT_FILES)
 	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/app.o: src/app.cpp src/app.hpp
 	$(CXX) -c src/app.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
@@ -74,6 +77,8 @@ build/slider.o: src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/spacer.o: src/controls/spacer.cpp src/controls/spacer.hpp
 	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/treeview.o: src/controls/treeview.cpp src/controls/treeview.hpp
+	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/widget.o: src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
