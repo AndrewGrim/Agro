@@ -30,6 +30,7 @@ OUT = main.out
 
 run: local_build
 	./$(OUT)
+# TODO also install the include files?
 install: build/libgui.so
 	sudo cp build/libgui.so /usr/lib
 	sudo ldconfig
@@ -57,7 +58,7 @@ build/box.o: src/controls/box.cpp src/controls/box.hpp
 	$(CXX) -c src/controls/box.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/button.o: src/controls/button.cpp src/controls/button.hpp
 	$(CXX) -c src/controls/button.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/image.o: src/controls/image.cpp src/controls/image.hpp
+build/image.o: src/controls/image.cpp src/controls/image.hpp src/renderer/texture.hpp
 	$(CXX) -c src/controls/image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/label.o: src/controls/label.cpp src/controls/label.hpp
 	$(CXX) -c src/controls/label.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
