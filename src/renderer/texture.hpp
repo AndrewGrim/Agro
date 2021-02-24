@@ -13,8 +13,6 @@
         std::string file_path = "";
         int width = 0;
         int height = 0;
-        int nr_channels = 0;
-        unsigned char *data = nullptr;
         unsigned int ID;
         Point top_left = Point(0.0, 1.0);
         Point bottom_left = Point(0.0, 0.0);
@@ -23,17 +21,18 @@
 
         Texture(std::string file_path) {
             this->file_path = file_path;
-            this->data = stbi_load(
+            int nr_channels = -1;
+            unsigned char *data = stbi_load(
                 file_path.c_str(), 
-                &this->width, 
-                &this->height, 
-                &this->nr_channels, 
+                &width, 
+                &height, 
+                &nr_channels, 
                 0
             );
-            if (this->data) {
+            if (data) {
                 glActiveTexture(GL_TEXTURE0);
-                glGenTextures(1, &this->ID);
-                glBindTexture(GL_TEXTURE_2D, this->ID);
+                glGenTextures(1, &ID);
+                glBindTexture(GL_TEXTURE_2D, ID);
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -42,18 +41,18 @@
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 assert((nr_channels == 3 || nr_channels == 4) && "Unsupported number of channels!");
                 if (nr_channels == 4) {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->width, this->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, this->data);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
                 } else {
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, this->data);
+                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
                 }
                 glGenerateMipmap(GL_TEXTURE_2D);
+                stbi_image_free(data);
             } else {
                 println("Error: Failed to load texture! '" + file_path + "'");
             }
         }
 
         ~Texture() {
-            free(this->data);
             glDeleteTextures(1, &this->ID);
         }
 
