@@ -506,6 +506,12 @@
                                     Size s = renderer->sizeHint(dc);
                                     if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
                                         Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
+                                        if (cell_start + col_width > rect.x + rect.w) {
+                                            cell_clip.w = rect.w - cell_start;
+                                        }
+                                        if (pos.y + node->max_cell_height > rect.y + rect.h) {
+                                            cell_clip.h = rect.h - pos.y;
+                                        }
                                         if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
                                             cell_clip.x = rect.x;
                                             cell_clip.w = cell_start + col_width - rect.x;
