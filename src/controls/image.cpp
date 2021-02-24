@@ -7,6 +7,12 @@ Image::Image(std::string file_path, bool expand) : Widget(), Texture(file_path) 
     this->setExpand(expand);
 }
 
+Image::Image(bool from_memory, const unsigned char *image_data, int length, bool expand) : Widget(), Texture(from_memory, image_data, length) {
+    Widget::m_fg = Color(1, 1, 1, 1);
+    Widget::m_bg = Color(0, 0, 0, 0);
+    this->setExpand(expand);
+}
+
 Image::~Image() {
 }
 
