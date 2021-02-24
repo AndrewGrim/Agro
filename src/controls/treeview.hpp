@@ -542,7 +542,7 @@
                             pos.y += node->max_cell_height;
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
-                                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h));
+                                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                                 dc->fillRect(Rect(rect.x, pos.y - 1, m_children_size.w, 1), Color(0.85, 0.85, 0.85));
                             }
                         }
@@ -560,7 +560,7 @@
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, m_virtual_size.h - m_children_size.h));
+                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                         for (float width : m_column_widths) {
                             dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
                             pos.x += width;
