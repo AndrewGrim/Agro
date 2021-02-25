@@ -24,7 +24,7 @@
         DrawingContext(void *app);
         ~DrawingContext();
         void fillRect(Rect rect, Color color);
-        void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Renderer::Gradient orientation);
+        void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void fillText(Font *font, std::string text, Point point, Color color = Color(), float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);

@@ -31,7 +31,7 @@ void DrawingContext::fillRect(Rect rect, Color color) {
     renderer->fillRect(rect, color);
 }
 
-void DrawingContext::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Renderer::Gradient orientation) {
+void DrawingContext::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
     renderer->fillRectWithGradient(rect, fromColor, toColor, orientation);
 }
 
