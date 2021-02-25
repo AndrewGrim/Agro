@@ -197,3 +197,7 @@ const TextureCoordinates* Image::coords() {
 std::shared_ptr<Texture> Image::texture() {
     return m_texture;
 }
+
+Texture* Image::_texture() {
+    return m_texture.get();
+}

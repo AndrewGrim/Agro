@@ -85,6 +85,7 @@
             void setTexture(std::shared_ptr<Texture> texture);
             const TextureCoordinates* coords();
             std::shared_ptr<Texture> texture();
+            Texture* _texture();
 
         protected:
             std::shared_ptr<Texture> m_texture;
