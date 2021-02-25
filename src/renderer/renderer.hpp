@@ -10,6 +10,7 @@
     #include <ft2build.h>
     #include FT_FREETYPE_H
 
+    #include "../common/enums.hpp"
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
@@ -21,12 +22,6 @@
     #include "font.hpp"
 
     struct Renderer {
-        // TODO move gradient either to dc or make it standalone leaning towards the latter
-        enum class Gradient {
-            TopToBottom,
-            LeftToRight,
-        };
-
         enum class Sampler {
             Color,
             Texture,
@@ -59,8 +54,7 @@
         void fillText(Font *font, std::string text, Point point, Color color = Color(), float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
-        void drawImage(Point point, Texture *texture, Color color = Color(1, 1, 1));
-        void drawImageAtSize(Point point, Size size, Texture *texture, Color color = Color(1, 1, 1));
+        void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = Color(1, 1, 1));
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void check();

@@ -233,7 +233,7 @@ Size Renderer::measureText(Font *font, char c, float scale) {
     return size;
 }
 
-void Renderer::drawImage(Point point, Texture *texture, Color color) {
+void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color) {
     check();
 
     if (this->current_texture_slot > this->max_texture_slots - 1) {
@@ -245,60 +245,7 @@ void Renderer::drawImage(Point point, Texture *texture, Color color) {
     // TOP LEFT
     vertices[index++] = {
         {0.0, 1.0},
-        {texture->top_left.x, texture->top_left.y},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {point.x, point.y, (float)texture->width, (float)texture->height},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
-    };
-    // BOTTOM LEFT
-    vertices[index++] = {
-        {0.0, 0.0},
-        {texture->bottom_left.x, texture->bottom_left.y},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {point.x, point.y, (float)texture->width, (float)texture->height},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
-    };
-    // BOTTOM RIGHT
-    vertices[index++] = {
-        {1.0, 0.0},
-        {texture->bottom_right.x, texture->bottom_right.y},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {point.x, point.y, (float)texture->width, (float)texture->height},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
-    };
-    // TOP RIGHT
-    vertices[index++] = {
-        {1.0, 1.0},
-        {texture->top_right.x, texture->top_right.y},
-        {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {point.x, point.y, (float)texture->width, (float)texture->height},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
-    };
-    count++;
-    this->current_texture_slot++;
-}
-
-void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color color) {
-    check();
-
-    if (this->current_texture_slot > this->max_texture_slots - 1) {
-        render();
-    }
-    glActiveTexture(gl_texture_begin + this->current_texture_slot);
-    glBindTexture(GL_TEXTURE_2D, texture->ID);
-
-    // TOP LEFT
-    vertices[index++] = {
-        {0.0, 1.0},
-        {texture->top_left.x, texture->top_left.y},
+        {coords->top_left.x, coords->top_left.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -308,7 +255,7 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
     // BOTTOM LEFT
     vertices[index++] = {
         {0.0, 0.0},
-        {texture->bottom_left.x, texture->bottom_left.y},
+        {coords->bottom_left.x, coords->bottom_left.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -318,7 +265,7 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
     // BOTTOM RIGHT
     vertices[index++] = {
         {1.0, 0.0},
-        {texture->bottom_right.x, texture->bottom_right.y},
+        {coords->bottom_right.x, coords->bottom_right.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
@@ -328,7 +275,7 @@ void Renderer::drawImageAtSize(Point point, Size size, Texture *texture, Color c
     // TOP RIGHT
     vertices[index++] = {
         {1.0, 1.0},
-        {texture->top_right.x, texture->top_right.y},
+        {coords->top_right.x, coords->top_right.y},
         {color.r, color.g, color.b, color.a},
         (float)this->current_texture_slot,
         (float)Renderer::Sampler::Texture,
