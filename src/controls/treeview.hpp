@@ -70,6 +70,46 @@
             bool m_size_changed = true;
     };
 
+    class ImageCellRenderer : public CellRenderer {
+        public:
+            ImageCellRenderer(std::string file_path) {
+                m_image = new Image(file_path);
+            }
+
+            ImageCellRenderer(bool from_memory, const unsigned char *image_data, int length) {
+                m_image = new Image(from_memory, image_data, length);
+            }
+
+            ~ImageCellRenderer() {
+                delete m_image;
+            }
+
+            virtual void draw(DrawingContext *dc, Rect rect) override {
+                // dc->drawImage(Point(rect.x, rect.y), m_image);
+                // TODO this is just for testing right now
+                dc->fillRect(
+                    rect,
+                    Color(0.4, 0.4, 0.4, 0.35)
+                );
+                dc->drawImageAlignedAtSize(
+                    rect,
+                    HorizontalAlignment::Center,
+                    VerticalAlignment::Center,
+                    Size(24, 24),
+                    m_image
+                );
+            }
+            
+            virtual Size sizeHint(DrawingContext *dc) override {
+                // return Size(m_image->width, m_image->height);
+                // TODO temp for testing
+                return Size(24, 24);
+            }
+
+        protected:
+            Image *m_image = nullptr;
+    };
+
     template <typename T> class TreeNode {
         public:
             std::vector<CellRenderer*> columns;
