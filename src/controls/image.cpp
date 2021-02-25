@@ -1,19 +1,30 @@
 #include "image.hpp"
-#include "../common/point.hpp"
 
-Image::Image(std::string file_path, bool expand) : Widget(), Texture(file_path) {
+Image::Image(std::string file_path) : Widget() {
     Widget::m_fg = Color(1, 1, 1, 1);
     Widget::m_bg = Color(0, 0, 0, 0);
-    this->setExpand(expand);
+    m_texture = std::make_shared<Texture>(file_path);
+    m_min_size = Size(m_texture->width, m_texture->height);
 }
 
-Image::Image(bool from_memory, const unsigned char *image_data, int length, bool expand) : Widget(), Texture(from_memory, image_data, length) {
+Image::Image(bool from_memory, const unsigned char *image_data, int length) : Widget() {
     Widget::m_fg = Color(1, 1, 1, 1);
     Widget::m_bg = Color(0, 0, 0, 0);
-    this->setExpand(expand);
+    m_texture = std::make_shared<Texture>(from_memory, image_data, length);
+    m_min_size = Size(m_texture->width, m_texture->height);
+}
+
+// TODO not to sure about the order and defaultness
+// of owning here, think about it
+Image::Image(std::shared_ptr<Texture> texture) {
+    Widget::m_fg = Color(1, 1, 1, 1);
+    Widget::m_bg = Color(0, 0, 0, 0);
+    m_texture = texture;
+    m_min_size = Size(m_texture->width, m_texture->height);
 }
 
 Image::~Image() {
+
 }
 
 const char* Image::name() {
@@ -23,7 +34,7 @@ const char* Image::name() {
 void Image::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     dc->fillRect(rect, Widget::m_bg);
-    if (this->m_expand) {
+    if (m_expand) {
         if (m_maintain_aspect_ratio) {
             Size size = Size();
             if (rect.w > rect.h) {
@@ -42,35 +53,44 @@ void Image::draw(DrawingContext *dc, Rect rect) {
             }
             dc->drawImageAlignedAtSize(
                 rect,
-                this->m_horizontal_align,
-                this->m_vertical_align,
+                m_horizontal_align,
+                m_vertical_align,
                 size,
-                this,
+                m_texture.get(),
                 Widget::m_fg
             );
         } else {
             dc->drawImageAlignedAtSize(
                 rect,
-                this->m_horizontal_align,
-                this->m_vertical_align,
+                m_horizontal_align,
+                m_vertical_align,
                 Size(rect.w, rect.h),
-                this,
+                m_texture.get(),
                 Widget::m_fg
             );
         }
     } else {
         dc->drawImageAligned(
             rect,
-            this->m_horizontal_align,
-            this->m_vertical_align,
-            this,
+            m_horizontal_align,
+            m_vertical_align,
+            m_texture.get(),
             Widget::m_fg
         );
     }
 }
 
 Size Image::sizeHint(DrawingContext *dc) {
-    return Size(Texture::width, Texture::height);
+    return m_min_size;
+}
+
+void Image::setMinSize(Size min_size) {
+    m_min_size = min_size;
+    layout();
+}
+
+Size Image::originalSize() {
+    return Size(m_texture->width, m_texture->height);
 }
 
 Image* Image::setBackground(Color background) {
@@ -141,4 +161,64 @@ Image* Image::setMaintainAspectRatio(bool aspect_ratio) {
     }
 
     return this;
+}
+
+Image* Image::flipHorizontally() {
+    // if flipped reset to default
+    if (m_coords.top_left.x) {
+        m_coords.top_left.x = 0.0;
+        m_coords.bottom_left.x = 0.0;
+        m_coords.bottom_right.x = 1.0;
+        m_coords.top_right.x = 1.0;
+    // flip x to the opposite side
+    } else {
+        m_coords.top_left.x = 1.0;
+        m_coords.bottom_left.x = 1.0;
+        m_coords.bottom_right.x = 0.0;
+        m_coords.top_right.x = 0.0;
+    }
+
+    return this;
+}
+
+Image* Image::flipVertically() {
+    // if flipped reset to default
+    if (!m_coords.top_left.y) {
+        m_coords.top_left.y = 1.0;
+        m_coords.bottom_left.y = 0.0;
+        m_coords.bottom_right.y = 0.0;
+        m_coords.top_right.y = 1.0;
+    // flip y to the opposite side
+    } else {
+        m_coords.top_left.y = 0.0;
+        m_coords.bottom_left.y = 1.0;
+        m_coords.bottom_right.y = 1.0;
+        m_coords.top_right.y = 0.0;
+    }
+
+    return this;
+}
+
+Image* Image::flipBoth() {
+    this->flipHorizontally();
+    this->flipVertically();
+
+    return this;
+}
+
+void Image::setTexture(std::shared_ptr<Texture> texture) {
+    m_texture = texture;
+    update();
+}
+
+void Image::resetOrientation() {
+    m_coords = TextureCoordinates();
+}
+
+const TextureCoordinates* Image::coords() {
+    return &m_coords;
+}
+
+std::shared_ptr<Texture> Image::texture() {
+    return m_texture;
 }

@@ -2,14 +2,29 @@
     #define IMAGE_HPP
 
     #include <string>
+    #include <memory>
 
     #include "widget.hpp"
     #include "../renderer/texture.hpp"
 
-    class Image : public Widget, public Texture {
+    struct TextureCoordinates {
+        Point top_left = Point(0.0, 1.0);
+        Point bottom_left = Point(0.0, 0.0);
+        Point bottom_right = Point(1.0, 0.0);
+        Point top_right = Point(1.0, 1.0);
+
+        TextureCoordinates() {
+
+        }
+    };
+
+    class Image : public Widget {
         public:
-            Image(std::string file_path, bool expand = false);
-            Image(bool from_memory, const unsigned char *image_data, int length, bool expand = false);
+            Image(std::string file_path);
+            // TODO actually check if we need the from_memory bool
+            // its there to disambiguate ctor overload
+            Image(bool from_memory, const unsigned char *image_data, int length);
+            Image(std::shared_ptr<Texture> texture);
             ~Image();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
@@ -24,11 +39,23 @@
             Image* setVerticalAlignment(VerticalAlignment image_align);
             bool maintainAspectRation();
             Image* setMaintainAspectRatio(bool aspect_ratio);
+            Image* flipHorizontally();
+            Image* flipVertically();
+            Image* flipBoth();
+            void resetOrientation();
+            void setMinSize(Size min_size);
+            Size originalSize();
+            void setTexture(std::shared_ptr<Texture> texture);
+            const TextureCoordinates* coords();
+            std::shared_ptr<Texture> texture();
 
         protected:
+            std::shared_ptr<Texture> m_texture;
             bool m_expand = false;
             bool m_maintain_aspect_ratio = true;
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
+            Size m_min_size;
+            TextureCoordinates m_coords;     
     };
 #endif
