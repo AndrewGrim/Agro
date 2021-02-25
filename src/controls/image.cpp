@@ -164,44 +164,19 @@ Image* Image::setMaintainAspectRatio(bool aspect_ratio) {
 }
 
 Image* Image::flipHorizontally() {
-    // if flipped reset to default
-    if (m_coords.top_left.x) {
-        m_coords.top_left.x = 0.0;
-        m_coords.bottom_left.x = 0.0;
-        m_coords.bottom_right.x = 1.0;
-        m_coords.top_right.x = 1.0;
-    // flip x to the opposite side
-    } else {
-        m_coords.top_left.x = 1.0;
-        m_coords.bottom_left.x = 1.0;
-        m_coords.bottom_right.x = 0.0;
-        m_coords.top_right.x = 0.0;
-    }
+    m_coords.flipHorizontally();
 
     return this;
 }
 
 Image* Image::flipVertically() {
-    // if flipped reset to default
-    if (!m_coords.top_left.y) {
-        m_coords.top_left.y = 1.0;
-        m_coords.bottom_left.y = 0.0;
-        m_coords.bottom_right.y = 0.0;
-        m_coords.top_right.y = 1.0;
-    // flip y to the opposite side
-    } else {
-        m_coords.top_left.y = 0.0;
-        m_coords.bottom_left.y = 1.0;
-        m_coords.bottom_right.y = 1.0;
-        m_coords.top_right.y = 0.0;
-    }
+    m_coords.flipVertically();
 
     return this;
 }
 
 Image* Image::flipBoth() {
-    this->flipHorizontally();
-    this->flipVertically();
+    m_coords.flipBoth();
 
     return this;
 }
