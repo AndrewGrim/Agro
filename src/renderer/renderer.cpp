@@ -148,7 +148,8 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
     if (this->current_texture_slot > this->max_texture_slots - 1) {
         render();
     }
-    glActiveTexture(gl_texture_begin + this->current_texture_slot); 
+    unsigned int font_texture_slot = this->current_texture_slot;
+    glActiveTexture(gl_texture_begin + font_texture_slot); 
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
         check();
@@ -166,7 +167,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos, ypos + h}, 
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot,
+                (float)font_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -176,7 +177,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos, ypos}, 
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot,
+                (float)font_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -186,7 +187,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos + w, ypos}, 
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot,
+                (float)font_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -196,7 +197,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos + w, ypos + h}, 
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
-                (float)this->current_texture_slot,
+                (float)font_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -206,6 +207,8 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
         }
         point.x += advance;
     }
+    // TODO this would mean that now we leave one texture slot empty
+    // because we use the old font texture slot
     this->current_texture_slot++;
 }
 
