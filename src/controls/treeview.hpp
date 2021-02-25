@@ -415,7 +415,7 @@
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeCollapsed = nullptr;
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeExpanded = nullptr;
 
-            TreeView(Size min_size = Size(400, 400)) : Scrollable(min_size) {
+            TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     float y = rect.y;
                     if (m_vertical_scrollbar) {
