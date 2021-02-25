@@ -51,30 +51,31 @@ void Image::draw(DrawingContext *dc, Rect rect) {
             } else {
                 size = Size(rect.w < rect.h ? rect.w : rect.h, rect.h < rect.w ? rect.h : rect.w);
             }
-            dc->drawImageAlignedAtSize(
+            dc->drawImageAligned(
                 rect,
+                size,
+                this,
                 m_horizontal_align,
                 m_vertical_align,
-                size,
-                m_texture.get(),
                 Widget::m_fg
             );
         } else {
-            dc->drawImageAlignedAtSize(
+            dc->drawImageAligned(
                 rect,
+                Size(rect.w, rect.h),
+                this,
                 m_horizontal_align,
                 m_vertical_align,
-                Size(rect.w, rect.h),
-                m_texture.get(),
                 Widget::m_fg
             );
         }
     } else {
         dc->drawImageAligned(
             rect,
+            m_size,
+            this,
             m_horizontal_align,
             m_vertical_align,
-            m_texture.get(),
             Widget::m_fg
         );
     }
