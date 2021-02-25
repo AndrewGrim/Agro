@@ -83,7 +83,7 @@
             void setMinSize(Size min_size);
             Size originalSize();
             void setTexture(std::shared_ptr<Texture> texture);
-            const TextureCoordinates* coords();
+            TextureCoordinates* coords();
             std::shared_ptr<Texture> texture();
             Texture* _texture();
 

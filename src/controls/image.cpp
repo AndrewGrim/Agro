@@ -190,7 +190,7 @@ void Image::resetOrientation() {
     m_coords = TextureCoordinates();
 }
 
-const TextureCoordinates* Image::coords() {
+TextureCoordinates* Image::coords() {
     return &m_coords;
 }
 
