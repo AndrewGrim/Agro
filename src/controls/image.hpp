@@ -7,54 +7,6 @@
     #include "widget.hpp"
     #include "../renderer/texture.hpp"
 
-    struct TextureCoordinates {
-        Point top_left = Point(0.0, 1.0);
-        Point bottom_left = Point(0.0, 0.0);
-        Point bottom_right = Point(1.0, 0.0);
-        Point top_right = Point(1.0, 1.0);
-
-        TextureCoordinates() {
-
-        }
-
-        void flipHorizontally() {
-            // if flipped reset to default
-            if (top_left.x) {
-                top_left.x = 0.0;
-                bottom_left.x = 0.0;
-                bottom_right.x = 1.0;
-                top_right.x = 1.0;
-            // flip x to the opposite side
-            } else {
-                top_left.x = 1.0;
-                bottom_left.x = 1.0;
-                bottom_right.x = 0.0;
-                top_right.x = 0.0;
-            }
-        }
-
-        void flipVertically() {
-            // if flipped reset to default
-            if (!top_left.y) {
-                top_left.y = 1.0;
-                bottom_left.y = 0.0;
-                bottom_right.y = 0.0;
-                top_right.y = 1.0;
-            // flip y to the opposite side
-            } else {
-                top_left.y = 0.0;
-                bottom_left.y = 1.0;
-                bottom_right.y = 1.0;
-                top_right.y = 0.0;
-            }
-        }
-
-        void flipBoth() {
-            this->flipHorizontally();
-            this->flipVertically();
-        }
-    };
-
     class Image : public Widget {
         public:
             Image(std::string file_path);
