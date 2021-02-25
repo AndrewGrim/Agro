@@ -10,18 +10,12 @@
     #include "../common/point.hpp"
 
     struct Texture {
-        std::string file_path = "";
-        int width = 0;
-        int height = 0;
+        int width = -1;
+        int height = -1;
+        int nr_channels = -1;
         unsigned int ID;
-        Point top_left = Point(0.0, 1.0);
-        Point bottom_left = Point(0.0, 0.0);
-        Point bottom_right = Point(1.0, 0.0);
-        Point top_right = Point(1.0, 1.0);
-
+        
         Texture(std::string file_path) {
-            this->file_path = file_path;
-            int nr_channels = -1;
             unsigned char *data = stbi_load(
                 file_path.c_str(), 
                 &width, 
@@ -39,6 +33,7 @@
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                // TODO get some grayscale, and grayscale + alpha images to test 1 and 2 channel textures
                 assert((nr_channels == 3 || nr_channels == 4) && "Unsupported number of channels!");
                 if (nr_channels == 4) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -54,7 +49,6 @@
 
         Texture(bool from_memory, const unsigned char *image_data, int length) {
             assert(image_data && "Null image data!");
-            int nr_channels = -1;
             unsigned char *data = stbi_load_from_memory(
                 image_data, 
                 length, 
@@ -73,6 +67,7 @@
 
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                // TODO get some grayscale, and grayscale + alpha images to test 1 and 2 channel textures
                 assert((nr_channels == 3 || nr_channels == 4) && "Unsupported number of channels!");
                 if (nr_channels == 4) {
                     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -88,49 +83,6 @@
 
         ~Texture() {
             glDeleteTextures(1, &this->ID);
-        }
-
-        Texture* flipHorizontally() {
-            // if flipped reset to default
-            if (top_left.x) {
-                top_left.x = 0.0;
-                bottom_left.x = 0.0;
-                bottom_right.x = 1.0;
-                top_right.x = 1.0;
-            // flip x to the opposite side
-            } else {
-                top_left.x = 1.0;
-                bottom_left.x = 1.0;
-                bottom_right.x = 0.0;
-                top_right.x = 0.0;
-            }
-
-            return this;
-        }
-
-        Texture* flipVertically() {
-            // if flipped reset to default
-            if (!top_left.y) {
-                top_left.y = 1.0;
-                bottom_left.y = 0.0;
-                bottom_right.y = 0.0;
-                top_right.y = 1.0;
-            // flip y to the opposite side
-            } else {
-                top_left.y = 0.0;
-                bottom_left.y = 1.0;
-                bottom_right.y = 1.0;
-                top_right.y = 0.0;
-            }
-
-            return this;
-        }
-
-        Texture* flipBoth() {
-            this->flipHorizontally();
-            this->flipVertically();
-
-            return this;
         }
     };
 #endif
