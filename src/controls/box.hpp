@@ -2,7 +2,6 @@
     #define BOX_HPP
 
     #include "widget.hpp"
-    #include "../common/align.hpp"
 
     class Box : public Widget {
         public:

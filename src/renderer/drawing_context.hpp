@@ -4,7 +4,7 @@
     #include <glad/glad.h>
     #include <SDL2/SDL.h>
 
-    #include "../common/align.hpp"
+    #include "../common/enums.hpp"
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
