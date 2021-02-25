@@ -5,7 +5,7 @@
     #include <cassert>
 
     #include <glad/glad.h>
-    #include "stb_image.h"
+    #include "stb_image.hpp"
 
     #include "../util.hpp"
     #include "../common/point.hpp"
