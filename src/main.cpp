@@ -4,7 +4,7 @@
 #include <ctime>
 
 #include "util.hpp"
-#include "app.hpp"
+#include "application.hpp"
 #include "controls/box.hpp"
 #include "controls/button.hpp"
 #include "controls/notebook.hpp"

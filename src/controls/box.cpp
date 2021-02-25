@@ -1,6 +1,6 @@
 #include "box.hpp"
 #include "../common/point.hpp"
-#include "../app.hpp"
+#include "../application.hpp"
 
 Box::Box(Align align_policy) {
     this->m_align_policy = align_policy;

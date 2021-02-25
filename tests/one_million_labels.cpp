@@ -1,4 +1,4 @@
-#include "../src/app.hpp"
+#include "../src/application.hpp"
 #include "../src/controls/label.hpp"
 
 int main(int argc, char **argv) { 

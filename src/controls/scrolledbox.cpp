@@ -1,4 +1,4 @@
-#include "../app.hpp"
+#include "../application.hpp"
 #include "scrolledbox.hpp"
 
 ScrolledBox::ScrolledBox(Align align_policy, Size min_size) : Box(align_policy) {

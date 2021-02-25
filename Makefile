@@ -7,7 +7,7 @@ LIB_NAME = gui
 # TODO add a release version of cxx flags
 # which also disables asserts
 OBJECT_FILES = \
-	build/app.o \
+	build/application.o \
 	build/box.o \
 	build/button.o \
 	build/image.o \
@@ -59,8 +59,8 @@ build/libgui.so: dir $(OBJECT_FILES)
 # ROOT
 build/main.o: src/main.cpp $(OBJECT_FILES)
 	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/app.o: src/app.cpp src/app.hpp
-	$(CXX) -c src/app.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/application.o: src/application.cpp src/application.hpp
+	$(CXX) -c src/application.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # CONTROLS
 build/box.o: src/controls/box.cpp src/controls/box.hpp

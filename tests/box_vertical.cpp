@@ -3,7 +3,7 @@
 #include <memory>
 
 #include "../src/util.hpp"
-#include "../src/app.hpp"
+#include "../src/application.hpp"
 #include "../src/controls/box.hpp"
 #include "../src/controls/button.hpp"
 // #include "../src/controls/scrolledbox.hpp"

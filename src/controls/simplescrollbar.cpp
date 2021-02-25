@@ -1,6 +1,6 @@
 #include "simplescrollbar.hpp"
 #include "image.hpp"
-#include "../app.hpp"
+#include "../application.hpp"
 
 SimpleScrollBarSlider::SimpleScrollBarSlider(Align alignment) : Slider(alignment) {
     Widget::m_bg = Color(0.7, 0.7, 0.7);

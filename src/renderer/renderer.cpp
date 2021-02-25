@@ -1,5 +1,5 @@
 #include "renderer.hpp"
-#include "../app.hpp"
+#include "../application.hpp"
 
 Renderer::Renderer(unsigned int *indices, void *app) {
     this->m_app = app;

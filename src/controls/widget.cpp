@@ -1,5 +1,5 @@
 #include "widget.hpp"
-#include "../app.hpp"
+#include "../application.hpp"
 
 Widget::Widget() {
 

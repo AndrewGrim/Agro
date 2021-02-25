@@ -1,5 +1,5 @@
 #include "lineedit.hpp"
-#include "../app.hpp"
+#include "../application.hpp"
 
 LineEdit::LineEdit(std::string text) : Widget() {
     Widget::m_bg = Color(1, 1, 1);

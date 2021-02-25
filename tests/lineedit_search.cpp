@@ -1,7 +1,7 @@
 #include <algorithm>
 
 #include "../src/util.hpp"
-#include "../src/app.hpp"
+#include "../src/application.hpp"
 #include "../src/controls/lineedit.hpp"
 #include "../src/controls/scrolledbox.hpp"
 #include "../src/controls/label.hpp"

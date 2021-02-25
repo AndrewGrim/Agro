@@ -2,7 +2,7 @@
 
 #include <glad/glad.h>
 
-#include "app.hpp"
+#include "application.hpp"
 
 Cursors::Cursors() {
 

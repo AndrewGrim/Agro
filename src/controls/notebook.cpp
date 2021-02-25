@@ -1,5 +1,5 @@
 #include "notebook.hpp"
-#include "../app.hpp"
+#include "../application.hpp"
 
 NoteBookTabBar::NoteBookTabBar() : Widget() {
 
