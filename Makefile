@@ -3,6 +3,7 @@ LINK = -Llib -L/usr/lib/i386-linux-gnu -L/usr/lib -Lbuild
 LIBS = -lGL -lSDL2 -lfreetype -lX11 -lpthread -lXrandr -lXi -ldl
 CXX = g++
 CXX_FLAGS = -fno-exceptions -fPIC
+LIB_NAME = gui
 # TODO add a release version of cxx flags
 # which also disables asserts
 OBJECT_FILES = \
@@ -30,20 +31,28 @@ OUT = main.out
 
 run: local_build
 	./$(OUT)
-# TODO also install the include files?
-install: build/libgui.so
-	sudo cp build/libgui.so /usr/lib
-	sudo ldconfig
+install: build/lib$(LIB_NAME).so
+	cp src/*.hpp -t build/$(LIB_NAME)
+	cp src/controls/*.hpp -t build/$(LIB_NAME)/controls
+	cp src/common/*.hpp -t build/$(LIB_NAME)/common
+	cp src/renderer/*.hpp -t build/$(LIB_NAME)/renderer
+	cp build/lib$(LIB_NAME).so /usr/lib
+	cp -r build/$(LIB_NAME) /usr/include
+	ldconfig
 
 # BUILD DIRECTORY
 dir:
 	mkdir -p build
+	mkdir -p build/$(LIB_NAME)
+	mkdir -p build/$(LIB_NAME)/controls
+	mkdir -p build/$(LIB_NAME)/common
+	mkdir -p build/$(LIB_NAME)/renderer
 
 # BUILD lib and main
 local_build: dir build/main.o $(OBJECT_FILES)
 	$(CXX) build/main.o $(OBJECT_FILES) $(LINK) $(LIBS) -o $(OUT)
 build: install build/main.o
-	$(CXX) build/main.o $(LINK) $(LIBS) -lgui -o $(OUT)
+	$(CXX) build/main.o $(LINK) $(LIBS) -l$(LIB_NAME) -o $(OUT)
 build/libgui.so: dir $(OBJECT_FILES)
 	$(CXX) $(OBJECT_FILES) $(LINK) $(LIBS) -shared -o build/libgui.so
 
@@ -92,7 +101,7 @@ build/glad.o: src/renderer/glad.c include/glad/glad.h
 	$(CXX) -c src/renderer/glad.c $(INCLUDE) $(CXX_FLAGS) -o $@
 build/renderer.o: src/renderer/renderer.cpp src/renderer/renderer.hpp
 	$(CXX) -c src/renderer/renderer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.h
+build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.hpp
 	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 clean:
