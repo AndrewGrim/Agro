@@ -4,14 +4,14 @@ Image::Image(std::string file_path) : Widget() {
     Widget::m_fg = Color(1, 1, 1, 1);
     Widget::m_bg = Color(0, 0, 0, 0);
     m_texture = std::make_shared<Texture>(file_path);
-    m_min_size = Size(m_texture->width, m_texture->height);
+    m_size = Size(m_texture->width, m_texture->height);
 }
 
 Image::Image(bool from_memory, const unsigned char *image_data, int length) : Widget() {
     Widget::m_fg = Color(1, 1, 1, 1);
     Widget::m_bg = Color(0, 0, 0, 0);
     m_texture = std::make_shared<Texture>(from_memory, image_data, length);
-    m_min_size = Size(m_texture->width, m_texture->height);
+    m_size = Size(m_texture->width, m_texture->height);
 }
 
 // TODO not to sure about the order and defaultness
@@ -20,7 +20,7 @@ Image::Image(std::shared_ptr<Texture> texture) {
     Widget::m_fg = Color(1, 1, 1, 1);
     Widget::m_bg = Color(0, 0, 0, 0);
     m_texture = texture;
-    m_min_size = Size(m_texture->width, m_texture->height);
+    m_size = Size(m_texture->width, m_texture->height);
 }
 
 Image::~Image() {
@@ -85,11 +85,11 @@ void Image::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size Image::sizeHint(DrawingContext *dc) {
-    return m_min_size;
+    return m_size;
 }
 
 void Image::setMinSize(Size min_size) {
-    m_min_size = min_size;
+    m_size = min_size;
     layout();
 }
 

@@ -45,7 +45,6 @@
             bool m_maintain_aspect_ratio = true;
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
-            Size m_min_size;
             TextureCoordinates m_coords;     
     };
 #endif
