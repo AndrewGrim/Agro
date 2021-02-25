@@ -181,26 +181,15 @@ void DrawingContext::swap_buffer(SDL_Window *win) {
     SDL_GL_SwapWindow(win);
 }
 
-void DrawingContext::drawImage(Point point, Texture *texture, Color color) {
-    renderer->drawImage(point, texture, color);
+void DrawingContext::drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color) {
+    renderer->drawTexture(point, size, texture, coords, color);
 }
 
-void DrawingContext::drawImageAtSize(Point point, Size size, Texture *texture, Color color) {
-    renderer->drawImageAtSize(point, size, texture, color);
+void DrawingContext::drawImage(Point point, Size size, Image *image, Color color) {
+    renderer->drawTexture(point, size, image->_texture(), image->coords(), color);
 }
 
-void DrawingContext::drawImageAligned(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Texture *texture, Color color) {
-    this->drawImageAlignedAtSize(
-        rect,
-        h_align,
-        v_align,
-        Size(texture->width, texture->height),
-        texture,
-        color
-    );
-}
-
-void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_align, VerticalAlignment v_align, Size size, Texture *texture, Color color) {
+void DrawingContext::drawTextureAligned(Rect rect, Size size, Texture *texture, TextureCoordinates *coords, HorizontalAlignment h_align, VerticalAlignment v_align, Color color) {
     Point pos = Point();
     switch (h_align) {
         case HorizontalAlignment::Left:
@@ -224,12 +213,17 @@ void DrawingContext::drawImageAlignedAtSize(Rect rect, HorizontalAlignment h_ali
             pos.y = rect.y + (rect.h / 2) - size.h / 2;
             break;
     }
-    this->drawImageAtSize(
+    this->drawTexture(
         pos, 
         size,
         texture,
+        coords,
         color
     );
+}
+
+void DrawingContext::drawImageAligned(Rect rect, Size size, Image *image, HorizontalAlignment h_align, VerticalAlignment v_align, Color color) {
+    drawTextureAligned(rect, size, image->_texture(), image->coords(), h_align, v_align, color);
 }
 
 void DrawingContext::drawPoint(Point point, Color color) {
