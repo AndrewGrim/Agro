@@ -149,13 +149,14 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         if (m_close_button) {
             width -= 22;
         }
-        dc->drawImageAtSize(
+        dc->drawTexture(
             Point(
                 round(rect.x + (width / 2 - text_size.w / 2) - image_size.w / 2), 
                 round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
-            m_image,
+            m_image->_texture(),
+            m_image->coords(),
             m_image->foreground()
         );
         // Resize rect to account for image before the label is drawn.

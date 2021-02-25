@@ -33,13 +33,14 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
     rect.shrink(m_padding);
     if (this->m_image) {
         Size image_size = Size(12, 12);
-        dc->drawImage(
+        dc->drawTexture(
             Point(
                 (rect.x + (rect.w * 0.5) - (image_size.w * 0.5)), 
                 (rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
-            m_image,
+            m_image->_texture(),
+            m_image->coords(),
             m_image->foreground()
         );
     }

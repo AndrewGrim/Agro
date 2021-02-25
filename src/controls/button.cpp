@@ -39,13 +39,14 @@ void Button::draw(DrawingContext *dc, Rect rect) {
     Size text_size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
-        dc->drawImageAtSize(
+        dc->drawTexture(
             Point(
                 round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
                 round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
-            m_image,
+            m_image->_texture(),
+            m_image->coords(),
             m_image->foreground()
         );
         // Resize rect to account for image before the label is drawn.
