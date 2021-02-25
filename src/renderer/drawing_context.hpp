@@ -10,8 +10,6 @@
     #include "../common/size.hpp"
     #include "../common/point.hpp"
 
-    #include "../controls/image.hpp"
-
     #include "shader.hpp"
     #include "batch.hpp"
     #include "renderer.hpp"
@@ -33,9 +31,7 @@
         void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = Color());
         Rect drawBorder(Rect rect, int border_width, Color rect_color);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color);
-        void drawImage(Point point, Size size, Image *image, Color color = Color(1, 1, 1));
         void drawTextureAligned(Rect rect, Size size, Texture *texture, TextureCoordinates *coords, HorizontalAlignment h_align, VerticalAlignment v_align, Color color = Color(1, 1, 1));
-        void drawImageAligned(Rect rect, Size size, Image *image, HorizontalAlignment h_align, VerticalAlignment v_align, Color color = Color(1, 1, 1));
         void drawPoint(Point point, Color color);
         void clear();
         void swap_buffer(SDL_Window *win);

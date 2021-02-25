@@ -185,10 +185,6 @@ void DrawingContext::drawTexture(Point point, Size size, Texture *texture, Textu
     renderer->drawTexture(point, size, texture, coords, color);
 }
 
-void DrawingContext::drawImage(Point point, Size size, Image *image, Color color) {
-    renderer->drawTexture(point, size, image->_texture(), image->coords(), color);
-}
-
 void DrawingContext::drawTextureAligned(Rect rect, Size size, Texture *texture, TextureCoordinates *coords, HorizontalAlignment h_align, VerticalAlignment v_align, Color color) {
     Point pos = Point();
     switch (h_align) {
@@ -220,10 +216,6 @@ void DrawingContext::drawTextureAligned(Rect rect, Size size, Texture *texture, 
         coords,
         color
     );
-}
-
-void DrawingContext::drawImageAligned(Rect rect, Size size, Image *image, HorizontalAlignment h_align, VerticalAlignment v_align, Color color) {
-    drawTextureAligned(rect, size, image->_texture(), image->coords(), h_align, v_align, color);
 }
 
 void DrawingContext::drawPoint(Point point, Color color) {
