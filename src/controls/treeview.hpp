@@ -514,10 +514,10 @@
                             if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
                                 // Clip and draw selection and or hover. 
                                 if (m_selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
-                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_children_size.w, rect.h));
+                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                                     dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
                                 } else if (m_hovered == node) {
-                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_children_size.w, rect.h));
+                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                                     dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
                                 }
 
