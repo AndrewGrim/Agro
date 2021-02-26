@@ -225,6 +225,7 @@
             int bind(int key, Mod modifier, std::function<void()> callback);
             void unbind(int map_key);
             const std::unordered_map<int, KeyboardShortcut> keyboardShortcuts();
+            Size size();
 
         protected:
             bool m_is_hovered = false;

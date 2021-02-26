@@ -416,3 +416,7 @@ void Widget::unbind(int key) {
 const std::unordered_map<int, KeyboardShortcut> Widget::keyboardShortcuts() {
     return this->m_keyboard_shortcuts;
 }
+
+Size Widget::size() {
+    return m_size;
+}
