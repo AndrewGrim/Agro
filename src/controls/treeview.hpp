@@ -683,6 +683,25 @@
                 }
             }
 
+            void select(int index) {
+                int i = 0;
+                bool early = false;
+                for (TreeNode<T> *root : m_model->roots) {
+                    if (early) {
+                        return;
+                    }
+                    m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                        if (i == index) {
+                            select(node);
+                            early = true;
+                            return false;
+                        }
+                        i++;
+                        return true;
+                    });
+                }
+            }
+
             void deselect() {
                 if (m_selected) {
                     if (onNodeDeselected) {
