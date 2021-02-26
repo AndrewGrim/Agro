@@ -72,48 +72,47 @@
 
     class ImageCellRenderer : public CellRenderer {
         public:
+            Image *image = nullptr;
+
             ImageCellRenderer(std::string file_path) {
-                m_image = new Image(file_path);
+                image = new Image(file_path);
             }
 
             ImageCellRenderer(bool from_memory, const unsigned char *image_data, int length) {
-                m_image = new Image(from_memory, image_data, length);
+                image = new Image(from_memory, image_data, length);
             }
 
             ImageCellRenderer(std::shared_ptr<Texture> texture) {
-                m_image = new Image(texture);
+                image = new Image(texture);
             }
 
-            ImageCellRenderer(Image *image) {
-                m_image = image;
+            ImageCellRenderer(Image *img) {
+                image = img;
             }
 
             ~ImageCellRenderer() {
-                delete m_image;
+                delete image;
             }
 
             virtual void draw(DrawingContext *dc, Rect rect) override {
                 dc->fillRect(
                     rect,
-                    m_image->background()
+                    image->background()
                 );
                 dc->drawTextureAligned(
                     rect,
-                    m_image->size(),
-                    m_image->_texture(),
-                    m_image->coords(),
+                    image->size(),
+                    image->_texture(),
+                    image->coords(),
                     HorizontalAlignment::Center,
                     VerticalAlignment::Center,
-                    m_image->foreground()
+                    image->foreground()
                 );
             }
             
             virtual Size sizeHint(DrawingContext *dc) override {
-                return m_image->size();
+                return image->size();
             }
-
-        protected:
-            Image *m_image = nullptr;
     };
 
     template <typename T> class TreeNode {
