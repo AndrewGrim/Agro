@@ -84,6 +84,10 @@
                 m_image = new Image(texture);
             }
 
+            ImageCellRenderer(Image *image) {
+                m_image = image;
+            }
+
             ~ImageCellRenderer() {
                 delete m_image;
             }
