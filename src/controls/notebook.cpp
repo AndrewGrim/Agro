@@ -102,7 +102,8 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
 }
 
 NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image *image,  bool close_button) : Button(text) {
-    setBorderWidth(1);
+    // TODO outdate beause of the new style
+    // setBorderWidth(1);
     if (image) {
         setImage(image);
     }
@@ -135,14 +136,11 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         color = this->background();
     }
     
-    // Draw border and shrink rectangle to prevent drawing over the border
-    dc->fillRect(rect, foreground());
-    rect.shrink(m_border_width);
-
+    dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
-    // Pad the rectangle with some empty space.
-    rect.shrink(m_padding);
-    Size text_size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+    dc->padding(rect, style);
+
+    Size text_size = dc->measureText(font(), text());
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
         float width = rect.w;
@@ -172,23 +170,24 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         h_text_align = HorizontalAlignment::Center;
         v_text_align = VerticalAlignment::Center;
     }
-    if (this->m_text.length()) {
+    if (m_text.length()) {
         if (m_close_button && !m_image) {
             rect.w -= 22;
         }
         dc->fillTextAligned(
-            this->font() ? this->font() : dc->default_font,
-            this->m_text,
+            font(),
+            m_text,
             h_text_align,
             v_text_align,
             rect,
             0,
-            this->m_fg
+            m_fg
         );
         rect.x += text_size.w;
     }
     if (m_close_button && m_image) {
-        m_close_image->draw(dc, Rect(rect.x + 10, rect.y + padding(), 12, 12));
+        // TODO used to be rect.y + padding
+        m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, 12));
     } else if (m_close_button) {
         m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, 12));
     }
@@ -204,10 +203,9 @@ Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
                 size.h = i.h;
             }
         }
-        // Note: full padding is applied on both sides but
-        // border width is divided in half for each side
-        size.w += this->m_padding * 2 + this->m_border_width;
-        size.h += this->m_padding * 2 + this->m_border_width;
+        
+        dc->sizeHintBorder(size, style);
+        dc->sizeHintPadding(size, style);
 
         // Account for the close button if present;
         if (m_close_button) {

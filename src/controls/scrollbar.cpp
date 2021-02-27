@@ -30,7 +30,7 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
     dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
     // Pad the rectangle with some empty space.
-    rect.shrink(m_padding);
+    dc->padding(rect, style);
     if (this->m_image) {
         Size image_size = Size(12, 12);
         dc->drawTexture(
@@ -48,8 +48,8 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
 
 Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
     Size size = Size(12, 12);
-    size.w += this->m_padding * 2 + this->m_border_width * 2;
-    size.h += this->m_padding * 2 + this->m_border_width * 2;
+    dc->sizeHintBorder(size, style);
+    dc->sizeHintPadding(size, style);
 
     return size;
 }
@@ -112,7 +112,8 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
     m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
-    m_begin_button->setPadding(1);
+    // TODO outdated beause of the new style
+    // m_begin_button->setPadding(1);
     m_begin_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
         this->m_slider->m_value -= 0.05f; // TODO should be a customizable step
         if (this->m_slider->m_value < 0.0f) {
@@ -129,7 +130,8 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     // m_slider->setBackground(m_slider->parent->background());
 
     m_end_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
-    m_end_button->setPadding(1);
+    // TODO outdated beause of the new style
+    // m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();
     m_end_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
         this->m_slider->m_value += 0.05f; 

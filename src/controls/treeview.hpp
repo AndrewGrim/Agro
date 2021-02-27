@@ -222,7 +222,8 @@
                 Button *b = new Button(text);
                     b->setImage(image);
                     b->setBackground(Color(0, 0, 0, 0));
-                    b->setBorderWidth(0);
+                    // TODO the below is outdated because of the new style
+                    // b->setBorderWidth(0);
                 if (alignment == HorizontalAlignment::Left || alignment == HorizontalAlignment::Right) {
                     this->append(b, Fill::Vertical);
                 } else {
