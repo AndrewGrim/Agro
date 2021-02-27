@@ -14,16 +14,31 @@
     };
 
     struct Style {
-        int border = STYLE_ALL;
-        int border_size = 2;
-        int padding = STYLE_ALL;
-        int padding_size = 5;
-        int margin = STYLE_NONE;
-        int margin_size = 0;
+        int margin = STYLE_ALL;
+        int margin_top = 0;
+        int margin_bottom = 0;
+        int margin_left = 0;
+        int margin_right = 0;
 
-        Color border_color = COLOR_BLACK;
+        int border = STYLE_ALL;
+        int border_top = 2;
+        Color border_top_color = COLOR_BLACK;
+        int border_bottom = 2;
+        Color border_bottom_color = COLOR_BLACK;
+        int border_left = 2;
+        Color border_left_color = COLOR_BLACK;
+        int border_right = 2;
+        Color border_right_color = COLOR_BLACK;
+
+        int padding = STYLE_ALL;
+        int padding_top = 5;
+        int padding_bottom = 5;
+        int padding_left = 5;
+        int padding_right = 5;
+
         Color text_color = COLOR_BLACK;
         Color background_color = Color(0.9, 0.9, 0.9);
+        Color window_color = Color(0.5, 0.5, 0.5);
         Color selection_color = Color(0.2, 0.5, 1.0);
         Color hover_color = Color(0.5, 0.5, 0.5, 0.1);
 
