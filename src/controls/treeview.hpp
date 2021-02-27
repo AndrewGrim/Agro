@@ -5,6 +5,7 @@
 
     #include "widget.hpp"
     #include "scrollable.hpp"
+    #include "spacer.hpp"
 
     class CellRenderer {
         public:
@@ -210,9 +211,33 @@
         public:
             std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_fn = nullptr;
 
-            Column(std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr, Align alignment = Align::Horizontal) : Box(alignment) {
+            Column(
+                std::string text, Image *image = nullptr, 
+                HorizontalAlignment alignment = HorizontalAlignment::Center, 
+                std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr) : Box(Align::Horizontal) {
                 Widget::m_bg = Color(0.9, 0.9, 0.9);
+                if (alignment == HorizontalAlignment::Right) {
+                    this->append(new Spacer(), Fill::Both);
+                }
+                Button *b = new Button(text);
+                    b->setImage(image);
+                    b->setBackground(Color(0, 0, 0, 0));
+                    b->setBorderWidth(0);
+                if (alignment == HorizontalAlignment::Left || alignment == HorizontalAlignment::Right) {
+                    this->append(b, Fill::Vertical);
+                } else {
+                    this->append(b, Fill::Both);
+                }
                 this->sort_fn = sort_function;
+                if (sort_fn) {
+                    if (alignment == HorizontalAlignment::Left) {
+                        this->append(new Spacer(), Fill::Both);
+                    }
+                    Image *sort_icon = (new Image("up_arrow.png"))->setForeground(Color());
+                        sort_icon->setMinSize(Size(12, 12));
+                        sort_icon->hide();
+                    this->append(sort_icon, Fill::Vertical);
+                }
                 this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (event.x >= (rect.x + rect.w) - 5) {
                         m_dragging = true;
@@ -325,40 +350,20 @@
 
             virtual Size sizeHint(DrawingContext *dc) override {
                 unsigned int visible = 0;
-                unsigned int vertical_non_expandable = 0;
                 unsigned int horizontal_non_expandable = 0;
                 if (m_size_changed) {
                     Size size = Size();
-                    if (m_align_policy == Align::Horizontal) {
-                        for (Widget* child : children) {
-                            if (child->isVisible()) {
-                                Size s = child->sizeHint(dc);
-                                size.w += s.w;
-                                if (s.h > size.h) {
-                                    size.h = s.h;
-                                }
-                                visible += child->proportion();
-                                if (child->fillPolicy() == Fill::Vertical || child->fillPolicy() == Fill::None) {
-                                    horizontal_non_expandable++;
-                                }
-                            }
+                    for (Widget* child : children) {
+                        Size s = child->sizeHint(dc);
+                        size.w += s.w;
+                        if (s.h > size.h) {
+                            size.h = s.h;
                         }
-                    } else {
-                        for (Widget* child : children) {
-                            if (child->isVisible()) {
-                                Size s = child->sizeHint(dc);
-                                size.h += s.h;
-                                if (s.w > size.w) {
-                                    size.w = s.w;
-                                }
-                                visible += child->proportion();
-                                if (child->fillPolicy() == Fill::Horizontal || child->fillPolicy() == Fill::None) {
-                                    vertical_non_expandable++;
-                                }
-                            }
+                        visible += child->proportion();
+                        if (child->fillPolicy() == Fill::Vertical || child->fillPolicy() == Fill::None) {
+                            horizontal_non_expandable++;
                         }
                     }
-                    m_vertical_non_expandable = vertical_non_expandable;
                     m_horizontal_non_expandable = horizontal_non_expandable;
                     m_visible_children = visible;
                     m_size = size;
@@ -398,10 +403,9 @@
             bool m_dragging = false;
             bool m_custom_size = false;
             float m_custom_width = 0.0;
-            float m_min_width = 15;
+            float m_min_width = 16;
     };
 
-    // TODO image cache / manager
     // TODO tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
 
     enum class GridLines {
@@ -755,13 +759,6 @@
                     column->parent->remove(column->parent_index);
                 }
                 column->parent = this;
-                // TODO the below might be better off in column ctor instead
-                if (column->sort_fn) {
-                    Image *sort_icon = (new Image("up_arrow.png"))->setForeground(Color());
-                        sort_icon->setMinSize(Size(12, 12));
-                        sort_icon->hide();
-                    column->append(sort_icon, Fill::Vertical);
-                }
                 column->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
                     this->m_hovered = nullptr;
                 });

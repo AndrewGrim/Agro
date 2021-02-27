@@ -102,32 +102,30 @@ int main(int argc, char **argv) {
             // });
         {
             Column<Hidden> *first_col = new Column<Hidden>(
+                "Column: 0", new Image("notes.png"), HorizontalAlignment::Center,
                 [&](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                    // TODO simplify this in the treeview itself
+                    // by simply !negating the result
                     if (first_col->isSorted() == Sort::Ascending) {
                         return lhs->hidden->id < rhs->hidden->id;
                     }
                     return lhs->hidden->id > rhs->hidden->id;
-                }, 
-                Align::Horizontal
+                }
             );
-                first_col->append(new Image("notes.png"), Fill::Both);
-                first_col->append(new Label("Column: " + std::to_string(0)), Fill::Both);
             tv->append(first_col);
             for (int i = 1; i < 6; i++) {
-                Column<Hidden> *c = new Column<Hidden>(nullptr, Align::Horizontal);
-                    c->append(new Label("Column: " + std::to_string(i)), Fill::Both);
+                Column<Hidden> *c = new Column<Hidden>("Column: " + std::to_string(i));
                 tv->append(c);
             }
             Column<Hidden> *last_col = new Column<Hidden>(
+                "Column: " + std::to_string(6), nullptr, HorizontalAlignment::Left,
                 [&](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
                     if (last_col->isSorted() == Sort::Ascending) {
                         return lhs->hidden->id < rhs->hidden->id;
                     }
                     return lhs->hidden->id > rhs->hidden->id;
-                }, 
-                Align::Horizontal
+                }
             );
-                last_col->append(new Label("Column: " + std::to_string(6)), Fill::Both);
             tv->append(last_col);
             Tree<Hidden> *model = new Tree<Hidden>();
             {
