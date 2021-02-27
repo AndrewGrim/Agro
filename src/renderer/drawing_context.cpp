@@ -20,11 +20,14 @@ DrawingContext::DrawingContext(void *app) {
     }
 
     renderer = new Renderer(indices, app);
+
+    default_style = new Style();
 }
 
 DrawingContext::~DrawingContext() {
     delete renderer;
     delete default_font;
+    delete default_style;
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {

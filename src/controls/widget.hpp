@@ -13,6 +13,7 @@
     #include "../common/size.hpp"
     #include "../common/color.hpp"
     #include "../common/point.hpp"
+    #include "../common/style.hpp"
     #include "../renderer/drawing_context.hpp"
 
     class Widget;
@@ -49,6 +50,8 @@
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
             std::vector<Widget*> children;
+
+            Style *style = nullptr;
 
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 

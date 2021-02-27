@@ -62,6 +62,10 @@ build/main.o: src/main.cpp $(OBJECT_FILES)
 build/application.o: build/widget.o build/drawing_context.o src/application.cpp src/application.hpp
 	$(CXX) -c src/application.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
+# COMMON
+build/style.o: src/common/style.cpp src/common/style.hpp
+	$(CXX) -c src/common/style.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+
 # CONTROLS
 build/box.o: build/widget.o src/controls/box.cpp src/controls/box.hpp
 	$(CXX) -c src/controls/box.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
@@ -89,11 +93,11 @@ build/spacer.o: build/widget.o src/controls/spacer.cpp src/controls/spacer.hpp
 	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/treeview.o: build/widget.o src/controls/treeview.cpp src/controls/treeview.hpp
 	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/widget.o: build/font.o src/controls/widget.cpp src/controls/widget.hpp
+build/widget.o: build/style.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # RENDERER
-build/drawing_context.o: build/renderer.o src/renderer/drawing_context.cpp src/renderer/drawing_context.hpp
+build/drawing_context.o: build/style.o build/renderer.o src/renderer/drawing_context.cpp src/renderer/drawing_context.hpp
 	$(CXX) -c src/renderer/drawing_context.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/font.o: src/renderer/font.cpp src/renderer/font.hpp
 	$(CXX) -c src/renderer/font.cpp $(INCLUDE) $(CXX_FLAGS) -o $@

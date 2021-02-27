@@ -9,6 +9,7 @@
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
     #include "../common/point.hpp"
+    #include "../common/style.hpp"
 
     #include "shader.hpp"
     #include "batch.hpp"
@@ -19,6 +20,7 @@
         unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer;
         Font *default_font = nullptr;
+        Style *default_style = nullptr;
 
         DrawingContext(void *app);
         ~DrawingContext();
