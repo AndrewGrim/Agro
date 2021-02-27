@@ -13,6 +13,15 @@
         STYLE_ALL = 0x1111,
     };
 
+    // TODO we need to think about color somewhat
+    // cause we want to be able to tell when a color
+    // is not overriden
+    // i though about using uint32_t for 8bits per color/alpha
+    // but then we couldnt really set it to -1 unless we checked for
+    // the max uint32_t value instead
+    // and on the flip side int32_t would quite work for bitshifting?
+    // i pressume anyway, the uint32_t method should also be easier
+    // to work with rgba int and hex | string
     struct Style {
         int margin = STYLE_ALL;
         int margin_top = 0;
@@ -43,7 +52,6 @@
         Color hover_color = Color(0.5, 0.5, 0.5, 0.1);
 
         Style();
-        Style(StyleOptions default_value, int default_size);
         ~Style();
     };
 #endif
