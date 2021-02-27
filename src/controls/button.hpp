@@ -25,17 +25,11 @@
             Button* setHorizontalAlignment(HorizontalAlignment text_align);
             VerticalAlignment verticalAlignment();
             Button* setVerticalAlignment(VerticalAlignment text_align);
-            unsigned int padding();
-            Button* setPadding(unsigned int padding);
-            unsigned int borderWidth();
-            Button* setBorderWidth(unsigned int border_width);
 
         protected:
             std::string m_text = "";
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
-            unsigned int m_padding = 5;
-            unsigned int m_border_width = 4;
             Image *m_image = nullptr;
     };
 #endif

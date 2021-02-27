@@ -22,22 +22,23 @@ const char* Button::name() {
 
 void Button::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
+
     Color color; 
-    if (this->isPressed() && this->isHovered()) {
-        color = this->m_pressed_bg; 
-    } else if (this->isHovered()) {
-        color = this->m_hovered_bg;
+    if (isPressed() && isHovered()) {
+        color = m_pressed_bg; 
+    } else if (isHovered()) {
+        color = m_hovered_bg;
     } else {
-        color = this->background();
+        color = background();
     }
     
-    // Draw border and shrink rectangle to prevent drawing over the border
-    rect = dc->drawBorder(rect, this->m_border_width, color);
+    dc->margin(rect, style);
+    dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
-    // Pad the rectangle with some empty space.
-    rect.shrink(m_padding);
-    Size text_size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
-    if (this->m_image) {
+    dc->padding(rect, style);
+
+    Size text_size = dc->measureText(font(), text());
+    if (m_image) {
         Size image_size = m_image->sizeHint(dc);
         dc->drawTexture(
             Point(
@@ -59,22 +60,22 @@ void Button::draw(DrawingContext *dc, Rect rect) {
         h_text_align = HorizontalAlignment::Center;
         v_text_align = VerticalAlignment::Center;
     }
-    if (this->m_text.length()) {
+    if (m_text.length()) {
         dc->fillTextAligned(
-            this->font() ? this->font() : dc->default_font,
-            this->m_text,
+            font(),
+            m_text,
             h_text_align,
             v_text_align,
             rect,
             0,
-            this->m_fg
+            m_fg
         );
     }
 }
 
 Size Button::sizeHint(DrawingContext *dc) {
-    if (this->m_size_changed) {
-        Size size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+    if (m_size_changed) {
+        Size size = dc->measureText(font(), text());
         if (m_image) {
             Size i = m_image->sizeHint(dc);
             size.w += i.w;
@@ -82,24 +83,24 @@ Size Button::sizeHint(DrawingContext *dc) {
                 size.h = i.h;
             }
         }
-        // Note: full padding is applied on both sides but
-        // border width is divided in half for each side
-        size.w += this->m_padding * 2 + this->m_border_width;
-        size.h += this->m_padding * 2 + this->m_border_width;
 
-        this->m_size = size;
-        this->m_size_changed = false;
+        dc->sizeHintMargin(size, style);
+        dc->sizeHintBorder(size, style);
+        dc->sizeHintPadding(size, style);
+
+        m_size = size;
+        m_size_changed = false;
 
         return size;
     } else {
-        return this->m_size;
+        return m_size;
     }
 }
 
 Button* Button::setForeground(Color foreground) {
     if (Widget::m_fg != foreground) {
         Widget::m_fg = foreground;
-        this->update();
+        update();
     }
 
     return this;
@@ -108,90 +109,59 @@ Button* Button::setForeground(Color foreground) {
 Button* Button::setBackground(Color background) {
     if (Widget::m_bg != background) {
         Widget::m_bg = background;
-        this->update();
+        update();
     }
 
     return this;
 }
 
 std::string Button::text() {
-    return this->m_text;
+    return m_text;
 }
 
 Button* Button::setText(std::string text) {
-    // Unlike everywhere else I don't think we
-    // should compare the m_text to text since
-    // that can be pretty expensive and we can
-    // assume that if someone is setting the text
-    // its going to be different.
-    this->m_text = text;
-    this->layout();
+    m_text = text;
+    layout();
 
     return this;
 }
 
 HorizontalAlignment Button::horizontalAlignment() {
-    return this->m_horizontal_align;
+    return m_horizontal_align;
 }
 
 Button* Button::setHorizontalAlignment(HorizontalAlignment text_align) {
     if (m_horizontal_align != text_align) {
         m_horizontal_align = text_align;
-        this->update();
+        update();
     }
 
     return this;
 }
 
 VerticalAlignment Button::verticalAlignment() {
-    return this->m_vertical_align;
+    return m_vertical_align;
 }
 
 Button* Button::setVerticalAlignment(VerticalAlignment text_align) {
     if (m_vertical_align != text_align) {
         m_vertical_align = text_align;
-        this->update();
+        update();
     }
 
     return this;
 }
 
 Image* Button::image() {
-    return this->m_image;
+    return m_image;
 }
 
 Button* Button::setImage(Image *image) {
     if (m_image) {
         delete m_image;
     }
-    this->m_image = image;
-    this->layout();
-
-    return this;
-}
-
-unsigned int Button::padding() {
-    return this->m_padding;
-}
-
-Button* Button::setPadding(unsigned int padding) {
-    if (this->m_padding != padding) {
-        this->m_padding = padding;
-        this->layout();
-    }
-
-    return this;
-}
-
-unsigned int Button::borderWidth() {
-    return this->m_border_width;
-}
-
-Button* Button::setBorderWidth(unsigned int border_width) {
-    if (this->m_border_width != border_width) {
-        this->m_border_width = border_width;
-        this->layout();
-    }
+    m_image = image;
+    layout();
 
     return this;
 }
