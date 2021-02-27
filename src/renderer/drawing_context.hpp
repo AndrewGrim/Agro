@@ -32,6 +32,9 @@
         void render();
         void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = Color());
         Rect drawBorder3D(Rect rect, int border_width, Color rect_color);
+        void drawBorder(Rect &rect, Style *style);
+        void margin(Rect &rect, Style *style);
+        void padding(Rect &rect, Style *style);
         void sizeHintMargin(Size &size, Style *style);
         void sizeHintBorder(Size &size, Style *style);
         void sizeHintPadding(Size &size, Style *style);
