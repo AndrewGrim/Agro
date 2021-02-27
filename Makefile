@@ -8,6 +8,7 @@ LIB_NAME = gui
 # which also disables asserts
 OBJECT_FILES = \
 	build/application.o \
+	build/style.o \
 	build/box.o \
 	build/button.o \
 	build/image.o \
