@@ -59,35 +59,35 @@ build/libgui.so: dir $(OBJECT_FILES)
 # ROOT
 build/main.o: src/main.cpp $(OBJECT_FILES)
 	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/application.o: src/application.cpp src/application.hpp
+build/application.o: build/widget.o src/application.cpp src/application.hpp
 	$(CXX) -c src/application.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # CONTROLS
-build/box.o: src/controls/box.cpp src/controls/box.hpp
+build/box.o: build/widget.o src/controls/box.cpp src/controls/box.hpp
 	$(CXX) -c src/controls/box.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/button.o: src/controls/button.cpp src/controls/button.hpp
+build/button.o: build/widget.o src/controls/button.cpp src/controls/button.hpp
 	$(CXX) -c src/controls/button.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/image.o: src/controls/image.cpp src/controls/image.hpp src/renderer/texture.hpp
+build/image.o: build/widget.o src/controls/image.cpp src/controls/image.hpp src/renderer/texture.hpp
 	$(CXX) -c src/controls/image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/label.o: src/controls/label.cpp src/controls/label.hpp
+build/label.o: build/widget.o src/controls/label.cpp src/controls/label.hpp
 	$(CXX) -c src/controls/label.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/lineedit.o: src/controls/lineedit.cpp src/controls/lineedit.hpp
+build/lineedit.o: build/widget.o src/controls/lineedit.cpp src/controls/lineedit.hpp
 	$(CXX) -c src/controls/lineedit.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/notebook.o: src/controls/notebook.cpp src/controls/notebook.hpp
+build/notebook.o: build/widget.o src/controls/notebook.cpp src/controls/notebook.hpp
 	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrollable.o: src/controls/scrollable.cpp src/controls/scrollable.hpp
+build/scrollable.o: build/widget.o src/controls/scrollable.cpp src/controls/scrollable.hpp
 	$(CXX) -c src/controls/scrollable.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrollbar.o: src/controls/scrollbar.cpp src/controls/scrollbar.hpp
+build/scrollbar.o: build/widget.o src/controls/scrollbar.cpp src/controls/scrollbar.hpp
 	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrolledbox.o: src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
+build/scrolledbox.o: build/widget.o src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
 	$(CXX) -c src/controls/scrolledbox.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/simplescrollbar.o: src/controls/simplescrollbar.cpp src/controls/simplescrollbar.hpp
+build/simplescrollbar.o: build/widget.o src/controls/simplescrollbar.cpp src/controls/simplescrollbar.hpp
 	$(CXX) -c src/controls/simplescrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/slider.o: src/controls/slider.cpp src/controls/slider.hpp
+build/slider.o: build/widget.o src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/spacer.o: src/controls/spacer.cpp src/controls/spacer.hpp
+build/spacer.o: build/widget.o src/controls/spacer.cpp src/controls/spacer.hpp
 	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/treeview.o: src/controls/treeview.cpp src/controls/treeview.hpp
+build/treeview.o: build/widget.o src/controls/treeview.cpp src/controls/treeview.hpp
 	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/widget.o: src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
