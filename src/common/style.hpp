@@ -28,7 +28,7 @@
         Color hover_color = Color(0.5, 0.5, 0.5, 0.1);
 
         Style();
-        Style(StyleOptions default_value);
+        Style(StyleOptions default_value, int default_size);
         ~Style();
     };
 #endif
