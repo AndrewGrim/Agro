@@ -44,15 +44,15 @@ void DrawingContext::render() {
 
 void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, float scale) {
     Point rounded = Point(round(point.x), round(point.y));
-    renderer->fillText(font, text, rounded, color, scale);
+    renderer->fillText(font ? font : default_font, text, rounded, color, scale);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text, float scale) {
-    return renderer->measureText(font, text, scale);
+    return renderer->measureText(font ? font : default_font, text, scale);
 }
 
 Size DrawingContext::measureText(Font *font, char c, float scale) {
-    return renderer->measureText(font, c, scale);
+    return renderer->measureText(font ? font : default_font, c, scale);
 }
 
 void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color) {
@@ -71,10 +71,10 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
             pos.x = rect.x + padding;
             break;
         case HorizontalAlignment::Right:
-            pos.x = (rect.x + rect.w) - (this->measureText(font, text).w + padding);
+            pos.x = (rect.x + rect.w) - (measureText(font, text).w + padding);
             break;
         case HorizontalAlignment::Center:
-            pos.x = rect.x + (rect.w * 0.5) - (this->measureText(font, text).w * 0.5);
+            pos.x = rect.x + (rect.w * 0.5) - (measureText(font, text).w * 0.5);
             break;
     }
     switch (v_align) {
@@ -82,13 +82,13 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
             pos.y = rect.y + padding;
             break;
         case VerticalAlignment::Bottom:
-            pos.y = (rect.y + rect.h) - (this->measureText(font, text).h + padding);
+            pos.y = (rect.y + rect.h) - (measureText(font, text).h + padding);
             break;
         case VerticalAlignment::Center:
-            pos.y = rect.y + (rect.h * 0.5) - (this->measureText(font, text).h * 0.5);
+            pos.y = rect.y + (rect.h * 0.5) - (measureText(font, text).h * 0.5);
             break;
     }
-    this->fillText(
+    fillText(
         font,
         text,
         pos,
