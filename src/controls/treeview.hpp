@@ -330,7 +330,11 @@
                         m_sort = sort;
                     } else {
                         assert(m_model && "Model cannot be null when sorting! Only sort once youve set the model.");
-                        std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
+                        if (isSorted() == Sort::Ascending) {
+                            std::sort(m_model->roots.rbegin(), m_model->roots.rend(), sort_fn);
+                        } else {
+                            std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
+                        }
                     }
                 }
             }

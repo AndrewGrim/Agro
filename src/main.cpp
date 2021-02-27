@@ -104,11 +104,6 @@ int main(int argc, char **argv) {
             Column<Hidden> *first_col = new Column<Hidden>(
                 "Column: 0", new Image("notes.png"), HorizontalAlignment::Center,
                 [&](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
-                    // TODO simplify this in the treeview itself
-                    // by simply !negating the result
-                    if (first_col->isSorted() == Sort::Ascending) {
-                        return lhs->hidden->id < rhs->hidden->id;
-                    }
                     return lhs->hidden->id > rhs->hidden->id;
                 }
             );
@@ -120,9 +115,6 @@ int main(int argc, char **argv) {
             Column<Hidden> *last_col = new Column<Hidden>(
                 "Column: " + std::to_string(6), nullptr, HorizontalAlignment::Left,
                 [&](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
-                    if (last_col->isSorted() == Sort::Ascending) {
-                        return lhs->hidden->id < rhs->hidden->id;
-                    }
                     return lhs->hidden->id > rhs->hidden->id;
                 }
             );
