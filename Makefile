@@ -97,13 +97,13 @@ build/widget.o: build/style.o build/font.o src/controls/widget.cpp src/controls/
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # RENDERER
-build/drawing_context.o: build/style.o build/renderer.o src/renderer/drawing_context.cpp src/renderer/drawing_context.hpp
+build/drawing_context.o: build/style.o build/font.o build/renderer.o src/renderer/drawing_context.cpp src/renderer/drawing_context.hpp
 	$(CXX) -c src/renderer/drawing_context.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/font.o: src/renderer/font.cpp src/renderer/font.hpp
 	$(CXX) -c src/renderer/font.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/glad.o: src/renderer/glad.c include/glad/glad.h
 	$(CXX) -c src/renderer/glad.c $(INCLUDE) $(CXX_FLAGS) -o $@
-build/renderer.o: src/renderer/renderer.cpp src/renderer/renderer.hpp
+build/renderer.o: build/font.o src/renderer/renderer.cpp src/renderer/renderer.hpp
 	$(CXX) -c src/renderer/renderer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.hpp
 	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
