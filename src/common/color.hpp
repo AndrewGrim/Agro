@@ -1,6 +1,10 @@
 #ifndef COLOR_HPP
     #define COLOR_HPP
 
+    #define COLOR_NONE Color(0, 0, 0, 0)
+	#define COLOR_BLACK Color()
+	#define COLOR_WHITE Color(1, 1, 1)
+
     struct Color {
         float r;
         float g;
