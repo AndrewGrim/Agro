@@ -27,7 +27,7 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
     }
     
     // Draw border and shrink rectangle to prevent drawing over the border
-    rect = dc->drawBorder(rect, this->m_border_width, color);
+    dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
     // Pad the rectangle with some empty space.
     rect.shrink(m_padding);

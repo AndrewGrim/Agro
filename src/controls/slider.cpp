@@ -25,7 +25,7 @@ void SliderButton::draw(DrawingContext *dc, Rect rect) {
     } else {
         color = this->background();
     }
-    rect = dc->drawBorder(rect, 4, color);
+    dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
 }
 
