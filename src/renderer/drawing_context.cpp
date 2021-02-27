@@ -96,7 +96,7 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
     );
 }
 
-Rect DrawingContext::drawBorder(Rect rect, int border_width, Color rect_color) {
+Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color) {
     // light border
     {
         // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here

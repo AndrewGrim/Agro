@@ -31,7 +31,7 @@
         Size measureText(Font *font, char c, float scale = 1.0f);
         void render();
         void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = Color());
-        Rect drawBorder(Rect rect, int border_width, Color rect_color);
+        Rect drawBorder3D(Rect rect, int border_width, Color rect_color);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color);
         void drawTextureAligned(Rect rect, Size size, Texture *texture, TextureCoordinates *coords, HorizontalAlignment h_align, VerticalAlignment v_align, Color color = Color(1, 1, 1));
         void drawPoint(Point point, Color color);
