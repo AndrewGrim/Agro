@@ -175,6 +175,66 @@ Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color)
     return rect;
 }
 
+void DrawingContext::sizeHintMargin(Size &size, Style *style) {
+    const Style *_style = style ? style : default_style;
+    
+    if (_style->margin != STYLE_NONE) {
+        const int margin = _style->margin == STYLE_DEFAULT ? default_style->margin : _style->margin;
+        if (margin & STYLE_TOP) {
+            size.h += _style->margin_top < 0 ? default_style->margin_top : _style->margin_top;
+        }
+        if (margin & STYLE_BOTTOM) {
+            size.h += _style->margin_bottom < 0 ? default_style->margin_bottom : _style->margin_bottom;
+        }
+        if (margin & STYLE_LEFT) {
+            size.w += _style->margin_left < 0 ? default_style->margin_left : _style->margin_left;
+        }
+        if (margin & STYLE_RIGHT) {
+            size.w += _style->margin_right < 0 ? default_style->margin_right : _style->margin_right;
+        }
+    }
+}
+
+void DrawingContext::sizeHintBorder(Size &size, Style *style) {
+    const Style *_style = style ? style : default_style;
+    
+    if (_style->border != STYLE_NONE) {
+        const int border = _style->border == STYLE_DEFAULT ? default_style->border : _style->border;
+        if (border & STYLE_TOP) {
+            size.h += _style->border_top < 0 ? default_style->border_top : _style->border_top;
+        }
+        if (border & STYLE_BOTTOM) {
+            size.h += _style->border_bottom < 0 ? default_style->border_bottom : _style->border_bottom;
+        }
+        if (border & STYLE_LEFT) {
+            size.w += _style->border_left < 0 ? default_style->border_left : _style->border_left;
+        }
+        if (border & STYLE_RIGHT) {
+            size.w += _style->border_right < 0 ? default_style->border_right : _style->border_right;
+        }
+    }
+}
+
+void DrawingContext::sizeHintPadding(Size &size, Style *style) {
+    const Style *_style = style ? style : default_style;
+    
+    if (_style->padding != STYLE_NONE) {
+        const int padding = _style->padding == STYLE_DEFAULT ? default_style->padding : _style->padding;
+        if (padding & STYLE_TOP) {
+            size.h += _style->padding_top < 0 ? default_style->padding_top : _style->padding_top;
+        }
+        if (padding & STYLE_BOTTOM) {
+            size.h += _style->padding_bottom < 0 ? default_style->padding_bottom : _style->padding_bottom;
+        }
+        if (padding & STYLE_LEFT) {
+            size.w += _style->padding_left < 0 ? default_style->padding_left : _style->padding_left;
+        }
+        if (padding & STYLE_RIGHT) {
+            size.w += _style->padding_right < 0 ? default_style->padding_right : _style->padding_right;
+        }
+    }
+}
+
 void DrawingContext::clear() {
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);

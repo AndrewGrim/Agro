@@ -32,6 +32,9 @@
         void render();
         void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = Color());
         Rect drawBorder3D(Rect rect, int border_width, Color rect_color);
+        void sizeHintMargin(Size &size, Style *style);
+        void sizeHintBorder(Size &size, Style *style);
+        void sizeHintPadding(Size &size, Style *style);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color);
         void drawTextureAligned(Rect rect, Size size, Texture *texture, TextureCoordinates *coords, HorizontalAlignment h_align, VerticalAlignment v_align, Color color = Color(1, 1, 1));
         void drawPoint(Point point, Color color);
