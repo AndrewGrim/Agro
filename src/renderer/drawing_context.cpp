@@ -22,6 +22,35 @@ DrawingContext::DrawingContext(void *app) {
     renderer = new Renderer(indices, app);
 
     default_style = new Style();
+    {
+        default_style->margin = STYLE_ALL;
+        default_style->margin_top = 1;
+        default_style->margin_bottom = 1;
+        default_style->margin_left = 1;
+        default_style->margin_right = 1;
+
+        default_style->border = STYLE_ALL;
+        default_style->border_top = 1;
+        default_style->border_top_color = COLOR_BLACK;
+        default_style->border_bottom = 1;
+        default_style->border_bottom_color = COLOR_BLACK;
+        default_style->border_left = 1;
+        default_style->border_left_color = COLOR_BLACK;
+        default_style->border_right = 1;
+        default_style->border_right_color = COLOR_BLACK;
+
+        default_style->padding = STYLE_ALL;
+        default_style->padding_top = 5;
+        default_style->padding_bottom = 5;
+        default_style->padding_left = 5;
+        default_style->padding_right = 5;
+
+        default_style->text_color = COLOR_BLACK;
+        default_style->background_color = Color(0.9, 0.9, 0.9);
+        default_style->window_color = Color(0.5, 0.5, 0.5);
+        default_style->selection_color = Color(0.2, 0.5, 1.0);
+        default_style->hover_color = Color(0.5, 0.5, 0.5, 0.1);
+    }
 }
 
 DrawingContext::~DrawingContext() {
