@@ -37,6 +37,7 @@
         public:
             /// A rectangle representing the Widget position and size.
             Rect rect = Rect(0, 0, 0, 0);
+            Rect inner_rect = Rect(0, 0, 0, 0);
             
             /// Pointer to the Application. Used to tell the Application to update.
             void *app = nullptr;
