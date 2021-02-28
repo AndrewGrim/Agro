@@ -309,6 +309,9 @@
                 // TODO border, for now we are skipping working on this
                 // because ideally i would like to add padding, border, margins
                 // to all widgets through a styling system.
+                // TODO also sizeHint
+                dc->drawBorder(rect, style);
+
                 Rect old_clip = dc->clip();
                 dc->setClip(rect);
                 dc->fillRect(rect, color);
@@ -397,6 +400,14 @@
                 parentLayout(); // TODO ideally this would only affect the column on which it is called
             }
 
+            void setColumnStyle(Style *column, Style *button) {
+                style = column;
+                for (auto child : children) {
+                    child->style = button;
+                }
+                layout(); // TODO this should be done by setting the style
+            }
+
         protected:
             Sort m_sort = Sort::None;
             Tree<T> *m_model = nullptr;
@@ -416,7 +427,7 @@
     };
 
     template <typename T> class TreeView : public Scrollable {
-        public:
+        public:        
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeHovered = nullptr;
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeSelected = nullptr;
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeDeselected = nullptr;
@@ -480,6 +491,16 @@
                         });
                     }
                 });
+                m_column_style = Style();
+                m_column_style.border = STYLE_TOP | STYLE_BOTTOM | STYLE_RIGHT;
+                m_column_style.border_top = 1;
+                m_column_style.border_bottom = 1;
+                m_column_style.border_right = 1;
+                m_column_style.margin = STYLE_NONE;
+
+                m_column_button_style = Style();
+                m_column_button_style.border = STYLE_NONE;
+                m_column_button_style.margin = STYLE_NONE;
             }
 
             ~TreeView() {
@@ -624,6 +645,7 @@
                 m_model = model;
                 for (Widget *widget : children) {
                     ((Column<T>*)widget)->setModel(model);
+                    ((Column<T>*)widget)->setColumnStyle(&m_column_style, &m_column_button_style);
                 }
                 m_virtual_size_changed = true;
                 m_auto_size_columns = true;
@@ -826,6 +848,8 @@
             std::vector<float> m_column_widths;
             bool m_auto_size_columns = false;
             bool m_table = false;
+            Style m_column_style;
+            Style m_column_button_style;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
