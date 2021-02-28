@@ -436,64 +436,67 @@
 
             TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-                    float y = rect.y;
+                    float y = inner_rect.y;
                     if (m_vertical_scrollbar) {
-                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
+                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
                     y += m_children_size.h;
-                    for (TreeNode<T> *root : m_model->roots) {
-                        m_model->descend(root, [&](TreeNode<T> *node) -> bool {
-                            if (event.x <= rect.x + m_children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (m_hovered != node) {
-                                    m_hovered = node;
-                                    if (onNodeHovered) {
-                                        onNodeHovered(this, node);
+                    if (event.x <= inner_rect.x + m_children_size.w) {
+                        for (TreeNode<T> *root : m_model->roots) {
+                            m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                                if (event.y >= y && event.y <= y + node->max_cell_height) {
+                                    if (m_hovered != node) {
+                                        m_hovered = node;
+                                        if (onNodeHovered) {
+                                            onNodeHovered(this, node);
+                                        }
+                                        update();
                                     }
-                                    update();
                                 }
-                            }
-                            y += node->max_cell_height;
-                            if (node->is_collapsed) {
-                                return false;
-                            }
-                            return true;
-                        });
+                                y += node->max_cell_height;
+                                if (node->is_collapsed) {
+                                    return false;
+                                }
+                                return true;
+                            });
+                        }
                     }
                 });
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-                    float x = rect.x;
-                    float y = rect.y;
+                    float x = inner_rect.x;
+                    float y = inner_rect.y;
                     if (m_horizontal_scrollbar) {
-                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - rect.w);
+                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                     }
                     if (m_vertical_scrollbar) {
-                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - rect.h);
+                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
                     y += m_children_size.h;
-                    for (TreeNode<T> *root : m_model->roots) {
-                        m_model->descend(root, [&](TreeNode<T> *node) -> bool {
-                            if (event.x <= rect.x + m_children_size.w && (event.y >= y && event.y <= y + node->max_cell_height)) {
-                                if (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent)) {
-                                    if (node->is_collapsed) {
-                                        expand(node);
+                    if (event.x <= inner_rect.x + m_children_size.w) {
+                        for (TreeNode<T> *root : m_model->roots) {
+                            m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                                if (event.y >= y && event.y <= y + node->max_cell_height) {
+                                    if (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent)) {
+                                        if (node->is_collapsed) {
+                                            expand(node);
+                                        } else {
+                                            collapse(node);
+                                        }
                                     } else {
-                                        collapse(node);
+                                        select(node);
                                     }
-                                } else {
-                                    select(node);
                                 }
-                            }
-                            y += node->max_cell_height;
-                            if (node->is_collapsed) {
-                                return false;
-                            }
-                            return true;
-                        });
+                                y += node->max_cell_height;
+                                if (node->is_collapsed) {
+                                    return false;
+                                }
+                                return true;
+                            });
+                        }
                     }
                 });
                 m_column_style = Style();
-                m_column_style.border = STYLE_TOP | STYLE_BOTTOM | STYLE_RIGHT;
-                m_column_style.border_top = 1;
+                m_column_style.border = STYLE_BOTTOM | STYLE_RIGHT;
                 m_column_style.border_bottom = 1;
                 m_column_style.border_right = 1;
                 m_column_style.margin = STYLE_NONE;
@@ -517,8 +520,8 @@
 
                 dc->margin(rect, style);
                 dc->drawBorder(rect, style);
+                this->inner_rect = rect;
                 dc->fillRect(rect, Color(1, 1, 1));
-                dc->padding(rect, style);
 
                 Rect old_clip = dc->clip();
                 Size virtual_size;
@@ -535,7 +538,6 @@
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
-                dc->fillRect(Rect(rect.x, rect.y, 1, m_children_size.h), Color());
                 pos.y += m_children_size.h;
                 for (TreeNode<T> *root : m_model->roots) {
                     bool collapsed = false;
@@ -637,7 +639,6 @@
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
-                        dc->fillRect(Rect(pos.x, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
                         for (float width : m_column_widths) {
                             dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
                             pos.x += width;
@@ -833,7 +834,6 @@
                 Size vieport_and_style = m_viewport;
                 dc->sizeHintMargin(vieport_and_style, style);
                 dc->sizeHintBorder(vieport_and_style, style);
-                dc->sizeHintPadding(vieport_and_style, style);
                 return vieport_and_style;
             }
 
