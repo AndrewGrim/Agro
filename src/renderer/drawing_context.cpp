@@ -187,20 +187,22 @@ void DrawingContext::drawBorder(Rect &rect, Style *style) {
             const int size = _style->border_top < 0 ? default_style->border_top : _style->border_top;
             fillRect(Rect(rect.x, rect.y, rect.w, size), border_color);
             rect.y += size;
-            rect.h -= size * 2;
+            rect.h -= size;
         }
         if (border & STYLE_BOTTOM) {
             const int size = _style->border_bottom < 0 ? default_style->border_bottom : _style->border_bottom;
+            rect.h -= size;
             fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), border_color);
         }
         if (border & STYLE_LEFT) {
             const int size = _style->border_left < 0 ? default_style->border_left : _style->border_left;
             fillRect(Rect(rect.x, rect.y, size, rect.h), border_color);
             rect.x += size;
-            rect.w -= size * 2;
+            rect.w -= size;
         }
         if (border & STYLE_RIGHT) {
             const int size = _style->border_right < 0 ? default_style->border_right : _style->border_right;
+            rect.w -= size;
             fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), border_color);
         }
     }
@@ -214,10 +216,11 @@ void DrawingContext::margin(Rect &rect, Style *style) {
         if (margin & STYLE_TOP) {
             const int size = _style->margin_top < 0 ? default_style->margin_top : _style->margin_top;
             rect.y += size;
-            rect.h -= size * 2;
+            rect.h -= size;
         }
         if (margin & STYLE_BOTTOM) {
             const int size = _style->margin_bottom < 0 ? default_style->margin_bottom : _style->margin_bottom;
+            rect.h -= size;
         }
         if (margin & STYLE_LEFT) {
             const int size = _style->margin_left < 0 ? default_style->margin_left : _style->margin_left;
@@ -226,6 +229,7 @@ void DrawingContext::margin(Rect &rect, Style *style) {
         }
         if (margin & STYLE_RIGHT) {
             const int size = _style->margin_right < 0 ? default_style->margin_right : _style->margin_right;
+            rect.w -= size;
         }
     }
 }
@@ -238,10 +242,11 @@ void DrawingContext::padding(Rect &rect, Style *style) {
         if (padding & STYLE_TOP) {
             const int size = _style->padding_top < 0 ? default_style->padding_top : _style->padding_top;
             rect.y += size;
-            rect.h -= size * 2;
+            rect.h -= size;
         }
         if (padding & STYLE_BOTTOM) {
             const int size = _style->padding_bottom < 0 ? default_style->padding_bottom : _style->padding_bottom;
+            rect.w -= size;
         }
         if (padding & STYLE_LEFT) {
             const int size = _style->padding_left < 0 ? default_style->padding_left : _style->padding_left;
@@ -250,6 +255,7 @@ void DrawingContext::padding(Rect &rect, Style *style) {
         }
         if (padding & STYLE_RIGHT) {
             const int size = _style->padding_right < 0 ? default_style->padding_right : _style->padding_right;
+            rect.w -= size;
         }
     }
 }
