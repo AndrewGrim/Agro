@@ -460,6 +460,9 @@
                                 return true;
                             });
                         }
+                    } else {
+                        m_hovered = nullptr;
+                        update();
                     }
                 });
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
