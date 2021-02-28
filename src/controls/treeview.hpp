@@ -514,6 +514,12 @@
             virtual void draw(DrawingContext *dc, Rect rect) override {
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
+
+                dc->margin(rect, style);
+                dc->drawBorder(rect, style);
+                dc->fillRect(rect, Color(1, 1, 1));
+                dc->padding(rect, style);
+
                 Rect old_clip = dc->clip();
                 Size virtual_size;
                 if (m_virtual_size_changed) {
@@ -522,7 +528,6 @@
                     virtual_size = m_virtual_size;
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
-                dc->fillRect(rect, Color(1, 1, 1));
                 float local_pos_x = pos.x;
                 dc->setClip(rect);
                 for (Widget *child : children) {
@@ -530,6 +535,7 @@
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
+                dc->fillRect(Rect(rect.x, rect.y, 1, m_children_size.h), Color());
                 pos.y += m_children_size.h;
                 for (TreeNode<T> *root : m_model->roots) {
                     bool collapsed = false;
@@ -631,6 +637,7 @@
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
+                        dc->fillRect(Rect(pos.x, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
                         for (float width : m_column_widths) {
                             dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
                             pos.x += width;
@@ -823,7 +830,11 @@
                     m_virtual_size.w = size.w;
                     m_size_changed = false;
                 }
-                return m_viewport;
+                Size vieport_and_style = m_viewport;
+                dc->sizeHintMargin(vieport_and_style, style);
+                dc->sizeHintBorder(vieport_and_style, style);
+                dc->sizeHintPadding(vieport_and_style, style);
+                return vieport_and_style;
             }
 
             bool isTable() {
