@@ -499,14 +499,14 @@
                     }
                 });
                 m_column_style = Style();
-                m_column_style.border = STYLE_BOTTOM | STYLE_RIGHT;
-                m_column_style.border_bottom = 1;
-                m_column_style.border_right = 1;
-                m_column_style.margin = STYLE_NONE;
+                m_column_style.border.type = STYLE_BOTTOM | STYLE_RIGHT;
+                m_column_style.border.bottom = 1;
+                m_column_style.border.right = 1;
+                m_column_style.margin.type = STYLE_NONE;
 
                 m_column_button_style = Style();
-                m_column_button_style.border = STYLE_NONE;
-                m_column_button_style.margin = STYLE_NONE;
+                m_column_button_style.border.type = STYLE_NONE;
+                m_column_button_style.margin.type = STYLE_NONE;
             }
 
             ~TreeView() {

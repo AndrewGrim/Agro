@@ -23,28 +23,38 @@
     // i pressume anyway, the uint32_t method should also be easier
     // to work with rgba int and hex | string
     struct Style {
-        int margin = STYLE_DEFAULT;
-        int margin_top = STYLE_DEFAULT;
-        int margin_bottom = STYLE_DEFAULT;
-        int margin_left = STYLE_DEFAULT;
-        int margin_right = STYLE_DEFAULT;
+        struct Margin {
+            int type = STYLE_DEFAULT;
+            int top = STYLE_DEFAULT;
+            int bottom = STYLE_DEFAULT;
+            int left = STYLE_DEFAULT;
+            int right = STYLE_DEFAULT;
+        };
 
-        int border = STYLE_DEFAULT;
-        int border_top = STYLE_DEFAULT;
-        Color border_top_color = COLOR_BLACK;
-        int border_bottom = STYLE_DEFAULT;
-        Color border_bottom_color = COLOR_BLACK;
-        int border_left = STYLE_DEFAULT;
-        Color border_left_color = COLOR_BLACK;
-        int border_right = STYLE_DEFAULT;
-        Color border_right_color = COLOR_BLACK;
+        struct Border {
+            int type = STYLE_DEFAULT;
+            int top = STYLE_DEFAULT;
+            int bottom = STYLE_DEFAULT;
+            int left = STYLE_DEFAULT;
+            int right = STYLE_DEFAULT;
 
-        int padding = STYLE_DEFAULT;
-        int padding_top = STYLE_DEFAULT;
-        int padding_bottom = STYLE_DEFAULT;
-        int padding_left = STYLE_DEFAULT;
-        int padding_right = STYLE_DEFAULT;
+            Color color_top = COLOR_BLACK;
+            Color color_bottom = COLOR_BLACK;
+            Color color_left = COLOR_BLACK;
+            Color color_right = COLOR_BLACK;
+        };
 
+        struct Padding {
+            int type = STYLE_DEFAULT;
+            int top = STYLE_DEFAULT;
+            int bottom = STYLE_DEFAULT;
+            int left = STYLE_DEFAULT;
+            int right = STYLE_DEFAULT;
+        };
+
+        Margin margin;
+        Border border;
+        Padding padding;
         Color text_color = COLOR_BLACK;
         Color background_color = Color(0.9, 0.9, 0.9);
         Color window_color = Color(0.5, 0.5, 0.5);
