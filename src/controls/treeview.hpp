@@ -222,8 +222,6 @@
                 Button *b = new Button(text);
                     b->setImage(image);
                     b->setBackground(Color(0, 0, 0, 0));
-                    // TODO the below is outdated because of the new style
-                    // b->setBorderWidth(0);
                 if (alignment == HorizontalAlignment::Left || alignment == HorizontalAlignment::Right) {
                     this->append(b, Fill::Vertical);
                 } else {
@@ -553,7 +551,7 @@
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
                                 // Clip and draw selection and or hover. 
-                                if (m_selected == node) { // TODO we might want to think about drawing the selection and hover after drawing the cell itself
+                                if (m_selected == node) {
                                     dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                                     dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
                                 } else if (m_hovered == node) {
@@ -815,9 +813,6 @@
 
             virtual Size sizeHint(DrawingContext *dc) override {
                 if (m_size_changed) { // TODO this will be slow for a large number of columns
-                    // TODO this will need to behave differently
-                    // we set the width based on the sizeHint of the column
-                    // with no bearing on its content
                     m_virtual_size.w = 0.0;
                     m_column_widths.clear();
                     Size size = Size();
