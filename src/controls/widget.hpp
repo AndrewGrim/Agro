@@ -52,7 +52,7 @@
             /// rather through methods like append().
             std::vector<Widget*> children;
 
-            Style *style = nullptr;
+            Style style;
 
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 

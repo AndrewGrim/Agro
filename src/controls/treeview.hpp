@@ -352,6 +352,7 @@
             }
 
             virtual Size sizeHint(DrawingContext *dc) override {
+                // TODO we dont take the border into account?
                 unsigned int visible = 0;
                 unsigned int horizontal_non_expandable = 0;
                 if (m_size_changed) {
@@ -367,6 +368,9 @@
                             horizontal_non_expandable++;
                         }
                     }
+
+                    // dc->sizeHintBorder(size, style);
+
                     m_horizontal_non_expandable = horizontal_non_expandable;
                     m_visible_children = visible;
                     m_size = size;
@@ -400,7 +404,7 @@
                 parentLayout(); // TODO ideally this would only affect the column on which it is called
             }
 
-            void setColumnStyle(Style *column, Style *button) {
+            void setColumnStyle(Style column, Style button) {
                 style = column;
                 for (auto child : children) {
                     child->style = button;
@@ -656,7 +660,7 @@
                 m_model = model;
                 for (Widget *widget : children) {
                     ((Column<T>*)widget)->setModel(model);
-                    ((Column<T>*)widget)->setColumnStyle(&m_column_style, &m_column_button_style);
+                    ((Column<T>*)widget)->setColumnStyle(m_column_style, m_column_button_style);
                 }
                 m_virtual_size_changed = true;
                 m_auto_size_columns = true;
@@ -834,10 +838,10 @@
                     m_virtual_size.w = size.w;
                     m_size_changed = false;
                 }
-                Size vieport_and_style = m_viewport;
-                dc->sizeHintMargin(vieport_and_style, style);
-                dc->sizeHintBorder(vieport_and_style, style);
-                return vieport_and_style;
+                Size viewport_and_style = m_viewport;
+                dc->sizeHintMargin(viewport_and_style, style);
+                dc->sizeHintBorder(viewport_and_style, style);
+                return viewport_and_style;
             }
 
             bool isTable() {
