@@ -38,7 +38,7 @@
         void sizeHintMargin(Size &size, Style &style);
         void sizeHintBorder(Size &size, Style &style);
         void sizeHintPadding(Size &size, Style &style);
-        void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color);
+        void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void drawTextureAligned(Rect rect, Size size, Texture *texture, TextureCoordinates *coords, HorizontalAlignment h_align, VerticalAlignment v_align, Color color = Color(1, 1, 1));
         void drawPoint(Point point, Color color);
         void clear();
