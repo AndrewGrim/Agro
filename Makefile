@@ -94,7 +94,7 @@ build/spacer.o: build/widget.o src/controls/spacer.cpp src/controls/spacer.hpp
 	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/treeview.o: build/widget.o src/controls/treeview.cpp src/controls/treeview.hpp
 	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/widget.o: build/style.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
+build/widget.o: build/style.o build/drawing_context.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # RENDERER
