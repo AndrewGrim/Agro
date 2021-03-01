@@ -306,10 +306,6 @@
                 } else {
                     color = this->background();
                 }
-                // TODO border, for now we are skipping working on this
-                // because ideally i would like to add padding, border, margins
-                // to all widgets through a styling system.
-                // TODO also sizeHint
                 dc->drawBorder(rect, style);
 
                 Rect old_clip = dc->clip();
@@ -352,7 +348,6 @@
             }
 
             virtual Size sizeHint(DrawingContext *dc) override {
-                // TODO we dont take the border into account?
                 unsigned int visible = 0;
                 unsigned int horizontal_non_expandable = 0;
                 if (m_size_changed) {
@@ -369,7 +364,7 @@
                         }
                     }
 
-                    // dc->sizeHintBorder(size, style);
+                    dc->sizeHintBorder(size, style);
 
                     m_horizontal_non_expandable = horizontal_non_expandable;
                     m_visible_children = visible;
