@@ -230,6 +230,7 @@
             void unbind(int map_key);
             const std::unordered_map<int, KeyboardShortcut> keyboardShortcuts();
             Size size();
+            void setStyle(Style style);
 
         protected:
             bool m_is_hovered = false;

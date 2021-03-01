@@ -398,11 +398,10 @@
             }
 
             void setColumnStyle(Style column, Style button) {
-                style = column;
+                setStyle(column);
                 for (auto child : children) {
-                    child->style = button;
+                    child->setStyle(button);
                 }
-                layout(); // TODO this should be done by setting the style
             }
 
         protected:

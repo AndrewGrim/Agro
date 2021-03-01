@@ -420,3 +420,8 @@ const std::unordered_map<int, KeyboardShortcut> Widget::keyboardShortcuts() {
 Size Widget::size() {
     return m_size;
 }
+
+void Widget::setStyle(Style style) {
+    this->style = style;
+    layout();
+}
