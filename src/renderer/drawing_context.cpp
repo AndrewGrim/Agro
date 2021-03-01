@@ -270,7 +270,7 @@ void DrawingContext::padding(Rect &rect, Style &style) {
         }
         if (padding & STYLE_BOTTOM) {
             const int size = style.padding.bottom < 0 ? default_style->padding.bottom : style.padding.bottom;
-            rect.w -= size;
+            rect.h -= size;
         }
         if (padding & STYLE_LEFT) {
             const int size = style.padding.left < 0 ? default_style->padding.left : style.padding.left;
