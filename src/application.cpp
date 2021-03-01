@@ -31,6 +31,9 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
             if (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                 Application *app = (Application*)data;
                 app->handleResizeEvent(event->window.data1, event->window.data2);
+                if (app->onResize) {
+                    app->onResize(app);
+                }
                 return 0;
             }
             break;
@@ -194,6 +197,9 @@ void Application::run() {
                         case SDL_WINDOWEVENT_SIZE_CHANGED:
                             // TODO Gets handled in `forcePaintWhileResizing()` so this is probably not needed anymore.
                             this->handleResizeEvent(event.window.data1, event.window.data2);
+                            if (this->onResize) {
+                                this->onResize(this);
+                            }
                             break;
                         case SDL_WINDOWEVENT_ENTER:
                             m_mouse_inside = true;

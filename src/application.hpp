@@ -68,6 +68,8 @@
             /// before anything is freed.
             std::function<bool(Application*)> onQuit = nullptr;
 
+            std::function<void(Application*)> onResize = nullptr;
+
             Application(const char* title = "Application", Size size = Size(400, 400));
 
             ~Application();
