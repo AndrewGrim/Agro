@@ -58,7 +58,7 @@ build/libgui.so: dir $(OBJECT_FILES)
 	$(CXX) $(OBJECT_FILES) $(LINK) $(LIBS) -shared -o build/libgui.so
 
 # ROOT
-build/main.o: src/main.cpp $(OBJECT_FILES) src/custom_style.hpp
+build/main.o: src/main.cpp $(OBJECT_FILES)
 	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/application.o: build/widget.o build/drawing_context.o src/application.cpp src/application.hpp
 	$(CXX) -c src/application.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
@@ -136,3 +136,7 @@ example_keybindings:
 	$(CXX) examples/keybindings.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/keybindings.out && ./examples/keybindings.out
 example_callbacks:
 	$(CXX) examples/callbacks.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/callbacks.out && ./examples/callbacks.out
+example_custom_widget_styling:
+	$(CXX) examples/custom_widget_styling.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_styling.out && ./examples/custom_widget_styling.out
+example_custom_widget_drawing:
+	$(CXX) examples/custom_widget_drawing.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_drawing.out && ./examples/custom_widget_drawing.out
