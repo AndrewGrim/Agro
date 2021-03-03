@@ -61,6 +61,7 @@ int main(int argc, char **argv) {
         #include "../tests/headless.hpp"
     #else
         app->run();
+    #endif
 
     return 0; 
 }
