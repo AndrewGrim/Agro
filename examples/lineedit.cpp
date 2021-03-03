@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
         app->append(results_view, Fill::Both);
 
     #ifdef TEST
-        #include "headless.hpp"
+        #include "../tests/headless.hpp"
     #else
         app->run();
     #endif

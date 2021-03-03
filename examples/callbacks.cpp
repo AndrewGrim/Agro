@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
         return quit;
         // return false to not quit or true to quit
     };
+
         Button *button = new Button("Click Me!");
             button->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
                 button->setText("Mouse Down!");
@@ -43,8 +44,12 @@ int main(int argc, char **argv) {
             });
         app->append(disable_enable_quit, Fill::Both);
 
+        app->onResize = [&](Application *app) {
+            button->setText("Window Size:" + std::to_string((int)app->m_size.w) + ", " + std::to_string((int)app->m_size.h));
+        };
+
     #ifdef TEST
-        #include "headless.hpp"
+        #include "../tests/headless.hpp"
     #else
         app->run();
     #endif

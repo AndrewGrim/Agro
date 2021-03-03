@@ -58,7 +58,7 @@ build/libgui.so: dir $(OBJECT_FILES)
 	$(CXX) $(OBJECT_FILES) $(LINK) $(LIBS) -shared -o build/libgui.so
 
 # ROOT
-build/main.o: src/main.cpp $(OBJECT_FILES)
+build/main.o: src/main.cpp $(OBJECT_FILES) src/custom_style.hpp
 	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/application.o: build/widget.o build/drawing_context.o src/application.cpp src/application.hpp
 	$(CXX) -c src/application.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
@@ -114,25 +114,25 @@ clean:
 
 test:
 	python3 run_tests.py
-test_box_vertical:
-	$(CXX) tests/box_vertical.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o box_vertical.out && ./box_vertical.out
-test_box_horizontal:
-	$(CXX) tests/box_horizontal.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o box_horizontal.out && ./box_horizontal.out
+
 test_scrolledbox_outer:
-	$(CXX) tests/scrolledbox_outer.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_outer.out && ./scrolledbox_outer.out
+	$(CXX) tests/scrolledbox_outer.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/scrolledbox_outer.out && ./tests/scrolledbox_outer.out
 test_scrolledbox_inner:
-	$(CXX) tests/scrolledbox_inner.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_inner.out && ./scrolledbox_inner.out
+	$(CXX) tests/scrolledbox_inner.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/scrolledbox_inner.out && ./tests/scrolledbox_inner.out
 test_scrolledbox_both:
-	$(CXX) tests/scrolledbox_both.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_both.out && ./scrolledbox_both.out
+	$(CXX) tests/scrolledbox_both.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/scrolledbox_both.out && ./tests/scrolledbox_both.out
 test_scrolledbox_inception_clipping:
-	$(CXX) tests/scrolledbox_inception_clipping.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o scrolledbox_inception_clipping.out && ./scrolledbox_inception_clipping.out
-test_lineedit_search:
-	$(CXX) tests/lineedit_search.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o lineedit_search.out && ./lineedit_search.out
-test_keybindings:
-	$(CXX) tests/keybindings.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o keybindings.out && ./keybindings.out
+	$(CXX) tests/scrolledbox_inception_clipping.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/scrolledbox_inception_clipping.out && ./tests/scrolledbox_inception_clipping.out
 test_one_million_labels:
-	$(CXX) tests/one_million_labels.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o one_million_labels.out && ./one_million_labels.out
-test_callbacks:
-	$(CXX) tests/callbacks.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o callbacks.out && ./callbacks.out
+	$(CXX) tests/one_million_labels.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/one_million_labels.out && ./tests/one_million_labels.out
 test_notebook:
-	$(CXX) tests/notebook.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o notebook.out && ./notebook.out
+	$(CXX) tests/notebook.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/notebook.out && ./tests/notebook.out
+
+example_box:
+	$(CXX) examples/box.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/box.out && ./examples/box.out
+example_lineedit:
+	$(CXX) examples/lineedit.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/lineedit.out && ./examples/lineedit.out
+example_keybindings:
+	$(CXX) examples/keybindings.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/keybindings.out && ./examples/keybindings.out
+example_callbacks:
+	$(CXX) examples/callbacks.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/callbacks.out && ./examples/callbacks.out

@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
         app->append(unbind_button, Fill::Both);
 
     #ifdef TEST
-        #include "headless.hpp"
+        #include "../tests/headless.hpp"
     #else
         app->run();
     #endif

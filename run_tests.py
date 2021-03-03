@@ -19,7 +19,14 @@ def warn(message):
 passed = 0
 failed = 0
 
-test_files = os.listdir("tests")
+dirs = [
+    "tests", 
+    "examples", 
+]
+test_files = [
+    os.listdir("tests"), 
+    os.listdir("examples"), 
+]
 
 # Run `make local_build` which creates all required .o files and the build dir 
 command = ["make", "local_build"]
@@ -39,52 +46,55 @@ else:
         if not obj.endswith(".o") or obj == "main.o":
             object_files.remove(obj)
 
-    for test in filter(lambda f: f.endswith(".cpp"), test_files):
-        filename = test.replace(".cpp", "")
+    i = 0
+    for files_dir in test_files:
+        for test in filter(lambda f: f.endswith(".cpp"), files_dir):
+            filename = test.replace(".cpp", "")
 
-        index = 2
-        command = [
-            "g++",
-            f"tests/{test}",
-            "-DTEST",
-            "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
-            "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
-            "-lGL", "-lSDL2", "-lfreetype", "-lX11", "-lpthread", "-lXrandr", "-lXi", "-ldl",
-            "-o", f"{filename}.out",
-        ]
-        for obj in object_files:
-            command.insert(index, f"build/{obj}")
-            index += 1
+            index = 2
+            command = [
+                "g++",
+                f"{dirs[i]}/{test}",
+                "-DTEST",
+                "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
+                "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
+                "-lGL", "-lSDL2", "-lfreetype", "-lX11", "-lpthread", "-lXrandr", "-lXi", "-ldl",
+                "-o", f"{dirs[i]}/{filename}.out",
+            ]
+            for obj in object_files:
+                command.insert(index, f"build/{obj}")
+                index += 1
 
-        run = [
-            f"./{filename}.out",
-        ]
+            run = [
+                f"./{dirs[i]}/{filename}.out",
+            ]
 
-        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait()
-        if p.returncode != 0 and p.returncode != None:
-            print(f"{error('Compilation Error')}: '{test}'")
-            while True:
-                line = p.stderr.readline()
-                if not line:
-                    break
-                print(warn(line.rstrip().decode("UTF-8")))
-            print(f"Occured when running command: '{command}'")
-            failed += 1
-        else:
-            p = subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             p.wait()
             if p.returncode != 0 and p.returncode != None:
-                print(f"{{{error(' FAIL ')}}} '{test}'")
+                print(f"{error('Compilation Error')}: '{test}'")
                 while True:
                     line = p.stderr.readline()
                     if not line:
                         break
                     print(warn(line.rstrip().decode("UTF-8")))
+                print(f"Occured when running command: '{command}'")
                 failed += 1
             else:
-                print(f"{{{success(' PASS ')}}} '{test}'")
-                passed += 1
+                p = subprocess.Popen(run, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p.wait()
+                if p.returncode != 0 and p.returncode != None:
+                    print(f"{{{error(' FAIL ')}}} '{test}'")
+                    while True:
+                        line = p.stderr.readline()
+                        if not line:
+                            break
+                        print(warn(line.rstrip().decode("UTF-8")))
+                    failed += 1
+                else:
+                    print(f"{{{success(' PASS ')}}} '{test}'")
+                    passed += 1
+        i += 1
 
     print(f"Passed: {success(passed)}/{passed + failed}")
     if failed > 0:
