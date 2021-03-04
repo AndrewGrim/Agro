@@ -19,14 +19,6 @@ Cursors::~Cursors() {
     SDL_FreeCursor(hand);
 }
 
-Application::Application(const char *title, Size size) : Window(title, size) {
-    assert(init == 0 && "Failed initializing SDL video!");
-}
-
-Application::~Application() {
-    SDL_Quit();
-}
-
 void Application::setMouseCursor(Cursor cursor) {
     switch (cursor) {
         case Cursor::Arrow: SDL_SetCursor(m_cursors.arrow); break;
@@ -43,4 +35,17 @@ void Application::setMouseCursor(Cursor cursor) {
         case Cursor::Hand: SDL_SetCursor(m_cursors.hand); break;
         default: SDL_SetCursor(SDL_GetDefaultCursor()); break;
     }
+}
+
+Application& Application::get() {
+    static Application app = Application("Application", Size(400, 400));
+    return app;
+}
+
+Application::Application(const char *title, Size size) : Window(title, size) {
+    assert(init == 0 && "Failed initializing SDL video!");
+}
+
+Application::~Application() {
+    SDL_Quit();
 }

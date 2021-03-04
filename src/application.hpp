@@ -41,11 +41,12 @@
     
     class Application : public Window {
         public:
-            Application(const char *title, Size size);
-            ~Application();
             void setMouseCursor(Cursor cursor);
+            static Application& get();
 
         private:
+            Application(const char *title, Size size);
+            ~Application();
             std::vector<SDL_Window*> m_windows;
             Cursors m_cursors;
     };
