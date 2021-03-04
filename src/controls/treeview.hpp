@@ -517,8 +517,6 @@
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
 
-                dc->margin(rect, style);
-                dc->drawBorder(rect, style);
                 this->inner_rect = rect;
                 dc->fillRect(rect, Color(1, 1, 1));
 
@@ -826,10 +824,7 @@
                     m_virtual_size.w = size.w;
                     m_size_changed = false;
                 }
-                Size viewport_and_style = m_viewport;
-                dc->sizeHintMargin(viewport_and_style, style);
-                dc->sizeHintBorder(viewport_and_style, style);
-                return viewport_and_style;
+                return m_viewport;
             }
 
             bool isTable() {
