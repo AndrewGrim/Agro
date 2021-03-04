@@ -4,11 +4,11 @@
 
 int main(int argc, char **argv) { 
     Application *app = new Application("Keybindings Test", Size(400, 400));
-    app->onReady = [](Application *app) {
+    app->onReady = [](Window *app) {
         println("READY");
     };
     bool quit = true;
-    app->onQuit = [&](Application *app) -> bool {
+    app->onQuit = [&](Window *app) -> bool {
         println("QUIT");
         return quit;
         // return false to not quit or true to quit
@@ -44,8 +44,8 @@ int main(int argc, char **argv) {
             });
         app->append(disable_enable_quit, Fill::Both);
 
-        app->onResize = [&](Application *app) {
-            button->setText("Window Size:" + std::to_string((int)app->m_size.w) + ", " + std::to_string((int)app->m_size.h));
+        app->onResize = [&](Window *app) {
+            button->setText("Window Size:" + std::to_string((int)app->size.w) + ", " + std::to_string((int)app->size.h));
         };
 
     #ifdef TEST

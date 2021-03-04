@@ -115,11 +115,11 @@ int main(int argc, char **argv) {
             right->append(csir, Fill::Horizontal);
         app->append(right);
 
-        app->onResize = [&](Application *app) {
+        app->onResize = [&](Window *app) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
         };
-        app->onReady = [&](Application *app) {
+        app->onReady = [&](Window *app) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
         };

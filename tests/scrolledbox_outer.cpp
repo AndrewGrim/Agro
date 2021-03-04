@@ -8,33 +8,8 @@
 #include "../src/controls/button.hpp"
 #include "../src/controls/scrolledbox.hpp"
 
-void onApplicationReady(Application *self) {
-    #ifndef TEST
-        for (Widget *child : self->mainWidget()->children) {
-            println(child->rect);
-            for (Widget *child : child->children) {
-                pprint(4, child->rect);
-                for (Widget *child : child->children) {
-                    pprint(8, child->rect);
-                }
-            }
-        }
-    #endif
-
-    // Root: Align::Vertical, Fill::Both
-    // assert(((ScrolledBox*)self->mainWidget())->hasScrollbar(Align::Vertical));
-    // assert(((ScrolledBox*)self->mainWidget())->hasScrollbar(Align::Horizontal));
-
-    // assert(self->mainWidget()->children[0]->children[0]->rect == Rect(0, 0, 300, 300));
-    // assert(self->mainWidget()->children[0]->children[1]->rect == Rect(300, 0, 300, 300));
-    // assert(self->mainWidget()->children[1]->children[0]->rect == Rect(0, 300, 300, 300));
-    // assert(self->mainWidget()->children[1]->children[1]->rect == Rect(300, 300, 300, 300));
-}
-
 int main(int argc, char **argv) { 
     Application *app = new Application("ScrolledBox Outer Test", Size(500, 500));
-        app->onReady = onApplicationReady;
-
         Box *top = (new Box(Align::Horizontal))->setBackground(Color());
             ScrolledBox *av_fn = (ScrolledBox*)(new ScrolledBox(Align::Vertical, Size(300, 300)))->setBackground(Color(0.0));
                 av_fn->append((new Button("P: Fill::None, C: Fill::None"))->setBackground(Color(0.7, 0.2, 0.2)), Fill::None);

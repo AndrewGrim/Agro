@@ -8,36 +8,8 @@
 #include "../src/controls/button.hpp"
 #include "../src/controls/scrolledbox.hpp"
 
-void onApplicationReady(Application *self) {
-    #ifndef TEST
-        for (Widget *child : self->mainWidget()->children) {
-            println(child->rect);
-            for (Widget *child : child->children) {
-                pprint(4, child->rect);
-                for (Widget *child : child->children) {
-                    pprint(8, child->rect);
-                }
-            }
-        }
-    #endif
-
-    // // Root: Align::Vertical, Fill::Both
-    // assert(!((ScrolledBox*)self->mainWidget())->hasSCrollBar(Align::Vertical));
-    // assert(!((ScrolledBox*)self->mainWidget())->hasSCrollBar(Align::Horizontal));
-
-    // assert(((ScrolledBox*)self->mainWidget()->children[0])->hasSCrollBar(Align::Vertical));
-    // assert(((ScrolledBox*)self->mainWidget()->children[0])->hasSCrollBar(Align::Horizontal));
-    // assert(((ScrolledBox*)self->mainWidget()->children[1])->hasSCrollBar(Align::Vertical));
-    // assert(((ScrolledBox*)self->mainWidget()->children[1])->hasSCrollBar(Align::Horizontal));
-    
-    // assert(self->mainWidget()->children[0]->rect == Rect(0, 0, 500, 250));
-    // assert(self->mainWidget()->children[1]->rect == Rect(0, 250, 500, 250));
-}
-
 int main(int argc, char **argv) { 
     Application *app = new Application("ScrolledBox Inner Test", Size(500, 500));
-        app->onReady = onApplicationReady;
-
         ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(200, 200));
             for (char i = 'a'; i <= 'z'; i++) {
                 top->append((new Button(std::string(100, i)))->setBackground(Color(0.6, 0.0, 0.6)), Fill::Both);
