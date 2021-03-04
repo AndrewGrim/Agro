@@ -143,3 +143,5 @@ example_custom_widget_styling:
 	$(CXX) examples/custom_widget_styling.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_styling.out && ./examples/custom_widget_styling.out
 example_custom_widget_drawing:
 	$(CXX) examples/custom_widget_drawing.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_drawing.out && ./examples/custom_widget_drawing.out
+example_treeview:
+	cd examples/treeview && make
