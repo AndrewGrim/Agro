@@ -22,7 +22,7 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
 }
 
 Window::Window(const char* title, Size size) {
-    this->title = title;
+    this->m_title = title;
     this->size = size;
 
     m_win = SDL_CreateWindow(
@@ -388,4 +388,12 @@ void Window::handleResizeEvent(int width, int height) {
 void Window::resize(int width, int height) {
     SDL_SetWindowSize(m_win, width, height);
     handleResizeEvent(width, height);
+}
+
+std::string Window::title() {
+    return m_title;
+}
+
+void Window::setTitle(std::string title) {
+    SDL_SetWindowTitle(m_win, title.c_str());
 }

@@ -19,7 +19,6 @@
         public:
             Size size;
             Point position;
-            std::string title; // TODO getter setter (no update!)
 
             /// The dc is used to draw various primitives.
             /// It can also draw as well as measure text.
@@ -75,6 +74,9 @@
             void handleResizeEvent(int width, int height);
             void resize(int width, int height);
 
+            std::string title();
+            void setTitle(std::string title);
+
         protected:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
@@ -87,6 +89,7 @@
             bool m_running = true;
             bool m_mouse_inside = true;
             bool m_is_mouse_captured = false;
+            std::string m_title;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from
