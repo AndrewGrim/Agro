@@ -39,7 +39,7 @@
             std::function<void(Window*)> onResize = nullptr;
 
             Window(const char* title, Size size);
-            ~Window();
+            virtual ~Window();
 
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
