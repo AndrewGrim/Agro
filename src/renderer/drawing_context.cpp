@@ -21,42 +21,41 @@ DrawingContext::DrawingContext(void *app) {
 
     renderer = new Renderer(indices, app);
 
-    default_style = new Style();
+    default_style = Style();
     {
-        default_style->margin.type = STYLE_ALL;
-        default_style->margin.top = 1;
-        default_style->margin.bottom = 1;
-        default_style->margin.left = 1;
-        default_style->margin.right = 1;
+        default_style.margin.type = STYLE_ALL;
+        default_style.margin.top = 1;
+        default_style.margin.bottom = 1;
+        default_style.margin.left = 1;
+        default_style.margin.right = 1;
 
-        default_style->border.type = STYLE_ALL;
-        default_style->border.top = 1;
-        default_style->border.bottom = 1;
-        default_style->border.left = 1;
-        default_style->border.right = 1;
-        default_style->border.color_top = COLOR_BLACK;
-        default_style->border.color_bottom = COLOR_BLACK;
-        default_style->border.color_left = COLOR_BLACK;
-        default_style->border.color_right = COLOR_BLACK;
+        default_style.border.type = STYLE_ALL;
+        default_style.border.top = 1;
+        default_style.border.bottom = 1;
+        default_style.border.left = 1;
+        default_style.border.right = 1;
+        default_style.border.color_top = COLOR_BLACK;
+        default_style.border.color_bottom = COLOR_BLACK;
+        default_style.border.color_left = COLOR_BLACK;
+        default_style.border.color_right = COLOR_BLACK;
 
-        default_style->padding.type = STYLE_ALL;
-        default_style->padding.top = 5;
-        default_style->padding.bottom = 5;
-        default_style->padding.left = 5;
-        default_style->padding.right = 5;
+        default_style.padding.type = STYLE_ALL;
+        default_style.padding.top = 5;
+        default_style.padding.bottom = 5;
+        default_style.padding.left = 5;
+        default_style.padding.right = 5;
 
-        default_style->text_color = COLOR_BLACK;
-        default_style->background_color = Color(0.9, 0.9, 0.9);
-        default_style->window_color = Color(0.5, 0.5, 0.5);
-        default_style->selection_color = Color(0.2, 0.5, 1.0);
-        default_style->hover_color = Color(0.5, 0.5, 0.5, 0.1);
+        default_style.text_color = COLOR_BLACK;
+        default_style.background_color = Color(0.9, 0.9, 0.9);
+        default_style.window_color = Color(0.5, 0.5, 0.5);
+        default_style.selection_color = Color(0.2, 0.5, 1.0);
+        default_style.hover_color = Color(0.5, 0.5, 0.5, 0.1);
     }
 }
 
 DrawingContext::~DrawingContext() {
     delete renderer;
     delete default_font;
-    delete default_style;
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {
@@ -207,29 +206,29 @@ Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color)
 void DrawingContext::drawBorder(Rect &rect, Style &style) {
     // TODO lets table color for now
     // const Color border_color = 
-    const Color border_color = default_style->border.color_top;
+    const Color border_color = default_style.border.color_top;
 
     if (style.border.type != STYLE_NONE) {
-        const int border = style.border.type == STYLE_DEFAULT ? default_style->border.type : style.border.type;
+        const int border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
-            const int size = style.border.top < 0 ? default_style->border.top : style.border.top;
+            const int size = style.border.top < 0 ? default_style.border.top : style.border.top;
             fillRect(Rect(rect.x, rect.y, rect.w, size), border_color);
             rect.y += size;
             rect.h -= size;
         }
         if (border & STYLE_BOTTOM) {
-            const int size = style.border.bottom < 0 ? default_style->border.bottom : style.border.bottom;
+            const int size = style.border.bottom < 0 ? default_style.border.bottom : style.border.bottom;
             rect.h -= size;
             fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), border_color);
         }
         if (border & STYLE_LEFT) {
-            const int size = style.border.left < 0 ? default_style->border.left : style.border.left;
+            const int size = style.border.left < 0 ? default_style.border.left : style.border.left;
             fillRect(Rect(rect.x, rect.y, size, rect.h), border_color);
             rect.x += size;
             rect.w -= size;
         }
         if (border & STYLE_RIGHT) {
-            const int size = style.border.right < 0 ? default_style->border.right : style.border.right;
+            const int size = style.border.right < 0 ? default_style.border.right : style.border.right;
             rect.w -= size;
             fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), border_color);
         }
@@ -238,23 +237,23 @@ void DrawingContext::drawBorder(Rect &rect, Style &style) {
 
 void DrawingContext::margin(Rect &rect, Style &style) {
     if (style.margin.type != STYLE_NONE) {
-        const int margin = style.margin.type == STYLE_DEFAULT ? default_style->margin.type : style.margin.type;
+        const int margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;
         if (margin & STYLE_TOP) {
-            const int size = style.margin.top < 0 ? default_style->margin.top : style.margin.top;
+            const int size = style.margin.top < 0 ? default_style.margin.top : style.margin.top;
             rect.y += size;
             rect.h -= size;
         }
         if (margin & STYLE_BOTTOM) {
-            const int size = style.margin.bottom < 0 ? default_style->margin.bottom : style.margin.bottom;
+            const int size = style.margin.bottom < 0 ? default_style.margin.bottom : style.margin.bottom;
             rect.h -= size;
         }
         if (margin & STYLE_LEFT) {
-            const int size = style.margin.left < 0 ? default_style->margin.left : style.margin.left;
+            const int size = style.margin.left < 0 ? default_style.margin.left : style.margin.left;
             rect.x += size;
             rect.w -= size;
         }
         if (margin & STYLE_RIGHT) {
-            const int size = style.margin.right < 0 ? default_style->margin.right : style.margin.right;
+            const int size = style.margin.right < 0 ? default_style.margin.right : style.margin.right;
             rect.w -= size;
         }
     }
@@ -262,23 +261,23 @@ void DrawingContext::margin(Rect &rect, Style &style) {
 
 void DrawingContext::padding(Rect &rect, Style &style) {
     if (style.padding.type != STYLE_NONE) {
-        const int padding = style.padding.type == STYLE_DEFAULT ? default_style->padding.type : style.padding.type;
+        const int padding = style.padding.type == STYLE_DEFAULT ? default_style.padding.type : style.padding.type;
         if (padding & STYLE_TOP) {
-            const int size = style.padding.top < 0 ? default_style->padding.top : style.padding.top;
+            const int size = style.padding.top < 0 ? default_style.padding.top : style.padding.top;
             rect.y += size;
             rect.h -= size;
         }
         if (padding & STYLE_BOTTOM) {
-            const int size = style.padding.bottom < 0 ? default_style->padding.bottom : style.padding.bottom;
+            const int size = style.padding.bottom < 0 ? default_style.padding.bottom : style.padding.bottom;
             rect.h -= size;
         }
         if (padding & STYLE_LEFT) {
-            const int size = style.padding.left < 0 ? default_style->padding.left : style.padding.left;
+            const int size = style.padding.left < 0 ? default_style.padding.left : style.padding.left;
             rect.x += size;
             rect.w -= size;
         }
         if (padding & STYLE_RIGHT) {
-            const int size = style.padding.right < 0 ? default_style->padding.right : style.padding.right;
+            const int size = style.padding.right < 0 ? default_style.padding.right : style.padding.right;
             rect.w -= size;
         }
     }
@@ -286,54 +285,54 @@ void DrawingContext::padding(Rect &rect, Style &style) {
 
 void DrawingContext::sizeHintMargin(Size &size, Style &style) {
     if (style.margin.type != STYLE_NONE) {
-        const int margin = style.margin.type == STYLE_DEFAULT ? default_style->margin.type : style.margin.type;
+        const int margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;
         if (margin & STYLE_TOP) {
-            size.h += style.margin.top < 0 ? default_style->margin.top : style.margin.top;
+            size.h += style.margin.top < 0 ? default_style.margin.top : style.margin.top;
         }
         if (margin & STYLE_BOTTOM) {
-            size.h += style.margin.bottom < 0 ? default_style->margin.bottom : style.margin.bottom;
+            size.h += style.margin.bottom < 0 ? default_style.margin.bottom : style.margin.bottom;
         }
         if (margin & STYLE_LEFT) {
-            size.w += style.margin.left < 0 ? default_style->margin.left : style.margin.left;
+            size.w += style.margin.left < 0 ? default_style.margin.left : style.margin.left;
         }
         if (margin & STYLE_RIGHT) {
-            size.w += style.margin.right < 0 ? default_style->margin.right : style.margin.right;
+            size.w += style.margin.right < 0 ? default_style.margin.right : style.margin.right;
         }
     }
 }
 
 void DrawingContext::sizeHintBorder(Size &size, Style &style) {
     if (style.border.type != STYLE_NONE) {
-        const int border = style.border.type == STYLE_DEFAULT ? default_style->border.type : style.border.type;
+        const int border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
-            size.h += style.border.top < 0 ? default_style->border.top : style.border.top;
+            size.h += style.border.top < 0 ? default_style.border.top : style.border.top;
         }
         if (border & STYLE_BOTTOM) {
-            size.h += style.border.bottom < 0 ? default_style->border.bottom : style.border.bottom;
+            size.h += style.border.bottom < 0 ? default_style.border.bottom : style.border.bottom;
         }
         if (border & STYLE_LEFT) {
-            size.w += style.border.left < 0 ? default_style->border.left : style.border.left;
+            size.w += style.border.left < 0 ? default_style.border.left : style.border.left;
         }
         if (border & STYLE_RIGHT) {
-            size.w += style.border.right < 0 ? default_style->border.right : style.border.right;
+            size.w += style.border.right < 0 ? default_style.border.right : style.border.right;
         }
     }
 }
 
 void DrawingContext::sizeHintPadding(Size &size, Style &style) {
     if (style.padding.type != STYLE_NONE) {
-        const int padding = style.padding.type == STYLE_DEFAULT ? default_style->padding.type : style.padding.type;
+        const int padding = style.padding.type == STYLE_DEFAULT ? default_style.padding.type : style.padding.type;
         if (padding & STYLE_TOP) {
-            size.h += style.padding.top < 0 ? default_style->padding.top : style.padding.top;
+            size.h += style.padding.top < 0 ? default_style.padding.top : style.padding.top;
         }
         if (padding & STYLE_BOTTOM) {
-            size.h += style.padding.bottom < 0 ? default_style->padding.bottom : style.padding.bottom;
+            size.h += style.padding.bottom < 0 ? default_style.padding.bottom : style.padding.bottom;
         }
         if (padding & STYLE_LEFT) {
-            size.w += style.padding.left < 0 ? default_style->padding.left : style.padding.left;
+            size.w += style.padding.left < 0 ? default_style.padding.left : style.padding.left;
         }
         if (padding & STYLE_RIGHT) {
-            size.w += style.padding.right < 0 ? default_style->padding.right : style.padding.right;
+            size.w += style.padding.right < 0 ? default_style.padding.right : style.padding.right;
         }
     }
 }

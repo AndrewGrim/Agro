@@ -17,10 +17,15 @@
     #include "font.hpp"
 
     struct DrawingContext {
+        // TODO dc will need to be modified so that
+        // dc is window agnostic and only switches between the
+        // renderer instances that refer to different windows/glcontexts
+        // finally it will need to be made static and initialized before
+        // all other imports so we could access it anywhere
         unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer;
         Font *default_font = nullptr;
-        Style *default_style = nullptr;
+        Style default_style;
 
         DrawingContext(void *app);
         ~DrawingContext();
