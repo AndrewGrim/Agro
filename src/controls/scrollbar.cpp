@@ -173,7 +173,7 @@ Size ScrollBar::sizeHint(DrawingContext *dc) {
     Size size = this->m_slider->m_slider_button->sizeHint(dc);
     Size button_size = this->m_begin_button->sizeHint(dc);
         if (this->m_align_policy == Align::Horizontal) {
-            size.w *= 2 * 2; // ?
+            size.w *= 2;
             size.w += button_size.w;
             if (button_size.h > size.h) size.h = button_size.h;
         }
