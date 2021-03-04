@@ -38,7 +38,6 @@
             float clip_rect[4];
         };
         
-        void *m_app = nullptr;
         int max_texture_slots;
         int current_texture_slot = 2;
         unsigned int gl_texture_begin = GL_TEXTURE0;
@@ -49,7 +48,7 @@
         unsigned int VAO, VBO, EBO;
         Rect clip_rect; // Gets set before each draw() in Application.
 
-        Renderer(unsigned int *indices, void *app);
+        Renderer(unsigned int *indices);
         ~Renderer();
         void fillText(Font *font, std::string text, Point point, Color color = Color(), float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);

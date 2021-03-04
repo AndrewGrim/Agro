@@ -242,7 +242,7 @@
                         m_dragging = true;
                         m_custom_width = m_custom_size ? m_custom_width : m_size.w;
                         m_custom_size = true;
-                        ((Application*)app)->setMouseCursor(Cursor::SizeWE);
+                        Application::get()->setMouseCursor(Cursor::SizeWE);
                     }
                 });
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -262,7 +262,7 @@
                         sort(m_sort);
                     } else {
                         m_dragging = false;
-                        ((Application*)app)->setMouseCursor(Cursor::Default);
+                        Application::get()->setMouseCursor(Cursor::Default);
                     }
                 });
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -270,9 +270,9 @@
                         setWidth(event.x - rect.x); // TODO take scroll into account?
                     } else {
                         if (event.x >= (rect.x + rect.w) - 5) {
-                            ((Application*)app)->setMouseCursor(Cursor::SizeWE);
+                            Application::get()->setMouseCursor(Cursor::SizeWE);
                         } else {
-                            ((Application*)app)->setMouseCursor(Cursor::Default);
+                            Application::get()->setMouseCursor(Cursor::Default);
                         }
                     }
                 });
@@ -280,7 +280,7 @@
                     if (m_dragging) {
                         m_dragging = false;
                     }
-                    ((Application*)app)->setMouseCursor(Cursor::Default);
+                    Application::get()->setMouseCursor(Cursor::Default);
                 });
             }
 

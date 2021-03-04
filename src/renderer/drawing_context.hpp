@@ -27,7 +27,7 @@
         Font *default_font = nullptr;
         Style default_style;
 
-        DrawingContext(void *app);
+        DrawingContext();
         ~DrawingContext();
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);

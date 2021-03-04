@@ -6,9 +6,7 @@ Widget::Widget() {
 }
 
 Widget::~Widget() {
-    if (this->app) {
-        ((Application*)this->app)->removeFromState(this);
-    }
+    Application::get()->removeFromState(this);
     for (Widget *child : this->children) {
         delete child;
     }
@@ -23,7 +21,6 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
     widget->setProportion(proportion);
     this->children.push_back(widget);
     widget->parent_index = this->children.size() - 1;
-    if (this->app) widget->app = this->app;
     this->layout();
 
     return this;
@@ -34,7 +31,7 @@ Widget* Widget::remove(size_t parent_index) {
     child->setPressed(false);
     child->setHovered(false);
     child->setFocused(false);
-    ((Application*)child->app)->removeFromState(child);
+    Application::get()->removeFromState(child);
     this->children.erase(this->children.begin() + parent_index);
     size_t i = 0;
     for (Widget *child : this->children) {
@@ -158,9 +155,7 @@ Widget* Widget::setFocused(bool focused) {
 }
 
 Widget* Widget::update() {
-    if (this->app) {
-        ((Application*)this->app)->update();
-    }
+    Application::get()->update();
     
     return this;
 }
@@ -232,7 +227,6 @@ void Widget::handleMouseEvent(State *state, MouseEvent event) {
     // Note: The hovered state is not set as it is returned
     // from the propagateMouseEvent function.
 
-    Application *app = (Application*)this->app;
     switch (event.type) {
         case MouseEvent::Type::Down:
             if (state->pressed) {
@@ -301,15 +295,6 @@ bool Widget::handleScrollEvent(ScrollEvent event) {
     // this widget doesnt handle scroll events.
     // Otherwise return true.
     return false;
-}
-
-Widget* Widget::attachApp(void *app) {
-    for (Widget *child : this->children) {
-        child->app = app;
-        child->attachApp(app);
-    }
-    
-    return this;
 }
 
 bool Widget::isLayout() {

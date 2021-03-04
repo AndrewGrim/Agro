@@ -16,7 +16,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
             if (!(m_virtual_size.w < rect.w)) {
                 local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
             }
-            DrawingContext *dc = ((Application*)this->app)->dc;
+            DrawingContext *dc = Application::get()->dc;
             float x = this->padding() + (this->borderWidth() / 2);
             size_t index = 0;
             for (char c : this->text()) {
@@ -48,7 +48,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
             if (!(m_virtual_size.w < rect.w)) {
                 local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
             }
-            DrawingContext *dc = ((Application*)this->app)->dc;
+            DrawingContext *dc = Application::get()->dc;
 
             float x = m_selection.x_begin;
             size_t index = m_selection.begin;
@@ -92,10 +92,10 @@ LineEdit::LineEdit(std::string text) : Widget() {
         this->m_selection.mouse_selection = false;
     });
     this->onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
-        ((Application*)this->app)->setMouseCursor(Cursor::IBeam);
+        Application::get()->setMouseCursor(Cursor::IBeam);
     });
     this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
-        ((Application*)this->app)->setMouseCursor(Cursor::Default);
+        Application::get()->setMouseCursor(Cursor::Default);
         this->m_selection.mouse_selection = false;
     });
     auto left = [&]{
@@ -346,16 +346,16 @@ LineEdit* LineEdit::moveCursorLeft() {
             m_selection.x_end = m_selection.x_begin;
             m_selection.end = m_selection.begin;
         }
-    } else if (m_selection.end && app) {
+    } else if (m_selection.end) {
         if (m_selection.hasSelection() && !isShiftPressed()) {
             swapSelection();
             m_selection.x_end = m_selection.x_begin;
             m_selection.end = m_selection.begin;
             goto END;
         }
-        DrawingContext *dc = ((Application*)this->app)->dc;
+        DrawingContext *dc = Application::get()->dc;
         m_selection.end--;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_selection.end]).w;
+        float char_size = dc->measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end -= char_size;
         if (!isShiftPressed()) {
             m_selection.x_begin = m_selection.x_end;
@@ -379,14 +379,14 @@ LineEdit* LineEdit::moveCursorRight() {
             m_selection.x_begin = m_selection.x_end;
             m_selection.begin = m_selection.end;
         }
-    } else if (m_selection.end < text().size() && app) {
+    } else if (m_selection.end < text().size()) {
         if (m_selection.hasSelection() && !isShiftPressed()) {
             swapSelection();
             m_selection.x_begin = m_selection.x_end;
             m_selection.begin = m_selection.end;
             goto END;
         }
-        DrawingContext *dc = ((Application*)this->app)->dc;
+        DrawingContext *dc = Application::get()->dc;
         float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_selection.end]).w;
         m_selection.x_end += char_size;
         m_selection.end++;
@@ -560,7 +560,7 @@ void LineEdit::swapSelection() {
 }
 
 void LineEdit::insert(size_t index, const char *text, bool skip) {
-    DrawingContext *dc = ((Application*)this->app)->dc;
+    DrawingContext *dc = Application::get()->dc;
 
     if (m_selection.hasSelection()) {
         deleteSelection(skip);
@@ -601,7 +601,7 @@ void LineEdit::setCursor(size_t index) {
         if (!(m_virtual_size.w < rect.w)) {
             local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
         }
-        DrawingContext *dc = ((Application*)this->app)->dc;
+        DrawingContext *dc = Application::get()->dc;
         float x = this->padding() + (this->borderWidth() / 2);
         size_t local_index = 0;
         for (char c : this->text()) {

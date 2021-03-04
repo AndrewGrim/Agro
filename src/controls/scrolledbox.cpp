@@ -58,7 +58,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     float *rect_opposite_length;
     Size size; // Individual widget size.
     float *generic_length; // Needs to be a ptr because the value will change.
-    Size app_size = ((Application*)this->app)->size;
+    Size app_size = Application::get()->size;
     float generic_app_length;
     switch (parent_layout) {
         case Align::Vertical:
@@ -323,18 +323,10 @@ void ScrolledBox::addScrollBar(Align alignment) {
         if (!this->m_horizontal_scrollbar) {
             this->m_horizontal_scrollbar = new ScrollBar(alignment);
         }
-        if (this->m_horizontal_scrollbar) {
-            this->m_horizontal_scrollbar->app = this->app;
-            this->m_horizontal_scrollbar->attachApp(this->app);
-        }
     }
     else {
         if (!this->m_vertical_scrollbar) {
             this->m_vertical_scrollbar = new ScrollBar(alignment);
-        }
-        if (this->m_vertical_scrollbar) {
-            this->m_vertical_scrollbar->app = this->app;
-            this->m_vertical_scrollbar->attachApp(this->app);
         }
     }
 }

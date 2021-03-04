@@ -2,7 +2,7 @@
 
 #include "drawing_context.hpp"
 
-DrawingContext::DrawingContext(void *app) {
+DrawingContext::DrawingContext() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -19,7 +19,7 @@ DrawingContext::DrawingContext(void *app) {
         offset += 4;
     }
 
-    renderer = new Renderer(indices, app);
+    renderer = new Renderer(indices);
 
     default_style = Style();
     {

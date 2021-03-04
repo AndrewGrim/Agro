@@ -306,21 +306,12 @@ Size NoteBook::sizeHint(DrawingContext *dc) {
 // TODO maybe overwrite append just like TreeView
 // internally we could still use Widget::append
 NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool close_button) {
-    // We need to attach app at run time to new tabs / tab buttons.
-    if (app) {
-        root->app = app;
-        root->attachApp(app);
-    }
     this->append(root, Fill::Both);
     NoteBookTabButton *tab_button = new NoteBookTabButton(this, text, icon, close_button);
     tab_button->onMouseClick.addEventListener([=](Widget *widget, MouseEvent event) {
         this->setCurrentTab(tab_button->parent_index);
     });
-    // We need to attach app at run time to new tabs / tab buttons.
-    if (app) {
-        tab_button->app = app;
-        tab_button->attachApp(app);
-    }
+
     m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
         tab_button->setActive(true);
@@ -404,29 +395,5 @@ void* NoteBook::propagateMouseEvent(State *state, MouseEvent event) {
     }
 
     this->handleMouseEvent(state, event);
-    return this;
-}
-
-Widget* NoteBook::attachApp(void *app) {
-    // Attach app to all tab roots.
-    for (Widget *child : this->children) {
-        child->app = app;
-        child->attachApp(app);
-    }
-
-    // Attach app to scrollbar of NoteBookTabBar.
-    m_tabs->m_horizontal_scrollbar->app = app;
-    for (Widget *child : m_tabs->m_horizontal_scrollbar->children) {
-        child->app = app;
-        child->attachApp(app);
-    }
-
-    // Attach app to all buttons of NoteBookTabBar.
-    m_tabs->app = app;
-    for (Widget *child : m_tabs->children) {
-        child->app = app;
-        child->attachApp(app);
-    }
-    
     return this;
 }

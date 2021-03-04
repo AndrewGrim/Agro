@@ -30,7 +30,6 @@
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isLayout() override;
             virtual void* propagateMouseEvent(State *state, MouseEvent event) override;
-            virtual Widget* attachApp(void *app) override;
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
             // NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
             NoteBook* destroyTab(int index);

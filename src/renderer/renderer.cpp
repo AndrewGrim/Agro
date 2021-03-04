@@ -1,9 +1,7 @@
 #include "renderer.hpp"
 #include "../application.hpp"
 
-Renderer::Renderer(unsigned int *indices, void *app) {
-    this->m_app = app;
-
+Renderer::Renderer(unsigned int *indices) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -138,8 +136,10 @@ void Renderer::check() {
     if (this->index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
+// TODO actually we should probably just pass the widget dimensions
+// so we could stop drawing text early
 void Renderer::fillText(Font *font, std::string text, Point point, Color color, float scale) {
-    Size window = ((Application*)this->m_app)->size;
+    Size window = Application::get()->size;
     std::string::const_iterator c;
     // TODO handle newlines and tab characters
     // TODO also we should probably find the max height for each font and store that information somewhere

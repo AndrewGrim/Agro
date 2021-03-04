@@ -39,9 +39,6 @@
             Rect rect = Rect(0, 0, 0, 0);
             Rect inner_rect = Rect(0, 0, 0, 0);
             
-            /// Pointer to the Application. Used to tell the Application to update.
-            void *app = nullptr;
-
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
 
@@ -212,10 +209,6 @@
             virtual void handleTextEvent(DrawingContext *dc, const char *text);
 
             virtual bool handleScrollEvent(ScrollEvent event);
-
-            /// Sets the Application* of the Widget and does the same
-            /// for any of its children.
-            virtual Widget* attachApp(void *app);
 
             unsigned int proportion();
 
