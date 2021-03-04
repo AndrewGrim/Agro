@@ -42,7 +42,7 @@
     class Application : public Window {
         public:
             void setMouseCursor(Cursor cursor);
-            static Application& get();
+            static Application* get();
 
         private:
             Application(const char *title, Size size);

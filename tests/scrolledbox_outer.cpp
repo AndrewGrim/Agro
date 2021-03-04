@@ -9,7 +9,9 @@
 #include "../src/controls/scrolledbox.hpp"
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("ScrolledBox Outer Test", Size(500, 500));
+    Application *app = Application::get();
+        app->setTitle("ScrolledBox Outer Test");
+        app->resize(500, 500);
         Box *top = (new Box(Align::Horizontal))->setBackground(Color());
             ScrolledBox *av_fn = (ScrolledBox*)(new ScrolledBox(Align::Vertical, Size(300, 300)))->setBackground(Color(0.0));
                 av_fn->append((new Button("P: Fill::None, C: Fill::None"))->setBackground(Color(0.7, 0.2, 0.2)), Fill::None);

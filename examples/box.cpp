@@ -8,7 +8,9 @@
 #include "../src/controls/button.hpp"
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("Box Vertical Test", Size(400, 600));
+    Application *app = Application::get();
+        app->setTitle("Box");
+        app->resize(400, 600);
         Button *align_button = new Button("Switch Box Alignment");
         app->append(align_button, Fill::None);
 

@@ -70,7 +70,9 @@ void update_rect_labels(std::string text, Button *button, Rect rect) {
 }
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("Application", Size(600, 400));
+    Application *app = Application::get();
+        app->setTitle("Custom Widget Styling");
+        app->resize(600, 400);
         // LEFT
         app->setMainWidget((new Box(Align::Horizontal))->setBackground(COLOR_WHITE));
         CustomStyle *custom = new CustomStyle();
@@ -115,11 +117,11 @@ int main(int argc, char **argv) {
             right->append(csir, Fill::Horizontal);
         app->append(right);
 
-        app->onResize = [&](Window *app) {
+        app->onResize = [&](Window *window) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
         };
-        app->onReady = [&](Window *app) {
+        app->onReady = [&](Window *window) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
         };

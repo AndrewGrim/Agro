@@ -3,12 +3,13 @@
 #include "../src/controls/button.hpp"
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("Keybindings Test", Size(400, 400));
-    app->onReady = [](Window *app) {
+    Application *app = Application::get();
+        app->setTitle("Callbacks");
+    app->onReady = [](Window *win) {
         println("READY");
     };
     bool quit = true;
-    app->onQuit = [&](Window *app) -> bool {
+    app->onQuit = [&](Window *win) -> bool {
         println("QUIT");
         return quit;
         // return false to not quit or true to quit
@@ -44,8 +45,8 @@ int main(int argc, char **argv) {
             });
         app->append(disable_enable_quit, Fill::Both);
 
-        app->onResize = [&](Window *app) {
-            button->setText("Window Size:" + std::to_string((int)app->size.w) + ", " + std::to_string((int)app->size.h));
+        app->onResize = [&](Window *win) {
+            button->setText("Window Size:" + std::to_string((int)win->size.w) + ", " + std::to_string((int)win->size.h));
         };
 
     #ifdef TEST

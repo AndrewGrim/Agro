@@ -15,7 +15,9 @@
 // When the SB's parent is not an SB:
 //  4 - Regular old clip.
 int main(int argc, char **argv) { 
-    Application *app = new Application("ScrolledBox Inception Clipping Test", Size(1000, 400));
+    Application *app = Application::get();
+        app->setTitle("Scrolledbox Inception Clipping Test");
+        app->resize(1000, 400);
         app->append(new Button("Top"), Fill::Horizontal);
         Box *h_box = new Box(Align::Horizontal);
         {

@@ -37,8 +37,8 @@ void Application::setMouseCursor(Cursor cursor) {
     }
 }
 
-Application& Application::get() {
-    static Application app = Application("Application", Size(400, 400));
+Application* Application::get() {
+    static Application *app = new Application("Application", Size(400, 400));
     return app;
 }
 

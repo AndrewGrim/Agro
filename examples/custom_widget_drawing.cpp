@@ -52,7 +52,8 @@ class CustomWidget : public Widget {
 };
 
 int main(int argc, char **argv) {
-    Application *app = new Application("Custom Widget Drawing", Size(400, 400));
+    Application *app = Application::get();
+        app->setTitle("Custom Widget Drawing");
         app->append(new CustomWidget());
     
     #ifdef TEST

@@ -9,7 +9,9 @@
 #include "../src/controls/scrolledbox.hpp"
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("ScrolledBox Inner Test", Size(500, 500));
+    Application *app = Application::get();
+        app->setTitle("ScrolledBox Inner Test");
+        app->resize(500, 500);
         ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(200, 200));
             for (char i = 'a'; i <= 'z'; i++) {
                 top->append((new Button(std::string(100, i)))->setBackground(Color(0.6, 0.0, 0.6)), Fill::Both);

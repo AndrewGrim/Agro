@@ -3,7 +3,8 @@
 #include "../src/controls/button.hpp"
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("Keybindings Test", Size(400, 400));
+    Application *app = Application::get();
+        app->setTitle("Keybindings");
         int map_key = app->bind(
             SDLK_q,
             Mod::None, 

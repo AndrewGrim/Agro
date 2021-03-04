@@ -4,7 +4,8 @@
 #include "../src/controls/notebook.hpp"
 
 int main(int argc, char **argv) { 
-    Application *app = new Application("Keybindings Test", Size(400, 400));
+    Application *app = Application::get();
+        app->setTitle("Notebook Test");
         NoteBook *nb = new NoteBook();
         {
             for (int t = 1; t < 15; t++) {
