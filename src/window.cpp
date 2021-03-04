@@ -275,8 +275,6 @@ void Window::run() {
         }
     }
     SDL_StopTextInput();
-
-    delete this;
 }
 
 Widget* Window::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
