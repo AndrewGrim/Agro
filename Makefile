@@ -23,6 +23,7 @@ OBJECT_FILES = \
 	build/spacer.o \
 	build/treeview.o \
 	build/widget.o \
+	build/window.o \
 	build/drawing_context.o \
 	build/font.o \
 	build/glad.o \
@@ -60,8 +61,10 @@ build/libgui.so: dir $(OBJECT_FILES)
 # ROOT
 build/main.o: src/main.cpp $(OBJECT_FILES)
 	$(CXX) -c src/main.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/application.o: build/widget.o build/drawing_context.o src/application.cpp src/application.hpp
+build/application.o: build/window.o src/application.cpp src/application.hpp
 	$(CXX) -c src/application.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/window.o: build/widget.o build/style.o build/drawing_context.o build/font.o src/window.cpp src/window.hpp
+	$(CXX) -c src/window.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # COMMON
 build/style.o: src/common/style.cpp src/common/style.hpp

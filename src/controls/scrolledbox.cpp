@@ -58,7 +58,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     float *rect_opposite_length;
     Size size; // Individual widget size.
     float *generic_length; // Needs to be a ptr because the value will change.
-    Size app_size = ((Application*)this->app)->m_size;
+    Size app_size = ((Application*)this->app)->size;
     float generic_app_length;
     switch (parent_layout) {
         case Align::Vertical:
