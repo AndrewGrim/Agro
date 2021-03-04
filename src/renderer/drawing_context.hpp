@@ -23,7 +23,7 @@
         // finally it will need to be made static and initialized before
         // all other imports so we could access it anywhere
         unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
-        Renderer *renderer;
+        Renderer *renderer = nullptr;
         Font *default_font = nullptr;
         Style default_style;
 
