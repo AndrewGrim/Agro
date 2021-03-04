@@ -804,7 +804,6 @@
                 });
                 children.push_back(column);
                 column->parent_index = children.size() - 1;
-                if (app) column->app = app;
                 layout();
 
                 return this;
