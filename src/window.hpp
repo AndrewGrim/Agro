@@ -1,5 +1,5 @@
-#ifndef WINDWOW_HPP
-    #define WINDWOW_HPP
+#ifndef WINDOW_HPP
+    #define WINDOW_HPP
 
     #include <string>
     #include <vector>
