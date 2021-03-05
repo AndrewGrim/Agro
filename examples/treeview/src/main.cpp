@@ -21,10 +21,6 @@ int main(int argc, char **argv) {
         app->setTitle("Contacts 2021");
         app->resize(1200, 800);
         app->setMainWidget(new Box(Align::Horizontal));
-        // app->dc->default_style.margin.type = STYLE_NONE;
-        // app->dc->default_style.border.type = STYLE_NONE;
-        // app->dc->default_style.padding.type = STYLE_NONE;
-        // app->dc->default_style.margin.left = 50;
         TreeView<Hidden> *tv;
 
         Box *box = new Box(Align::Vertical);
@@ -186,7 +182,12 @@ int main(int argc, char **argv) {
         app->onReady = [&](Window *win) {
             tv->select(0);
         };
-    app->run();
+        
+    #ifdef TEST
+        #include "headless.hpp"
+    #else
+        app->run();
+    #endif
 
     return 0;
 }
