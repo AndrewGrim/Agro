@@ -475,7 +475,7 @@
                         for (TreeNode<T> *root : m_model->roots) {
                             m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                                 if (event.y >= y && event.y <= y + node->max_cell_height) {
-                                    if (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent)) {
+                                    if (node->children.size() && (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent))) {
                                         if (node->is_collapsed) {
                                             expand(node);
                                         } else {
