@@ -11,6 +11,7 @@
     #include "../common/point.hpp"
 
     struct TextureCoordinates {
+        // Default
         Point top_left = Point(0.0, 1.0);
         Point bottom_left = Point(0.0, 0.0);
         Point bottom_right = Point(1.0, 0.0);
@@ -55,6 +56,20 @@
         void flipBoth() {
             this->flipHorizontally();
             this->flipVertically();
+        }
+
+        void clockwise90() {
+            top_left = Point(1.0, 1.0);
+            bottom_left = Point(0.0, 1.0);
+            bottom_right = Point(0.0, 0.0);
+            top_right = Point(1.0, 0.0);
+        }
+
+        void counterClockwise90() {
+            top_left = Point(0.0, 0.0);
+            bottom_left = Point(1.0, 0.0);
+            bottom_right = Point(1.0, 1.0);
+            top_right = Point(0.0, 1.0);
         }
     };
 
