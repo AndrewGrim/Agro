@@ -507,6 +507,8 @@
 
             ~TreeView() {
                 delete m_model;
+                delete m_collapsed;
+                delete m_expanded;
             }
 
             virtual const char* name() override {
@@ -548,6 +550,8 @@
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
                                 // Clip and draw selection and or hover. 
+                                // TODO we should probably draw this after the cell itself
+                                // selection might be a bit tricky, should cells be selection and or hover aware? probably
                                 if (m_selected == node) {
                                     dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                                     dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
@@ -568,9 +572,29 @@
                                     );
                                     // End of the line.
                                     if (node->children.size()) {
-                                        dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(0, 1));
+                                        if (node->is_collapsed) {
+                                            dc->drawTextureAligned(
+                                                Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height),
+                                                Size(m_indent / 2, m_indent / 2),
+                                                m_collapsed->_texture(),
+                                                m_collapsed->coords(),
+                                                HorizontalAlignment::Center,
+                                                VerticalAlignment::Center,
+                                                m_collapsed->foreground()
+                                            );
+                                        } else {
+                                            dc->drawTextureAligned(
+                                                Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height),
+                                                Size(m_indent / 2, m_indent / 2),
+                                                m_expanded->_texture(),
+                                                m_expanded->coords(),
+                                                HorizontalAlignment::Center,
+                                                VerticalAlignment::Center,
+                                                m_expanded->foreground()
+                                            );
+                                        }
                                     } else {
-                                        dc->fillRect(Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height), Color(1, 0, 1));
+                                        // TODO an image indicating that this node is the end of the line could go here
                                     }
                                 }
 
@@ -851,6 +875,9 @@
             bool m_table = false;
             Style m_column_style;
             Style m_column_button_style;
+            std::shared_ptr<Texture> m_arrow = std::make_shared<Texture>("up_arrow.png");
+            Image *m_collapsed = (new Image(m_arrow))->clockwise90()->setForeground(COLOR_BLACK);
+            Image *m_expanded = (new Image(m_arrow))->flipVertically()->setForeground(COLOR_BLACK);
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
