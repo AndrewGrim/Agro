@@ -31,6 +31,8 @@
             Image* flipHorizontally();
             Image* flipVertically();
             Image* flipBoth();
+            Image* clockwise90();
+            Image* counterClockwise90();
             void resetOrientation();
             void setMinSize(Size min_size);
             Size originalSize();

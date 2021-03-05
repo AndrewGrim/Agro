@@ -185,6 +185,18 @@ Image* Image::flipBoth() {
     return this;
 }
 
+Image* Image::clockwise90() {
+    m_coords.clockwise90();
+    
+    return this;
+}
+
+Image* Image::counterClockwise90() {
+    m_coords.counterClockwise90();
+    
+    return this;
+}
+
 void Image::setTexture(std::shared_ptr<Texture> texture) {
     m_texture = texture;
     update();

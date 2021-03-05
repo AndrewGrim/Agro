@@ -112,6 +112,9 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
     m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
+    if (alignment == Align::Horizontal) {
+        m_begin_button->image()->counterClockwise90();
+    }
     // TODO outdated beause of the new style
     // m_begin_button->setPadding(1);
     m_begin_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -133,6 +136,9 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     // TODO outdated beause of the new style
     // m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();
+    if (alignment == Align::Horizontal) {
+        m_end_button->image()->clockwise90();
+    }
     m_end_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
         this->m_slider->m_value += 0.05f; 
         if (this->m_slider->m_value > 1.0f) {
