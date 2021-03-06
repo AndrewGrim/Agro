@@ -9,9 +9,15 @@
 
     class CellRenderer {
         public:
+            enum State {
+                STATE_DEFAULT = 0x0000,
+                STATE_HOVERED = 0x0010,
+                STATE_SELECTED = 0x0100,
+            };
+
             CellRenderer() {}
             virtual ~CellRenderer() {}
-            virtual void draw(DrawingContext *dc, Rect rect) = 0;
+            virtual void draw(DrawingContext *dc, Rect rect, int state) = 0;
             virtual Size sizeHint(DrawingContext *dc) = 0;
     };
 
@@ -23,7 +29,8 @@
             Color background;
             int padding;
             Font *font = nullptr;
-            HorizontalAlignment align = HorizontalAlignment::Left;
+            HorizontalAlignment h_align = HorizontalAlignment::Left;
+            VerticalAlignment v_align = VerticalAlignment::Center;
 
             TextCellRenderer(
                     std::string text, 
@@ -41,17 +48,28 @@
 
             }
 
-            virtual void draw(DrawingContext *dc, Rect rect) override {
-                dc->fillRect(rect, background);
+            virtual void draw(DrawingContext *dc, Rect rect, int state) override {
+                Color fg = foreground;
+                Color bg = background;
+                if (state & STATE_SELECTED) {
+                    fg = COLOR_WHITE;
+                    bg = Color(0.2, 0.5, 1.0);
+                }
+
+                dc->fillRect(rect, bg);
                 dc->fillTextAligned(
                     font ? font : dc->default_font,
                     text,
-                    align,
-                    VerticalAlignment::Center,
+                    h_align,
+                    v_align,
                     rect,
                     padding,
-                    foreground
+                    fg
                 );
+
+                if (state & STATE_HOVERED) {
+                    dc->fillRect(rect, Color(0.4, 0.4, 0.4, 0.1));
+                }
             }
 
             virtual Size sizeHint(DrawingContext *dc) override {
@@ -95,7 +113,7 @@
                 delete image;
             }
 
-            virtual void draw(DrawingContext *dc, Rect rect) override {
+            virtual void draw(DrawingContext *dc, Rect rect, int state) override {
                 dc->fillRect(
                     rect,
                     image->background()
@@ -109,6 +127,12 @@
                     VerticalAlignment::Center,
                     image->foreground()
                 );
+                if (state & STATE_SELECTED) {
+                    dc->fillRect(rect, Color(0.2, 0.5, 1.0, 0.7));
+                } else if (state & STATE_HOVERED) {
+                    dc->fillRect(rect, Color(0.5, 0.5, 0.5, 0.1));
+                }
+
             }
             
             virtual Size sizeHint(DrawingContext *dc) override {
@@ -549,17 +573,6 @@
                         }
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
-                                // Clip and draw selection and or hover. 
-                                // TODO we should probably draw this after the cell itself
-                                // selection might be a bit tricky, should cells be selection and or hover aware? probably
-                                if (m_selected == node) {
-                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
-                                    dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.2, 0.5, 1.0));
-                                } else if (m_hovered == node) {
-                                    dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
-                                    dc->fillRect(Rect(rect.x, pos.y, m_children_size.w, node->max_cell_height), Color(0.5, 0.5, 0.5, 0.1));
-                                }
-
                                 if (!m_table) {
                                     // Clip and draw the collapsible "button".
                                     dc->setClip(
@@ -625,11 +638,19 @@
                                         if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
                                         }
+                                        int state = CellRenderer::State::STATE_DEFAULT;
+                                        if (m_selected == node) {
+                                            state = state | CellRenderer::State::STATE_SELECTED;
+                                        }
+                                        if (m_hovered == node) {
+                                            state = state | CellRenderer::State::STATE_HOVERED;
+                                        }
                                         renderer->draw(
                                             dc,
                                             Rect(
                                                 cell_x, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
-                                            )
+                                            ),
+                                            state
                                         );
                                     }
                                     cell_start += col_width;
