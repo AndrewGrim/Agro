@@ -954,8 +954,10 @@
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
-                    m_model->descend(node, [&](TreeNode<T> *_node){
-                        _node->is_collapsed = is_collapsed;
+                    m_model->descend(node, [&](TreeNode<T> *_node) {
+                        if (_node->children.size()) {
+                            _node->is_collapsed = is_collapsed;
+                        }
                         return TREEVIEW_CONTINUE;
                     });
                     m_virtual_size_changed = true;
@@ -965,8 +967,10 @@
 
             void collapseOrExpandAll(bool is_collapsed) {
                 for (TreeNode<T> *root : m_model->roots) {
-                    m_model->descend(root, [&](TreeNode<T> *node){
-                        node->is_collapsed = is_collapsed;
+                    m_model->descend(root, [&](TreeNode<T> *node) {
+                        if (node->children.size()) {
+                            node->is_collapsed = is_collapsed;
+                        }
                         return TREEVIEW_CONTINUE;
                     });
                 }
