@@ -613,31 +613,12 @@
 
                                             m_model->descend(tree_root, [&](TreeNode<T> *node) {
                                                 if (!node->is_collapsed) {
-                                                    // TODO draw lines to children
+                                                    drawTreeLinesToChildren(dc, local_x, tree_line_start, node);
+                                                } else {
+                                                    return TREEVIEW_EARLY_EXIT;
                                                 }
-                                                // TODO can we early exit here?
-                                                // does it interrupt current branch or only the next one?
                                                 return TREEVIEW_CONTINUE;
                                             });
-
-                                            // TODO look at drawTreeLinesToChildren from ts project for this next bit
-                                            float line_height = 0;
-                                            float last_node_height = 0;
-                                            m_model->descend(tree_root, [&](TreeNode<T> *node) {
-                                                line_height += node->max_cell_height;
-                                                last_node_height = node->max_cell_height;
-                                                return TREEVIEW_CONTINUE;
-                                            });
-                                            dc->fillRect(
-                                                Rect(
-                                                    local_x  + (tree_root->depth * m_indent) - (m_indent / 2), 
-                                                    tree_line_start,// - (tree_root->max_cell_height / 2),
-                                                    1, 
-                                                    line_height// - last_node_height
-                                                ), 
-                                                Color(1, 0, 1)
-                                            );
-                                            // TODO draw tree lines
                                         }
                                         tree_roots.push_back(tree_root);
                                     }
@@ -1048,6 +1029,66 @@
                 m_auto_size_columns = false;
 
                 return virtual_size;
+            }
+
+            void drawTreeLinesToChildren(DrawingContext *dc, float x, float y, TreeNode<T> *node) {
+                if (!node->is_collapsed && node->children.size()) {
+                    x += node->depth * m_indent;
+                    // Begin drawing at the center of the node cell height.
+                    y += node->max_cell_height / 2;
+                    float last_y = y;
+
+                    for (TreeNode<T> *child : node->children) {
+                        m_model->descend(child, [&](TreeNode<T>* _node) {
+                            if (!_node->is_collapsed) {
+                                last_y += _node->max_cell_height;
+                        });
+                        // Draw the line going down to the node.
+                        dc->fillRect(
+                            Rect(
+                                x - (m_indent / 2),
+                                y,
+                                1,
+                                last_y - y
+                            ),
+                            Color(1, 0, 1)
+                        );
+                        // Draw the horizontal line going to the icon.
+                        dc->fillRect(
+                            Rect(
+                                x - (m_indent / 2),
+                                y + (last_y - y),
+                                m_indent / 2,
+                                1
+                            ),
+                            Color(1, 0, 1)
+                        );
+                    }
+                }
+            }
+               });
+                        // Draw the line going down to the node.
+                        dc->fillRect(
+                            Rect(
+                                x - (m_indent / 2),
+                                y,
+                                1,
+                                last_y - y
+                            ),
+                            Color(1, 0, 1)
+                        );
+                        // Draw the horizontal line going to the icon.
+                        dc->fillRect(
+                            Rect(
+                                x - (m_indent / 2),
+                                y + (last_y - y),
+                                m_indent / 2,
+                                1
+                            ),
+                            Color(1, 0, 1)
+                        );
+                    }
+                }
             }
     };
 #endif
