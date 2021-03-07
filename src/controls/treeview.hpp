@@ -1,6 +1,9 @@
 #ifndef TREEVIEW_HPP
     #define TREEVIEW_HPP
 
+    #define TREEVIEW_CONTINUE true
+    #define TREEVIEW_EARLY_EXIT false
+
     #include <algorithm>
 
     #include "widget.hpp"
@@ -434,8 +437,6 @@
             float m_min_width = 16;
     };
 
-    // TODO tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
-
     enum class GridLines {
         None,
         Horizontal,
@@ -472,9 +473,9 @@
                                 }
                                 y += node->max_cell_height;
                                 if (node->is_collapsed) {
-                                    return false;
+                                    return TREEVIEW_EARLY_EXIT;
                                 }
-                                return true;
+                                return TREEVIEW_CONTINUE;
                             });
                         }
                     } else {
@@ -508,9 +509,9 @@
                                 }
                                 y += node->max_cell_height;
                                 if (node->is_collapsed) {
-                                    return false;
+                                    return TREEVIEW_EARLY_EXIT;
                                 }
-                                return true;
+                                return TREEVIEW_CONTINUE;
                             });
                         }
                     }
@@ -553,6 +554,7 @@
                     virtual_size = m_virtual_size;
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
+                float y_start = pos.y;
 
                 float local_pos_x = pos.x;
                 for (Widget *child : children) {
@@ -566,6 +568,7 @@
                     local_pos_x += s.w;
                 }
                 pos.y += m_children_size.h;
+                std::vector<TreeNode<T>*> tree_roots;
                 for (TreeNode<T> *root : m_model->roots) {
                     bool collapsed = false;
                     int collapsed_depth = -1;
@@ -578,6 +581,55 @@
                         if (!collapsed) {
                             if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
                                 if (!m_table) {
+                                    TreeNode<T> *tree_root = node;
+                                    // TODO while going up keep track of the height of all nodes so we get an
+                                    // accurate starting point
+                                    while (tree_root) {
+                                        if (!tree_root->parent) {
+                                            break;
+                                        }
+                                        tree_root = tree_root->parent;
+                                    }
+                                    auto result = std::find(tree_roots.begin(), tree_roots.end(), tree_root);
+                                    if (result == tree_roots.end()) {
+                                        if (tree_root->children.size()) {
+                                            dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
+                                            float local_x = pos.x;
+                                            float tree_line_start = y_start + m_children_size.h;
+                                            if (m_model->roots[0] != tree_root) {
+                                                for (TreeNode<T> *_root : m_model->roots) {
+                                                    if (tree_root == _root) {
+                                                        break;
+                                                    }
+                                                    m_model->descend(_root, [&](TreeNode<T> *node) {
+                                                        tree_line_start += node->max_cell_height;
+                                                        return TREEVIEW_CONTINUE;
+                                                    });
+                                                }
+                                            }
+
+                                            // TODO look at drawTreeLinesToChildren from ts project for this next bit
+                                            float line_height = 0;
+                                            float last_node_height = 0;
+                                            m_model->descend(tree_root, [&](TreeNode<T> *node) {
+                                                line_height += node->max_cell_height;
+                                                last_node_height = node->max_cell_height;
+                                                return TREEVIEW_CONTINUE;
+                                            });
+                                            dc->fillRect(
+                                                Rect(
+                                                    local_x  + (tree_root->depth * m_indent) - (m_indent / 2), 
+                                                    tree_line_start,// - (tree_root->max_cell_height / 2),
+                                                    1, 
+                                                    line_height// - last_node_height
+                                                ), 
+                                                Color(1, 0, 1)
+                                            );
+                                            // TODO draw tree lines
+                                        }
+                                        tree_roots.push_back(tree_root);
+                                    }
+
                                     // Clip and draw the collapsible "button".
                                     dc->setClip(
                                         Rect(
@@ -676,9 +728,9 @@
                             collapsed_depth = node->depth;
                         }
                         if (pos.y > rect.y + rect.h) {
-                            return false;
+                            return TREEVIEW_EARLY_EXIT;
                         }
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
                 if (m_model->roots.size()) {
@@ -774,10 +826,10 @@
                         if (i == index) {
                             select(node);
                             early = true;
-                            return false;
+                            return TREEVIEW_EARLY_EXIT;
                         }
                         i++;
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
             }
@@ -911,7 +963,7 @@
                 if (node) {
                     m_model->descend(node, [&](TreeNode<T> *_node){
                         _node->is_collapsed = is_collapsed;
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                     m_virtual_size_changed = true;
                     update();
@@ -922,7 +974,7 @@
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node){
                         node->is_collapsed = is_collapsed;
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
                 m_virtual_size_changed = true;
@@ -975,7 +1027,7 @@
                             collapsed = true;
                             collapsed_depth = node->depth;
                         }
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
                 virtual_size.w = m_children_size.w;
