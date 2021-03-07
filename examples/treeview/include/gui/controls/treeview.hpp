@@ -1046,31 +1046,9 @@
                         m_model->descend(child, [&](TreeNode<T>* _node) {
                             if (!_node->is_collapsed) {
                                 last_y += _node->max_cell_height;
+                            } 
+                            return TREEVIEW_CONTINUE;
                         });
-                        // Draw the line going down to the node.
-                        dc->fillRect(
-                            Rect(
-                                x - (m_indent / 2),
-                                y,
-                                1,
-                                last_y - y
-                            ),
-                            Color(1, 0, 1)
-                        );
-                        // Draw the horizontal line going to the icon.
-                        dc->fillRect(
-                            Rect(
-                                x - (m_indent / 2),
-                                y + (last_y - y),
-                                m_indent / 2,
-                                1
-                            ),
-                            Color(1, 0, 1)
-                        );
-                    }
-                }
-            }
-               });
                         // Draw the line going down to the node.
                         dc->fillRect(
                             Rect(
