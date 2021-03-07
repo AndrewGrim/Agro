@@ -330,11 +330,8 @@
                 }
                 dc->drawBorder(rect, style);
 
-                Rect old_clip = dc->clip();
-                dc->setClip(rect);
                 dc->fillRect(rect, color);
                 layoutChildren(dc, rect);
-                dc->setClip(old_clip);
             }
 
             virtual bool isLayout() override {
@@ -543,6 +540,8 @@
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
 
+                dc->margin(rect, style);
+                dc->drawBorder(rect, style);
                 this->inner_rect = rect;
                 dc->fillRect(rect, Color(1, 1, 1));
 
@@ -554,10 +553,16 @@
                     virtual_size = m_virtual_size;
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
+                // TODO possibly set inner_rect here to account for scrollbars?
+
                 float local_pos_x = pos.x;
-                dc->setClip(rect);
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
+                    Rect clip_rect = rect;
+                        clip_rect.x = local_pos_x < rect.x ? rect.x : local_pos_x;
+                        clip_rect.w = local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - clip_rect.x : s.w;
+                        clip_rect.h = m_children_size.h;
+                    dc->setClip(clip_rect);
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
@@ -869,7 +874,10 @@
                     m_virtual_size.w = size.w;
                     m_size_changed = false;
                 }
-                return m_viewport;
+                Size viewport_and_style = m_viewport;
+                    dc->sizeHintMargin(viewport_and_style, style);
+                    dc->sizeHintBorder(viewport_and_style, style);
+                return viewport_and_style;
             }
 
             bool isTable() {
