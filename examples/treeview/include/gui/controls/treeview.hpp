@@ -437,8 +437,6 @@
             float m_min_width = 16;
     };
 
-    // TODO tooltips (kinda important since we want some headings to be image only), but treeview specific or lib wide?
-
     enum class GridLines {
         None,
         Horizontal,
