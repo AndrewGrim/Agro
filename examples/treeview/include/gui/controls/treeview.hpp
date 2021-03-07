@@ -582,8 +582,6 @@
                             if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
                                 if (!m_table) {
                                     TreeNode<T> *tree_root = node;
-                                    // TODO while going up keep track of the height of all nodes so we get an
-                                    // accurate starting point
                                     while (tree_root) {
                                         if (!tree_root->parent) {
                                             break;
@@ -592,7 +590,7 @@
                                     }
                                     auto result = std::find(tree_roots.begin(), tree_roots.end(), tree_root);
                                     if (result == tree_roots.end()) {
-                                        if (tree_root->children.size()) {
+                                        if (!tree_root->is_collapsed && tree_root->children.size()) {
                                             dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                                             float local_x = pos.x;
                                             float tree_line_start = y_start + m_children_size.h;
@@ -602,11 +600,25 @@
                                                         break;
                                                     }
                                                     m_model->descend(_root, [&](TreeNode<T> *node) {
-                                                        tree_line_start += node->max_cell_height;
+                                                        if (!node->is_collapsed) {
+                                                            tree_line_start += node->max_cell_height;
+                                                        } else {
+                                                            tree_line_start += node->max_cell_height;
+                                                            return TREEVIEW_EARLY_EXIT;
+                                                        }
                                                         return TREEVIEW_CONTINUE;
                                                     });
                                                 }
                                             }
+
+                                            m_model->descend(tree_root, [&](TreeNode<T> *node) {
+                                                if (!node->is_collapsed) {
+                                                    // TODO draw lines to children
+                                                }
+                                                // TODO can we early exit here?
+                                                // does it interrupt current branch or only the next one?
+                                                return TREEVIEW_CONTINUE;
+                                            });
 
                                             // TODO look at drawTreeLinesToChildren from ts project for this next bit
                                             float line_height = 0;
