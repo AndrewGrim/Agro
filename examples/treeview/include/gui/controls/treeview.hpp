@@ -1,6 +1,9 @@
 #ifndef TREEVIEW_HPP
     #define TREEVIEW_HPP
 
+    #define TREEVIEW_CONTINUE true
+    #define TREEVIEW_EARLY_EXIT false
+
     #include <algorithm>
 
     #include "widget.hpp"
@@ -472,9 +475,9 @@
                                 }
                                 y += node->max_cell_height;
                                 if (node->is_collapsed) {
-                                    return false;
+                                    return TREEVIEW_EARLY_EXIT;
                                 }
-                                return true;
+                                return TREEVIEW_CONTINUE;
                             });
                         }
                     } else {
@@ -508,9 +511,9 @@
                                 }
                                 y += node->max_cell_height;
                                 if (node->is_collapsed) {
-                                    return false;
+                                    return TREEVIEW_EARLY_EXIT;
                                 }
-                                return true;
+                                return TREEVIEW_CONTINUE;
                             });
                         }
                     }
@@ -676,9 +679,9 @@
                             collapsed_depth = node->depth;
                         }
                         if (pos.y > rect.y + rect.h) {
-                            return false;
+                            return TREEVIEW_EARLY_EXIT;
                         }
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
                 if (m_model->roots.size()) {
@@ -774,10 +777,10 @@
                         if (i == index) {
                             select(node);
                             early = true;
-                            return false;
+                            return TREEVIEW_EARLY_EXIT;
                         }
                         i++;
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
             }
@@ -911,7 +914,7 @@
                 if (node) {
                     m_model->descend(node, [&](TreeNode<T> *_node){
                         _node->is_collapsed = is_collapsed;
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                     m_virtual_size_changed = true;
                     update();
@@ -922,7 +925,7 @@
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(root, [&](TreeNode<T> *node){
                         node->is_collapsed = is_collapsed;
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
                 m_virtual_size_changed = true;
@@ -975,7 +978,7 @@
                             collapsed = true;
                             collapsed_depth = node->depth;
                         }
-                        return true;
+                        return TREEVIEW_CONTINUE;
                     });
                 }
                 virtual_size.w = m_children_size.w;
