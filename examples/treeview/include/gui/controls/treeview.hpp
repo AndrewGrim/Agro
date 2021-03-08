@@ -1064,15 +1064,17 @@
                             } 
                             return TREEVIEW_CONTINUE;
                         });
+                        // TODO 2 is the width and height of the lines
+                        // this should probably be a member on the treeview class
                         // Draw the line going down to the node.
                         dc->fillRect(
                             Rect(
-                                x - (m_indent / 2),
+                                x - (m_indent / 2) - 1,
                                 y,
-                                1,
-                                last_y - y
+                                2,
+                                last_y - y + 2
                             ),
-                            Color(1, 0, 1)
+                            Color(0.5, 0.5, 0.5)
                         );
                         // Draw the horizontal line going to the icon.
                         dc->fillRect(
@@ -1080,9 +1082,9 @@
                                 x - (m_indent / 2),
                                 y + (last_y - y),
                                 m_indent / 2,
-                                1
+                                2
                             ),
-                            Color(1, 0, 1)
+                            Color(0.5, 0.5, 0.5)
                         );
                     }
                 }
