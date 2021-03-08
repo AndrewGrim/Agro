@@ -637,7 +637,6 @@
                                             node->max_cell_height
                                         )
                                     );
-                                    // End of the line.
                                     if (node->children.size()) {
                                         if (node->is_collapsed) {
                                             dc->drawTextureAligned(
@@ -660,8 +659,19 @@
                                                 m_expanded->foreground()
                                             );
                                         }
+                                    // End of the line.
                                     } else {
-                                        // TODO an image indicating that this node is the end of the line could go here
+                                        if (node->parent) {
+                                            dc->fillRect(
+                                                Rect(
+                                                    pos.x + (node->depth - 1) * m_indent, 
+                                                    pos.y + (m_indent / 2) + (m_indent / 8), 
+                                                    m_indent / 4, 
+                                                    m_indent / 4
+                                                ),
+                                                COLOR_BLACK
+                                            );
+                                        }
                                     }
                                 }
 
