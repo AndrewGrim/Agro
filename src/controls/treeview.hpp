@@ -454,12 +454,16 @@
 
             TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+                    float x = inner_rect.x;
                     float y = inner_rect.y;
+                    if (m_horizontal_scrollbar) {
+                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
+                    }
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
                     y += m_children_size.h;
-                    if (event.x <= inner_rect.x + m_children_size.w) {
+                    if (event.x <= x + m_children_size.w) {
                         for (TreeNode<T> *root : m_model->roots) {
                             m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                                 if (event.y >= y && event.y <= y + node->max_cell_height) {
@@ -493,7 +497,7 @@
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
                     y += m_children_size.h;
-                    if (event.x <= inner_rect.x + m_children_size.w) {
+                    if (event.x <= x + m_children_size.w) {
                         for (TreeNode<T> *root : m_model->roots) {
                             m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                                 if (event.y >= y && event.y <= y + node->max_cell_height) {
@@ -554,9 +558,10 @@
                     virtual_size = m_virtual_size;
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
-                float y_start = pos.y;
+                this->inner_rect = rect;
 
                 float local_pos_x = pos.x;
+                float y_start = pos.y;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
                     Rect clip_rect = rect;
@@ -610,14 +615,13 @@
                                                     });
                                                 }
                                             }
-                                            float root_y = tree_line_start;
 
                                             m_model->descend(tree_root, [&](TreeNode<T> *node) {
                                                 if (!node->is_collapsed) {
-                                                    drawTreeLinesToChildren(dc, local_x, root_y, node);
+                                                    drawTreeLinesToChildren(dc, local_x, tree_line_start, node);
+                                                } else {
+                                                    return TREEVIEW_EARLY_EXIT;
                                                 }
-                                                // TODO can we early exit here?
-                                                // does it interrupt current branch or only the next one?
                                                 return TREEVIEW_CONTINUE;
                                             });
                                         }
