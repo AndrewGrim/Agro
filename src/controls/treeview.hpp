@@ -636,7 +636,7 @@
                                         if (node->parent) {
                                             dc->fillRect(
                                                 Rect(
-                                                    pos.x + (node->depth - 1) * m_indent, 
+                                                    pos.x + (node->depth - 1) * m_indent + (m_indent / 3), 
                                                     pos.y + (m_indent / 2) + (m_indent / 8), 
                                                     m_indent / 4, 
                                                     m_indent / 4
@@ -749,6 +749,7 @@
                         m_model->descend(tree_root, [&](TreeNode<T> *node) {
                             if (!node->is_collapsed) {
                                 drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
+                                tree_line_start += node->max_cell_height;
                             } else {
                                 return TREEVIEW_EARLY_EXIT;
                             }
@@ -1063,36 +1064,50 @@
                     y += node->max_cell_height / 2;
                     float last_y = y;
 
-                    for (TreeNode<T> *child : node->children) {
+                    // TODO 2 is the width and height of the lines
+                    // this should probably be a member on the treeview class
+                    // Draw the horizontal line going to the icon.
+                    dc->fillRect(
+                        Rect(
+                            x - (m_indent / 2),
+                            y + (last_y - y) + node->max_cell_height,
+                            m_indent,
+                            2
+                        ),
+                        Color(0.5, 0.5, 0.5)
+                    );
+                    last_y += node->max_cell_height;
+                    for (int i = 0; i < node->children.size() - 1; i++) {
+                        TreeNode<T> *child = node->children[i];
                         m_model->descend(child, [&](TreeNode<T>* _node) {
                             if (!_node->is_collapsed) {
                                 last_y += _node->max_cell_height;
-                            } 
+                            } else {
+                                return TREEVIEW_EARLY_EXIT;
+                            }
                             return TREEVIEW_CONTINUE;
                         });
-                        // TODO 2 is the width and height of the lines
-                        // this should probably be a member on the treeview class
-                        // Draw the line going down to the node.
-                        dc->fillRect(
-                            Rect(
-                                x - (m_indent / 2) - 1,
-                                y + (m_indent / 8),
-                                2,
-                                last_y - y + 2 - (m_indent / 8)
-                            ),
-                            Color(0.5, 0.5, 0.5)
-                        );
                         // Draw the horizontal line going to the icon.
                         dc->fillRect(
                             Rect(
                                 x - (m_indent / 2),
-                                y + (last_y - y),
-                                m_indent / 2,
+                                last_y,
+                                m_indent,
                                 2
                             ),
                             Color(0.5, 0.5, 0.5)
                         );
                     }
+                    // Draw the line going down to the last child node.
+                    dc->fillRect(
+                        Rect(
+                            x - (m_indent / 2) - 1,
+                            y,
+                            2,
+                            last_y - y + 2
+                        ),
+                        Color(0.5, 0.5, 0.5)
+                    );
                 }
             }
     };
