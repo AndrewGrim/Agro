@@ -38,9 +38,9 @@ install: build/lib$(LIB_NAME).so
 	cp src/controls/*.hpp -t build/$(LIB_NAME)/controls
 	cp src/common/*.hpp -t build/$(LIB_NAME)/common
 	cp src/renderer/*.hpp -t build/$(LIB_NAME)/renderer
-	cp build/lib$(LIB_NAME).so /usr/lib
-	cp -r build/$(LIB_NAME) /usr/include
-	ldconfig
+	sudo cp build/lib$(LIB_NAME).so /usr/lib
+	sudo cp -r build/$(LIB_NAME) /usr/include
+	sudo ldconfig
 
 # BUILD DIRECTORY
 dir:
