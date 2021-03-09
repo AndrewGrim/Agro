@@ -560,8 +560,10 @@
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 this->inner_rect = rect;
 
-                float local_pos_x = pos.x;
+                float x_start = pos.x;
                 float y_start = pos.y;
+
+                float local_pos_x = pos.x;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
                     Rect clip_rect = rect;
@@ -595,36 +597,6 @@
                                     }
                                     auto result = std::find(tree_roots.begin(), tree_roots.end(), tree_root);
                                     if (result == tree_roots.end()) {
-                                        if (!tree_root->is_collapsed && tree_root->children.size()) {
-                                            dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
-                                            float local_x = pos.x;
-                                            float tree_line_start = y_start + m_children_size.h;
-                                            if (m_model->roots[0] != tree_root) {
-                                                for (TreeNode<T> *_root : m_model->roots) {
-                                                    if (tree_root == _root) {
-                                                        break;
-                                                    }
-                                                    m_model->descend(_root, [&](TreeNode<T> *node) {
-                                                        if (!node->is_collapsed) {
-                                                            tree_line_start += node->max_cell_height;
-                                                        } else {
-                                                            tree_line_start += node->max_cell_height;
-                                                            return TREEVIEW_EARLY_EXIT;
-                                                        }
-                                                        return TREEVIEW_CONTINUE;
-                                                    });
-                                                }
-                                            }
-
-                                            m_model->descend(tree_root, [&](TreeNode<T> *node) {
-                                                if (!node->is_collapsed) {
-                                                    drawTreeLinesToChildren(dc, local_x, tree_line_start, node);
-                                                } else {
-                                                    return TREEVIEW_EARLY_EXIT;
-                                                }
-                                                return TREEVIEW_CONTINUE;
-                                            });
-                                        }
                                         tree_roots.push_back(tree_root);
                                     }
 
@@ -751,6 +723,40 @@
                         }
                     }
                 }
+
+                // Draw the tree lines
+                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h));
+                for (TreeNode<T> *tree_root : tree_roots) {
+                    if (!tree_root->is_collapsed && tree_root->children.size()) {
+                        float tree_line_start = y_start + m_children_size.h;
+                        if (m_model->roots[0] != tree_root) {
+                            for (TreeNode<T> *_root : m_model->roots) {
+                                if (tree_root == _root) {
+                                    break;
+                                }
+                                m_model->descend(_root, [&](TreeNode<T> *node) {
+                                    if (!node->is_collapsed) {
+                                        tree_line_start += node->max_cell_height;
+                                    } else {
+                                        tree_line_start += node->max_cell_height;
+                                        return TREEVIEW_EARLY_EXIT;
+                                    }
+                                    return TREEVIEW_CONTINUE;
+                                });
+                            }
+                        }
+
+                        m_model->descend(tree_root, [&](TreeNode<T> *node) {
+                            if (!node->is_collapsed) {
+                                drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
+                            } else {
+                                return TREEVIEW_EARLY_EXIT;
+                            }
+                            return TREEVIEW_CONTINUE;
+                        });
+                    }
+                }
+
                 dc->setClip(old_clip);
                 drawScrollBars(dc, rect, virtual_size);
             }
@@ -1070,9 +1076,9 @@
                         dc->fillRect(
                             Rect(
                                 x - (m_indent / 2) - 1,
-                                y,
+                                y + (m_indent / 8),
                                 2,
-                                last_y - y + 2
+                                last_y - y + 2 - (m_indent / 8)
                             ),
                             Color(0.5, 0.5, 0.5)
                         );
