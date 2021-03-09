@@ -1083,6 +1083,7 @@
                             if (!_node->is_collapsed) {
                                 last_y += _node->max_cell_height;
                             } else {
+                                last_y += _node->max_cell_height;
                                 return TREEVIEW_EARLY_EXIT;
                             }
                             return TREEVIEW_CONTINUE;
