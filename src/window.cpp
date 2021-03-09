@@ -112,7 +112,7 @@ void Window::run() {
                             m_is_mouse_captured = false;
                             SDL_CaptureMouse(SDL_FALSE);
                             if ((event.button.x < 0 || event.button.x > size.w) ||
-                                (event.button.y < 0 || event.button.y > size.w)) {
+                                (event.button.y < 0 || event.button.y > size.h)) {
                                 if (m_state->pressed) {
                                     SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
                                     ((Widget*)m_state->pressed)->onMouseLeft.notify(((Widget*)m_state->pressed), MouseEvent(event));
