@@ -599,52 +599,6 @@
                                     if (result == tree_roots.end()) {
                                         tree_roots.push_back(tree_root);
                                     }
-
-                                    // Clip and draw the collapsible "button".
-                                    dc->setClip(
-                                        Rect(
-                                            rect.x, 
-                                            pos.y > rect.y + m_children_size.h ? pos.y : rect.y + m_children_size.h, 
-                                            m_column_widths[0], 
-                                            node->max_cell_height
-                                        )
-                                    );
-                                    if (node->children.size()) {
-                                        if (node->is_collapsed) {
-                                            dc->drawTextureAligned(
-                                                Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height),
-                                                Size(m_indent / 2, m_indent / 2),
-                                                m_collapsed->_texture(),
-                                                m_collapsed->coords(),
-                                                HorizontalAlignment::Center,
-                                                VerticalAlignment::Center,
-                                                m_collapsed->foreground()
-                                            );
-                                        } else {
-                                            dc->drawTextureAligned(
-                                                Rect(pos.x + (node->depth - 1) * m_indent, pos.y, m_indent, node->max_cell_height),
-                                                Size(m_indent / 2, m_indent / 2),
-                                                m_expanded->_texture(),
-                                                m_expanded->coords(),
-                                                HorizontalAlignment::Center,
-                                                VerticalAlignment::Center,
-                                                m_expanded->foreground()
-                                            );
-                                        }
-                                    // End of the line.
-                                    } else {
-                                        if (node->parent) {
-                                            dc->fillRect(
-                                                Rect(
-                                                    pos.x + (node->depth - 1) * m_indent + (m_indent / 3), 
-                                                    pos.y + (m_indent / 2) + (m_indent / 8), 
-                                                    m_indent / 4, 
-                                                    m_indent / 4
-                                                ),
-                                                COLOR_BLACK
-                                            );
-                                        }
-                                    }
                                 }
 
                                 float cell_start = pos.x;
@@ -727,7 +681,7 @@
                 // Draw the tree lines
                 dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h));
                 for (TreeNode<T> *tree_root : tree_roots) {
-                    if (!tree_root->is_collapsed && tree_root->children.size()) {
+                    if (tree_root->children.size()) {
                         float tree_line_start = y_start + m_children_size.h;
                         if (m_model->roots[0] != tree_root) {
                             for (TreeNode<T> *_root : m_model->roots) {
@@ -747,10 +701,9 @@
                         }
 
                         m_model->descend(tree_root, [&](TreeNode<T> *node) {
-                            if (!node->is_collapsed) {
-                                drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
-                                tree_line_start += node->max_cell_height;
-                            } else {
+                            drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
+                            tree_line_start += node->max_cell_height;
+                            if (node->is_collapsed) {
                                 return TREEVIEW_EARLY_EXIT;
                             }
                             return TREEVIEW_CONTINUE;
@@ -1058,46 +1011,48 @@
             }
 
             void drawTreeLinesToChildren(DrawingContext *dc, float x, float y, TreeNode<T> *node) {
-                if (!node->is_collapsed && node->children.size()) {
+                if (node->children.size()) {
                     x += node->depth * m_indent;
                     // Begin drawing at the center of the node cell height.
                     y += node->max_cell_height / 2;
                     float last_y = y;
 
-                    // TODO 2 is the width and height of the lines
-                    // this should probably be a member on the treeview class
-                    // Draw the horizontal line going to the icon.
-                    dc->fillRect(
-                        Rect(
-                            x - (m_indent / 2),
-                            y + (last_y - y) + node->max_cell_height,
-                            m_indent,
-                            2
-                        ),
-                        Color(0.5, 0.5, 0.5)
-                    );
-                    last_y += node->max_cell_height;
-                    for (int i = 0; i < node->children.size() - 1; i++) {
-                        TreeNode<T> *child = node->children[i];
-                        m_model->descend(child, [&](TreeNode<T>* _node) {
-                            if (!_node->is_collapsed) {
-                                last_y += _node->max_cell_height;
-                            } else {
-                                last_y += _node->max_cell_height;
-                                return TREEVIEW_EARLY_EXIT;
-                            }
-                            return TREEVIEW_CONTINUE;
-                        });
+                    if (!node->is_collapsed) {
+                        // TODO 2 is the width and height of the lines
+                        // this should probably be a member on the treeview class
                         // Draw the horizontal line going to the icon.
                         dc->fillRect(
                             Rect(
                                 x - (m_indent / 2),
-                                last_y,
+                                y + (last_y - y) + node->max_cell_height,
                                 m_indent,
                                 2
                             ),
                             Color(0.5, 0.5, 0.5)
                         );
+                        last_y += node->max_cell_height;
+                        for (int i = 0; i < node->children.size() - 1; i++) {
+                            TreeNode<T> *child = node->children[i];
+                            m_model->descend(child, [&](TreeNode<T>* _node) {
+                                if (!_node->is_collapsed) {
+                                    last_y += _node->max_cell_height;
+                                } else {
+                                    last_y += _node->max_cell_height;
+                                    return TREEVIEW_EARLY_EXIT;
+                                }
+                                return TREEVIEW_CONTINUE;
+                            });
+                            // Draw the horizontal line going to the icon.
+                            dc->fillRect(
+                                Rect(
+                                    x - (m_indent / 2),
+                                    last_y,
+                                    m_indent,
+                                    2
+                                ),
+                                Color(0.5, 0.5, 0.5)
+                            );
+                        }
                     }
                     // Draw the line going down to the last child node.
                     dc->fillRect(
@@ -1109,6 +1064,40 @@
                         ),
                         Color(0.5, 0.5, 0.5)
                     );
+                    if (node->is_collapsed) {
+                        dc->drawTextureAligned(
+                            Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
+                            Size(m_indent / 2, m_indent / 2),
+                            m_collapsed->_texture(),
+                            m_collapsed->coords(),
+                            HorizontalAlignment::Center,
+                            VerticalAlignment::Center,
+                            m_collapsed->foreground()
+                        );
+                    } else {
+                        dc->drawTextureAligned(
+                            Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
+                            Size(m_indent / 2, m_indent / 2),
+                            m_expanded->_texture(),
+                            m_expanded->coords(),
+                            HorizontalAlignment::Center,
+                            VerticalAlignment::Center,
+                            m_expanded->foreground()
+                        );
+                    }
+                // End of the line.
+                } else {
+                    if (node->parent) {
+                        dc->fillRect(
+                            Rect(
+                                x + ((node->depth - 1) * m_indent) + (m_indent / 3), 
+                                y + (m_indent / 2) + (m_indent / 8), 
+                                m_indent / 4, 
+                                m_indent / 4
+                            ),
+                            COLOR_BLACK
+                        );
+                    }
                 }
             }
     };
