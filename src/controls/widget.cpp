@@ -180,7 +180,7 @@ void Widget::parentLayout() {
     update();
 }
 
-void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
+void* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (this->isScrollable()) {
         // TODO this should probably be an abstract class that provides a vert
         // and a horizontal scrollbar, so in the future dont cast to scrolledbox
@@ -193,13 +193,13 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         if (self->m_vertical_scrollbar) {
             if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
                 (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
-                return (void*)self->m_vertical_scrollbar->propagateMouseEvent(state, event);
+                return (void*)self->m_vertical_scrollbar->propagateMouseEvent(window, state, event);
             }
         }
         if (self->m_horizontal_scrollbar) {
             if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
                 (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
-                return (void*)self->m_horizontal_scrollbar->propagateMouseEvent(state, event);
+                return (void*)self->m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
             }
         }
     }
@@ -209,9 +209,9 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
                 (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
                 void *last = nullptr;
                 if (child->isLayout()) {
-                    last = (void*)child->propagateMouseEvent(state, event);
+                    last = (void*)child->propagateMouseEvent(window, state, event);
                 } else {
-                    child->handleMouseEvent(state, event);
+                    child->handleMouseEvent(window, state, event);
                     last = (void*)child;
                 }
                 return last;
@@ -219,11 +219,11 @@ void* Widget::propagateMouseEvent(State *state, MouseEvent event) {
         }
     }
 
-    this->handleMouseEvent(state, event);
+    this->handleMouseEvent(window, state, event);
     return this;
 }
 
-void Widget::handleMouseEvent(State *state, MouseEvent event) {
+void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
     // Note: The hovered state is not set as it is returned
     // from the propagateMouseEvent function.
 

@@ -119,17 +119,17 @@ bool Scrollable::isLayout() {
     return true;
 }
 
-void* Scrollable::propagateMouseEvent(State *state, MouseEvent event) {
+void* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (m_vertical_scrollbar) {
         if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
             (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
-            return (void*)m_vertical_scrollbar->propagateMouseEvent(state, event);
+            return (void*)m_vertical_scrollbar->propagateMouseEvent(window, state, event);
         }
     }
     if (m_horizontal_scrollbar) {
         if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
             (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
-            return (void*)m_horizontal_scrollbar->propagateMouseEvent(state, event);
+            return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
         }
     }
     for (Widget *child : children) {
@@ -137,16 +137,16 @@ void* Scrollable::propagateMouseEvent(State *state, MouseEvent event) {
             (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
             void *last = nullptr;
             if (child->isLayout()) {
-                last = (void*)child->propagateMouseEvent(state, event);
+                last = (void*)child->propagateMouseEvent(window, state, event);
             } else {
-                child->handleMouseEvent(state, event);
+                child->handleMouseEvent(window, state, event);
                 last = (void*)child;
             }
             return last;
         }
     }
 
-    this->handleMouseEvent(state, event);
+    this->handleMouseEvent(window, state, event);
     return this;
 }
 

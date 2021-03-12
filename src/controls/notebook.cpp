@@ -71,26 +71,26 @@ bool NoteBookTabBar::isLayout() {
     return true;
 }
 
-void* NoteBookTabBar::propagateMouseEvent(State *state, MouseEvent event) {
+void* NoteBookTabBar::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
         (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
-        return (void*)m_horizontal_scrollbar->propagateMouseEvent(state, event);
+        return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
     }
     for (Widget *child : children) {
         if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
             (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
             void *last = nullptr;
             if (child->isLayout()) {
-                last = (void*)child->propagateMouseEvent(state, event);
+                last = (void*)child->propagateMouseEvent(window, state, event);
             } else {
-                child->handleMouseEvent(state, event);
+                child->handleMouseEvent(window, state, event);
                 last = (void*)child;
             }
             return last;
         }
     }
 
-    this->handleMouseEvent(state, event);
+    this->handleMouseEvent(window, state, event);
     return this;
 }
 
@@ -228,14 +228,14 @@ bool NoteBookTabButton::isLayout() {
     return true;
 }
 
-void* NoteBookTabButton::propagateMouseEvent(State *state, MouseEvent event) {
+void* NoteBookTabButton::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if ((event.x >= m_close_image->rect.x && event.x <= m_close_image->rect.x + m_close_image->rect.w) &&
         (event.y >= m_close_image->rect.y && event.y <= m_close_image->rect.y + m_close_image->rect.h)) {
-        m_close_image->handleMouseEvent(state, event);
+        m_close_image->handleMouseEvent(window, state, event);
         return m_close_image;
     }
 
-    this->handleMouseEvent(state, event);
+    this->handleMouseEvent(window, state, event);
     return this;
 }
 
@@ -373,11 +373,11 @@ bool NoteBook::isLayout() {
     return true;
 }
 
-void* NoteBook::propagateMouseEvent(State *state, MouseEvent event) {
+void* NoteBook::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     // Check event against NoteBookTabBar.
     if ((event.x >= m_tabs->rect.x && event.x <= m_tabs->rect.x + m_tabs->rect.w) &&
         (event.y >= m_tabs->rect.y && event.y <= m_tabs->rect.y + m_tabs->rect.h)) {
-        return (void*)m_tabs->propagateMouseEvent(state, event);
+        return (void*)m_tabs->propagateMouseEvent(window, state, event);
     }
 
     // Check event against the tab content itself.
@@ -386,14 +386,14 @@ void* NoteBook::propagateMouseEvent(State *state, MouseEvent event) {
         (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
         void *last = nullptr;
         if (child->isLayout()) {
-            last = (void*)child->propagateMouseEvent(state, event);
+            last = (void*)child->propagateMouseEvent(window, state, event);
         } else {
-            child->handleMouseEvent(state, event);
+            child->handleMouseEvent(window, state, event);
             last = (void*)child;
         }
         return last;
     }
 
-    this->handleMouseEvent(state, event);
+    this->handleMouseEvent(window, state, event);
     return this;
 }

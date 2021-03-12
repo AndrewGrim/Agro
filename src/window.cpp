@@ -104,7 +104,7 @@ void Window::run() {
                 case SDL_MOUSEBUTTONDOWN:
                     m_is_mouse_captured = true;
                     SDL_CaptureMouse(SDL_TRUE);
-                    m_state->pressed = m_main_widget->propagateMouseEvent(m_state, MouseEvent(event.button));
+                    m_state->pressed = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
                     break;
                 case SDL_MOUSEBUTTONUP:
                     if (m_mouse_inside) {
@@ -126,7 +126,7 @@ void Window::run() {
                                 break;
                             }
                         }
-                        m_main_widget->propagateMouseEvent(m_state, MouseEvent(event.button));
+                        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
                     } else {
                         if (m_state->pressed) {
                             ((Widget*)m_state->pressed)->setPressed(false);
@@ -138,7 +138,7 @@ void Window::run() {
                     if (event.motion.timestamp >= frame_start) {
                         event.motion.xrel += mouse_movement_x;
                         event.motion.yrel += mouse_movement_y;
-                        m_state->hovered = m_main_widget->propagateMouseEvent(m_state, MouseEvent(event.motion));
+                        m_state->hovered = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
                         mouse_movement_x = 0;
                         mouse_movement_y = 0;
                     } else {
