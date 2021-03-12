@@ -2,6 +2,24 @@
 
 # include "window.hpp"
 
+uint32_t tooltipCallback(uint32_t interval, void *window) {
+    Window *win = (Window*)window;
+    win->draw_tooltip = true;
+    win->update();
+
+    SDL_Event event;
+    SDL_UserEvent userevent;
+    userevent.type = SDL_USEREVENT;
+    userevent.code = 0;
+    userevent.data1 = NULL;
+    userevent.data2 = NULL;
+    event.type = SDL_USEREVENT;
+    event.user = userevent;
+    SDL_PushEvent(&event);
+
+    return 0;
+}
+
 // This is needed on Windows and supposedly on MacOS (not tested) to
 // redraw the window while the user is resizing it.
 // I guess alternatively we could paint in a different thread??
@@ -68,6 +86,10 @@ void Window::draw() {
     dc->clear();
     dc->setClip(Rect(0, 0, size.w, size.h));
     m_main_widget->draw(dc, Rect(0, 0, size.w, size.h));
+    if (m_state->tooltip && draw_tooltip) {
+        drawTooltip();
+        draw_tooltip = false;
+    }
     dc->render();
 }
 
@@ -184,6 +206,7 @@ void Window::run() {
                                 SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
                                 ((Widget*)m_state->hovered)->onMouseLeft.notify(((Widget*)m_state->hovered), MouseEvent(event));
                                 m_state->hovered = nullptr;
+                                SDL_RemoveTimer(m_tooltip_callback);
                             }
                             break;
                     }
@@ -365,4 +388,43 @@ std::string Window::title() {
 
 void Window::setTitle(std::string title) {
     SDL_SetWindowTitle(m_win, title.c_str());
+}
+
+void Window::setTooltip(Widget *widget) {
+    SDL_RemoveTimer(m_tooltip_callback);
+    if (!widget->tooltip.size()) {
+        return;
+    }
+    m_state->tooltip = widget;
+    m_tooltip_callback = SDL_AddTimer(m_tooltip_time, tooltipCallback, this);
+    update();
+}
+
+void Window::drawTooltip() {
+    Widget *w = (Widget*)m_state->tooltip;
+    if (!w->tooltip.size()) {
+        return;
+    }
+    dc->setClip(Rect(0, 0, size.w, size.h));
+    Size s = dc->measureText(nullptr, w->tooltip);
+        // Padding, Border
+        s.w += (5 * 2) + (1 * 2);
+        s.h += (5 * 2) + (1 * 2);
+    int x, y;
+    SDL_GetMouseState(&x, &y);
+    SDL_Cursor *current_cursor = SDL_GetCursor();
+
+    Rect r = Rect(x + 12, y + 16, s.w, s.h);
+    dc->fillRect(r, COLOR_BLACK);
+    r.shrink(1); // Shrink by border
+    dc->fillRect(r, Color(1, 1, 0.55));
+    dc->fillTextAligned(
+        nullptr, 
+        w->tooltip,
+        HorizontalAlignment::Center,
+        VerticalAlignment::Center,
+        r,
+        5,
+        COLOR_BLACK
+    );
 }

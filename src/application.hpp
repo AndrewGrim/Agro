@@ -3,7 +3,7 @@
 
     #include "window.hpp"
 
-    static int init = SDL_Init(SDL_INIT_VIDEO);;
+    static int init = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);;
 
     enum class Cursor {
         Arrow,

@@ -52,6 +52,8 @@
 
             Style style;
 
+            std::string tooltip;
+
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 
             /// certain events happen. If not in use these should

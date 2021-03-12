@@ -260,6 +260,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
             state->pressed = nullptr;
             break;
         case MouseEvent::Type::Motion:
+            window->setTooltip(this);
             if (!state->pressed) {
                 if (state->hovered) {
                     if (this != state->hovered) {

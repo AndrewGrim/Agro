@@ -27,6 +27,8 @@
             /// constructor of the Application.
             DrawingContext *dc = nullptr;
 
+            bool draw_tooltip = false;
+
             /// `onReady` gets called when the Application has finished its first draw()
             /// but before entering the event loop.
             std::function<void(Window*)> onReady = nullptr;
@@ -77,6 +79,8 @@
             std::string title();
             void setTitle(std::string title);
 
+            void setTooltip(Widget *widget);
+
         protected:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
@@ -91,10 +95,14 @@
             bool m_is_mouse_captured = false;
             std::string m_title;
 
+            uint32_t m_tooltip_time = 500;
+            SDL_TimerID m_tooltip_callback = -1;
+
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from
             /// calls to the DrawingContext.
             /// Used internally by show().
             void draw();
+            void drawTooltip();
     };
 #endif

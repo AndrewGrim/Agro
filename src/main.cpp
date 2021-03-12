@@ -7,6 +7,7 @@ int main(int argc, char **argv) {
         app->resize(400, 800);
         TreeView<void> *tv = new TreeView<void>();
             tv->append(new Column<void>("Testing treelines at more than 1 depth!"));
+            tv->children[0]->tooltip = "Testing";
             Tree<void> *model = new Tree<void>();
                 for (int n = 0; n < 2; n++) {
                     TreeNode<void> *parent = nullptr;
