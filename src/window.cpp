@@ -415,6 +415,12 @@ void Window::drawTooltip() {
     SDL_Cursor *current_cursor = SDL_GetCursor();
 
     Rect r = Rect(x + 12, y + 16, s.w, s.h);
+    if (r.x + s.w > size.w) {
+        r.x -= 12 + r.w;
+    }
+    if (r.y + s.h > size.h) {
+        r.y -= 16 + r.h;
+    }
     dc->fillRect(r, COLOR_BLACK);
     r.shrink(1); // Shrink by border
     dc->fillRect(r, Color(1, 1, 0.55));
