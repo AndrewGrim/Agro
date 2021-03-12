@@ -133,6 +133,8 @@ test_notebook:
 
 example_box:
 	$(CXX) examples/box.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/box.out && ./examples/box.out
+example_tooltips:
+	$(CXX) examples/tooltips.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/tooltips.out && ./examples/tooltips.out
 example_image:
 	$(CXX) examples/image.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/image.out && ./examples/image.out
 example_lineedit:
