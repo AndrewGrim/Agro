@@ -71,13 +71,6 @@ void update_rect_labels(std::string text, Button *button, Rect rect) {
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
-            if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
-                    window->quit();
-                }
-            }
-        };
         app->setTitle("Custom Widget Styling");
         app->resize(600, 400);
         // LEFT
@@ -131,6 +124,11 @@ int main(int argc, char **argv) {
         app->onReady = [&](Window *window) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
         };
     app->run();
 
