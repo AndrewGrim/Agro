@@ -10,6 +10,13 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("ScrolledBox Inner Test");
         app->resize(500, 500);
         ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(200, 200));
@@ -22,14 +29,7 @@ int main(int argc, char **argv) {
                 bottom->append((new Button(std::string(100, i)))->setBackground(Color(0.0, 0.6, 0.6)), Fill::Both);
             }
         app->append(bottom, Fill::Both);
-
-        
-
-    #ifdef TEST
-        #include "headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }

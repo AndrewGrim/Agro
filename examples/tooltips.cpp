@@ -4,6 +4,13 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("Tooltips");
         Button *top = new Button("Top");
             top->tooltip = "top";
@@ -11,12 +18,7 @@ int main(int argc, char **argv) {
             bottom->tooltip = "bottom";
         app->append(top, Fill::Both);
         app->append(bottom, Fill::Both);
-
-    #ifdef TEST
-        #include "../tests/headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }

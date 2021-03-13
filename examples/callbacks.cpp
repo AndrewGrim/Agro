@@ -5,8 +5,13 @@
 int main(int argc, char **argv) { 
     Application *app = Application::get();
         app->setTitle("Callbacks");
-    app->onReady = [](Window *win) {
+    app->onReady = [&](Window *window) {
         println("READY");
+        if (argc > 1) {
+            if (std::string(argv[1]) == std::string("quit")) {
+                window->quit();
+            }
+        }
     };
     bool quit = true;
     app->onQuit = [&](Window *win) -> bool {
@@ -48,12 +53,7 @@ int main(int argc, char **argv) {
         app->onResize = [&](Window *win) {
             button->setText("Window Size:" + std::to_string((int)win->size.w) + ", " + std::to_string((int)win->size.h));
         };
-
-    #ifdef TEST
-        #include "../tests/headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }

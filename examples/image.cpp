@@ -2,6 +2,13 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("New Title");
         app->resize(500, 500);
 
@@ -42,12 +49,7 @@ int main(int argc, char **argv) {
         original->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
             img->setMinSize(img->originalSize());
         });
-
-    #ifdef TEST
-        #include "../tests/headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0;
 }

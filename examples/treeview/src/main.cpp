@@ -18,6 +18,13 @@ struct Hidden {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("Contacts 2021");
         app->resize(1200, 800);
         app->setMainWidget(new Box(Align::Horizontal));
@@ -181,13 +188,8 @@ int main(int argc, char **argv) {
         app->append(vbox, Fill::Vertical);
         app->onReady = [&](Window *win) {
             tv->select(0);
-        };
-        
-    #ifdef TEST
-        #include "headless.hpp"
-    #else
-        app->run();
-    #endif
+        };        
+    app->run();
 
     return 0;
 }

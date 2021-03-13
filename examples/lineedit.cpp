@@ -8,6 +8,13 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("LineEdit");
         std::vector<std::string> monster_names = {
             "Great Jagras", "Kulu-Ya-Ku", "Pukei-Pukei", "Barroth",
@@ -47,12 +54,7 @@ int main(int argc, char **argv) {
                 results_view->append(new Label(m));
             }
         app->append(results_view, Fill::Both);
-
-    #ifdef TEST
-        #include "../tests/headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }

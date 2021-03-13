@@ -5,6 +5,13 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("Notebook Test");
         NoteBook *nb = new NoteBook();
         {
@@ -17,12 +24,7 @@ int main(int argc, char **argv) {
             }
         }
         app->append(nb, Fill::Both);
-
-    #ifdef TEST
-        #include "headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }

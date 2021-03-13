@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <vector>
 #include <memory>
 
@@ -9,6 +10,13 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("Box");
         app->resize(400, 600);
         Button *align_button = new Button("Switch Box Alignment");
@@ -58,12 +66,7 @@ int main(int argc, char **argv) {
             av_fv->setAlignPolicy(a);
             av_fb->setAlignPolicy(a);
         });
-
-    #ifdef TEST
-        #include "../tests/headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }

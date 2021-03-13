@@ -16,6 +16,13 @@
 //  4 - Regular old clip.
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        app->onReady = [&](Window *window) {
+            if (argc > 1) {
+                if (std::string(argv[1]) == std::string("quit")) {
+                    window->quit();
+                }
+            }
+        };
         app->setTitle("Scrolledbox Inception Clipping Test");
         app->resize(1000, 400);
         app->append(new Button("Top"), Fill::Horizontal);
@@ -79,12 +86,7 @@ int main(int argc, char **argv) {
             h_box->append(right, Fill::Both);
         }
         app->append(h_box, Fill::Both);
-
-    #ifdef TEST
-        #include "headless.hpp"
-    #else
-        app->run();
-    #endif
+    app->run();
 
     return 0; 
 }
