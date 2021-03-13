@@ -55,7 +55,6 @@ else:
             command = [
                 "g++",
                 f"{dirs[i]}/{test}",
-                "-DTEST",
                 "-Iinclude", "-I/usr/include", "-I/usr/include/freetype2",
                 "-Llib", "-L/usr/lib/i386-linux-gnu", "-L/usr/lib",
                 "-lGL", "-lSDL2", "-lfreetype", "-lX11", "-lpthread", "-lXrandr", "-lXi", "-ldl",
@@ -66,7 +65,7 @@ else:
                 index += 1
 
             run = [
-                f"./{dirs[i]}/{filename}.out",
+                f"./{dirs[i]}/{filename}.out", "quit"
             ]
 
             p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
