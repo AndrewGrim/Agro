@@ -17,6 +17,7 @@
     #include "../renderer/drawing_context.hpp"
 
     class Widget;
+    class Window;
 
     class EventListener {
         public:
@@ -50,6 +51,8 @@
             std::vector<Widget*> children;
 
             Style style;
+
+            std::string tooltip;
 
             /// The following functions pointers are responsible
             /// for callbacks that the Widget can execute as 
@@ -201,10 +204,10 @@
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
-            virtual void* propagateMouseEvent(State *state, MouseEvent event);
+            virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event);
 
             /// Handles the MouseEvent sent by the Application.
-            virtual void handleMouseEvent(State *state, MouseEvent event);
+            virtual void handleMouseEvent(Window *window, State *state, MouseEvent event);
 
             virtual void handleTextEvent(DrawingContext *dc, const char *text);
 
