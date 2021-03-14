@@ -434,3 +434,11 @@ void Window::drawTooltip() {
         COLOR_BLACK
     );
 }
+
+void Window::move(int x, int y) {
+    SDL_SetWindowPosition(m_win, x, y);
+}
+
+void Window::center() {
+    SDL_SetWindowPosition(m_win, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+}

@@ -81,6 +81,9 @@
 
             void setTooltip(Widget *widget);
 
+            void move(int x, int y);
+            void center();
+
         protected:
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
