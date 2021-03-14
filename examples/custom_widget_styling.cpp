@@ -20,8 +20,12 @@ class CustomStyle : public Widget {
             style.border.left = 30;
             style.border.right = 40;
 
-            // TODO implement
-            style.border.color_top = Color(0.2f, 0.4f, 0.7f);
+            // // Changes the color of the border to resemble the
+            // // windows logo.
+            // style.border.color_top = Color("#dc3e00");
+            // style.border.color_bottom = Color("#6aa413");
+            // style.border.color_left = Color("#009fb8");
+            // style.border.color_right = Color("#d7a120");
 
             style.padding.top = 10;
             style.padding.bottom = 20;

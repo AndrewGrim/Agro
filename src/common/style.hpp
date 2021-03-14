@@ -38,10 +38,10 @@
             int left = STYLE_DEFAULT;
             int right = STYLE_DEFAULT;
 
-            Color color_top = COLOR_BLACK;
-            Color color_bottom = COLOR_BLACK;
-            Color color_left = COLOR_BLACK;
-            Color color_right = COLOR_BLACK;
+            Color color_top = COLOR_DEFAULT;
+            Color color_bottom = COLOR_DEFAULT;
+            Color color_left = COLOR_DEFAULT;
+            Color color_right = COLOR_DEFAULT;
         };
 
         struct Padding {
