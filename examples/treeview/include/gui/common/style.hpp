@@ -56,10 +56,10 @@
         Border border;
         Padding padding;
         Color text_color = COLOR_BLACK;
-        Color background_color = Color(0.9, 0.9, 0.9);
-        Color window_color = Color(0.5, 0.5, 0.5);
-        Color selection_color = Color(0.2, 0.5, 1.0);
-        Color hover_color = Color(0.5, 0.5, 0.5, 0.1);
+        Color background_color = Color(0.9f, 0.9f, 0.9f);
+        Color window_color = Color(0.5f, 0.5f, 0.5f);
+        Color selection_color = Color(0.2f, 0.5f, 1.0f);
+        Color hover_color = Color(0.5f, 0.5f, 0.5f, 0.1f);
 
         Style();
         ~Style();

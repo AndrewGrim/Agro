@@ -3,7 +3,7 @@
 #include "slider.hpp"
 
 SliderButton::SliderButton() : Widget() {
-    Widget::m_bg = Color(0.9, 0.9, 0.9);
+    Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
     setMinSize(Size(20, 20));
 }
 
@@ -17,7 +17,7 @@ const char* SliderButton::name() {
 
 void SliderButton::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    Color color = Color(0, 0, 0, 1); 
+    Color color = COLOR_BLACK; 
     if (this->isPressed()) {
         color = this->m_pressed_bg; 
     } else if (this->isHovered()) {
@@ -45,7 +45,7 @@ Size SliderButton::minSize() {
 }
 
 Slider::Slider(Align alignment, float value) : Box(alignment) {
-    Widget::m_bg = Color();
+    Widget::m_bg = COLOR_BLACK;
     this->m_value = value;
     this->m_slider_button = new SliderButton();
     if (alignment == Align::Horizontal) {
@@ -153,10 +153,8 @@ Size Slider::sizeHint(DrawingContext *dc) {
 Slider* Slider::setForeground(Color foreground) {
     // The foreground color for this widget acutally affects
     // the slider button.
-    if (m_slider_button->background() != foreground) {
-        m_slider_button->setBackground(foreground);
-        this->update();
-    }
+    m_slider_button->setBackground(foreground);
+    this->update();
 
     return this;
 }
@@ -164,10 +162,8 @@ Slider* Slider::setForeground(Color foreground) {
 Slider* Slider::setBackground(Color background) {
     // The background color for this widget only affects
     // the line on which the slider sits on.
-    if (Widget::m_bg != background) {
-        Widget::m_bg = background;
-        this->update();
-    }
+    Widget::m_bg = background;
+    this->update();
 
     return this;
 }

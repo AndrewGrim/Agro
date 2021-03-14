@@ -2,7 +2,7 @@
 
 Spacer::Spacer(Size min_size) : Widget() {
     m_size = min_size;
-    Widget::m_bg = Color(0, 0, 0, 0);
+    Widget::m_bg = COLOR_NONE;
 }
 
 Spacer::~Spacer() {

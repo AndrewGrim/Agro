@@ -50,10 +50,10 @@
 
         Renderer(unsigned int *indices);
         ~Renderer();
-        void fillText(Font *font, std::string text, Point point, Color color = Color(), float scale = 1.0f);
+        void fillText(Font *font, std::string text, Point point, Color color = COLOR_BLACK, float scale = 1.0f);
         Size measureText(Font *font, std::string text, float scale = 1.0f);
         Size measureText(Font *font, char c, float scale = 1.0f);
-        void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = Color(1, 1, 1));
+        void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void check();

@@ -423,7 +423,7 @@ void Window::drawTooltip() {
     }
     dc->fillRect(r, COLOR_BLACK);
     r.shrink(1); // Shrink by border
-    dc->fillRect(r, Color(1, 1, 0.55));
+    dc->fillRect(r, Color(1.0f, 1.0f, 0.55f));
     dc->fillTextAligned(
         nullptr, 
         w->tooltip,

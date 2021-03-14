@@ -55,7 +55,7 @@ Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
 }
 
 ScrollBarSlider::ScrollBarSlider(Align alignment) : Slider(alignment, 0.0) {
-    Widget::m_bg = Color(0.7, 0.7, 0.7);
+    Widget::m_bg = Color(0.7f, 0.7f, 0.7f);
 }
 
 ScrollBarSlider::~ScrollBarSlider() {
@@ -111,7 +111,7 @@ void ScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
 ScrollBar::ScrollBar(Align alignment) : Widget() {
     this->m_align_policy = alignment;
 
-    m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
+    m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(COLOR_BLACK));
     if (alignment == Align::Horizontal) {
         m_begin_button->image()->counterClockwise90();
     }
@@ -132,7 +132,7 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     // to inherit its parents color for the line below to do anything
     // m_slider->setBackground(m_slider->parent->background());
 
-    m_end_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(Color()));
+    m_end_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(COLOR_BLACK));
     // TODO outdated beause of the new style
     // m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();

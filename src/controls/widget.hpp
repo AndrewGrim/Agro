@@ -252,8 +252,8 @@
             /// needs to be recomputed.
             bool m_size_changed = true;
 
-            Color m_fg = Color();
-            Color m_bg = Color(1, 1, 1);
+            Color m_fg = COLOR_BLACK;
+            Color m_bg = COLOR_WHITE;
             Color m_hovered_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
             // as an altered fg, bg color? dynamic i mean
             Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented

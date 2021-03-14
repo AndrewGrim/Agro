@@ -2,12 +2,12 @@
 
 Button::Button(std::string text) {
     this->setText(text);
-    Widget::m_bg = Color(0.9, 0.9, 0.9);
+    Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
 }
 
 Button::Button(Image *image) {
     this->setImage(image);
-    Widget::m_bg = Color(0.9, 0.9, 0.9);
+    Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
 }
 
 Button::~Button() {
@@ -98,19 +98,15 @@ Size Button::sizeHint(DrawingContext *dc) {
 }
 
 Button* Button::setForeground(Color foreground) {
-    if (Widget::m_fg != foreground) {
-        Widget::m_fg = foreground;
-        update();
-    }
+    Widget::m_fg = foreground;
+    update();
 
     return this;
 }
 
 Button* Button::setBackground(Color background) {
-    if (Widget::m_bg != background) {
-        Widget::m_bg = background;
-        update();
-    }
+    Widget::m_bg = background;
+    update();
 
     return this;
 }

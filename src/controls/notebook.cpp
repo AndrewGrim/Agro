@@ -108,7 +108,7 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
         setImage(image);
     }
     setCloseButton(close_button);
-    m_close_image = (new Image("close_thin.png"))->setForeground(Color());
+    m_close_image = (new Image("close_thin.png"))->setForeground(COLOR_BLACK);
     m_close_image->onMouseClick.addEventListener([=](Widget *widget,MouseEvent event) {
         notebook->destroyTab(m_close_image->parent->parent_index);
     });
@@ -127,7 +127,7 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Color color; 
     if (isActive()) {
-        color = Color(0.5, 0.5, 0.5);
+        color = Color(0.5f, 0.5f, 0.5f);
     } else if (this->isPressed() && this->isHovered()) {
         color = this->m_pressed_bg; 
     } else if (this->isHovered()) {

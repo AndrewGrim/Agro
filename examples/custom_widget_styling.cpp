@@ -21,7 +21,7 @@ class CustomStyle : public Widget {
             style.border.right = 40;
 
             // TODO implement
-            style.border.color_top = Color(0.2, 0.4, 0.7);
+            style.border.color_top = Color(0.2f, 0.4f, 0.7f);
 
             style.padding.top = 10;
             style.padding.bottom = 20;
@@ -40,14 +40,14 @@ class CustomStyle : public Widget {
         void draw(DrawingContext *dc, Rect rect) {
             this->rect = rect;
 
-            dc->fillRect(rect, Color(1, 0, 0, 0.5));
+            dc->fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
             dc->margin(rect, style);
             dc->drawBorder(rect, style);
-            dc->fillRect(rect, Color(0, 1, 0, 0.5));
+            dc->fillRect(rect, Color(0.0f, 1.0f, 0.0f, 0.5f));
             dc->padding(rect, style);
             this->inner_rect = rect;
 
-            dc->fillRect(rect, Color(0, 0, 1, 0.5));
+            dc->fillRect(rect, Color(0.0f, 0.0f, 1.0f, 0.5f));
         }
 
         Size sizeHint(DrawingContext *dc) {
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 
         // RIOHT
         Box *right = new Box(Align::Vertical);
-            right->setBackground(Color(0.8, 0.8, 0.8));
+            right->setBackground(Color(0.8f, 0.8f, 0.8f));
 
             Button *csr = new Button("Rect: ");
             right->append(csr, Fill::Horizontal);
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
                         + std::to_string(custom->style.margin.left) + ", "
                         + std::to_string(custom->style.margin.right)
                     );
-                    margin->setBackground(Color(1, 0, 0, 0.5));
+                    margin->setBackground(Color(1.0f, 0.0f, 0.0f, 0.5f));
                 right->append(margin, Fill::Horizontal);
                 Button *border = new Button(
                         "Border: "
@@ -110,10 +110,10 @@ int main(int argc, char **argv) {
                         + std::to_string(custom->style.padding.left) + ", "
                         + std::to_string(custom->style.padding.right)
                     );
-                    padding->setBackground(Color(0, 1, 0, 0.5));
+                    padding->setBackground(Color(0.0f, 1.0f, 0.0f, 0.5f));
                 right->append(padding, Fill::Horizontal);
             Button *csir = new Button("Content Rect: ");
-                csir->setBackground(Color(0, 0, 1, 0.5));
+                csir->setBackground(Color(0.0f, 0.0f, 1.0f, 0.5f));
             right->append(csir, Fill::Horizontal);
         app->append(right);
 

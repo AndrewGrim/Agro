@@ -3,7 +3,7 @@
 #include "../application.hpp"
 
 SimpleScrollBarSlider::SimpleScrollBarSlider(Align alignment) : Slider(alignment) {
-    Widget::m_bg = Color(0.7, 0.7, 0.7);
+    Widget::m_bg = Color(0.7f, 0.7f, 0.7f);
 }
 
 SimpleScrollBarSlider::~SimpleScrollBarSlider() {

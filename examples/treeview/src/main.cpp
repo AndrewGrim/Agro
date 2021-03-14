@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
                     });
                 buttons->append(collapse);
                 Spacer *spacer = new Spacer();
-                    spacer->setBackground(Color(1, 1, 1));
+                    spacer->setBackground(COLOR_WHITE);
                 buttons->append(spacer, Fill::Both);
                 Button *tree_mode = new Button("Tree Mode");
                     tree_mode->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
                                 if (search_texture != textures.end()) {
                                     Image *img = new Image(search_texture->second);
                                         img->setMinSize(Size(56, 32));
-                                        img->setBackground(Color(0.9, 0.9, 0.9));
+                                        img->setBackground(Color(0.9f, 0.9f, 0.9f));
                                     columns.push_back(new ImageCellRenderer(img));
                                 }
                             TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(c.category[0], row, c.countrycode));
@@ -157,12 +157,12 @@ int main(int argc, char **argv) {
         app->append(box, Fill::Both);
 
         Box *vbox = new Box(Align::Vertical);
-            vbox->setBackground(Color(0.9, 0.9, 0.9));
+            vbox->setBackground(Color(0.9f, 0.9f, 0.9f));
             Image *s_img = new Image("lena.png");
                 s_img->setMinSize(Size(364, 256));
                 // TODO we could implement style for image to
                 // to make this even better
-                s_img->setBackground(Color(0.9, 0.9, 0.9));
+                s_img->setBackground(Color(0.9f, 0.9f, 0.9f));
             vbox->append(s_img, Fill::Horizontal);
             Label *s_first_name = new Label("first_name");
             vbox->append(s_first_name, Fill::Horizontal);

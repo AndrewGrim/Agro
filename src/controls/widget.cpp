@@ -56,10 +56,8 @@ Color Widget::background() {
 }
 
 Widget* Widget::setBackground(Color background) {
-    if (this->m_bg != background) {
-        this->m_bg = background;
-        this->update();
-    }
+    this->m_bg = background;
+    this->update();
 
     return this;
 }
@@ -69,10 +67,8 @@ Color Widget::foreground() {
 }
 
 Widget* Widget::setForeground(Color foreground) {
-    if (this->m_fg != foreground) {
-        this->m_fg = foreground;
-        this->update();
-    }
+    this->m_fg = foreground;
+    this->update();
 
     return this;
 }

@@ -31,10 +31,10 @@ int main(int argc, char **argv) {
             h_box->append(new Button("Left"), Fill::Vertical);
             ScrolledBox *left = new ScrolledBox(Align::Horizontal);
             {
-                left->setBackground(Color(0.8, 0.8, 0.2));
+                left->setBackground(Color(0.8f, 0.8f, 0.2f));
                 ScrolledBox *inner_top = new ScrolledBox(Align::Horizontal, Size(200, 200));
                     {
-                        inner_top->setBackground(Color(0.8, 0.2, 0.2));
+                        inner_top->setBackground(Color(0.8f, 0.2f, 0.2f));
                         for (int i = 0; i < 50; i++) {
                             inner_top->append(new Label(std::to_string(i)));
                         }
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
                 }
                 ScrolledBox *inner = new ScrolledBox(Align::Vertical, Size(200, 200));
                     {
-                        inner->setBackground(Color(0.8, 0.2, 0.2));
+                        inner->setBackground(Color(0.8f, 0.2f, 0.2f));
                         for (int i = 0; i < 50; i++) {
                             inner->append(new Label(std::to_string(i)));
                         }
@@ -59,10 +59,10 @@ int main(int argc, char **argv) {
 
             ScrolledBox *right = new ScrolledBox(Align::Vertical);
             {
-                right->setBackground(Color(0.2, 0.8, 0.8));
+                right->setBackground(Color(0.2f, 0.8f, 0.8f));
                 ScrolledBox *inner_top = new ScrolledBox(Align::Vertical, Size(200, 200));
                     {
-                        inner_top->setBackground(Color(0.2, 0.2, 0.8));
+                        inner_top->setBackground(Color(0.2f, 0.2f, 0.8f));
                         for (int i = 0; i < 50; i++) {
                             inner_top->append(new Label(std::to_string(i)));
                         }
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
                 }
                 ScrolledBox *inner = new ScrolledBox(Align::Horizontal, Size(200, 200));
                     {
-                        inner->setBackground(Color(0.2, 0.2, 0.8));
+                        inner->setBackground(Color(0.2f, 0.2f, 0.8f));
                         for (int i = 0; i < 50; i++) {
                             inner->append(new Label(std::to_string(i)));
                         }

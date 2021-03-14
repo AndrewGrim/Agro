@@ -46,10 +46,10 @@ DrawingContext::DrawingContext() {
         default_style.padding.right = 5;
 
         default_style.text_color = COLOR_BLACK;
-        default_style.background_color = Color(0.9, 0.9, 0.9);
-        default_style.window_color = Color(0.5, 0.5, 0.5);
-        default_style.selection_color = Color(0.2, 0.5, 1.0);
-        default_style.hover_color = Color(0.5, 0.5, 0.5, 0.1);
+        default_style.background_color = Color(0.9f, 0.9f, 0.9f);
+        default_style.window_color = Color(0.5f, 0.5f, 0.5f);
+        default_style.selection_color = Color(0.2f, 0.5f, 1.0f);
+        default_style.hover_color = Color(0.5f, 0.5f, 0.5f, 0.1f);
     }
 }
 

@@ -2,7 +2,7 @@
 #include "../application.hpp"
 
 LineEdit::LineEdit(std::string text) : Widget() {
-    Widget::m_bg = Color(1, 1, 1);
+    Widget::m_bg = COLOR_WHITE;
     this->setText(text);
     this->setPlaceholderText("");
     this->m_selection.x_begin = padding() + (borderWidth() / 2);
@@ -205,7 +205,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
             VerticalAlignment::Center, 
             rect,
             this->m_padding,
-            Color(0.7, 0.7, 0.7)
+            Color(0.7f, 0.7f, 0.7f)
         );
     // Draw normal text;
     } else {
@@ -219,7 +219,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
                     m_selection.x_end - m_selection.x_begin, 
                     text_height
                 ),
-                Color(0.2, 0.5, 1.0)
+                Color(0.2f, 0.5f, 1.0f)
             );
         } else if (isFocused() && m_selection.hasSelection()) {
             float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
@@ -231,7 +231,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
                     m_selection.x_end - m_selection.x_begin, 
                     text_height
                 ),
-                Color(0.2, 0.5, 1.0)
+                Color(0.2f, 0.5f, 1.0f)
             );
         }
         dc->fillTextAligned(

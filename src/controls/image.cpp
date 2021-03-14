@@ -1,15 +1,15 @@
 #include "image.hpp"
 
 Image::Image(std::string file_path) : Widget() {
-    Widget::m_fg = Color(1, 1, 1, 1);
-    Widget::m_bg = Color(0, 0, 0, 0);
+    Widget::m_fg = COLOR_WHITE;
+    Widget::m_bg = COLOR_NONE;
     m_texture = std::make_shared<Texture>(file_path);
     m_size = Size(m_texture->width, m_texture->height);
 }
 
 Image::Image(bool from_memory, const unsigned char *image_data, int length) : Widget() {
-    Widget::m_fg = Color(1, 1, 1, 1);
-    Widget::m_bg = Color(0, 0, 0, 0);
+    Widget::m_fg = COLOR_WHITE;
+    Widget::m_bg = COLOR_NONE;
     m_texture = std::make_shared<Texture>(from_memory, image_data, length);
     m_size = Size(m_texture->width, m_texture->height);
 }
@@ -17,8 +17,8 @@ Image::Image(bool from_memory, const unsigned char *image_data, int length) : Wi
 // TODO not to sure about the order and defaultness
 // of owning here, think about it
 Image::Image(std::shared_ptr<Texture> texture) {
-    Widget::m_fg = Color(1, 1, 1, 1);
-    Widget::m_bg = Color(0, 0, 0, 0);
+    Widget::m_fg = COLOR_WHITE;
+    Widget::m_bg = COLOR_NONE;
     m_texture = texture;
     m_size = Size(m_texture->width, m_texture->height);
 }
@@ -98,19 +98,15 @@ Size Image::originalSize() {
 }
 
 Image* Image::setBackground(Color background) {
-    if (Widget::m_bg != background) {
-        Widget::m_bg = background;
-        this->update();
-    }
+    Widget::m_bg = background;
+    this->update();
 
     return this;
 }
 
 Image* Image::setForeground(Color foreground) {
-    if (Widget::m_fg != foreground) {
-        Widget::m_fg = foreground;
-        this->update();
-    }
+    Widget::m_fg = foreground;
+    this->update();
 
     return this;
 }

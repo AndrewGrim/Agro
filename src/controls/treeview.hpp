@@ -37,8 +37,8 @@
 
             TextCellRenderer(
                     std::string text, 
-                    Color foreground = Color(), 
-                    Color background = Color(0, 0, 0, 0), 
+                    Color foreground = COLOR_BLACK, 
+                    Color background = COLOR_NONE, 
                     int padding = 10
                 ) {
                 this->text = text;
@@ -56,7 +56,7 @@
                 Color bg = background;
                 if (state & STATE_SELECTED) {
                     fg = COLOR_WHITE;
-                    bg = Color(0.2, 0.5, 1.0);
+                    bg = Color(0.2f, 0.5f, 1.0f);
                 }
 
                 dc->fillRect(rect, bg);
@@ -71,7 +71,7 @@
                 );
 
                 if (state & STATE_HOVERED) {
-                    dc->fillRect(rect, Color(0.4, 0.4, 0.4, 0.1));
+                    dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
                 }
             }
 
@@ -131,9 +131,9 @@
                     image->foreground()
                 );
                 if (state & STATE_SELECTED) {
-                    dc->fillRect(rect, Color(0.2, 0.5, 1.0, 0.7));
+                    dc->fillRect(rect, Color(0.2f, 0.5f, 1.0f, 0.7f));
                 } else if (state & STATE_HOVERED) {
-                    dc->fillRect(rect, Color(0.5, 0.5, 0.5, 0.1));
+                    dc->fillRect(rect, Color(0.5f, 0.5f, 0.5f, 0.1f));
                 }
 
             }
@@ -242,13 +242,13 @@
                 std::string text, Image *image = nullptr, 
                 HorizontalAlignment alignment = HorizontalAlignment::Center, 
                 std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr) : Box(Align::Horizontal) {
-                Widget::m_bg = Color(0.9, 0.9, 0.9);
+                Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
                 if (alignment == HorizontalAlignment::Right) {
                     this->append(new Spacer(), Fill::Both);
                 }
                 Button *b = new Button(text);
                     b->setImage(image);
-                    b->setBackground(Color(0, 0, 0, 0));
+                    b->setBackground(COLOR_NONE);
                 if (alignment == HorizontalAlignment::Left || alignment == HorizontalAlignment::Right) {
                     this->append(b, Fill::Vertical);
                 } else {
@@ -259,7 +259,7 @@
                     if (alignment == HorizontalAlignment::Left) {
                         this->append(new Spacer(), Fill::Both);
                     }
-                    Image *sort_icon = (new Image("up_arrow.png"))->setForeground(Color());
+                    Image *sort_icon = (new Image("up_arrow.png"))->setForeground(COLOR_BLACK);
                         sort_icon->setMinSize(Size(12, 12));
                         sort_icon->hide();
                     this->append(sort_icon, Fill::Vertical);
@@ -548,7 +548,7 @@
                 dc->margin(rect, style);
                 dc->drawBorder(rect, style);
                 this->inner_rect = rect;
-                dc->fillRect(rect, Color(1, 1, 1));
+                dc->fillRect(rect, COLOR_WHITE);
 
                 Rect old_clip = dc->clip();
                 Size virtual_size;
@@ -653,7 +653,7 @@
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                                 dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
-                                dc->fillRect(Rect(rect.x, pos.y - 1, m_children_size.w, 1), Color(0.85, 0.85, 0.85));
+                                dc->fillRect(Rect(rect.x, pos.y - 1, m_children_size.w, 1), Color(0.85f, 0.85f, 0.85f));
                             }
                         }
 
@@ -672,7 +672,7 @@
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
                         for (float width : m_column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85, 0.85, 0.85));
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
                         }
                     }
@@ -1028,7 +1028,7 @@
                                 m_indent,
                                 2
                             ),
-                            Color(0.5, 0.5, 0.5)
+                            Color(0.5f, 0.5f, 0.5f)
                         );
                         last_y += node->max_cell_height;
                         for (int i = 0; i < node->children.size() - 1; i++) {
@@ -1050,7 +1050,7 @@
                                     m_indent,
                                     2
                                 ),
-                                Color(0.5, 0.5, 0.5)
+                                Color(0.5f, 0.5f, 0.5f)
                             );
                         }
                     }
@@ -1062,7 +1062,7 @@
                             2,
                             last_y - y + 2
                         ),
-                        Color(0.5, 0.5, 0.5)
+                        Color(0.5f, 0.5f, 0.5f)
                     );
                     if (node->is_collapsed) {
                         dc->drawTextureAligned(

@@ -2,7 +2,7 @@
 
 Label::Label(std::string text) {
     this->setText(text);
-    Widget::m_bg = Color(0, 0, 0, 0);
+    Widget::m_bg = COLOR_NONE;
 }
 
 Label::~Label() {
@@ -39,19 +39,15 @@ Size Label::sizeHint(DrawingContext *dc) {
 }
 
 Label* Label::setForeground(Color foreground) {
-    if (Widget::m_fg != foreground) {
-        Widget::m_fg = foreground;
-        this->update();
-    }
+    Widget::m_fg = foreground;
+    this->update();
 
     return this;
 }
 
 Label* Label::setBackground(Color background) {
-    if (Widget::m_bg != background) {
-        Widget::m_bg = background;
-        this->update();
-    }
+    Widget::m_bg = background;
+    this->update();
 
     return this;
 }

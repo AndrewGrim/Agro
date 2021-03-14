@@ -4,7 +4,7 @@
 
 Box::Box(Align align_policy) {
     this->m_align_policy = align_policy;
-    Widget::m_bg = Color(0.5, 0.5, 0.5);
+    Widget::m_bg = Color(0.5f, 0.5f, 0.5f);
 }
 
 Box::~Box() {
@@ -183,20 +183,16 @@ Size Box::sizeHint(DrawingContext *dc) {
 }
 
 Box* Box::setBackground(Color background) {
-    if (Widget::m_bg != background) {
-        Widget::m_bg = background;
-        this->update();
-    }
+    Widget::m_bg = background;
+    this->update();
 
     return this;
 }
 
 
 Box* Box::setForeground(Color foreground) {
-    if (Widget::m_fg != foreground) {
-        Widget::m_fg = foreground;
-        this->update();
-    }
+    Widget::m_fg = foreground;
+    this->update();
 
     return this;
 }
