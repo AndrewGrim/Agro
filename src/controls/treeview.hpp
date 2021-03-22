@@ -24,6 +24,25 @@
             virtual Size sizeHint(DrawingContext *dc) = 0;
     };
 
+    class EmptyCell : public CellRenderer {
+        public:
+            EmptyCell() {}
+            virtual ~EmptyCell() {}
+
+            virtual void draw(DrawingContext *dc, Rect rect, int state) {
+                if (state & STATE_SELECTED) {
+                    dc->fillRect(rect, Color(0.2f, 0.5f, 1.0f));
+                }
+                if (state & STATE_HOVERED) {
+                    dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+                }
+            }
+
+            virtual Size sizeHint(DrawingContext *dc) {
+                return Size();
+            }
+    };
+
     class TextCellRenderer : public CellRenderer {
         public:
             // TODO setters for text, alignment, padding, font to set m_size_changed
