@@ -1217,7 +1217,8 @@
                         dc->fillRect(
                             Rect(
                                 x + ((node->depth - 1) * m_indent) + (m_indent / 3), 
-                                y + (m_indent / 2) + (m_indent / 8), 
+                                // TODO again 2 for the line width / height
+                                y + (node->max_cell_height / 2) - (m_indent / 8) + (2 / 2),
                                 m_indent / 4, 
                                 m_indent / 4
                             ),
