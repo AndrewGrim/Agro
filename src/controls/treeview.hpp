@@ -139,9 +139,13 @@
             }
 
             virtual void draw(DrawingContext *dc, Rect rect, int state) override {
+                Color bg = image->background();
+                if (state & STATE_SELECTED) {
+                    bg = Color(0.2f, 0.5f, 1.0f);
+                }
                 dc->fillRect(
                     rect,
-                    image->background()
+                    bg
                 );
                 dc->drawTextureAligned(
                     rect,
@@ -152,10 +156,8 @@
                     VerticalAlignment::Center,
                     image->foreground()
                 );
-                if (state & STATE_SELECTED) {
-                    dc->fillRect(rect, Color(0.2f, 0.5f, 1.0f, 0.7f));
-                } else if (state & STATE_HOVERED) {
-                    dc->fillRect(rect, Color(0.5f, 0.5f, 0.5f, 0.1f));
+                if (state & STATE_HOVERED) {
+                    dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
                 }
 
             }
@@ -196,7 +198,6 @@
                     bg = Color(0.2f, 0.5f, 1.0f);
                 }
 
-                
                 dc->fillRect(rect, bg);
                 Size text_size = dc->measureText(font, text);
                 Rect local_rect = rect;
