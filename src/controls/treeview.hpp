@@ -576,10 +576,11 @@
                 }
                 pos.y += m_children_size.h;
                 std::vector<TreeNode<T>*> tree_roots;
+                int index = 0;
                 for (TreeNode<T> *root : m_model->roots) {
                     bool collapsed = false;
                     int collapsed_depth = -1;
-
+                    bool early_exit = false;
                     m_model->descend(root, [&](TreeNode<T> *node) -> bool {
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
@@ -662,10 +663,23 @@
                             collapsed_depth = node->depth;
                         }
                         if (pos.y > rect.y + rect.h) {
+                            early_exit = true;
                             return TREEVIEW_EARLY_EXIT;
                         }
                         return TREEVIEW_CONTINUE;
                     });
+                    index++;
+                    if (early_exit) {
+                        // TODO this is better but its far from ideal
+                        // it would be nice if we could encapsulate this process
+                        // within the whole descend method so that in the future
+                        // we dont need to keep track of that
+                        // cause early exit only quits the branch early
+                        // but if everything is root then that doesnt matter
+                        // still though the cpu usage seems too high for 23 rows of 7 columns
+                        println(index);
+                        break;
+                    }
                 }
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
