@@ -115,6 +115,9 @@
         public:
             Image *image = nullptr;
 
+            // TOOD why? lol
+            // because its just passing the parameters to image constructors
+            // we could just pass image and nothing else
             ImageCellRenderer(std::string file_path) {
                 image = new Image(file_path);
             }
@@ -160,6 +163,91 @@
             virtual Size sizeHint(DrawingContext *dc) override {
                 return image->size();
             }
+    };
+
+    class ImageTextCellRenderer : public CellRenderer {
+        public:
+            Image *image = nullptr;
+            Font *font = nullptr;
+            std::string text; 
+            Color foreground;
+            Color background;
+            int padding;
+
+            ImageTextCellRenderer(
+                    Image *image,
+                    std::string text, 
+                    Color foreground = COLOR_BLACK, 
+                    Color background = COLOR_NONE, 
+                    int padding = 10
+                ) : 
+                image{image}, text{text}, foreground{foreground}, background{background}, padding{padding} {
+            }
+
+            ~ImageTextCellRenderer() {
+                delete image;
+            }
+
+            void draw(DrawingContext *dc, Rect rect, int state) override {
+                Color fg = foreground;
+                Color bg = background;
+                if (state & STATE_SELECTED) {
+                    fg = COLOR_WHITE;
+                    bg = Color(0.2f, 0.5f, 1.0f);
+                }
+
+                
+                dc->fillRect(rect, bg);
+                Size text_size = dc->measureText(font, text);
+                Rect local_rect = rect;
+                Size image_size = image->size();
+                dc->drawTexture(
+                    Point(
+                        round(local_rect.x + (local_rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                        round(local_rect.y + (local_rect.h * 0.5) - (image_size.h * 0.5))
+                    ),
+                    image_size,
+                    image->_texture(),
+                    image->coords(),
+                    image->foreground()
+                );
+                // Resize local_rect to account for image before the label is drawn.
+                local_rect.x += image_size.w;
+                local_rect.w -= image_size.w;
+                dc->fillTextAligned(
+                    font,
+                    text,
+                    HorizontalAlignment::Center,
+                    VerticalAlignment::Center,
+                    local_rect,
+                    padding,
+                    fg
+                );
+
+                if (state & STATE_HOVERED) {
+                    dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+                }
+            }
+
+            Size sizeHint(DrawingContext *dc) override {
+                if (m_size_changed) {
+                    Size s = dc->measureText(font, text);
+                        s.w += image->size().w;
+                        if (image->size().h > s.h) {
+                            s.h = image->size().h;
+                        }
+                        s.w += padding * 2;
+                        s.h += padding * 2;
+                    m_size = s;
+                    return s;
+                } else {
+                    return m_size;
+                }
+            }
+            
+        protected:
+            Size m_size;
+            bool m_size_changed = true;
     };
 
     template <typename T> class TreeNode {
