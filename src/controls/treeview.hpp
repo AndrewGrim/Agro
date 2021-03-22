@@ -1142,21 +1142,26 @@
                     // Begin drawing at the center of the node cell height.
                     y += node->max_cell_height / 2;
                     float last_y = y;
+                    float last_node_height = 0;
 
                     if (!node->is_collapsed) {
+                        last_y += node->max_cell_height / 2;
                         // TODO 2 is the width and height of the lines
                         // this should probably be a member on the treeview class
                         // Draw the horizontal line going to the icon.
+                        last_y += node->children[0]->max_cell_height / 2;
                         dc->fillRect(
                             Rect(
                                 x - (m_indent / 2),
-                                y + (last_y - y) + node->max_cell_height,
+                                last_y,
                                 m_indent,
                                 2
                             ),
                             Color(0.5f, 0.5f, 0.5f)
                         );
-                        last_y += node->max_cell_height;
+                        if (node->children.size() > 1) {
+                            last_y -= node->children[0]->max_cell_height / 2;
+                        }
                         for (int i = 0; i < node->children.size() - 1; i++) {
                             TreeNode<T> *child = node->children[i];
                             m_model->descend(child, [&](TreeNode<T>* _node) {
@@ -1168,39 +1173,29 @@
                                 }
                                 return TREEVIEW_CONTINUE;
                             });
+                            last_node_height = node->children[i + 1]->max_cell_height / 2;
                             // Draw the horizontal line going to the icon.
                             dc->fillRect(
                                 Rect(
                                     x - (m_indent / 2),
-                                    last_y,
+                                    last_y + last_node_height,
                                     m_indent,
                                     2
                                 ),
                                 Color(0.5f, 0.5f, 0.5f)
                             );
                         }
-                    }
-                    // Draw the line going down to the last child node.
-                    dc->fillRect(
-                        Rect(
-                            x - (m_indent / 2) - 1,
-                            y,
-                            2,
-                            last_y - y + 2
-                        ),
-                        Color(0.5f, 0.5f, 0.5f)
-                    );
-                    if (node->is_collapsed) {
-                        dc->drawTextureAligned(
-                            Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
-                            Size(m_indent / 2, m_indent / 2),
-                            m_collapsed->_texture(),
-                            m_collapsed->coords(),
-                            HorizontalAlignment::Center,
-                            VerticalAlignment::Center,
-                            m_collapsed->foreground()
+                        last_y += last_node_height;
+                        // Draw the line going down to the last child node.
+                        dc->fillRect(
+                            Rect(
+                                x - (m_indent / 2) - 1,
+                                y,
+                                2,
+                                last_y - y + 2
+                            ),
+                            Color(0.5f, 0.5f, 0.5f)
                         );
-                    } else {
                         dc->drawTextureAligned(
                             Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
                             Size(m_indent / 2, m_indent / 2),
@@ -1209,6 +1204,16 @@
                             HorizontalAlignment::Center,
                             VerticalAlignment::Center,
                             m_expanded->foreground()
+                        );
+                    } else {
+                        dc->drawTextureAligned(
+                            Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
+                            Size(m_indent / 2, m_indent / 2),
+                            m_collapsed->_texture(),
+                            m_collapsed->coords(),
+                            HorizontalAlignment::Center,
+                            VerticalAlignment::Center,
+                            m_collapsed->foreground()
                         );
                     }
                 // End of the line.
