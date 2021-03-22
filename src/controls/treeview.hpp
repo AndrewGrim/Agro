@@ -1042,6 +1042,7 @@
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_selected = nullptr;
             GridLines m_grid_lines = GridLines::Both;
+            int m_treeline_size = 2;
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
             std::vector<float> m_column_widths;
@@ -1146,8 +1147,6 @@
 
                     if (!node->is_collapsed) {
                         last_y += node->max_cell_height / 2;
-                        // TODO 2 is the width and height of the lines
-                        // this should probably be a member on the treeview class
                         // Draw the horizontal line going to the icon.
                         last_y += node->children[0]->max_cell_height / 2;
                         dc->fillRect(
@@ -1155,7 +1154,7 @@
                                 x - (m_indent / 2),
                                 last_y,
                                 m_indent,
-                                2
+                                m_treeline_size
                             ),
                             Color(0.5f, 0.5f, 0.5f)
                         );
@@ -1180,7 +1179,7 @@
                                     x - (m_indent / 2),
                                     last_y + last_node_height,
                                     m_indent,
-                                    2
+                                    m_treeline_size
                                 ),
                                 Color(0.5f, 0.5f, 0.5f)
                             );
@@ -1191,8 +1190,8 @@
                             Rect(
                                 x - (m_indent / 2) - 1,
                                 y,
-                                2,
-                                last_y - y + 2
+                                m_treeline_size,
+                                last_y - y + m_treeline_size
                             ),
                             Color(0.5f, 0.5f, 0.5f)
                         );
@@ -1222,8 +1221,7 @@
                         dc->fillRect(
                             Rect(
                                 x + ((node->depth - 1) * m_indent) + (m_indent / 3), 
-                                // TODO again 2 for the line width / height
-                                y + (node->max_cell_height / 2) - (m_indent / 8) + (2 / 2),
+                                y + (node->max_cell_height / 2) - (m_indent / 8) + (m_treeline_size / 2),
                                 m_indent / 4, 
                                 m_indent / 4
                             ),
