@@ -169,11 +169,13 @@
 
     class ImageTextCellRenderer : public CellRenderer {
         public:
+            // TODO account for alignment, especially important for the first col
             Image *image = nullptr;
             Font *font = nullptr;
             std::string text; 
             Color foreground;
             Color background;
+            HorizontalAlignment h_align = HorizontalAlignment::Left;
             int padding;
 
             ImageTextCellRenderer(
@@ -181,9 +183,10 @@
                     std::string text, 
                     Color foreground = COLOR_BLACK, 
                     Color background = COLOR_NONE, 
+                    HorizontalAlignment h_align = HorizontalAlignment::Left,
                     int padding = 5
                 ) : 
-                image{image}, text{text}, foreground{foreground}, background{background}, padding{padding} {
+                image{image}, text{text}, foreground{foreground}, background{background}, h_align{h_align}, padding{padding} {
             }
 
             ~ImageTextCellRenderer() {
@@ -202,9 +205,15 @@
                 Size text_size = dc->measureText(font, text);
                 Rect local_rect = rect;
                 Size image_size = image->size();
+                float x = rect.x;
+                switch (h_align) {
+                    case HorizontalAlignment::Right: x = rect.x + rect.w - (image_size.w + text_size.w + (padding * 2)); break;
+                    case HorizontalAlignment::Center: x = rect.x + (rect.w / 2) - ((image_size.w + text_size.w + (padding * 2)) / 2); break;
+                    default: break;
+                }
                 dc->drawTexture(
                     Point(
-                        round(local_rect.x + (local_rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                        round(x), 
                         round(local_rect.y + (local_rect.h * 0.5) - (image_size.h * 0.5))
                     ),
                     image_size,
@@ -218,12 +227,13 @@
                 dc->fillTextAligned(
                     font,
                     text,
-                    HorizontalAlignment::Center,
+                    h_align,
                     VerticalAlignment::Center,
                     local_rect,
                     padding,
                     fg
                 );
+
 
                 if (state & STATE_HOVERED) {
                     dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
@@ -245,7 +255,7 @@
                     return m_size;
                 }
             }
-            
+
         protected:
             Size m_size;
             bool m_size_changed = true;
