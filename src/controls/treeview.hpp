@@ -58,7 +58,7 @@
                     std::string text, 
                     Color foreground = COLOR_BLACK, 
                     Color background = COLOR_NONE, 
-                    int padding = 10
+                    int padding = 5
                 ) {
                 this->text = text;
                 this->foreground = foreground;
@@ -179,7 +179,7 @@
                     std::string text, 
                     Color foreground = COLOR_BLACK, 
                     Color background = COLOR_NONE, 
-                    int padding = 10
+                    int padding = 5
                 ) : 
                 image{image}, text{text}, foreground{foreground}, background{background}, padding{padding} {
             }
