@@ -535,6 +535,11 @@
                 }
             }
 
+            Column* setTooltip(std::string tooltip) {
+                this->tooltip = tooltip;
+                return this;
+            }
+
         protected:
             Sort m_sort = Sort::None;
             Tree<T> *m_model = nullptr;
