@@ -873,6 +873,10 @@
                     m_virtual_size_changed = true;
                     m_hovered = nullptr;
                     m_selected = nullptr;
+                    if (m_last_sort) {
+                        m_last_sort->sort(Sort::None);
+                        m_last_sort = nullptr;
+                    }
                     update();
                 }
             }
