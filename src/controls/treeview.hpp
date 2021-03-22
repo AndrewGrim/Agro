@@ -736,7 +736,7 @@
                                             cell_clip.w = (rect.x + rect.w) - cell_start;
                                         }
                                         if (pos.y + node->max_cell_height > rect.y + rect.h) {
-                                            cell_clip.h = rect.h - pos.y + node->max_cell_height;
+                                            cell_clip.h = (rect.y + rect.h) - pos.y;
                                         }
                                         if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
                                             cell_clip.x = rect.x;
