@@ -1,9 +1,6 @@
 #ifndef TREEVIEW_HPP
     #define TREEVIEW_HPP
 
-    #define TREEVIEW_CONTINUE true
-    #define TREEVIEW_EARLY_EXIT false
-
     #include <algorithm>
 
     #include "widget.hpp"
@@ -287,6 +284,12 @@
             }
     };
 
+    enum class Traversal {
+        Continue, // Continue going down as normal by traversing all nodes.
+        Next, // Ends the traversal of the current node and its children early and goes to the next one on the same level.
+        Break // Ends the traversal as soon as possible (usually after the current root node).
+    };
+
     template <typename T> class Tree {
         public:
             std::vector<TreeNode<T>*> roots;
@@ -324,20 +327,31 @@
                 roots.clear();
             }
 
-            TreeNode<T>* descend(TreeNode<T> *root, std::function<bool(TreeNode<T> *node)> fn = nullptr) {
+            TreeNode<T>* descend(Traversal &early_exit, TreeNode<T> *root, std::function<Traversal(TreeNode<T> *node)> fn = nullptr) {
                 if (fn) {
-                    if (!fn(root)) {
+                    early_exit = fn(root);
+                    if (early_exit == Traversal::Break || early_exit == Traversal::Next) {
                         return root;
                     }
                 }
                 if (root->children.size()) {
                     TreeNode<T> *last = nullptr;
                     for (TreeNode<T> *child : root->children) {
-                        last = descend(child, fn);
+                        last = descend(early_exit, child, fn);
                     }
                     return last;
                 } else {
                     return root;
+                }
+            }
+
+            void forEachNode(std::vector<TreeNode<T>*> &roots, std::function<Traversal(TreeNode<T> *node)> fn) {
+                Traversal early_exit = Traversal::Continue;
+                for (TreeNode<T> *root : roots) {
+                    descend(early_exit, root, fn);
+                    if (early_exit == Traversal::Break) {
+                        break;
+                    }
                 }
             }
             // TreeNode find(compare function);
@@ -587,8 +601,9 @@
                     }
                     y += m_children_size.h;
                     if (event.x <= x + m_children_size.w) {
-                        for (TreeNode<T> *root : m_model->roots) {
-                            m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                        m_model->forEachNode(
+                            m_model->roots,
+                            [&](TreeNode<T> *node) -> Traversal {
                                 if (event.y >= y && event.y <= y + node->max_cell_height) {
                                     if (m_hovered != node) {
                                         m_hovered = node;
@@ -600,11 +615,13 @@
                                 }
                                 y += node->max_cell_height;
                                 if (node->is_collapsed) {
-                                    return TREEVIEW_EARLY_EXIT;
+                                    return Traversal::Next;
+                                } else if (y > event.y) {
+                                    return Traversal::Break;
                                 }
-                                return TREEVIEW_CONTINUE;
-                            });
-                        }
+                                return Traversal::Continue;
+                            }
+                        );
                     } else {
                         m_hovered = nullptr;
                         update();
@@ -621,8 +638,9 @@
                     }
                     y += m_children_size.h;
                     if (event.x <= x + m_children_size.w) {
-                        for (TreeNode<T> *root : m_model->roots) {
-                            m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                        m_model->forEachNode(
+                            m_model->roots,
+                            [&](TreeNode<T> *node) -> Traversal {
                                 if (event.y >= y && event.y <= y + node->max_cell_height) {
                                     if (node->children.size() && (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent))) {
                                         if (node->is_collapsed) {
@@ -636,11 +654,13 @@
                                 }
                                 y += node->max_cell_height;
                                 if (node->is_collapsed) {
-                                    return TREEVIEW_EARLY_EXIT;
+                                    return Traversal::Next;
+                                } else if (y > event.y) {
+                                    return Traversal::Break;
                                 }
-                                return TREEVIEW_CONTINUE;
-                            });
-                        }
+                                return Traversal::Continue;
+                            }
+                        );
                     }
                 });
                 m_column_style = Style();
@@ -699,12 +719,11 @@
                 }
                 pos.y += m_children_size.h;
                 std::vector<TreeNode<T>*> tree_roots;
-                int index = 0;
-                for (TreeNode<T> *root : m_model->roots) {
-                    bool collapsed = false;
-                    int collapsed_depth = -1;
-                    bool early_exit = false;
-                    m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                bool collapsed = false;
+                int collapsed_depth = -1;
+                m_model->forEachNode(
+                    m_model->roots,
+                    [&](TreeNode<T> *node) -> Traversal {
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
@@ -786,24 +805,11 @@
                             collapsed_depth = node->depth;
                         }
                         if (pos.y > rect.y + rect.h) {
-                            early_exit = true;
-                            return TREEVIEW_EARLY_EXIT;
+                            return Traversal::Break;
                         }
-                        return TREEVIEW_CONTINUE;
-                    });
-                    index++;
-                    if (early_exit) {
-                        // TODO this is better but its far from ideal
-                        // it would be nice if we could encapsulate this process
-                        // within the whole descend method so that in the future
-                        // we dont need to keep track of that
-                        // cause early exit only quits the branch early
-                        // but if everything is root then that doesnt matter
-                        // still though the cpu usage seems too high for 23 rows of 7 columns
-                        println(index);
-                        break;
+                        return Traversal::Continue;
                     }
-                }
+                );
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
@@ -817,6 +823,7 @@
 
                 // Draw the tree lines
                 dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h));
+                Traversal early_exit = Traversal::Continue;
                 for (TreeNode<T> *tree_root : tree_roots) {
                     if (tree_root->children.size()) {
                         float tree_line_start = y_start + m_children_size.h;
@@ -825,25 +832,25 @@
                                 if (tree_root == _root) {
                                     break;
                                 }
-                                m_model->descend(_root, [&](TreeNode<T> *node) {
+                                m_model->descend(early_exit, _root, [&](TreeNode<T> *node) {
                                     if (!node->is_collapsed) {
                                         tree_line_start += node->max_cell_height;
                                     } else {
                                         tree_line_start += node->max_cell_height;
-                                        return TREEVIEW_EARLY_EXIT;
+                                        return Traversal::Break;
                                     }
-                                    return TREEVIEW_CONTINUE;
+                                    return Traversal::Continue;
                                 });
                             }
                         }
 
-                        m_model->descend(tree_root, [&](TreeNode<T> *node) {
+                        m_model->descend(early_exit, tree_root, [&](TreeNode<T> *node) {
                             drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
                             tree_line_start += node->max_cell_height;
                             if (node->is_collapsed) {
-                                return TREEVIEW_EARLY_EXIT;
+                                return Traversal::Next;
                             }
-                            return TREEVIEW_CONTINUE;
+                            return Traversal::Continue;
                         });
                     }
                 }
@@ -926,19 +933,15 @@
 
             void select(int index) {
                 int i = 0;
-                bool early = false;
+                Traversal early = false;
                 for (TreeNode<T> *root : m_model->roots) {
-                    if (early) {
-                        return;
-                    }
-                    m_model->descend(root, [&](TreeNode<T> *node) -> bool {
+                    m_model->descend(early, root, [&](TreeNode<T> *node) -> Traversal {
                         if (i == index) {
                             select(node);
-                            early = true;
-                            return TREEVIEW_EARLY_EXIT;
+                            return Traversal::Break;
                         }
                         i++;
-                        return TREEVIEW_CONTINUE;
+                        return Traversal::Continue;
                     });
                 }
             }
@@ -1071,11 +1074,12 @@
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
-                    m_model->descend(node, [&](TreeNode<T> *_node) {
+                    Traversal _unused = Traversal::Continue;
+                    m_model->descend(_unused, node, [&](TreeNode<T> *_node) {
                         if (_node->children.size()) {
                             _node->is_collapsed = is_collapsed;
                         }
-                        return TREEVIEW_CONTINUE;
+                        return Traversal::Continue;
                     });
                     m_virtual_size_changed = true;
                     update();
@@ -1083,12 +1087,13 @@
             }
 
             void collapseOrExpandAll(bool is_collapsed) {
+                Traversal _unused = Traversal::Continue;
                 for (TreeNode<T> *root : m_model->roots) {
-                    m_model->descend(root, [&](TreeNode<T> *node) {
+                    m_model->descend(_unused, root, [&](TreeNode<T> *node) {
                         if (node->children.size()) {
                             node->is_collapsed = is_collapsed;
                         }
-                        return TREEVIEW_CONTINUE;
+                        return Traversal::Continue;
                     });
                 }
                 m_virtual_size_changed = true;
@@ -1097,12 +1102,13 @@
 
             Size calculateVirtualSize(DrawingContext *dc) {
                 Size virtual_size = m_children_size;
-                for (TreeNode<T> *root : m_model->roots) {
-                    void *previous_parent = nullptr;
-                    bool collapsed = false;
-                    int collapsed_depth = -1;
+                void *previous_parent = nullptr;
+                bool collapsed = false;
+                int collapsed_depth = -1;
 
-                    m_model->descend(root, [&](TreeNode<T> *node) {
+                m_model->forEachNode(
+                    m_model->roots,
+                    [&](TreeNode<T> *node) {
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
@@ -1141,9 +1147,10 @@
                             collapsed = true;
                             collapsed_depth = node->depth;
                         }
-                        return TREEVIEW_CONTINUE;
-                    });
-                }
+                        return Traversal::Continue;
+                    }
+                );
+                
                 virtual_size.w = m_children_size.w;
                 m_virtual_size = virtual_size;
                 m_virtual_size_changed = false;
@@ -1176,16 +1183,17 @@
                         if (node->children.size() > 1) {
                             last_y -= node->children[0]->max_cell_height / 2;
                         }
+                        Traversal early_exit = Traversal::Continue;
                         for (int i = 0; i < node->children.size() - 1; i++) {
                             TreeNode<T> *child = node->children[i];
-                            m_model->descend(child, [&](TreeNode<T>* _node) {
+                            m_model->descend(early_exit, child, [&](TreeNode<T>* _node) {
                                 if (!_node->is_collapsed) {
                                     last_y += _node->max_cell_height;
                                 } else {
                                     last_y += _node->max_cell_height;
-                                    return TREEVIEW_EARLY_EXIT;
+                                    return Traversal::Break;
                                 }
-                                return TREEVIEW_CONTINUE;
+                                return Traversal::Continue;
                             });
                             last_node_height = node->children[i + 1]->max_cell_height / 2;
                             // Draw the horizontal line going to the icon.
