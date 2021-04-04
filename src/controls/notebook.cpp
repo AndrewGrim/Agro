@@ -185,11 +185,9 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         );
         rect.x += text_size.w;
     }
-    if (m_close_button && m_image) {
-        // TODO used to be rect.y + padding
-        m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, 12));
-    } else if (m_close_button) {
-        m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, 12));
+
+    if (m_close_image) {
+        m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, rect.h));
     }
 }
 
@@ -212,7 +210,7 @@ Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
             if (size.h < 12) {
                 size.h = 12;
             }
-            size.w += 22;
+            size.w += 22; // 10px padding between text and close button + 12px size of close button
         }
 
         this->m_size = size;
