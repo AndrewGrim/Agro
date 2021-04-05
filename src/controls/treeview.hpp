@@ -663,6 +663,9 @@
                         );
                     }
                 });
+                this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
+                    this->m_hovered = nullptr;
+                });
                 m_column_style = Style();
                 m_column_style.border.type = STYLE_BOTTOM | STYLE_RIGHT;
                 m_column_style.border.bottom = 1;
