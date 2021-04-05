@@ -20,7 +20,13 @@ int main(int argc, char **argv) {
                     for (int i = 0; i < 5; i++) {
                         _b->append((new Button(std::to_string(i)))->setBackground(Color(t / 100.0 * 5)), Fill::Both);
                     }
-                nb->appendTab(_b, "Tab " + std::to_string(t), new Image("notes.png"), true);
+                if (t % 3 == 0) {
+                    nb->appendTab(_b, "Tab " + std::to_string(t), new Image("notes.png"), true);
+                } else if (t % 2 == 0) {
+                    nb->appendTab(_b, "Tab " + std::to_string(t), new Image("notes.png"), false);
+                } else {
+                    nb->appendTab(_b, "Tab " + std::to_string(t), nullptr, false);
+                }
             }
         }
         app->append(nb, Fill::Both);
