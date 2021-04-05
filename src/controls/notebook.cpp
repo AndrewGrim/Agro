@@ -202,7 +202,9 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
     }
 
     if (m_close_image) {
-        m_close_image->draw(dc, Rect(rect.x + 10, rect.y, 12, rect.h));
+        // TODO would be nice if the icon lit up when being hover / active
+        // 12 being the size of the icon in pixels
+        m_close_image->draw(dc, Rect(rect.x + 10, rect.y + (rect.h / 2) - (12 / 2), 12, 12));
     }
 }
 
