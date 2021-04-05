@@ -72,9 +72,11 @@ bool NoteBookTabBar::isLayout() {
 }
 
 void* NoteBookTabBar::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
-    if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
-        (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
-        return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
+    if (m_horizontal_scrollbar) {
+        if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+            (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
+            return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
+        }
     }
     for (Widget *child : children) {
         if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
