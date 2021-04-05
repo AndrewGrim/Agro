@@ -12,12 +12,22 @@ NoteBookTabBar::~NoteBookTabBar() {
 void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     float x = rect.x;
-    x -= m_horizontal_scrollbar->m_slider->m_value * (m_size.w - rect.w);
 
-    Size scroll_size = m_horizontal_scrollbar->sizeHint(dc);
+    if (rect.w < m_size.w) {
+        if (!m_horizontal_scrollbar) {
+            m_horizontal_scrollbar = new SimpleScrollBar(Align::Horizontal, Size(3, 3));
+        }
+        x -= m_horizontal_scrollbar->m_slider->m_value * (m_size.w - rect.w);
+    } else {
+        if (m_horizontal_scrollbar) {
+            delete m_horizontal_scrollbar;
+            m_horizontal_scrollbar = nullptr;
+        }
+    }
+
     for (Widget *child : children) {
         Size child_hint = child->sizeHint(dc);
-        Rect child_rect = Rect(x, rect.y, child_hint.w, rect.h - scroll_size.h);
+        Rect child_rect = Rect(x, rect.y, child_hint.w, rect.h);
         if (x + child_hint.w < rect.x) {
             child->rect = child_rect;
         } else {
@@ -29,19 +39,22 @@ void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
         x += child_hint.w;
     }
 
-    float slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
-    if (slider_size < 20) {
-        slider_size = 20;
-    } else if (slider_size > (rect.w - 10)) {
-        slider_size = rect.w - 10;
+    if (m_horizontal_scrollbar) {
+        Size scroll_size = m_horizontal_scrollbar->sizeHint(dc);
+        float slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
+        if (slider_size < 20) {
+            slider_size = 20;
+        } else if (slider_size > (rect.w - 10)) {
+            slider_size = rect.w - 10;
+        }
+        m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
+        m_horizontal_scrollbar->draw(dc, Rect(
+            rect.x, 
+            (rect.y + rect.h) - scroll_size.h, 
+            rect.w > scroll_size.w ? rect.w : scroll_size.w, 
+            scroll_size.h
+        ));
     }
-    m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-    m_horizontal_scrollbar->draw(dc, Rect(
-        rect.x, 
-        (rect.y + rect.h) - scroll_size.h, 
-        rect.w > scroll_size.w ? rect.w : scroll_size.w, 
-        scroll_size.h
-    ));
 }
 
 const char* NoteBookTabBar::name() {
