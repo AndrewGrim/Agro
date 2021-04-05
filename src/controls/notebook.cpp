@@ -128,6 +128,11 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
         notebook->destroyTab(m_close_image->parent->parent_index);
     });
     this->append(m_close_image);
+    this->style.padding.type = STYLE_ALL;
+    this->style.padding.top = 5;
+    this->style.padding.bottom = 5;
+    this->style.padding.left = 5;
+    this->style.padding.right = 5;
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
