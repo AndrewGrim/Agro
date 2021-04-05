@@ -71,7 +71,7 @@ Size NoteBookTabBar::sizeHint(DrawingContext *dc) {
                 size.h = s.h;
             }
         }
-        size.h += m_horizontal_scrollbar->sizeHint(dc).h;
+
         m_size = size;
         m_size_changed = false;
         return size;
