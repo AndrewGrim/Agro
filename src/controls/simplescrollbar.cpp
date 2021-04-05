@@ -56,10 +56,10 @@ void SimpleScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-SimpleScrollBar::SimpleScrollBar(Align alignment) : Widget() {
+SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Widget() {
     this->m_align_policy = alignment;
     m_slider = new SimpleScrollBarSlider(alignment);
-    m_slider->m_slider_button->setMinSize(Size(10, 10));
+    m_slider->m_slider_button->setMinSize(min_size);
     this->append(m_slider, Fill::Both);
 }
 

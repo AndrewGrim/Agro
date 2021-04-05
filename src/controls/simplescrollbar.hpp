@@ -16,7 +16,7 @@
         public:
             SimpleScrollBarSlider *m_slider = nullptr;
 
-            SimpleScrollBar(Align alignment);
+            SimpleScrollBar(Align alignment, Size min_size = Size(10, 10));
             ~SimpleScrollBar();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
