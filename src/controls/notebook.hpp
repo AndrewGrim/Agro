@@ -7,9 +7,7 @@
 
     class NoteBookTabBar : public Widget {
         public:
-            // TODO scrollable interface
-            SimpleScrollBar *m_vertical_scrollbar = nullptr;
-            SimpleScrollBar *m_horizontal_scrollbar = new SimpleScrollBar(Align::Horizontal);
+            SimpleScrollBar *m_horizontal_scrollbar = nullptr;
 
             NoteBookTabBar();
             ~NoteBookTabBar();
