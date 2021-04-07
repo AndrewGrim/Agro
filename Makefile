@@ -85,11 +85,11 @@ build/notebook.o: build/simplescrollbar.o build/widget.o build/button.o src/cont
 	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrollable.o: build/simplescrollbar.o build/widget.o src/controls/scrollable.cpp src/controls/scrollable.hpp
 	$(CXX) -c src/controls/scrollable.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrollbar.o: build/widget.o build/button.o src/controls/scrollbar.cpp src/controls/scrollbar.hpp
+build/scrollbar.o: build/slider.o build/widget.o build/button.o src/controls/scrollbar.cpp src/controls/scrollbar.hpp
 	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrolledbox.o: build/widget.o build/scrollbar.o src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
 	$(CXX) -c src/controls/scrolledbox.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/simplescrollbar.o: build/widget.o src/controls/simplescrollbar.cpp src/controls/simplescrollbar.hpp
+build/simplescrollbar.o: build/slider.o build/widget.o src/controls/simplescrollbar.cpp src/controls/simplescrollbar.hpp
 	$(CXX) -c src/controls/simplescrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/slider.o: build/widget.o src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
