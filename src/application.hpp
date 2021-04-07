@@ -41,6 +41,7 @@
     
     class Application : public Window {
         public:
+            int scroll_amount = 50;
             void setMouseCursor(Cursor cursor);
             static Application* get();
 
