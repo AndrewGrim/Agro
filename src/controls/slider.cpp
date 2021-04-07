@@ -172,28 +172,16 @@ Size Slider::sizeHint(DrawingContext *dc) {
     return size;
 }
 
-#define SCROLL_AMOUNT 50
-
 bool Slider::handleScrollEvent(ScrollEvent event) {
     // TODO should we do this automatically in ScrollEvent() ctor?
     event.y *= -1;
-    if (this->m_align_policy == Align::Horizontal) {
-        // TODO the right calculation but on the wrong values
-        // instead of rect.w - button_size
-        // it needs to be on the total length of the scrollable area
-        float value = this->m_value + ((SCROLL_AMOUNT * event.y) / (rect.w - m_slider_button_size)); //  + (event.y / 100.0);//(event.y / (rect.w - this->m_slider_button_size));
-        if (value > this->m_max) value = this->m_max;
-        else if (value < this->m_min) value = this->m_min;
-        this->m_value = value;
-    } else {
-        float value = this->m_value + ((SCROLL_AMOUNT * event.y) / (rect.h - m_slider_button_size)); // + (event.y / 100.0);// (event.y / (rect.h - this->m_slider_button_size));
-        if (value > this->m_max) value = this->m_max;
-        else if (value < this->m_min) value = this->m_min;
-        this->m_value = value;
+    m_value += m_step * event.y;
+    m_value = m_value < m_min ? m_min : m_value > m_max ? m_max : m_value;
+
+    if (onValueChanged) {
+        onValueChanged();
     }
-    if (this->onValueChanged) {
-        this->onValueChanged();
-    }
-    this->update();
+
+    update();
     return true;
 }
