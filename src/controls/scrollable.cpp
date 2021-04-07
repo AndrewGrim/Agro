@@ -1,3 +1,4 @@
+#include "../application.hpp"
 #include "scrollable.hpp"
 
 Scrollable::Scrollable(Size min_size) {
@@ -63,9 +64,11 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &r
     }
     if (m_vertical_scrollbar) {
         content_y -= m_vertical_scrollbar->m_slider->m_value * ((virtual_size.h) - rect.h);
+        m_vertical_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (virtual_size.h - rect.h);
     }
     if (m_horizontal_scrollbar) {
         content_x -= m_horizontal_scrollbar->m_slider->m_value * ((virtual_size.w) - rect.w);
+        m_horizontal_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (virtual_size.w - rect.w);
     }
 
     return Point(content_x, content_y);
