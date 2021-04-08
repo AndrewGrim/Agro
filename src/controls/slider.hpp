@@ -1,10 +1,7 @@
 #ifndef SLIDER_HPP
     #define SLIDER_HPP
 
-    #include "widget.hpp"
     #include "box.hpp"
-    #include "button.hpp"
-    #include "../renderer/drawing_context.hpp"
 
     class SliderButton : public Widget {
         public:
