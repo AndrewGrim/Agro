@@ -19,6 +19,11 @@ def warn(message):
 passed = 0
 failed = 0
 
+# TODO i think we should provide a makefile per folder
+# so that instead of messing around with custom commnads
+# we could just run make on each folder
+# to do that just handle cmdline arguments and quit immediately after ready
+# this way we dont have to build twice once normally and once with -DTEST
 dirs = [
     "tests", 
     "examples", 
