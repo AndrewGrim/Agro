@@ -4,7 +4,11 @@
 #include "image.hpp"
 
 ScrollBarArrowButton::ScrollBarArrowButton(Image *image) : Button(image) {
-
+    style.padding.type = STYLE_ALL;
+    style.padding.top = 2;
+    style.padding.bottom = 2;
+    style.padding.left = 2;
+    style.padding.right = 2;
 }
 
 ScrollBarArrowButton::~ScrollBarArrowButton() {
@@ -26,11 +30,10 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
         color = this->background();
     }
     
-    // Draw border and shrink rectangle to prevent drawing over the border
     dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
-    // Pad the rectangle with some empty space.
     dc->padding(rect, style);
+    
     if (this->m_image) {
         Size image_size = Size(8, 8);
         dc->drawTexture(
