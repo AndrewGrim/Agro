@@ -104,7 +104,7 @@ build/font.o: src/renderer/font.cpp src/renderer/font.hpp
 	$(CXX) -c src/renderer/font.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/glad.o: src/renderer/glad.c include/glad/glad.h
 	$(CXX) -c src/renderer/glad.c $(INCLUDE) $(CXX_FLAGS) -o $@
-build/renderer.o: build/font.o src/renderer/renderer.cpp src/renderer/renderer.hpp
+build/renderer.o: build/font.o src/renderer/renderer.cpp src/renderer/renderer.hpp src/renderer/batch.hpp
 	$(CXX) -c src/renderer/renderer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.hpp
 	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
@@ -144,5 +144,5 @@ example_custom_widget_styling:
 	$(CXX) examples/custom_widget_styling.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_styling.out && ./examples/custom_widget_styling.out
 example_custom_widget_drawing:
 	$(CXX) examples/custom_widget_drawing.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_drawing.out && ./examples/custom_widget_drawing.out
-example_treeview:
+example_treeview: install
 	cd examples/treeview && make
