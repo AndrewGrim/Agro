@@ -188,17 +188,15 @@ void ScrollBar::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size ScrollBar::sizeHint(DrawingContext *dc) {
-    Size size = this->m_slider->m_slider_button->sizeHint(dc);
-    Size button_size = this->m_begin_button->sizeHint(dc);
-        if (this->m_align_policy == Align::Horizontal) {
-            size.w *= 2;
-            size.w += button_size.w;
-            if (button_size.h > size.h) size.h = button_size.h;
-        }
-        else {
-            size.h *= 2;
-            size.h += button_size.h * 2;
-            if (button_size.w > size.w) size.w = button_size.w;
-        }
+    Size size = m_slider->sizeHint(dc);
+    Size button_size = m_begin_button->sizeHint(dc);
+    if (m_align_policy == Align::Horizontal) {
+        size.w += button_size.w * 2;
+        if (button_size.h > size.h) size.h = button_size.h;
+    } else {
+        size.h += button_size.h * 2;
+        if (button_size.w > size.w) size.w = button_size.w;
+    }
+
     return size;
 }
