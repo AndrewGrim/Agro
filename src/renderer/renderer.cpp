@@ -33,7 +33,7 @@ Renderer::Renderer(unsigned int *indices) {
     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, clip_rect));
     glEnableVertexAttribArray(6);
 
-    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &this->max_texture_slots);
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_texture_slots);
 
     std::string fragment_shader = "#version 330 core\n";
         fragment_shader += "layout (origin_upper_left) in vec4 gl_FragCoord;\n";
@@ -45,7 +45,7 @@ Renderer::Renderer(unsigned int *indices) {
         fragment_shader += "\n";
         fragment_shader += "out vec4 f_color;\n";
         fragment_shader += "\n";
-        fragment_shader += "uniform sampler2D textures[" + std::to_string(this->max_texture_slots) + "];\n";
+        fragment_shader += "uniform sampler2D textures[" + std::to_string(max_texture_slots) + "];\n";
         fragment_shader += "\n";
         fragment_shader += "void main()\n";
         fragment_shader += "{\n";
@@ -55,7 +55,7 @@ Renderer::Renderer(unsigned int *indices) {
         fragment_shader += "}\n";
         fragment_shader += "vec4 sampled;\n";
         fragment_shader += "switch (int(v_texture_slot_index)) {\n";
-        for (int i = 0; i < this->max_texture_slots; i++) {
+        for (int i = 0; i < max_texture_slots; i++) {
             fragment_shader += "case " + std::to_string(i) + ":\n";
             fragment_shader += "switch (int(v_sampler_type)) {\n";
             fragment_shader += "case 0: ";
@@ -74,7 +74,7 @@ Renderer::Renderer(unsigned int *indices) {
         fragment_shader += "f_color = v_color * sampled;\n";
         fragment_shader += "}";
 
-    this->shader = Shader(
+    shader = Shader(
         "#version 330 core\n"
         "layout (location = 0) in vec2 a_opengl_position;\n"
         "layout (location = 1) in vec2 a_texture_uv;\n"
@@ -115,7 +115,7 @@ Renderer::Renderer(unsigned int *indices) {
     for (int i = 0; i < 32; i++) {
         texture_indices.push_back(i);
     }
-    auto loc = glGetUniformLocation(this->shader.ID, "textures");
+    auto loc = glGetUniformLocation(shader.ID, "textures");
     glUniform1iv(loc, 32, texture_indices.data());
 }
 
@@ -241,7 +241,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
-    glActiveTexture(gl_texture_begin + this->current_texture_slot);
+    glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, texture->ID);
 
     // TOP LEFT
@@ -249,7 +249,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
         {0.0, 1.0},
         {coords->top_left.x, coords->top_left.y},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
+        (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
         {point.x, point.y, size.w, size.h},
         {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -259,7 +259,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
         {0.0, 0.0},
         {coords->bottom_left.x, coords->bottom_left.y},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
+        (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
         {point.x, point.y, size.w, size.h},
         {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -269,7 +269,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
         {1.0, 0.0},
         {coords->bottom_right.x, coords->bottom_right.y},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
+        (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
         {point.x, point.y, size.w, size.h},
         {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -279,13 +279,13 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
         {1.0, 1.0},
         {coords->top_right.x, coords->top_right.y},
         {color.r, color.g, color.b, color.a},
-        (float)this->current_texture_slot,
+        (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
         {point.x, point.y, size.w, size.h},
         {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
     };
     quad_count++;
-    this->current_texture_slot++;
+    current_texture_slot++;
 }
 
 void Renderer::render() {
