@@ -127,32 +127,37 @@ Renderer::~Renderer() {
 }
 
 void Renderer::reset() {
-    this->index = 0;
-    this->count = 0;
-    this->current_texture_slot = 2;
+    index = 0;
+    quad_count = 0;
+    current_texture_slot = 2;
 }
 
 void Renderer::check() {
-    if (this->index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
+    if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
-// TODO actually we should probably just pass the widget dimensions
-// so we could stop drawing text early
+void Renderer::textCheck(Font *font) {
+    if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) {
+        render();
+        glActiveTexture(gl_texture_begin + current_texture_slot); 
+        glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
+    }
+}
+
 void Renderer::fillText(Font *font, std::string text, Point point, Color color, float scale) {
     Size window = Application::get()->size;
     std::string::const_iterator c;
     // TODO handle newlines and tab characters
     // TODO also we should probably find the max height for each font and store that information somewhere
     // then we could use that to calculate the height of text by multiplying the max with amound of newlines
-    
-    if (this->current_texture_slot > this->max_texture_slots - 1) {
+
+    if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
-    unsigned int font_texture_slot = this->current_texture_slot;
-    glActiveTexture(gl_texture_begin + font_texture_slot); 
+    glActiveTexture(gl_texture_begin + current_texture_slot); 
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
-        check();
+        textCheck(font);
         Font::Character ch = font->characters[*c];
         float advance = ((ch.advance >> 6) * scale);
         if (point.x + advance >= 0) {
@@ -167,7 +172,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos, ypos + h}, 
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
-                (float)font_texture_slot,
+                (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -177,7 +182,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos, ypos}, 
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
-                (float)font_texture_slot,
+                (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -187,7 +192,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos + w, ypos}, 
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
-                (float)font_texture_slot,
+                (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
@@ -197,19 +202,16 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
                 {xpos + w, ypos + h}, 
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
-                (float)font_texture_slot,
+                (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
                 {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
             };
-
-            count++;
+            quad_count++;
         }
         point.x += advance;
     }
-    // TODO this would mean that now we leave one texture slot empty
-    // because we use the old font texture slot
-    this->current_texture_slot++;
+    current_texture_slot++;
 }
 
 Size Renderer::measureText(Font *font, std::string text, float scale) {
@@ -236,7 +238,7 @@ Size Renderer::measureText(Font *font, char c, float scale) {
 void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color) {
     check();
 
-    if (this->current_texture_slot > this->max_texture_slots - 1) {
+    if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
     glActiveTexture(gl_texture_begin + this->current_texture_slot);
@@ -282,7 +284,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
         {point.x, point.y, size.w, size.h},
         {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
     };
-    count++;
+    quad_count++;
     this->current_texture_slot++;
 }
 
@@ -291,7 +293,7 @@ void Renderer::render() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * index, vertices);
-    glDrawElements(GL_TRIANGLES, 6 * count, GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, QUAD_INDEX_COUNT * quad_count, GL_UNSIGNED_INT, 0);
     // TODO later on we could introduce rounded corners and circles by sampling pixels in the fragment shader??
     reset();
 }
@@ -340,7 +342,7 @@ void Renderer::fillRect(Rect rect, Color color) {
         {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
     };
 
-    count++;
+    quad_count++;
 }
 
 void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
@@ -435,5 +437,5 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
         }
     }
 
-    count++;
+    quad_count++;
 }

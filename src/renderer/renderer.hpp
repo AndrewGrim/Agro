@@ -43,7 +43,7 @@
         unsigned int gl_texture_begin = GL_TEXTURE0;
         Shader shader;
         unsigned int index = 0;
-        unsigned int count = 0;
+        unsigned int quad_count = 0;
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
         Rect clip_rect; // Gets set before each draw() in Application.
@@ -57,6 +57,7 @@
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void check();
+        void textCheck(Font *font);
         void render();
         
         private:
