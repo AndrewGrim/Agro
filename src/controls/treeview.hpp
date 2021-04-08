@@ -754,16 +754,26 @@
                                     Size s = renderer->sizeHint(dc);
                                     if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
                                         Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
+                                        // When the cell is wider than the treeview
+                                        // clip to the treeview's width accounting for scroll.
                                         if (cell_start + col_width > rect.x + rect.w) {
                                             cell_clip.w = (rect.x + rect.w) - cell_start;
                                         }
+                                        // When the cell is taller than the treeview
+                                        // clip to the treeview's height accounting for scroll.
                                         if (pos.y + node->max_cell_height > rect.y + rect.h) {
                                             cell_clip.h = (rect.y + rect.h) - pos.y;
                                         }
+                                        // When the cell is visible within the treeview but
+                                        // starts outside of the visible area
+                                        // clip only whats visible.
                                         if (cell_start + col_width > rect.x && !(cell_start > rect.x)) {
                                             cell_clip.x = rect.x;
                                             cell_clip.w = cell_start + col_width - rect.x;
                                         }
+                                        // When the cell is visible within the treeview but
+                                        // starts outside of the visible area
+                                        // clip only whats visible.
                                         if (pos.y + node->max_cell_height > rect.y + m_children_size.h && !(pos.y > rect.y + m_children_size.h)) {
                                             cell_clip.y = rect.y + m_children_size.h;
                                             cell_clip.h = pos.y + node->max_cell_height - rect.y - m_children_size.h;

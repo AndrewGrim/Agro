@@ -22,15 +22,32 @@ void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
         // to make the clip larger
         if (parent->isScrollable()) {
             Rect p = parent->rect;
-            if (p.y > rect.y) {
-                dc->setClip(Rect(p.x, p.y, rect.w, rect.h - (p.y - rect.y)));
-            } else if (p.x > rect.x) {
-                dc->setClip(Rect(p.x, p.y, rect.w - (p.x - rect.x), rect.h));
-            } else {
-                // This clips the inner ScrolledBox when its fully within
-                // the bounds of ScrolledBox (ie parent sb).
-                dc->setClip(rect);
+            Rect clip_rect = rect;
+            // When the widget is wider than the parent
+            // clip to the parent's width accounting for scroll.
+            if (rect.x + rect.w > p.x + p.w) {
+                clip_rect.w = (p.x + p.w) - rect.x;
             }
+            // When the widget is taller than the parent
+            // clip to the parent's height accounting for scroll.
+            if (rect.y + rect.h > p.y + p.h) {
+                clip_rect.h = (p.y + p.h) - rect.y;
+            }
+            // When the widget is visible within the parent but
+            // starts outside of the visible area
+            // clip only whats visible.
+            if (rect.x + rect.w > p.x && !(rect.x > p.x)) {
+                clip_rect.x = p.x;
+                clip_rect.w = rect.x + rect.w - p.x;
+            }
+            // When the widget is visible within the parent but
+            // starts outside of the visible area
+            // clip only whats visible.
+            if (rect.y + rect.h > p.y && !(rect.y > p.y)) {
+                clip_rect.y = p.y;
+                clip_rect.h = rect.y + rect.h - p.y;
+            }
+            dc->setClip(clip_rect);
         } else {
             // Non-inception ScrolledBox
             dc->setClip(rect);
