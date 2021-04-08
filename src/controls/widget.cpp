@@ -177,29 +177,7 @@ void Widget::parentLayout() {
 }
 
 void* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
-    if (this->isScrollable()) {
-        // TODO this should probably be an abstract class that provides a vert
-        // and a horizontal scrollbar, so in the future dont cast to scrolledbox
-        // Alternatively could override the propagate method of scrolledbox
-        // struct Scrollable {
-        //     ScrollBar m_horizontal;
-        //     ScrollBar m_vertical;
-        // };
-        ScrolledBox *self = (ScrolledBox*)this;
-        if (self->m_vertical_scrollbar) {
-            if ((event.x >= self->m_vertical_scrollbar->rect.x && event.x <= self->m_vertical_scrollbar->rect.x + self->m_vertical_scrollbar->rect.w) &&
-                (event.y >= self->m_vertical_scrollbar->rect.y && event.y <= self->m_vertical_scrollbar->rect.y + self->m_vertical_scrollbar->rect.h)) {
-                return (void*)self->m_vertical_scrollbar->propagateMouseEvent(window, state, event);
-            }
-        }
-        if (self->m_horizontal_scrollbar) {
-            if ((event.x >= self->m_horizontal_scrollbar->rect.x && event.x <= self->m_horizontal_scrollbar->rect.x + self->m_horizontal_scrollbar->rect.w) &&
-                (event.y >= self->m_horizontal_scrollbar->rect.y && event.y <= self->m_horizontal_scrollbar->rect.y + self->m_horizontal_scrollbar->rect.h)) {
-                return (void*)self->m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
-            }
-        }
-    }
-    for (Widget *child : this->children) {
+    for (Widget *child : children) {
         if (child->isVisible()) {
             if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
                 (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
@@ -215,7 +193,7 @@ void* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event
         }
     }
 
-    this->handleMouseEvent(window, state, event);
+    handleMouseEvent(window, state, event);
     return this;
 }
 

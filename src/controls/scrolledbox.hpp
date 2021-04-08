@@ -10,7 +10,6 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
-            virtual bool isScrollable() override;
             void layoutChildren(DrawingContext *dc, Rect rect);
             virtual bool handleScrollEvent(ScrollEvent event) override;
 

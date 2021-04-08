@@ -17,11 +17,10 @@ void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Rect previous_clip = dc->clip();
     if (parent) {
-        // This should be fine for now but change to checking is scrollable
         // TODO at a later time think about modifying clip to work such
         // that you can only make the clip smaller unless specifically requesting
         // to make the clip larger
-        if (this->name() == this->parent->name()) {
+        if (parent->isScrollable()) {
             Rect p = parent->rect;
             if (p.y > rect.y) {
                 dc->setClip(Rect(p.x, p.y, rect.w, rect.h - (p.y - rect.y)));
@@ -171,10 +170,6 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     }
 
     drawScrollBars(dc, rect, m_size);
-}
-
-bool ScrolledBox::isScrollable() {
-    return true;
 }
 
 Size ScrolledBox::sizeHint(DrawingContext *dc) {

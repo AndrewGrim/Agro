@@ -118,6 +118,10 @@ bool Scrollable::isLayout() {
     return true;
 }
 
+bool Scrollable::isScrollable() {
+    return true;
+}
+
 void* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (m_vertical_scrollbar) {
         if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
@@ -145,19 +149,19 @@ void* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent e
         }
     }
 
-    this->handleMouseEvent(window, state, event);
+    handleMouseEvent(window, state, event);
     return this;
 }
 
 bool Scrollable::handleScrollEvent(ScrollEvent event) {
     SDL_Keymod mod = SDL_GetModState();
     if (mod & Mod::Shift) {
-        if (this->m_horizontal_scrollbar) {
-            return this->m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+        if (m_horizontal_scrollbar) {
+            return m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
         }
     } else {
-        if (this->m_vertical_scrollbar) {
-            return this->m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+        if (m_vertical_scrollbar) {
+            return m_vertical_scrollbar->m_slider->handleScrollEvent(event);
         }
     }
     return false;
