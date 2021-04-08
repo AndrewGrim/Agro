@@ -80,19 +80,19 @@ build/label.o: build/widget.o src/controls/label.cpp src/controls/label.hpp
 	$(CXX) -c src/controls/label.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/lineedit.o: build/widget.o src/controls/lineedit.cpp src/controls/lineedit.hpp
 	$(CXX) -c src/controls/lineedit.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/notebook.o: build/widget.o build/button.o src/controls/notebook.cpp src/controls/notebook.hpp
+build/notebook.o: build/button.o src/controls/notebook.cpp src/controls/notebook.hpp
 	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrollable.o: build/widget.o src/controls/scrollable.cpp src/controls/scrollable.hpp
+build/scrollable.o: build/scrollbar.o src/controls/scrollable.cpp src/controls/scrollable.hpp
 	$(CXX) -c src/controls/scrollable.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrollbar.o: build/slider.o build/widget.o build/button.o src/controls/scrollbar.cpp src/controls/scrollbar.hpp
+build/scrollbar.o: build/slider.o build/button.o src/controls/scrollbar.cpp src/controls/scrollbar.hpp
 	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrolledbox.o: build/widget.o build/scrollbar.o src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
+build/scrolledbox.o: build/scrollable.o src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
 	$(CXX) -c src/controls/scrolledbox.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/slider.o: build/widget.o src/controls/slider.cpp src/controls/slider.hpp
+build/slider.o: build/box.o src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/spacer.o: build/widget.o src/controls/spacer.cpp src/controls/spacer.hpp
 	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/treeview.o: build/widget.o src/controls/treeview.cpp src/controls/treeview.hpp
+build/treeview.o: build/scrollable.o src/controls/treeview.cpp src/controls/treeview.hpp
 	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/widget.o: build/style.o build/drawing_context.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
