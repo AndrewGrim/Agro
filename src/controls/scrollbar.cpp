@@ -152,7 +152,7 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
         m_end_button->image()->clockwise90();
     }
     m_end_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-        m_slider->m_value -= m_slider->m_step;
+        m_slider->m_value += m_slider->m_step;
         if (m_slider->m_value > m_slider->m_max) {
             m_slider->m_value = m_slider->m_max;
         }
