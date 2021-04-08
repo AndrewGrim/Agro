@@ -936,7 +936,7 @@
 
             void select(int index) {
                 int i = 0;
-                Traversal early = false;
+                Traversal early = Traversal::Continue;
                 for (TreeNode<T> *root : m_model->roots) {
                     m_model->descend(early, root, [&](TreeNode<T> *node) -> Traversal {
                         if (i == index) {
