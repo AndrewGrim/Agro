@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include <gui/renderer/stb_image.hpp>
+#include "../../../build/gui/renderer/stb_image.hpp"
 
 struct Flag {
     std::string countrycode;

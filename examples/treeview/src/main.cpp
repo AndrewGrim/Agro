@@ -1,9 +1,9 @@
 #include <iostream>
 #include <vector>
 
-#include <gui/application.hpp>
-#include <gui/controls/treeview.hpp>
-#include <gui/controls/spacer.hpp>
+#include "../../../build/gui/application.hpp"
+#include "../../../build/gui/controls/treeview.hpp"
+#include "../../../build/gui/controls/spacer.hpp"
 
 #include "database.hpp"
 #include "contact.hpp"
@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
         };
         app->setTitle("Contacts 2021");
         app->resize(1200, 800);
+        app->center();
         app->setMainWidget(new Box(Align::Horizontal));
         TreeView<Hidden> *tv;
 
