@@ -6,12 +6,8 @@ Scrollable::Scrollable(Size min_size) {
 }
 
 Scrollable::~Scrollable() {
-    if (m_horizontal_scrollbar) {
-        delete m_horizontal_scrollbar;
-    }
-    if (m_vertical_scrollbar) {
-        delete m_vertical_scrollbar;
-    }
+    delete m_horizontal_scrollbar;
+    delete m_vertical_scrollbar;
 }
 
 const char* Scrollable::name() {

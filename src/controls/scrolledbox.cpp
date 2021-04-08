@@ -6,10 +6,7 @@ ScrolledBox::ScrolledBox(Align align_policy, Size min_size) : Scrollable(min_siz
 }
 
 ScrolledBox::~ScrolledBox() {
-    // ScrollBars are not added to children so if they
-    // exist they need to be deleted with the ScrolledBox.
-    delete m_horizontal_scrollbar;
-    delete m_vertical_scrollbar;
+    // ScrollBars are taken care of by Scrollable.
 }
 
 const char* ScrolledBox::name() {
@@ -172,7 +169,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             *generic_position_coord += *generic_length;
         }
     }
-    
+
     drawScrollBars(dc, rect, m_size);
 }
 
