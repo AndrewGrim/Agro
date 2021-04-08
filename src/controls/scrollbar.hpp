@@ -18,14 +18,24 @@
 
     class ScrollBarSlider : public Slider {
         public:
-            ScrollBarSlider(Align alignment);
+            ScrollBarSlider(Align alignment, float value = 0.0f);
             ~ScrollBarSlider();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
     };
 
-    class ScrollBar : public Widget {
-        // TODO could we just inherit from box instead??
+    class SimpleScrollBar : public Box {
+        public:
+            ScrollBarSlider *m_slider = nullptr;
+
+            SimpleScrollBar(Align alignment, Size min_size = Size(10, 10));
+            ~SimpleScrollBar();
+            virtual const char* name() override;
+            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext *dc) override;
+    };  
+
+    class ScrollBar : public Box {
         public:
             ScrollBarArrowButton *m_begin_button = nullptr;
             ScrollBarSlider *m_slider = nullptr;
@@ -36,9 +46,5 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
-            virtual bool isLayout() override;
-
-        protected:
-            Align m_align_policy;
     };  
 #endif

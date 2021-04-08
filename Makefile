@@ -18,7 +18,6 @@ OBJECT_FILES = \
 	build/scrollable.o \
 	build/scrollbar.o \
 	build/scrolledbox.o \
-	build/simplescrollbar.o \
 	build/slider.o \
 	build/spacer.o \
 	build/treeview.o \
@@ -81,16 +80,14 @@ build/label.o: build/widget.o src/controls/label.cpp src/controls/label.hpp
 	$(CXX) -c src/controls/label.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/lineedit.o: build/widget.o src/controls/lineedit.cpp src/controls/lineedit.hpp
 	$(CXX) -c src/controls/lineedit.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/notebook.o: build/simplescrollbar.o build/widget.o build/button.o src/controls/notebook.cpp src/controls/notebook.hpp
+build/notebook.o: build/widget.o build/button.o src/controls/notebook.cpp src/controls/notebook.hpp
 	$(CXX) -c src/controls/notebook.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/scrollable.o: build/simplescrollbar.o build/widget.o src/controls/scrollable.cpp src/controls/scrollable.hpp
+build/scrollable.o: build/widget.o src/controls/scrollable.cpp src/controls/scrollable.hpp
 	$(CXX) -c src/controls/scrollable.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrollbar.o: build/slider.o build/widget.o build/button.o src/controls/scrollbar.cpp src/controls/scrollbar.hpp
 	$(CXX) -c src/controls/scrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/scrolledbox.o: build/widget.o build/scrollbar.o src/controls/scrolledbox.cpp src/controls/scrolledbox.hpp
 	$(CXX) -c src/controls/scrolledbox.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/simplescrollbar.o: build/slider.o build/widget.o src/controls/simplescrollbar.cpp src/controls/simplescrollbar.hpp
-	$(CXX) -c src/controls/simplescrollbar.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/slider.o: build/widget.o src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/spacer.o: build/widget.o src/controls/spacer.cpp src/controls/spacer.hpp

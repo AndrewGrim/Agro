@@ -32,7 +32,7 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
     // Pad the rectangle with some empty space.
     dc->padding(rect, style);
     if (this->m_image) {
-        Size image_size = Size(12, 12);
+        Size image_size = Size(8, 8);
         dc->drawTexture(
             Point(
                 (rect.x + (rect.w * 0.5) - (image_size.w * 0.5)), 
@@ -47,14 +47,14 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
-    Size size = Size(12, 12);
+    Size size = Size(8, 8);
     dc->sizeHintBorder(size, style);
     dc->sizeHintPadding(size, style);
 
     return size;
 }
 
-ScrollBarSlider::ScrollBarSlider(Align alignment) : Slider(alignment, 0.0) {
+ScrollBarSlider::ScrollBarSlider(Align alignment, float value) : Slider(alignment, value) {
     Widget::m_bg = Color(0.7f, 0.7f, 0.7f);
 }
 
@@ -68,49 +68,71 @@ const char* ScrollBarSlider::name() {
 
 void ScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    if (this->m_align_policy == Align::Horizontal) {
-        dc->fillRect(rect, this->background());
-    } else {
-        dc->fillRect(rect, this->background());
-    }
-    Size sizehint = this->m_slider_button->sizeHint(dc);
+
+    // Get the size of the slider button.
     float size;
-    if (!this->m_slider_button_size) {
-        if (this->m_align_policy == Align::Horizontal) {
+    Size sizehint = m_slider_button->sizeHint(dc);
+    if (!m_slider_button_size) {
+        // Button size was not set. Default.
+        if (m_align_policy == Align::Horizontal) {
             size = sizehint.w;
         } else {
             size = sizehint.h;
         }
     } else {
-        size = this->m_slider_button_size;
-    }
-    float *align_rect[2] = {};
-    if (this->m_align_policy == Align::Horizontal) {
-        align_rect[0] = &rect.x;
-        align_rect[1] = &rect.w;
-    } else {
-        align_rect[0] = &rect.y;
-        align_rect[1] = &rect.h;
+        // Button size was set externally, usually by a scrollable widget.
+        size = m_slider_button_size;
     }
 
-    float result = ((*align_rect[1] - size) * this->m_value);
-    if (result <= 0) {
-        // NO OP
-    } else if (result > (*align_rect[1] - size)) {
-        *align_rect[0] += (*align_rect[1] - size);
+    // Draw the background.
+    dc->fillRect(rect, background());
+
+    // Determine and draw the location of the slider button.
+    if (m_align_policy == Align::Horizontal) {
+        float result = ((rect.w - size) * m_value);
+        if (result > 0) {
+            rect.x += result;
+        }
+        m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
     } else {
-        *align_rect[0] += result;
-    }
-    if (this->m_align_policy == Align::Horizontal) {
-        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
-    } else {
-        this->m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
+        float result = ((rect.h - size) * m_value);
+        if (result > 0) {
+            rect.y += result;
+        }
+        m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
     }
 }
 
-ScrollBar::ScrollBar(Align alignment) : Widget() {
-    this->m_align_policy = alignment;
+SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Box(alignment) {
+    m_slider = new ScrollBarSlider(alignment);
+    m_slider->m_slider_button->setMinSize(min_size);
+    this->append(m_slider, Fill::Both);
+}
 
+SimpleScrollBar::~SimpleScrollBar() {
+
+}
+
+const char* SimpleScrollBar::name() {
+    return "SimpleScrollBar";
+}
+
+void SimpleScrollBar::draw(DrawingContext *dc, Rect rect) {
+    this->rect = rect;
+    this->m_slider->draw(dc, rect);
+}
+
+Size SimpleScrollBar::sizeHint(DrawingContext *dc) {
+    Size size = this->m_slider->m_slider_button->sizeHint(dc);
+    if (this->m_align_policy == Align::Horizontal) {
+        size.w *= 2;
+    } else {
+        size.h *= 2;
+    }
+    return size;
+}
+
+ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(COLOR_BLACK));
     if (alignment == Align::Horizontal) {
         m_begin_button->image()->counterClockwise90();
@@ -126,7 +148,7 @@ ScrollBar::ScrollBar(Align alignment) : Widget() {
     });
     this->append(m_begin_button, Fill::None);
 
-    m_slider = new ScrollBarSlider(alignment);
+    m_slider = new ScrollBarSlider(alignment);//new ScrollBarSlider(alignment);
     this->append(m_slider, Fill::Both);
     // TODO this is a nice idea but for the scrollbar would need
     // to inherit its parents color for the line below to do anything
@@ -189,8 +211,4 @@ Size ScrollBar::sizeHint(DrawingContext *dc) {
             if (button_size.w > size.w) size.w = button_size.w;
         }
     return size;
-}
-
-bool ScrollBar::isLayout() {
-    return true;
 }
