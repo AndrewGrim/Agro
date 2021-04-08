@@ -33,7 +33,7 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
     dc->drawBorder(rect, style);
     dc->fillRect(rect, color);
     dc->padding(rect, style);
-    
+
     if (this->m_image) {
         Size image_size = Size(8, 8);
         dc->drawTexture(
@@ -126,13 +126,7 @@ void SimpleScrollBar::draw(DrawingContext *dc, Rect rect) {
 }
 
 Size SimpleScrollBar::sizeHint(DrawingContext *dc) {
-    Size size = this->m_slider->m_slider_button->sizeHint(dc);
-    if (this->m_align_policy == Align::Horizontal) {
-        size.w *= 2;
-    } else {
-        size.h *= 2;
-    }
-    return size;
+    return m_slider->sizeHint(dc);
 }
 
 ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
@@ -140,38 +134,31 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     if (alignment == Align::Horizontal) {
         m_begin_button->image()->counterClockwise90();
     }
-    // TODO outdated beause of the new style
-    // m_begin_button->setPadding(1);
     m_begin_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-        this->m_slider->m_value -= 0.05f; // TODO should be a customizable step
-        if (this->m_slider->m_value < 0.0f) {
-            this->m_slider->m_value = 0.0f;
+        m_slider->m_value -= m_slider->m_step;
+        if (m_slider->m_value < m_slider->m_min) {
+            m_slider->m_value = m_slider->m_min;
         }
-        this->update();
+        update();
     });
-    this->append(m_begin_button, Fill::None);
+    append(m_begin_button, Fill::None);
 
-    m_slider = new ScrollBarSlider(alignment);//new ScrollBarSlider(alignment);
-    this->append(m_slider, Fill::Both);
-    // TODO this is a nice idea but for the scrollbar would need
-    // to inherit its parents color for the line below to do anything
-    // m_slider->setBackground(m_slider->parent->background());
+    m_slider = new ScrollBarSlider(alignment);
+    append(m_slider, Fill::Both);
 
     m_end_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(COLOR_BLACK));
-    // TODO outdated beause of the new style
-    // m_end_button->setPadding(1);
     m_end_button->image()->flipVertically();
     if (alignment == Align::Horizontal) {
         m_end_button->image()->clockwise90();
     }
     m_end_button->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-        this->m_slider->m_value += 0.05f; 
-        if (this->m_slider->m_value > 1.0f) {
-            this->m_slider->m_value = 1.0f;
+        m_slider->m_value -= m_slider->m_step;
+        if (m_slider->m_value > m_slider->m_max) {
+            m_slider->m_value = m_slider->m_max;
         }
-        this->update();
+        update();
     });
-    this->append(m_end_button, Fill::None);
+    append(m_end_button, Fill::None);
 }
 
 ScrollBar::~ScrollBar() {
