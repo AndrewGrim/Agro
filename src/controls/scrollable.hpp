@@ -6,8 +6,8 @@
 
     class Scrollable : public Widget {
         public:
-            SimpleScrollBar *m_horizontal_scrollbar = nullptr;
-            SimpleScrollBar *m_vertical_scrollbar = nullptr;
+            ScrollBar *m_horizontal_scrollbar = nullptr;
+            ScrollBar *m_vertical_scrollbar = nullptr;
 
             Scrollable(Size min_size = Size(400, 400));
             ~Scrollable();
@@ -15,6 +15,7 @@
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isLayout() override;
+            // TODO add isScrollable?
             virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
             Point automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size);
