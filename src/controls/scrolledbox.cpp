@@ -1,19 +1,15 @@
 #include "../application.hpp"
 #include "scrolledbox.hpp"
 
-ScrolledBox::ScrolledBox(Align align_policy, Size min_size) : Box(align_policy) {
-    this->m_viewport = min_size;
+ScrolledBox::ScrolledBox(Align align_policy, Size min_size) : Scrollable(min_size) {
+    m_align_policy = align_policy;
 }
 
 ScrolledBox::~ScrolledBox() {
     // ScrollBars are not added to children so if they
-    // exists they need to be deleted with the ScrolledBox.
-    if (m_horizontal_scrollbar) {
-        delete m_horizontal_scrollbar;
-    }
-    if (m_vertical_scrollbar) {
-        delete m_vertical_scrollbar;
-    }
+    // exist they need to be deleted with the ScrolledBox.
+    delete m_horizontal_scrollbar;
+    delete m_vertical_scrollbar;
 }
 
 const char* ScrolledBox::name() {
@@ -24,6 +20,10 @@ void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Rect previous_clip = dc->clip();
     if (parent) {
+        // This should be fine for now but change to checking is scrollable
+        // TODO at a later time think about modifying clip to work such
+        // that you can only make the clip smaller unless specifically requesting
+        // to make the clip larger
         if (this->name() == this->parent->name()) {
             Rect p = parent->rect;
             if (p.y > rect.y) {
@@ -47,7 +47,7 @@ void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
 
 void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     this->sizeHint(dc);
-    Align parent_layout = this->alignPolicy();
+    Align parent_layout = m_align_policy;
     int generic_non_expandable_widgets;
     Point pos;
     float generic_total_layout_length;
@@ -62,9 +62,9 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     float generic_app_length;
     switch (parent_layout) {
         case Align::Vertical:
-            generic_non_expandable_widgets = this->m_vertical_non_expandable;
-            generic_total_layout_length = this->m_size.h;
-            generic_max_layout_length = this->m_size.w;
+            generic_non_expandable_widgets = m_vertical_non_expandable;
+            generic_total_layout_length = m_size.h;
+            generic_max_layout_length = m_size.w;
             generic_position_coord = &pos.y;
             generic_rect_coord = &rect.y;
             rect_length = &rect.h;
@@ -73,9 +73,9 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             generic_app_length = app_size.h;
             break;
         case Align::Horizontal:
-            generic_non_expandable_widgets = this->m_horizontal_non_expandable;
-            generic_total_layout_length = this->m_size.w;
-            generic_max_layout_length = this->m_size.h;
+            generic_non_expandable_widgets = m_horizontal_non_expandable;
+            generic_total_layout_length = m_size.w;
+            generic_max_layout_length = m_size.h;
             generic_position_coord = &pos.x;
             generic_rect_coord = &rect.x;
             rect_length = &rect.w;
@@ -85,68 +85,8 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             break;
     }
 
-    float content_x = rect.x;
-    float content_y = rect.y;
-    // TODO perhaps abstract this block into a generic add / remove scrollbar
-    // and we just pass in some variables?
-    if (this->m_align_policy == Align::Horizontal) {
-        bool vert = false;
-        if (rect.h < generic_max_layout_length) {
-            vert = true;
-            this->addScrollBar(Align::Vertical);
-            rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        }
-        if (rect.w < generic_total_layout_length) {
-            this->addScrollBar(Align::Horizontal);
-            rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
-            if (rect.h < generic_max_layout_length) {
-                this->addScrollBar(Align::Vertical);
-                if (!vert) {
-                    rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-                }
-            }
-        } else {
-            this->removeScrollBar(Align::Horizontal);
-        }
-        if (!(rect.h < generic_max_layout_length)) {
-            this->removeScrollBar(Align::Vertical);
-        }
-        if (this->hasScrollBar(Align::Vertical)) {
-            content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_max_layout_length) - rect.h);
-        }
-        if (this->hasScrollBar(Align::Horizontal)) {
-            content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_total_layout_length) - rect.w);
-        }
-    } else {
-        bool vert = false;
-        if (rect.h < generic_total_layout_length) {
-            vert = true;
-            this->addScrollBar(Align::Vertical);
-            rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-        }
-        if (rect.w < generic_max_layout_length) {
-            this->addScrollBar(Align::Horizontal);
-            rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
-            if (rect.h < generic_total_layout_length) {
-                this->addScrollBar(Align::Vertical);
-                if (!vert) {
-                    rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-                }
-            }
-        } else {
-            this->removeScrollBar(Align::Horizontal);
-        }
-        if (!(rect.h < generic_total_layout_length)) {
-            this->removeScrollBar(Align::Vertical);
-        }
-        if (this->hasScrollBar(Align::Vertical)) {
-            content_y -= this->m_vertical_scrollbar->m_slider->m_value * ((generic_total_layout_length) - rect.h);
-        }
-        if (this->hasScrollBar(Align::Horizontal)) {
-            content_x -= this->m_horizontal_scrollbar->m_slider->m_value * ((generic_max_layout_length) - rect.w);
-        }
-    }
-    pos = Point(content_x, content_y);
+    pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
+
     int child_count = this->m_visible_children - generic_non_expandable_widgets;
     if (!child_count) {
         child_count = 1; // Protects from division by zero
@@ -162,10 +102,6 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             case Align::Vertical:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
-                        // Just leaving a little note here:
-                        // expandable_opposite_length used to be rect.w, i think this is
-                        // the behaviour we want but honestly we just gotta build something
-                        // so that we can see the difference between these
                         size = Size { 
                             expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
                             child_hint.h + (expandable_length * child->proportion())
@@ -236,124 +172,8 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             *generic_position_coord += *generic_length;
         }
     }
-    if (parent_layout == Align::Vertical) {
-        if (m_vertical_scrollbar) {
-            Size size = m_vertical_scrollbar->sizeHint(dc);
-            float slider_size = rect.h * ((rect.h - size.h / 2) / generic_total_layout_length);
-            float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
-            if (slider_size < 20) {
-                slider_size = 20;
-            } else if (slider_size > (rect.h - buttons_size - 10)) {
-                slider_size = rect.h - buttons_size - 10;
-            }
-            m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
-            m_vertical_scrollbar->draw(dc, Rect(
-                rect.x + rect.w, 
-                rect.y, 
-                size.w, 
-                rect.h > size.h ? rect.h : size.h
-            ));
-        }
-        if (m_horizontal_scrollbar) {
-            Size size = m_horizontal_scrollbar->sizeHint(dc);
-            float slider_size = rect.w * ((rect.w - size.w / 2) / generic_max_layout_length);
-            float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
-            if (slider_size < 20) {
-                slider_size = 20;
-            } else if (slider_size > (rect.w - buttons_size - 10)) {
-                slider_size = rect.w - buttons_size - 10;
-            }
-            m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-            m_horizontal_scrollbar->draw(dc, Rect(
-                rect.x, 
-                rect.y + rect.h, 
-                rect.w > size.w ? rect.w : size.w, 
-                size.h
-            ));
-        }
-    } else {
-        if (m_vertical_scrollbar) {
-            Size size = m_vertical_scrollbar->sizeHint(dc);
-            float slider_size = rect.h * ((rect.h - size.h / 2) / generic_max_layout_length);
-            float buttons_size = m_vertical_scrollbar->m_begin_button->sizeHint(dc).h + m_vertical_scrollbar->m_end_button->sizeHint(dc).h;
-            if (slider_size < 20) {
-                slider_size = 20;
-            } else if (slider_size > (rect.h - buttons_size - 10)) {
-                slider_size = rect.h - buttons_size - 10;
-            }
-            m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
-            m_vertical_scrollbar->draw(dc, Rect(
-                rect.x + rect.w, 
-                rect.y, 
-                size.w, 
-                rect.h > size.h ? rect.h : size.h
-            ));
-        }
-        if (m_horizontal_scrollbar) {
-            Size size = m_horizontal_scrollbar->sizeHint(dc);
-            float slider_size = rect.w * ((rect.w - size.w / 2) / generic_total_layout_length);
-            float buttons_size = m_horizontal_scrollbar->m_begin_button->sizeHint(dc).w + m_horizontal_scrollbar->m_end_button->sizeHint(dc).w;
-            if (slider_size < 20) {
-                slider_size = 20;
-            } else if (slider_size > (rect.w - buttons_size - 10)) {
-                slider_size = rect.w - buttons_size - 10;
-            }
-            m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-            m_horizontal_scrollbar->draw(dc, Rect(
-                rect.x, 
-                rect.y + rect.h, 
-                rect.w > size.w ? rect.w : size.w, 
-                size.h
-            ));
-        }
-    }
-    if (m_vertical_scrollbar && m_horizontal_scrollbar) {
-        dc->fillRect(Rect(
-            rect.x + rect.w, 
-            rect.y + rect.h, 
-            m_vertical_scrollbar->sizeHint(dc).w, 
-            m_horizontal_scrollbar->sizeHint(dc).h), 
-            m_vertical_scrollbar->m_begin_button->background()
-        );
-    }
-}
-
-void ScrolledBox::addScrollBar(Align alignment) {
-    if (alignment == Align::Horizontal) {
-        if (!this->m_horizontal_scrollbar) {
-            this->m_horizontal_scrollbar = new ScrollBar(alignment);
-        }
-    }
-    else {
-        if (!this->m_vertical_scrollbar) {
-            this->m_vertical_scrollbar = new ScrollBar(alignment);
-        }
-    }
-}
-
-void ScrolledBox::removeScrollBar(Align alignment) {
-    if (alignment == Align::Horizontal) {
-        if (this->m_horizontal_scrollbar) {
-            delete this->m_horizontal_scrollbar;
-            this->m_horizontal_scrollbar = nullptr;
-        }
-    } else {
-        if (this->m_vertical_scrollbar) {
-            delete this->m_vertical_scrollbar;
-            this->m_vertical_scrollbar = nullptr;
-        }
-    }
-}
-
-// TODO this is kinda useless considering we can just do if (m_vertical_scrollbar)
-bool ScrolledBox::hasScrollBar(Align alignment) {
-    if (alignment == Align::Horizontal) {
-        if (m_horizontal_scrollbar) return true;
-        else return false;
-    } else {
-        if (m_vertical_scrollbar) return true;
-        else return false;
-    }
+    
+    drawScrollBars(dc, rect, m_size);
 }
 
 bool ScrolledBox::isScrollable() {

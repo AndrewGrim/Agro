@@ -1,29 +1,23 @@
 #ifndef SCROLLEDBOX_HPP
     #define SCROLLEDBOX_HPP
 
-    #include "widget.hpp"
-    #include "box.hpp"
-    #include "scrollbar.hpp"
-    #include "../renderer/drawing_context.hpp"
+    #include "scrollable.hpp"
 
-    class ScrolledBox : public Box {
+    class ScrolledBox : public Scrollable {
         public:
-            ScrollBar *m_vertical_scrollbar = nullptr;
-            ScrollBar *m_horizontal_scrollbar = nullptr;
-
             ScrolledBox(Align align_policy, Size min_size = Size(100, 100));
             ~ScrolledBox();
             virtual const char* name() override;
             virtual void draw(DrawingContext *dc, Rect rect) override;
             virtual Size sizeHint(DrawingContext *dc) override;
             virtual bool isScrollable() override;
-            virtual void layoutChildren(DrawingContext *dc, Rect rect) override;
+            void layoutChildren(DrawingContext *dc, Rect rect);
             virtual bool handleScrollEvent(ScrollEvent event) override;
-            void addScrollBar(Align alignment);
-            void removeScrollBar(Align alignment);
-            bool hasScrollBar(Align alignment);
 
         protected:
-            Size m_viewport = Size();
+            Align m_align_policy = Align::Horizontal;
+            unsigned int m_vertical_non_expandable = 0;
+            unsigned int m_horizontal_non_expandable = 0;
+            unsigned int m_visible_children = 0;
     };
 #endif
