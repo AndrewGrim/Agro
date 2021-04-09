@@ -20,6 +20,7 @@ OBJECT_FILES = \
 	build/scrolledbox.o \
 	build/slider.o \
 	build/spacer.o \
+	build/splitter.o \
 	build/treeview.o \
 	build/widget.o \
 	build/window.o \
@@ -92,6 +93,8 @@ build/slider.o: build/box.o src/controls/slider.cpp src/controls/slider.hpp
 	$(CXX) -c src/controls/slider.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/spacer.o: build/widget.o src/controls/spacer.cpp src/controls/spacer.hpp
 	$(CXX) -c src/controls/spacer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/splitter.o: build/widget.o src/controls/splitter.cpp src/controls/splitter.hpp
+	$(CXX) -c src/controls/splitter.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/treeview.o: build/scrollable.o src/controls/treeview.cpp src/controls/treeview.hpp
 	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/widget.o: build/style.o build/drawing_context.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
