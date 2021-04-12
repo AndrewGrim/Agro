@@ -16,43 +16,7 @@ const char* ScrolledBox::name() {
 void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Rect previous_clip = dc->clip();
-    if (parent) {
-        // TODO at a later time think about modifying clip to work such
-        // that you can only make the clip smaller unless specifically requesting
-        // to make the clip larger
-        if (parent->isScrollable()) {
-            Rect p = parent->rect;
-            Rect clip_rect = rect;
-            // When the widget is wider than the parent
-            // clip to the parent's width accounting for scroll.
-            if (rect.x + rect.w > p.x + p.w) {
-                clip_rect.w = (p.x + p.w) - rect.x;
-            }
-            // When the widget is taller than the parent
-            // clip to the parent's height accounting for scroll.
-            if (rect.y + rect.h > p.y + p.h) {
-                clip_rect.h = (p.y + p.h) - rect.y;
-            }
-            // When the widget is visible within the parent but
-            // starts outside of the visible area
-            // clip only whats visible.
-            if (rect.x + rect.w > p.x && !(rect.x > p.x)) {
-                clip_rect.x = p.x;
-                clip_rect.w = rect.x + rect.w - p.x;
-            }
-            // When the widget is visible within the parent but
-            // starts outside of the visible area
-            // clip only whats visible.
-            if (rect.y + rect.h > p.y && !(rect.y > p.y)) {
-                clip_rect.y = p.y;
-                clip_rect.h = rect.y + rect.h - p.y;
-            }
-            dc->setClip(clip_rect);
-        } else {
-            // Non-inception ScrolledBox
-            dc->setClip(rect);
-        }
-    }
+    clip();
     dc->fillRect(rect, this->background());
     layoutChildren(dc, rect);
     dc->setClip(previous_clip);
