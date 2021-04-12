@@ -84,8 +84,10 @@ int main(int argc, char **argv) {
                 }
             }
             h_box->append(right, Fill::Both);
+            h_box->append(new Button("Right"), Fill::Vertical);
         }
         app->append(h_box, Fill::Both);
+        app->append(new Button("Bottom"), Fill::Horizontal);
     app->run();
 
     return 0; 
