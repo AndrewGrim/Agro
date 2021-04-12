@@ -22,6 +22,7 @@
             void drawScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size);
             Size minSize();
             void setMinSize(Size min_size);
+            Rect clip();
 
         protected:
             Size m_viewport = Size();
