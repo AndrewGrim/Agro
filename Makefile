@@ -130,6 +130,8 @@ test_one_million_labels:
 	$(CXX) tests/one_million_labels.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/one_million_labels.out && ./tests/one_million_labels.out
 test_notebook:
 	$(CXX) tests/notebook.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/notebook.out && ./tests/notebook.out
+test_complex_clipping:
+	$(CXX) tests/complex_clipping.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o tests/complex_clipping.out && ./tests/complex_clipping.out
 
 example_box:
 	$(CXX) examples/box.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/box.out && ./examples/box.out
