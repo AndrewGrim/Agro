@@ -206,12 +206,12 @@ const char* Box::name() {
 }
 
 void Box::setAlignPolicy(Align align_policy) {
-    if (this->m_align_policy != align_policy) {
-        this->m_align_policy = align_policy;
-        this->layout();
+    if (m_align_policy != align_policy) {
+        m_align_policy = align_policy;
+        layout();
     }
 }
 
 Align Box::alignPolicy() {
-    return this->m_align_policy;
+    return m_align_policy;
 }
