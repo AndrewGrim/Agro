@@ -213,3 +213,14 @@ bool ScrolledBox::handleScrollEvent(ScrollEvent event) {
     }
     return false;
 }
+
+void ScrolledBox::setAlignPolicy(Align align_policy) {
+    if (m_align_policy != align_policy) {
+        m_align_policy = align_policy;
+        layout();
+    }
+}
+
+Align ScrolledBox::alignPolicy() {
+    return m_align_policy;
+}

@@ -12,6 +12,8 @@
             virtual Size sizeHint(DrawingContext *dc) override;
             void layoutChildren(DrawingContext *dc, Rect rect);
             virtual bool handleScrollEvent(ScrollEvent event) override;
+            void setAlignPolicy(Align align_policy);
+            Align alignPolicy();
 
         protected:
             Align m_align_policy = Align::Horizontal;
