@@ -16,6 +16,8 @@ class Splitter : public Widget {
         void bottom(Widget *widget);
         void left(Widget *widget);
         void right(Widget *widget);
+        void setSplit(float new_split);
+        float split();
 
     protected:
         Align m_align_policy;

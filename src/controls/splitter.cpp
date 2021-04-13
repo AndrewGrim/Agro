@@ -174,3 +174,17 @@ void Splitter::left(Widget *widget) {
 void Splitter::right(Widget *widget) {
     m_second = widget;
 }
+
+// Note the split value goes from 0.0 to 1.0.
+// The split value determines the size available
+// to the left or top side with the remaining
+// ,if any, size going to the other side (right, down).
+void Splitter::setSplit(float new_split) {
+    m_split = new_split;
+    m_split = m_split < 0.0f ? 0.0f : m_split > 1.0f ? 1.0f : m_split;
+    update();
+}
+
+float Splitter::split() {
+    return m_split;
+}
