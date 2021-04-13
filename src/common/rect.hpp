@@ -23,6 +23,52 @@
             this->h -= amount * 2;
         }
 
+        Rect clipTo(Rect parent) {
+            Rect new_clip = *this;
+
+            if (new_clip.x < parent.x) {
+                float diff = parent.x - new_clip.x;
+                new_clip.x += diff;
+                if (diff < new_clip.w) {
+                    new_clip.w = new_clip.w - diff; 
+                } else {
+                    new_clip.w = 0;
+                }
+            } else if (new_clip.x > parent.x) {
+                if (new_clip.x + new_clip.w > parent.x + parent.w) {
+                    if (parent.x + parent.w >= new_clip.x) {
+                        new_clip.w = parent.x + parent.w - new_clip.x;
+                    } else {
+                        new_clip.w = 0;
+                    }
+                } // ELSE NO OP
+            } else {
+                new_clip.w = std::min(parent.w, new_clip.w);
+            }
+
+            if (new_clip.y < parent.y) {
+                float diff = parent.y - new_clip.y;
+                new_clip.y += diff;
+                if (diff < new_clip.h) {
+                    new_clip.h = new_clip.h - diff;
+                } else {
+                    new_clip.h = 0;
+                }
+            } else if (new_clip.y > parent.y) {
+                if (new_clip.y + new_clip.h > parent.y + parent.h) {
+                    if (parent.y + parent.h >= new_clip.y) {
+                        new_clip.h = parent.y + parent.h - new_clip.y;
+                    } else {
+                        new_clip.h = 0;
+                    }
+                } // ELSE NO OP
+            } else {
+                new_clip.h = std::min(parent.h, new_clip.h);
+            }
+            
+            return new_clip;
+        }
+
         friend bool operator==(const Rect &lhs, const Rect &rhs) {
             if (lhs.x == rhs.x &&
                 lhs.y == rhs.y &&
