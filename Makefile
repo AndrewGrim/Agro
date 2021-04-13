@@ -97,7 +97,7 @@ build/splitter.o: build/widget.o src/controls/splitter.cpp src/controls/splitter
 	$(CXX) -c src/controls/splitter.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 build/treeview.o: build/scrollable.o src/controls/treeview.cpp src/controls/treeview.hpp
 	$(CXX) -c src/controls/treeview.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/widget.o: build/style.o build/drawing_context.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
+build/widget.o: src/common/rect.hpp src/common/color.hpp src/common/size.hpp src/common/point.hpp src/common/enums.hpp src/keyboard.hpp src/state.hpp src/event.hpp build/style.o build/drawing_context.o build/font.o src/controls/widget.cpp src/controls/widget.hpp
 	$(CXX) -c src/controls/widget.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
 
 # RENDERER
