@@ -706,6 +706,7 @@
                 }
                 Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 this->inner_rect = rect;
+                Rect tv_clip = clip();
 
                 float x_start = pos.x;
                 float y_start = pos.y;
@@ -713,11 +714,7 @@
                 float local_pos_x = pos.x;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
-                    Rect clip_rect = rect;
-                        clip_rect.x = local_pos_x < rect.x ? rect.x : local_pos_x;
-                        clip_rect.w = local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - clip_rect.x : s.w;
-                        clip_rect.h = m_children_size.h;
-                    dc->setClip(clip_rect);
+                    dc->setClip(Rect(local_pos_x, rect.y, s.w, m_children_size.h).clipTo(tv_clip));
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
@@ -780,7 +777,7 @@
                                             cell_clip.h = pos.y + node->max_cell_height - rect.y - m_children_size.h;
                                         }
                                         // Clip and draw the current cell.
-                                        dc->setClip(cell_clip);
+                                        dc->setClip(cell_clip.clipTo(tv_clip));
                                         float cell_x = cell_start;
                                         if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
@@ -809,7 +806,7 @@
                             pos.y += node->max_cell_height;
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
-                                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
+                                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h).clipTo(tv_clip));
                                 dc->fillRect(Rect(rect.x, pos.y - 1, m_children_size.w, 1), Color(0.85f, 0.85f, 0.85f));
                             }
                         }
@@ -827,7 +824,7 @@
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h));
+                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h).clipTo(tv_clip));
                         for (float width : m_column_widths) {
                             dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
@@ -836,7 +833,7 @@
                 }
 
                 // Draw the tree lines
-                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h));
+                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h).clipTo(tv_clip));
                 Traversal early_exit = Traversal::Continue;
                 for (TreeNode<T> *tree_root : tree_roots) {
                     if (tree_root->children.size()) {
