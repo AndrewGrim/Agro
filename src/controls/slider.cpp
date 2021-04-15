@@ -2,6 +2,8 @@
 #include "widget.hpp"
 #include "slider.hpp"
 
+#define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
+
 SliderButton::SliderButton(Size min_size) : Widget() {
     Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
     setMinSize(min_size);
@@ -50,6 +52,17 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
     append(m_slider_button, Fill::Both);
     m_slider_button->parent = this;
 
+    m_slider_button->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+        // The origin point is the position from where
+        // the value calculations will begin.
+        // It determines the start and end points for the value axis.
+        if (m_align_policy == Align::Horizontal) {
+            m_origin = m_slider_button->rect.x + m_slider_button->rect.w - event.x;
+        } else {
+            m_origin = m_slider_button->rect.y + m_slider_button->rect.h - event.y;
+        }
+    });
+
     m_slider_button->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         SliderButton *self = m_slider_button;
         if (self->isPressed()) {
@@ -72,18 +85,10 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
                 length = rect.h;
             }
 
-            // When the mouse position is outside the value axis use
-            // the mouse position from the event to calculate the value.
-            if ((event_pos < position + (size / 2)) || (event_pos > (position + (size / 2)) + (length - size))) {
-                m_value = (event_pos - (position + (size / 2))) / (length - size);
-            // When the mouse position is inside the value axis use
-            // the relative mouse movement from the event to calculate the value.
-            } else {
-                m_value = m_value + (event_pos_rel / (length - size));
-            }
-            // Normalize the value.
-            m_value = m_value < m_min ? m_min : m_value > m_max ? m_max : m_value;
-        
+            int start = size - m_origin;
+            float value = (event_pos - (position + start)) / (length - start - m_origin);
+            m_value = NORMALIZE(m_min, m_max, value);
+
             if (onValueChanged) {
                 onValueChanged();
             }
@@ -99,7 +104,7 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
         } else {
             m_value = (event.y - (rect.y + size / 2)) / (rect.h - size);
         }
-        m_value = m_value < m_min ? m_min : m_value > m_max ? m_max : m_value;
+        m_value = NORMALIZE(m_min, m_max, m_value);
     });
 }
 
@@ -138,17 +143,12 @@ void Slider::draw(DrawingContext *dc, Rect rect) {
     }
 
     // Determine and draw the location of the slider button.
+    int start = size - m_origin;
     if (m_align_policy == Align::Horizontal) {
-        float result = ((rect.w - size) * m_value);
-        if (result > 0) {
-            rect.x += result;
-        }
+        rect.x += (rect.w - start - m_origin) * m_value;
         m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
     } else {
-        float result = ((rect.h - size) * m_value);
-        if (result > 0) {
-            rect.y += result;
-        }
+        rect.y += (rect.h - start - m_origin) * m_value;
         m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
     }
 }
@@ -175,8 +175,7 @@ Size Slider::sizeHint(DrawingContext *dc) {
 bool Slider::handleScrollEvent(ScrollEvent event) {
     // TODO should we do this automatically in ScrollEvent() ctor?
     event.y *= -1;
-    m_value += m_step * event.y;
-    m_value = m_value < m_min ? m_min : m_value > m_max ? m_max : m_value;
+    m_value = NORMALIZE(m_min, m_max, m_value + m_step * event.y);
 
     if (onValueChanged) {
         onValueChanged();

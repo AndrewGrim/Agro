@@ -20,6 +20,7 @@
             float m_max = 1.0f;
             float m_value = 0.0f;
             float m_step = 0.1f; 
+            int m_origin = 0;
             
             float m_slider_button_size = 0;
             SliderButton *m_slider_button = nullptr;
