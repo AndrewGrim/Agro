@@ -151,5 +151,7 @@ example_custom_widget_drawing:
 	$(CXX) examples/custom_widget_drawing.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/custom_widget_drawing.out && ./examples/custom_widget_drawing.out
 example_splitter:
 	$(CXX) examples/splitter.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/splitter.out && ./examples/splitter.out
-example_treeview: install
-	cd examples/treeview && make
+example_treeview:
+	$(CXX) examples/treeview.cpp $(OBJECT_FILES) $(INCLUDE) $(LINK) $(LIBS) $(CXX_FLAGS) -o examples/treeview.out && ./examples/treeview.out
+example_complex_treeview: install
+	cd examples/complex_treeview && make
