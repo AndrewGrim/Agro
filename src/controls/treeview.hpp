@@ -714,7 +714,7 @@
                 float local_pos_x = pos.x;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
-                    dc->setClip(Rect(local_pos_x, rect.y, s.w, m_children_size.h).clipTo(tv_clip));
+                    dc->setClip(Rect(local_pos_x, rect.y, local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w, m_children_size.h).clipTo(tv_clip));
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
