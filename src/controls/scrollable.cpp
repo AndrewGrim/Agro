@@ -210,7 +210,7 @@ Rect Scrollable::clip() {
             }
             dc->setClip(clip_rect);
         } else {
-            // Non-inception ScrolledBox
+            // Non-inception Scrollable
             dc->setClip(rect);
         }
     } else {
