@@ -32,27 +32,38 @@ void Button::draw(DrawingContext *dc, Rect rect) {
         color = background();
     }
     
-    dc->margin(rect, style);
-    dc->drawBorder(rect, style);
-    dc->fillRect(rect, color);
-    dc->padding(rect, style);
+    Rect old_clip = dc->clip();
+    dc->setClip(rect.clipTo(old_clip));
+    // We pretend that the button always gets enough space
+    // but we still clip to the space that we were given.
+    Rect drawing_rect = Rect(
+        rect.x, 
+        rect.y, 
+        sizeHint(dc).w > rect.w ? sizeHint(dc).w : rect.w, 
+        sizeHint(dc).h > rect.h ? sizeHint(dc).h : rect.h
+    );
+
+    dc->margin(drawing_rect, style);
+    dc->drawBorder(drawing_rect, style);
+    dc->fillRect(drawing_rect, color);
+    dc->padding(drawing_rect, style);
 
     Size text_size = dc->measureText(font(), text());
     if (m_image) {
         Size image_size = m_image->sizeHint(dc);
         dc->drawTexture(
             Point(
-                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
-                round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
+                round(drawing_rect.x + (drawing_rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(drawing_rect.y + (drawing_rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
             m_image->_texture(),
             m_image->coords(),
             m_image->foreground()
         );
-        // Resize rect to account for image before the label is drawn.
-        rect.x += image_size.w;
-        rect.w -= image_size.w;
+        // Resize drawing_rect to account for image before the label is drawn.
+        drawing_rect.x += image_size.w;
+        drawing_rect.w -= image_size.w;
     }
     HorizontalAlignment h_text_align = m_horizontal_align;
     VerticalAlignment v_text_align = m_vertical_align;
@@ -66,11 +77,12 @@ void Button::draw(DrawingContext *dc, Rect rect) {
             m_text,
             h_text_align,
             v_text_align,
-            rect,
+            drawing_rect,
             0,
             m_fg
         );
     }
+    dc->setClip(old_clip);
 }
 
 Size Button::sizeHint(DrawingContext *dc) {

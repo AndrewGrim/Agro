@@ -14,16 +14,28 @@ const char* Label::name() {
 
 void Label::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    dc->fillRect(rect, Widget::m_bg);
+
+    Rect old_clip = dc->clip();
+    dc->setClip(rect.clipTo(old_clip));
+    // We pretend that the label always gets enough space
+    // but we still clip to the space that we were given.
+    Rect drawing_rect = Rect(
+        rect.x, 
+        rect.y, 
+        sizeHint(dc).w > rect.w ? sizeHint(dc).w : rect.w, 
+        sizeHint(dc).h > rect.h ? sizeHint(dc).h : rect.h
+    );
+    dc->fillRect(drawing_rect, Widget::m_bg);
     dc->fillTextAligned(
         this->font() ? this->font() : dc->default_font,
         this->m_text,
         this->m_horizontal_align,
         this->m_vertical_align,
-        rect,
+        drawing_rect,
         0,
         this->m_fg
     );
+    dc->setClip(old_clip);
 }
 
 Size Label::sizeHint(DrawingContext *dc) {
