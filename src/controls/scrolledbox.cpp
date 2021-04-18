@@ -149,20 +149,6 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
                 if (widget_rect.y + widget_rect.h > rect.y + rect.h) {
                     widget_rect.h = (rect.y + rect.h) - widget_rect.y;
                 }
-                // When the widget is visible within the parent but
-                // starts outside of the visible area
-                // clip only whats visible.
-                if (widget_rect.x + widget_rect.w >= rect.x && !(widget_rect.x > rect.x)) {
-                    widget_rect.x = rect.x;
-                    widget_rect.w = widget_rect.x + widget_rect.w - rect.x;
-                }
-                // When the widget is visible within the parent but
-                // starts outside of the visible area
-                // clip only whats visible.
-                if (widget_rect.y + widget_rect.h >= rect.y && !(widget_rect.y > rect.y)) {
-                    widget_rect.y = rect.y;
-                    widget_rect.h = widget_rect.y + widget_rect.h - rect.y;
-                }
                 child->draw(dc, widget_rect);
             }
             if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
