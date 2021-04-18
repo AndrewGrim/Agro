@@ -18,5 +18,11 @@ You will need:
 * FreeType2
 * Graphics card that supports OpenGL Core 3.3 at least (Tested on RX 5700XT and Intel HD 4000)
 
+On debian based system you should be able to install the dependencies like so:
+```
+sudo apt install libfreetype6-dev
+sudo apt install libsdl2-dev
+```
+
 After that you should be able to just run `make` in the root directory.
 This will run whatever test program happens to be in `main.cpp`.
