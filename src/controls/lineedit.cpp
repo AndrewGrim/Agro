@@ -190,7 +190,7 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     );
     // resize rectangle to account for border
     rect.shrink(m_border_width);
-    dc->setClip(rect);
+    dc->setClip(rect.clipTo(old_clip));
 
     dc->fillRect(rect, this->background());
     if (!(m_virtual_size.w < rect.w)) {
