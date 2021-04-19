@@ -1130,6 +1130,7 @@
                         if (!collapsed) {
                             // Check and set the max height of the node.
                             int index = 0;
+                            assert(node->columns.size() == children.size() && "The amount of Column<T>s and CellRenderers should be the same!");
                             for (CellRenderer *renderer : node->columns) {
                                 Size s = renderer->sizeHint(dc);
                                 Column<T> *col = (Column<T>*)children[index];
