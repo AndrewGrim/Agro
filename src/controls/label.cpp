@@ -25,7 +25,9 @@ void Label::draw(DrawingContext *dc, Rect rect) {
         sizeHint(dc).w > rect.w ? sizeHint(dc).w : rect.w, 
         sizeHint(dc).h > rect.h ? sizeHint(dc).h : rect.h
     );
+
     dc->fillRect(drawing_rect, Widget::m_bg);
+    dc->padding(drawing_rect, style);
     dc->fillTextAligned(
         this->font() ? this->font() : dc->default_font,
         this->m_text,
@@ -41,6 +43,7 @@ void Label::draw(DrawingContext *dc, Rect rect) {
 Size Label::sizeHint(DrawingContext *dc) {
     if (this->m_size_changed) {
         Size size = dc->measureText(this->font() ? this->font() : dc->default_font, this->text());
+        dc->sizeHintPadding(size, style);
         this->m_size = size;
         this->m_size_changed = false;
 
