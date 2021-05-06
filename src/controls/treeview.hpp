@@ -708,10 +708,7 @@
                     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
                 }
                 this->inner_rect = rect;
-                // TODO if the below is clip() then we get clipping issues
-                // where the contents get drawn in the margins past the scrollbar
-                // probably because clip() uses this->rect rather than rect, UPDATE: that didnt seem to fix it??
-                Rect tv_clip = rect;
+                Rect tv_clip = old_clip;
 
                 float x_start = pos.x;
                 float y_start = pos.y;
