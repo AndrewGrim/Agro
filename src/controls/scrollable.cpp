@@ -22,7 +22,7 @@ Size Scrollable::sizeHint(DrawingContext *dc) {
     return m_viewport;
 }
 
-Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size) {
+Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, const Size &virtual_size) {
     float content_x = rect.x;
     float content_y = rect.y;
     bool vert = false;
@@ -70,7 +70,7 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &r
     return Point(content_x, content_y);
 }
 
-void Scrollable::drawScrollBars(DrawingContext *dc, Rect &rect, Size virtual_size) {
+void Scrollable::drawScrollBars(DrawingContext *dc, Rect &rect, const Size &virtual_size) {
     if (m_vertical_scrollbar) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
         float slider_size = rect.h * ((rect.h - size.h / 2) / virtual_size.h);
