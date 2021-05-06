@@ -581,6 +581,11 @@
         Both,
     };
 
+    enum class Mode {
+        Scroll,
+        Unroll,
+    };
+
     template <typename T> class TreeView : public Scrollable {
         public:        
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeHovered = nullptr;
@@ -698,13 +703,10 @@
                 dc->fillRect(rect, COLOR_WHITE);
 
                 Rect old_clip = dc->clip();
-                Size virtual_size;
-                if (m_virtual_size_changed) {
-                    virtual_size = calculateVirtualSize(dc);
-                } else {
-                    virtual_size = m_virtual_size;
+                Point pos = Point(rect.x, rect.y);
+                if (m_mode == Mode::Scroll) {
+                    pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
                 }
-                Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 this->inner_rect = rect;
                 // TODO if the below is clip() then we get clipping issues
                 // where the contents get drawn in the margins past the scrollbar
@@ -870,7 +872,9 @@
                 }
 
                 dc->setClip(old_clip);
-                drawScrollBars(dc, rect, virtual_size);
+                if (m_mode == Mode::Scroll) {
+                    drawScrollBars(dc, rect, m_virtual_size);
+                }
             }
 
             void setModel(Tree<T> *model) {
@@ -1051,10 +1055,16 @@
                     m_virtual_size.w = size.w;
                     m_size_changed = false;
                 }
-                Size viewport_and_style = m_viewport;
-                    dc->sizeHintMargin(viewport_and_style, style);
-                    dc->sizeHintBorder(viewport_and_style, style);
-                return viewport_and_style;
+                if (m_virtual_size_changed) {
+                    calculateVirtualSize(dc);
+                }
+                if (m_mode == Mode::Scroll) {
+                    Size viewport_and_style = m_viewport;
+                        dc->sizeHintMargin(viewport_and_style, style);
+                        dc->sizeHintBorder(viewport_and_style, style);
+                    return viewport_and_style;
+                }
+                return m_virtual_size;
             }
 
             bool isTable() {
@@ -1066,10 +1076,24 @@
                 update();
             }
 
+            void setMode(Mode mode) {
+                m_mode = mode;
+                delete m_horizontal_scrollbar;
+                m_horizontal_scrollbar = nullptr;
+                delete m_vertical_scrollbar;
+                m_vertical_scrollbar = nullptr;
+                layout();
+            }
+
+            Mode mode() {
+                return m_mode;
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
             bool m_virtual_size_changed = false;
+            Mode m_mode = Mode::Scroll;
             uint8_t m_indent = 24;
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_selected = nullptr;
@@ -1114,8 +1138,8 @@
                 update();
             }
 
-            Size calculateVirtualSize(DrawingContext *dc) {
-                Size virtual_size = m_children_size;
+            void calculateVirtualSize(DrawingContext *dc) {
+                m_virtual_size = m_children_size;
                 void *previous_parent = nullptr;
                 bool collapsed = false;
                 int collapsed_depth = -1;
@@ -1155,7 +1179,7 @@
                                 }
                                 index++;
                             }
-                            virtual_size.h += node->max_cell_height;
+                            m_virtual_size.h += node->max_cell_height;
                         }
 
                         if (node->is_collapsed && !collapsed) {
@@ -1166,12 +1190,9 @@
                     }
                 );
                 
-                virtual_size.w = m_children_size.w;
-                m_virtual_size = virtual_size;
+                m_virtual_size.w = m_children_size.w;
                 m_virtual_size_changed = false;
                 m_auto_size_columns = false;
-
-                return virtual_size;
             }
 
             void drawTreeLinesToChildren(DrawingContext *dc, float x, float y, TreeNode<T> *node) {
