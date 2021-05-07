@@ -883,6 +883,7 @@
             }
 
             void setModel(Tree<T> *model) {
+                delete m_model;
                 m_model = model;
                 for (Widget *widget : children) {
                     ((Column<T>*)widget)->setModel(model);
