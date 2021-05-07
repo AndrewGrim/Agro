@@ -171,11 +171,6 @@ Widget* Widget::layout() {
     return this;
 }
 
-void Widget::parentLayout() {
-    parent->m_size_changed = true;
-    update();
-}
-
 void* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     for (Widget *child : children) {
         if (child->isVisible()) {
