@@ -724,6 +724,14 @@
                 std::vector<TreeNode<T>*> tree_roots;
                 bool collapsed = false;
                 int collapsed_depth = -1;
+                Rect drawing_rect = Rect(rect);
+                float column_header = m_children_size.h;
+                if (m_mode == Mode::Unroll) {
+                    if (parent) {
+                        drawing_rect = parent->rect;
+                    }
+                    column_header = 0.0f;
+                }
                 m_model->forEachNode(
                     m_model->roots,
                     [&](TreeNode<T> *node) -> Traversal {
@@ -732,7 +740,7 @@
                             collapsed_depth = -1;
                         }
                         if (!collapsed) {
-                            if (pos.y + node->max_cell_height > rect.y + m_children_size.h && pos.y < rect.y + rect.h) {
+                            if (pos.y + node->max_cell_height > drawing_rect.y + column_header && pos.y < drawing_rect.y + drawing_rect.h) {
                                 if (!m_table) {
                                     TreeNode<T> *tree_root = node;
                                     while (tree_root) {
@@ -752,7 +760,7 @@
                                     float col_width = m_column_widths[i];
                                     CellRenderer *renderer = node->columns[i];
                                     Size s = renderer->sizeHint(dc);
-                                    if (cell_start + col_width > rect.x && cell_start < rect.x + rect.w) {
+                                    if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
                                         Rect cell_clip = Rect(cell_start, pos.y, col_width, node->max_cell_height);
                                         // When the cell is wider than the treeview
                                         // clip to the treeview's width accounting for scroll.
@@ -800,7 +808,7 @@
                                         );
                                     }
                                     cell_start += col_width;
-                                    if (cell_start > rect.x + rect.w) {
+                                    if (cell_start > drawing_rect.x + drawing_rect.w) {
                                         break;
                                     }
                                 }
@@ -817,7 +825,7 @@
                             collapsed = true;
                             collapsed_depth = node->depth;
                         }
-                        if (pos.y > rect.y + rect.h) {
+                        if (pos.y > drawing_rect.y + drawing_rect.h) {
                             return Traversal::Break;
                         }
                         return Traversal::Continue;
