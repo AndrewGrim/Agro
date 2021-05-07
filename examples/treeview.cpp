@@ -13,7 +13,20 @@ int main(int argc, char **argv) {
         app->setTitle("TreeView");
         app->resize(1200, 600);
         app->center();
-        TreeView<void> *tv = new TreeView<void>();
+        TreeView<void> *tv = nullptr;
+        Box *h_box = new Box(Align::Horizontal);
+            Button *scroll = new Button("Set Scroll");
+                scroll->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
+                    tv->setMode(Mode::Scroll);
+                });
+            h_box->append(scroll, Fill::Both);
+            Button *unroll = new Button("Set Unroll");
+                unroll->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
+                    tv->setMode(Mode::Unroll);
+                });
+            h_box->append(unroll, Fill::Both);
+        app->append(h_box, Fill::Horizontal); 
+        tv = new TreeView<void>();
             for (int i = 0; i < 7; i++) {
                 tv->append(new Column<void>("Column: " + std::to_string(i)));
             }
@@ -33,6 +46,7 @@ int main(int argc, char **argv) {
                 }
             tv->setModel(model);
             tv->setTableMode(true);
+            tv->setMode(Mode::Unroll);
         app->append(tv, Fill::Both);
     app->run();
 
