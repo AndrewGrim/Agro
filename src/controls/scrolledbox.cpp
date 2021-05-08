@@ -139,16 +139,6 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             child->rect = widget_rect;
         } else {
             if (child->isVisible()) {
-                // When the widget is wider than the parent
-                // clip to the parent's width accounting for scroll.
-                if (widget_rect.x + widget_rect.w > rect.x + rect.w) {
-                    widget_rect.w = (rect.x + rect.w) - widget_rect.x;
-                }
-                // When the widget is taller than the parent
-                // clip to the parent's height accounting for scroll.
-                if (widget_rect.y + widget_rect.h > rect.y + rect.h) {
-                    widget_rect.h = (rect.y + rect.h) - widget_rect.y;
-                }
                 child->draw(dc, widget_rect);
             }
             if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
