@@ -17,13 +17,13 @@ void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
     Rect previous_clip = dc->clip();
     clip();
-    dc->fillRect(rect, this->background());
+    dc->fillRect(rect, background());
     layoutChildren(dc, rect);
     dc->setClip(previous_clip);
 }
 
 void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
-    this->sizeHint(dc);
+    sizeHint(dc);
     Align parent_layout = m_align_policy;
     int generic_non_expandable_widgets;
     Point pos;
@@ -64,7 +64,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
 
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
 
-    int child_count = this->m_visible_children - generic_non_expandable_widgets;
+    int child_count = m_visible_children - generic_non_expandable_widgets;
     if (!child_count) {
         child_count = 1; // Protects from division by zero
     }
@@ -73,7 +73,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     if (expandable_length < 0) {
         expandable_length = 0;
     }
-    for (Widget* child : this->children) {
+    for (Widget* child : children) {
         Size child_hint = child->sizeHint(dc);
         switch (parent_layout) {
             case Align::Vertical:
@@ -203,12 +203,12 @@ Size ScrolledBox::sizeHint(DrawingContext *dc) {
 bool ScrolledBox::handleScrollEvent(ScrollEvent event) {
     SDL_Keymod mod = SDL_GetModState();
     if (mod & Mod::Shift) {
-        if (this->m_horizontal_scrollbar) {
-            return this->m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+        if (m_horizontal_scrollbar) {
+            return m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
         }
     } else {
-        if (this->m_vertical_scrollbar) {
-            return this->m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+        if (m_vertical_scrollbar) {
+            return m_vertical_scrollbar->m_slider->handleScrollEvent(event);
         }
     }
     return false;
