@@ -32,10 +32,12 @@ void Button::draw(DrawingContext *dc, Rect rect) {
         color = background();
     }
     
-    Rect old_clip = dc->clip();
-    dc->setClip(rect.clipTo(old_clip));
-    // We pretend that the button always gets enough space
-    // but we still clip to the space that we were given.
+    // We pretend that the widget always gets enough space.
+    // This allows us to draw the widget exactly how its meant to look.
+    // Not explicitly clipping should not be a problem because
+    // as long as there is a scrollable somewhere in the tree everything will get its
+    // requested size and otherwise if its boxes all the way up
+    // you only wont get enough space if the widget is going to go outside the window.
     Rect drawing_rect = Rect(
         rect.x, 
         rect.y, 
@@ -82,7 +84,6 @@ void Button::draw(DrawingContext *dc, Rect rect) {
             m_fg
         );
     }
-    dc->setClip(old_clip);
 }
 
 Size Button::sizeHint(DrawingContext *dc) {
