@@ -1,12 +1,12 @@
 #include "button.hpp"
 
 Button::Button(std::string text) {
-    this->setText(text);
+    setText(text);
     Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
 }
 
 Button::Button(Image *image) {
-    this->setImage(image);
+    setImage(image);
     Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
 }
 
