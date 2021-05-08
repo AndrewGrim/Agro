@@ -426,6 +426,7 @@
                 });
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_dragging) {
+                        setExpand(false);
                         setWidth(event.x - rect.x); // TODO take scroll into account?
                     } else {
                         if (event.x >= (rect.x + rect.w) - 5) {
@@ -565,6 +566,15 @@
                 return this;
             }
 
+            void setExpand(bool expand) {
+                m_expand = expand;
+                update();
+            }
+
+            bool expand() {
+                return m_expand;
+            }
+
         protected:
             Sort m_sort = Sort::None;
             Tree<T> *m_model = nullptr;
@@ -572,6 +582,7 @@
             bool m_custom_size = false;
             float m_custom_width = 0.0;
             float m_min_width = 16;
+            bool m_expand = false;
     };
 
     enum class GridLines {
@@ -713,10 +724,29 @@
                 float x_start = pos.x;
                 float y_start = pos.y;
 
+                int child_count = 0;
+                for (Widget *child : children) {
+                    if (((Column<T>*)child)->expand()) {
+                        child_count++;
+                    }
+                }
+                if (child_count < 1) {
+                    child_count = 1;
+                }
+                float expandable_length = (rect.w - m_children_size.w) / child_count;
                 float local_pos_x = pos.x;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
-                    dc->setClip(Rect(local_pos_x, rect.y, local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w, m_children_size.h).clipTo(tv_clip));
+                    if (((Column<T>*)child)->expand()) {
+                        s.w += expandable_length > 0 ? expandable_length : 0;
+                        ((Column<T>*)child)->setWidth(s.w);
+                    }
+                    dc->setClip(Rect(
+                        local_pos_x, 
+                        rect.y, 
+                        local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w,
+                        m_children_size.h
+                    ).clipTo(tv_clip));
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
                 }
