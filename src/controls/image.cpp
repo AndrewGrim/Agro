@@ -33,26 +33,38 @@ const char* Image::name() {
 
 void Image::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
-    dc->fillRect(rect, Widget::m_bg);
+    // We pretend that the widget always gets enough space.
+    // This allows us to draw the widget exactly how its meant to look.
+    // Not explicitly clipping should not be a problem because
+    // as long as there is a scrollable somewhere in the tree everything will get its
+    // requested size and otherwise if its boxes all the way up
+    // you only wont get enough space if the widget is going to go outside the window.
+    Rect dr = Rect(
+        rect.x, 
+        rect.y, 
+        sizeHint(dc).w > rect.w ? sizeHint(dc).w : rect.w, 
+        sizeHint(dc).h > rect.h ? sizeHint(dc).h : rect.h
+    );
+    dc->fillRect(dr, Widget::m_bg);
     if (m_expand) {
         if (m_maintain_aspect_ratio) {
             Size size = Size();
-            if (rect.w > rect.h) {
+            if (dr.w > dr.h) {
                 size.w = 1;
-            } else if (rect.h > rect.w) {
+            } else if (dr.h > dr.w) {
                 size.h = 1;
             }
             if (size.w) {
-                size.w = rect.h;
-                size.h = size.w / (size.w / rect.h);
+                size.w = dr.h;
+                size.h = size.w / (size.w / dr.h);
             } else if (size.h) {
-                size.h = rect.w;
-                size.w = size.h / (size.h / rect.w);
+                size.h = dr.w;
+                size.w = size.h / (size.h / dr.w);
             } else {
-                size = Size(rect.w < rect.h ? rect.w : rect.h, rect.h < rect.w ? rect.h : rect.w);
+                size = Size(dr.w < dr.h ? dr.w : dr.h, dr.h < dr.w ? dr.h : dr.w);
             }
             dc->drawTextureAligned(
-                rect,
+                dr,
                 size,
                 this->_texture(),
                 this->coords(),
@@ -62,8 +74,8 @@ void Image::draw(DrawingContext *dc, Rect rect) {
             );
         } else {
             dc->drawTextureAligned(
-                rect,
-                Size(rect.w, rect.h),
+                dr,
+                Size(dr.w, dr.h),
                 this->_texture(),
                 this->coords(),
                 m_horizontal_align,
@@ -73,7 +85,7 @@ void Image::draw(DrawingContext *dc, Rect rect) {
         }
     } else {
         dc->drawTextureAligned(
-            rect,
+            dr,
             m_size,
             this->_texture(),
             this->coords(),
