@@ -735,11 +735,12 @@
                 }
                 float expandable_length = (rect.w - m_children_size.w) / child_count;
                 float local_pos_x = pos.x;
+                int i = 0;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
                     if (((Column<T>*)child)->expand()) {
                         s.w += expandable_length > 0 ? expandable_length : 0;
-                        ((Column<T>*)child)->setWidth(s.w);
+                        m_column_widths[i] = s.w;
                     }
                     dc->setClip(Rect(
                         local_pos_x, 
@@ -749,6 +750,7 @@
                     ).clipTo(tv_clip));
                     child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
                     local_pos_x += s.w;
+                    i++;
                 }
                 pos.y += m_children_size.h;
                 std::vector<TreeNode<T>*> tree_roots;
