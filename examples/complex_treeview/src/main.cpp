@@ -188,7 +188,7 @@ int main(int argc, char **argv) {
             };
         app->append(vbox, Fill::Vertical);
         app->onReady = [&](Window *win) {
-            tv->select(0);
+            tv->select((size_t)0);
         };        
     app->run();
 
