@@ -616,7 +616,7 @@
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
                     y += m_children_size.h;
-                    if (event.x <= x + m_children_size.w) {
+                    if (event.x <= x + m_current_header_width) {
                         m_model->forEachNode(
                             m_model->roots,
                             [&](TreeNode<T> *node) -> Traversal {
@@ -653,7 +653,7 @@
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
                     y += m_children_size.h;
-                    if (event.x <= x + m_children_size.w) {
+                    if (event.x <= x + m_current_header_width) {
                         m_model->forEachNode(
                             m_model->roots,
                             [&](TreeNode<T> *node) -> Traversal {
@@ -736,12 +736,14 @@
                 float expandable_length = (rect.w - m_children_size.w) / child_count;
                 float local_pos_x = pos.x;
                 int i = 0;
+                m_current_header_width = 0.0f;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
                     if (((Column<T>*)child)->expand()) {
                         s.w += expandable_length > 0 ? expandable_length : 0;
                         m_column_widths[i] = s.w;
                     }
+                    m_current_header_width += s.w;
                     dc->setClip(Rect(
                         local_pos_x, 
                         rect.y, 
@@ -834,7 +836,7 @@
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                                 dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h).clipTo(tv_clip));
-                                dc->fillRect(Rect(rect.x, pos.y - 1, m_children_size.w, 1), Color(0.85f, 0.85f, 0.85f));
+                                dc->fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f));
                             }
                         }
 
@@ -1124,6 +1126,7 @@
             int m_treeline_size = 2;
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
+            float m_current_header_width = 0.0f;
             std::vector<float> m_column_widths;
             bool m_auto_size_columns = false;
             bool m_table = false;
