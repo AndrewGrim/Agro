@@ -38,6 +38,7 @@ install: build/lib$(LIB_NAME).so
 	cp src/controls/*.hpp -t build/$(LIB_NAME)/controls
 	cp src/common/*.hpp -t build/$(LIB_NAME)/common
 	cp src/renderer/*.hpp -t build/$(LIB_NAME)/renderer
+	cp src/renderer/stb_image.h -t build/$(LIB_NAME)/renderer
 	sudo cp build/lib$(LIB_NAME).so /usr/lib
 	sudo cp -r build/$(LIB_NAME) /usr/include
 	sudo ldconfig
@@ -109,8 +110,8 @@ build/glad.o: src/renderer/glad.c include/glad/glad.h
 	$(CXX) -c src/renderer/glad.c $(INCLUDE) $(CXX_FLAGS) -o $@
 build/renderer.o: build/font.o src/renderer/renderer.cpp src/renderer/renderer.hpp src/renderer/batch.hpp
 	$(CXX) -c src/renderer/renderer.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
-build/stb_image.o: src/renderer/stb_image.cpp src/renderer/stb_image.hpp
-	$(CXX) -c src/renderer/stb_image.cpp $(INCLUDE) $(CXX_FLAGS) -o $@
+build/stb_image.o: src/renderer/stb_image.c src/renderer/stb_image.h
+	$(CXX) -c src/renderer/stb_image.c $(INCLUDE) $(CXX_FLAGS) -o $@
 
 clean:
 	rm -f -r build
