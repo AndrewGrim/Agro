@@ -974,19 +974,16 @@
                 }
             }
 
-            void select(int index) {
-                int i = 0;
-                Traversal early = Traversal::Continue;
-                for (TreeNode<T> *root : m_model->roots) {
-                    m_model->descend(early, root, [&](TreeNode<T> *node) -> Traversal {
-                        if (i == index) {
-                            select(node);
-                            return Traversal::Break;
-                        }
-                        i++;
-                        return Traversal::Continue;
-                    });
-                }
+            void select(size_t index) {
+                size_t i = 0;
+                m_model->forEachNode(m_model->roots, [&](TreeNode<T> *node) -> Traversal {
+                    if (i == index) {
+                        select(node);
+                        return Traversal::Break;
+                    }
+                    i++;
+                    return Traversal::Continue;
+                });
             }
 
             void deselect() {
