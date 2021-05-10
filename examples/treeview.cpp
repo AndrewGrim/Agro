@@ -1,6 +1,11 @@
 #include "../src/application.hpp"
 #include "../src/controls/treeview.hpp"
 
+struct Hidden {
+    int id = -1;
+    Hidden(int id) : id{id} {}
+};
+
 int main(int argc, char **argv) { 
     Application *app = Application::get();
         app->onReady = [&](Window *window) {
@@ -13,7 +18,7 @@ int main(int argc, char **argv) {
         app->setTitle("TreeView");
         app->resize(1200, 600);
         app->center();
-        TreeView<void> *tv = nullptr;
+        TreeView<Hidden> *tv = nullptr;
         Box *h_box = new Box(Align::Horizontal);
             Button *scroll = new Button("Set Scroll");
                 scroll->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
@@ -26,22 +31,31 @@ int main(int argc, char **argv) {
                 });
             h_box->append(unroll, Fill::Both);
         app->append(h_box, Fill::Horizontal); 
-        tv = new TreeView<void>();
-            for (int i = 0; i < 7; i++) {
-                tv->append(new Column<void>("Column: " + std::to_string(i)));
+        tv = new TreeView<Hidden>();
+            for (int i = 0; i < 3; i++) {
+                auto c = new Column<Hidden>(
+                    "Column: " + std::to_string(i),
+                    nullptr, 
+                    HorizontalAlignment::Center,
+                    [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                        return lhs->hidden->id > rhs->hidden->id;
+                    }
+                );
+                if (i == 1) c->setExpand(true);
+                if (i == 2) c->setWidth(350);
+                tv->append(c);
             }
-            Tree<void> *model = new Tree<void>();
+            Tree<Hidden> *model = new Tree<Hidden>();
                 for (int i = 0; i < 1000; i++) {
                     std::vector<CellRenderer*> columns = {
                         new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 0"),
                         new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 1"),
                         new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 2"),
-                        new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 3"),
-                        new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 4"),
-                        new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 5"),
-                        new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 6"),
                     };
-                    TreeNode<void> *node = new TreeNode<void>(columns, nullptr);
+                    ((TextCellRenderer*)columns[0])->h_align = HorizontalAlignment::Left;
+                    ((TextCellRenderer*)columns[1])->h_align = HorizontalAlignment::Right;
+                    ((TextCellRenderer*)columns[2])->h_align = HorizontalAlignment::Center;
+                    TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
                     model->append(nullptr, node);
                 }
             tv->setModel(model);
@@ -50,5 +64,5 @@ int main(int argc, char **argv) {
         app->append(tv, Fill::Both);
     app->run();
 
-    return 0; 
+    return 0;
 }
