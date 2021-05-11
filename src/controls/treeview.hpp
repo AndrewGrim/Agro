@@ -287,7 +287,10 @@
     enum class Traversal {
         Continue, // Continue going down as normal by traversing all nodes.
         Next, // Ends the traversal of the current node and its children early and goes to the next one on the same level.
-        Break // Ends the traversal as soon as possible (usually after the current root node).
+        Break // Ends the traversal of the entire tree immediately.
+        // Note: When manually descending (NOT using forEachNode) it is your
+        // responsibility to check `early_exit` for Traversal::Break
+        // after calling descend().
     };
 
     template <typename T> class Tree {
@@ -338,6 +341,9 @@
                     TreeNode<T> *last = nullptr;
                     for (TreeNode<T> *child : root->children) {
                         last = descend(early_exit, child, fn);
+                        if (early_exit == Traversal::Break) {
+                            return last;
+                        }
                     }
                     return last;
                 } else {
@@ -863,7 +869,10 @@
 
                 // Draw the tree lines
                 dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h).clipTo(tv_clip));
-                Traversal early_exit = Traversal::Continue;
+                // TODO we could optimse here by keeping track of where
+                // we left off between the tree_roots so we could just
+                // continue from there rather than from the beginning
+                Traversal _unused = Traversal::Continue;
                 for (TreeNode<T> *tree_root : tree_roots) {
                     if (tree_root->children.size()) {
                         float tree_line_start = y_start + m_children_size.h;
@@ -872,19 +881,19 @@
                                 if (tree_root == _root) {
                                     break;
                                 }
-                                m_model->descend(early_exit, _root, [&](TreeNode<T> *node) {
+                                m_model->descend(_unused, _root, [&](TreeNode<T> *node) {
                                     if (!node->is_collapsed) {
                                         tree_line_start += node->max_cell_height;
                                     } else {
                                         tree_line_start += node->max_cell_height;
-                                        return Traversal::Break;
+                                        return Traversal::Next;
                                     }
                                     return Traversal::Continue;
                                 });
                             }
                         }
 
-                        m_model->descend(early_exit, tree_root, [&](TreeNode<T> *node) {
+                        m_model->descend(_unused, tree_root, [&](TreeNode<T> *node) {
                             drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
                             tree_line_start += node->max_cell_height;
                             if (node->is_collapsed) {
@@ -1242,15 +1251,15 @@
                         if (node->children.size() > 1) {
                             last_y -= node->children[0]->max_cell_height / 2;
                         }
-                        Traversal early_exit = Traversal::Continue;
+                        Traversal _unused = Traversal::Continue;
                         for (int i = 0; i < node->children.size() - 1; i++) {
                             TreeNode<T> *child = node->children[i];
-                            m_model->descend(early_exit, child, [&](TreeNode<T>* _node) {
+                            m_model->descend(_unused, child, [&](TreeNode<T>* _node) {
                                 if (!_node->is_collapsed) {
                                     last_y += _node->max_cell_height;
                                 } else {
                                     last_y += _node->max_cell_height;
-                                    return Traversal::Break;
+                                    return Traversal::Next;
                                 }
                                 return Traversal::Continue;
                             });
