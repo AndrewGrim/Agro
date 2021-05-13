@@ -613,6 +613,10 @@
 
             TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+                    Size virtual_size = m_virtual_size;
+                    if (areColumnHeadersHidden()) {
+                        virtual_size.h -= m_children_size.h;
+                    }
                     float x = inner_rect.x;
                     float y = inner_rect.y;
                     if (m_horizontal_scrollbar) {
@@ -621,7 +625,9 @@
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
-                    y += m_children_size.h;
+                    if (!areColumnHeadersHidden()) {
+                        y += m_children_size.h;
+                    }
                     if (event.x <= x + m_current_header_width) {
                         m_model->forEachNode(
                             m_model->roots,
@@ -650,6 +656,10 @@
                     }
                 });
                 this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
+                    Size virtual_size = m_virtual_size;
+                    if (areColumnHeadersHidden()) {
+                        virtual_size.h -= m_children_size.h;
+                    }
                     float x = inner_rect.x;
                     float y = inner_rect.y;
                     if (m_horizontal_scrollbar) {
@@ -658,7 +668,9 @@
                     if (m_vertical_scrollbar) {
                         y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
                     }
-                    y += m_children_size.h;
+                    if (!areColumnHeadersHidden()) {
+                        y += m_children_size.h;
+                    }
                     if (event.x <= x + m_current_header_width) {
                         m_model->forEachNode(
                             m_model->roots,
@@ -719,10 +731,17 @@
                 this->inner_rect = rect;
                 dc->fillRect(rect, COLOR_WHITE);
 
+                // TODO somewhere around here make a variable
+                // for virtual_size that wont modify the m version
+                // and account in it for the header height if is there or not etc.
+                Size virtual_size = m_virtual_size;
+                if (areColumnHeadersHidden()) {
+                    virtual_size.h -= m_children_size.h;
+                }
                 Rect old_clip = dc->clip();
                 Point pos = Point(rect.x, rect.y);
                 if (m_mode == Mode::Scroll) {
-                    pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
+                    pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
                 }
                 this->inner_rect = rect;
                 Rect tv_clip = old_clip;
@@ -750,25 +769,30 @@
                         m_column_widths[i] = s.w;
                     }
                     m_current_header_width += s.w;
-                    dc->setClip(Rect(
-                        local_pos_x, 
-                        rect.y, 
-                        local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w,
-                        m_children_size.h
-                    ).clipTo(tv_clip));
-                    child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
-                    local_pos_x += s.w;
+                    if (!areColumnHeadersHidden()) {
+                        dc->setClip(Rect(
+                            local_pos_x, 
+                            rect.y, 
+                            local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w,
+                            m_children_size.h
+                        ).clipTo(tv_clip));
+                        child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
+                        local_pos_x += s.w;
+                    }
                     i++;
                 }
-                pos.y += m_children_size.h;
+                float column_header = 0.0f;
+                if (!areColumnHeadersHidden()) {
+                    column_header = m_children_size.h;
+                    pos.y += column_header;
+                }
                 std::vector<TreeNode<T>*> tree_roots;
                 bool collapsed = false;
                 int collapsed_depth = -1;
                 Rect drawing_rect = Rect(rect);
-                float column_header = m_children_size.h;
                 if (m_mode == Mode::Unroll) {
                     if (parent) {
-                        drawing_rect = parent->rect;
+                        drawing_rect = parent->rect; 
                     }
                     column_header = 0.0f;
                 }
@@ -806,9 +830,9 @@
                                                 .clipTo(
                                                     Rect(
                                                         rect.x, 
-                                                        rect.y + m_children_size.h, 
+                                                        rect.y + column_header,
                                                         rect.w, 
-                                                        rect.h - m_children_size.h
+                                                        rect.h - column_header
                                                     )
                                                 );
                                         // Clip and draw the current cell.
@@ -841,7 +865,7 @@
                             pos.y += node->max_cell_height;
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
-                                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h).clipTo(tv_clip));
+                                dc->setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
                                 dc->fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f));
                             }
                         }
@@ -859,23 +883,23 @@
                 if (m_model->roots.size()) {
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + m_children_size.h, rect.w, rect.h - m_children_size.h).clipTo(tv_clip));
+                        dc->setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
                         for (float width : m_column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + m_children_size.h, 1, m_virtual_size.h - m_children_size.h), Color(0.85f, 0.85f, 0.85f));
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + column_header, 1, virtual_size.h - column_header), Color(0.85f, 0.85f, 0.85f)); // TODO remove - column_header if we account for it in virtual_size
                             pos.x += width;
                         }
                     }
                 }
 
                 // Draw the tree lines
-                dc->setClip(Rect(rect.x, rect.y + m_children_size.h, m_column_widths[0], rect.h - m_children_size.h).clipTo(tv_clip));
+                dc->setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
                 // TODO we could optimse here by keeping track of where
                 // we left off between the tree_roots so we could just
                 // continue from there rather than from the beginning
                 Traversal _unused = Traversal::Continue;
                 for (TreeNode<T> *tree_root : tree_roots) {
                     if (tree_root->children.size()) {
-                        float tree_line_start = y_start + m_children_size.h;
+                        float tree_line_start = y_start + column_header;
                         if (m_model->roots[0] != tree_root) {
                             for (TreeNode<T> *_root : m_model->roots) {
                                 if (tree_root == _root) {
@@ -906,7 +930,7 @@
 
                 dc->setClip(old_clip);
                 if (m_mode == Mode::Scroll) {
-                    drawScrollBars(dc, rect, m_virtual_size);
+                    drawScrollBars(dc, rect, virtual_size);
                 }
             }
 
@@ -1095,6 +1119,12 @@
                         dc->sizeHintBorder(viewport_and_style, style);
                     return viewport_and_style;
                 }
+                if (areColumnHeadersHidden()) {
+                    Size virtual_size_and_style = Size(m_virtual_size.w, m_virtual_size.h - m_children_size.h);
+                        dc->sizeHintMargin(virtual_size_and_style, style);
+                        dc->sizeHintBorder(virtual_size_and_style, style);
+                    return virtual_size_and_style;
+                }
                 Size virtual_size_and_style = m_virtual_size;
                     dc->sizeHintMargin(virtual_size_and_style, style);
                     dc->sizeHintBorder(virtual_size_and_style, style);
@@ -1123,6 +1153,51 @@
                 return m_mode;
             }
 
+            void showColumnHeaders() {
+                m_column_headers_hidden = false;
+            }
+
+            void hideColumnHeaders() {
+                m_column_headers_hidden = true;
+            }
+
+            bool areColumnHeadersHidden() {
+                return m_column_headers_hidden;
+            }
+
+            void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override {
+                if (m_vertical_scrollbar) {
+                    if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
+                        (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+                        return (void*)m_vertical_scrollbar->propagateMouseEvent(window, state, event);
+                    }
+                }
+                if (m_horizontal_scrollbar) {
+                    if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+                        (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
+                        return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
+                    }
+                }
+                if (!areColumnHeadersHidden()) {
+                    for (Widget *child : children) {
+                        if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                            (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                            void *last = nullptr;
+                            if (child->isLayout()) {
+                                last = (void*)child->propagateMouseEvent(window, state, event);
+                            } else {
+                                child->handleMouseEvent(window, state, event);
+                                last = (void*)child;
+                            }
+                            return last;
+                        }
+                    }
+                }
+
+                handleMouseEvent(window, state, event);
+                return this;
+            }
+
         protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
@@ -1136,6 +1211,7 @@
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
             float m_current_header_width = 0.0f;
+            bool m_column_headers_hidden = false;
             std::vector<float> m_column_widths;
             bool m_auto_size_columns = false;
             bool m_table = false;
