@@ -1095,7 +1095,10 @@
                         dc->sizeHintBorder(viewport_and_style, style);
                     return viewport_and_style;
                 }
-                return m_virtual_size;
+                Size virtual_size_and_style = m_virtual_size;
+                    dc->sizeHintMargin(virtual_size_and_style, style);
+                    dc->sizeHintBorder(virtual_size_and_style, style);
+                return virtual_size_and_style;
             }
 
             bool isTable() {
