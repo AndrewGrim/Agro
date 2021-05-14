@@ -24,7 +24,7 @@
             return this->value;
         }
 
-        bool some() {
+        operator bool() {
             if (this->type == Type::Some) {
                 return true;
             }
