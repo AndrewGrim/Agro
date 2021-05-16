@@ -164,6 +164,60 @@
             }
     };
 
+    class MultipleImagesCellRenderer : public CellRenderer {
+        public:
+            std::vector<Image> images;
+
+            MultipleImagesCellRenderer(std::vector<Image> &&images) : images{images} {}
+            virtual ~MultipleImagesCellRenderer() {}
+
+            virtual void draw(DrawingContext *dc, Rect rect, int state) override {
+                Color bg = COLOR_NONE;
+                if (state & STATE_SELECTED) {
+                    bg = Color(0.2f, 0.5f, 1.0f);
+                }
+                dc->fillRect(
+                    rect,
+                    bg
+                );
+                Rect drawing_rect = rect;
+                Size size = sizeHint(dc);
+                drawing_rect.x = drawing_rect.x + (drawing_rect.w / 2) - (size.w / 2);
+                for (auto img : images) {
+                    dc->drawTextureAligned(
+                        drawing_rect,
+                        img.size(),
+                        img._texture(),
+                        img.coords(),
+                        HorizontalAlignment::Left,
+                        VerticalAlignment::Center,
+                        img.foreground()
+                    );
+                    drawing_rect.x += img.size().w;
+                }
+                if (state & STATE_HOVERED) {
+                    dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+                }
+            }
+
+            virtual Size sizeHint(DrawingContext *dc) override {
+                if (m_size_changed) {
+                    Size size = Size();
+                    for (auto img : images) {
+                        Size s = img.sizeHint(dc);
+                        size.w += s.w;
+                        if (s.h > size.h) { size.h = s.h; }
+                    }
+                    m_size = size;
+                }
+                return m_size;
+            }
+
+        protected:
+            Size m_size;
+            bool m_size_changed = true;
+    };
+
     class ImageTextCellRenderer : public CellRenderer {
         public:
             // TODO account for alignment, especially important for the first col
