@@ -30,13 +30,13 @@
             virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
             // NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
-            NoteBook* destroyTab(int index);
+            NoteBook* destroyTab(size_t index);
             // NoteBook* setTabWidget(Widget *root);
-            int currentTab();
-            NoteBook* setCurrentTab(int index);
+            size_t currentTab();
+            NoteBook* setCurrentTab(size_t index);
 
         protected:
-            int m_tab_index = 0;
+            size_t m_tab_index = 0;
             NoteBookTabBar *m_tabs = new NoteBookTabBar();
     };
 
