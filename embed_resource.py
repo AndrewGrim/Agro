@@ -11,10 +11,12 @@ def create_resource_bytes(filename):
                 if length % 12 == 0:
                     print(f"\n{tab}", end="")
         print("\n};")
-        print(f"unsigned int {normalized_filename}_length = {length};")
+        print(f"unsigned int {normalized_filename}_length = {length};\n")
 
 def main():
-    create_resource_bytes("close.png")
+    images = ["close.png", "close_thin.png", "up_arrow.png"]
+    for img in images:
+        create_resource_bytes(img)
 
 if __name__ == "__main__":
     main()
