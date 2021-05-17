@@ -433,7 +433,7 @@ LineEdit* LineEdit::moveCursorEnd() {
 }
 
 LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
-    if (index >= 0 && index < text().size()) {
+    if (index < text().size()) {
         if (!skip) {
             m_history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), m_selection});
         }
