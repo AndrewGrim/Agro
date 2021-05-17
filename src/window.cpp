@@ -410,7 +410,6 @@ void Window::drawTooltip() {
         s.h += (5 * 2) + (1 * 2);
     int x, y;
     SDL_GetMouseState(&x, &y);
-    SDL_Cursor *current_cursor = SDL_GetCursor();
 
     Rect r = Rect(x + 12, y + 16, s.w, s.h);
     if (r.x + s.w > size.w) {
