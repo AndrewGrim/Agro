@@ -4,9 +4,8 @@
     #include <string>
     #include <cassert>
 
-    #include <glad/glad.h>
+    #include "glad.h"
     #include "stb_image.h"
-
     #include "../util.hpp"
     #include "../common/point.hpp"
 

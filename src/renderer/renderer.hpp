@@ -5,7 +5,6 @@
     #include <string>
     #include <vector>
 
-    #include <glad/glad.h>
     #include <glm/glm.hpp>
     #include <ft2build.h>
     #include FT_FREETYPE_H
@@ -16,6 +15,7 @@
     #include "../common/size.hpp"
     #include "../common/point.hpp"
 
+    #include "glad.h"
     #include "shader.hpp"
     #include "batch.hpp"
     #include "texture.hpp"

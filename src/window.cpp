@@ -1,6 +1,4 @@
-#include <glad/glad.h>
-
-# include "window.hpp"
+#include "window.hpp"
 
 uint32_t tooltipCallback(uint32_t interval, void *window) {
     Window *win = (Window*)window;

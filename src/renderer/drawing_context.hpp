@@ -1,7 +1,6 @@
 #ifndef DRAWING_CONTEXT_HPP
     #define DRAWING_CONTEXT_HPP
 
-    #include <glad/glad.h>
     #include <SDL2/SDL.h>
 
     #include "../common/enums.hpp"
@@ -11,6 +10,7 @@
     #include "../common/point.hpp"
     #include "../common/style.hpp"
 
+    #include "glad.h"
     #include "shader.hpp"
     #include "batch.hpp"
     #include "renderer.hpp"
