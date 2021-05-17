@@ -1306,7 +1306,6 @@
 
             void calculateVirtualSize(DrawingContext *dc) {
                 m_virtual_size = m_children_size;
-                void *previous_parent = nullptr;
                 bool collapsed = false;
                 int collapsed_depth = -1;
 
