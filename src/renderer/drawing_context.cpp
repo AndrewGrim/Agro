@@ -9,7 +9,7 @@ DrawingContext::DrawingContext() {
 
     unsigned int offset = 0;
     unsigned int indexCount = MAX_BATCH_SIZE * QUAD_INDEX_COUNT;
-    for (int i = 0; i < indexCount; i += QUAD_INDEX_COUNT) {
+    for (unsigned int i = 0; i < indexCount; i += QUAD_INDEX_COUNT) {
         indices[i + 0] = 0 + offset;
         indices[i + 1] = 1 + offset;
         indices[i + 2] = 2 + offset;

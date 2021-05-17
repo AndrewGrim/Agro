@@ -1386,7 +1386,7 @@
                             last_y -= node->children[0]->max_cell_height / 2;
                         }
                         Traversal _unused = Traversal::Continue;
-                        for (int i = 0; i < node->children.size() - 1; i++) {
+                        for (size_t i = 0; i < node->children.size() - 1; i++) {
                             TreeNode<T> *child = node->children[i];
                             m_model->descend(_unused, child, [&](TreeNode<T>* _node) {
                                 if (!_node->is_collapsed) {
