@@ -70,17 +70,14 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
             float size = m_slider_button_size;
 
             int event_pos;
-            int event_pos_rel;
             float position;
             float length;
             if (m_align_policy == Align::Horizontal) {
                 event_pos = event.x;
-                event_pos_rel = event.xrel;
                 position = rect.x;
                 length = rect.w;
             } else {
                 event_pos = event.y;
-                event_pos_rel = event.yrel;
                 position = rect.y;
                 length = rect.h;
             }
