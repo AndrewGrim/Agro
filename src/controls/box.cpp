@@ -29,8 +29,6 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     float rect_opposite_length;
     Size size;
     float *generic_length; // Needs to be a ptr because the value will change.
-    Size app_size = Application::get()->size;
-    float generic_app_length;
     if (parent_layout == Align::Vertical) {
         generic_non_expandable_widgets = this->m_vertical_non_expandable;
         generic_total_layout_length = this->m_size.h;
@@ -39,7 +37,6 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
         rect_length = rect.h;
         rect_opposite_length = rect.w;
         generic_length = &size.h;
-        generic_app_length = app_size.h;
     } else {
         generic_non_expandable_widgets = this->m_horizontal_non_expandable;
         generic_total_layout_length = this->m_size.w;
@@ -48,7 +45,6 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
         rect_length = rect.w;
         rect_opposite_length = rect.h;
         generic_length = &size.w;
-        generic_app_length = app_size.w;
     }
     int child_count = this->m_visible_children - generic_non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
