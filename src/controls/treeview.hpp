@@ -935,11 +935,12 @@
                     }
                 );
                 if (m_model->roots.size()) {
+                    float local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0.0f;
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
+                        dc->setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (float width : m_column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + column_header, 1, virtual_size.h), Color(0.85f, 0.85f, 0.85f));
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
                         }
                     }
