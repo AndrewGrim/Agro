@@ -13,7 +13,7 @@ The library is tested and working on Windows 10 and Linux (Mint 20.1 and Kubuntu
 I'm only providing build instructions for Linux at the moment.
 
 You will need:
-* C++11 compatible version of g++
+* C++14 compatible version of g++
 * SDL2
 * FreeType2
 * Graphics card that supports OpenGL Core 3.3 at least (Tested on RX 5700XT and Intel HD 4000)
