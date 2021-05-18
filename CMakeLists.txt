@@ -35,22 +35,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	include
 	include/freetype2
 )
-
-if (UNIX)
-	add_executable(main src/main.cpp)
-	target_link_libraries(main
-		gui
-		freetype
-		SDL2
-		GL
-		X11 
-		pthread 
-		Xrandr 
-		Xi 
-		dl
-	)
-endif()
-
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)
 
