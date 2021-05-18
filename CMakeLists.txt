@@ -76,7 +76,7 @@ foreach(test ${tests})
 	)
 	if (UNIX)
 		target_link_libraries("test_${test_name}"
-			gui freetype SDL2main SDL2 GL X11  pthread  Xrandr  Xi  dl
+			gui freetype SDL2main SDL2 GL X11 pthread Xrandr Xi dl
 		)
 	elseif (MSVC)
 		target_link_libraries("test_${test_name}"
@@ -94,7 +94,7 @@ foreach(example ${examples})
 	)
 	if (UNIX)
 		target_link_libraries("example_${example_name}"
-			gui freetype SDL2main SDL2 GL X11  pthread  Xrandr  Xi  dl
+			gui freetype SDL2main SDL2 GL X11 pthread Xrandr Xi dl
 		)
 	elseif (MSVC)
 		target_link_libraries("example_${example_name}"
