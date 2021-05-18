@@ -18,7 +18,7 @@ def warn(message):
 
 passed = 0
 failed = 0
-BIN_PATH = "libgui/bin"
+BIN_PATH = "gui/bin"
 
 executables = os.listdir(BIN_PATH)
 i = 0
