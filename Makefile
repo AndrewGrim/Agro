@@ -2,7 +2,7 @@
 build:
 	cmake -S . -B build
 	cmake --build build
-install:
+install: build
 	cmake --install build
 clean:
 	rm -f -r build
