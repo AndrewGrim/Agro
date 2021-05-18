@@ -18,34 +18,19 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib${PROJECT_NAME}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib${PROJECT_NAME}/lib)
 
-add_library(${PROJECT_NAME}
-	src/application.cpp
-	src/window.cpp
-	src/resources.cpp
-
-	src/common/style.cpp
-
-	src/renderer/glad.c
-	src/renderer/font.cpp
-	src/renderer/drawing_context.cpp
-	src/renderer/renderer.cpp
-	src/renderer/stb_image.c
-
-	src/controls/box.cpp
-	src/controls/button.cpp
-	src/controls/image.cpp
-	src/controls/label.cpp
-	src/controls/lineedit.cpp
-	src/controls/notebook.cpp
-	src/controls/scrollable.cpp
-	src/controls/scrollbar.cpp
-	src/controls/scrolledbox.cpp
-	src/controls/slider.cpp
-	src/controls/spacer.cpp
-	src/controls/splitter.cpp
-	src/controls/treeview.cpp
-	src/controls/widget.cpp
+file(GLOB sources
+	"${PROJECT_SOURCE_DIR}/src/*.cpp"
+	"${PROJECT_SOURCE_DIR}/src/*.hpp"
+	"${PROJECT_SOURCE_DIR}/src/common/*.cpp"
+	"${PROJECT_SOURCE_DIR}/src/common/*.hpp"
+	"${PROJECT_SOURCE_DIR}/src/controls/*.cpp"
+	"${PROJECT_SOURCE_DIR}/src/controls/*.hpp"
+	"${PROJECT_SOURCE_DIR}/src/renderer/*.cpp"
+	"${PROJECT_SOURCE_DIR}/src/renderer/*.c"
+	"${PROJECT_SOURCE_DIR}/src/renderer/*.hpp"
+	"${PROJECT_SOURCE_DIR}/src/renderer/*.h"
 )
+add_library(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
 	include
 	include/freetype2
