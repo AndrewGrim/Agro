@@ -22,13 +22,14 @@ def create_resource_bytes(filename):
 def main():
     images = ["close.png", "close_thin.png", "up_arrow.png"]
     cpp = open("src/resources.cpp", "w")
+    cpp.write('#include "resources.hpp"\n\n')
     hpp = open("src/resources.hpp", "w")
     hpp.write("#pragma once\n\n")
 
     for img in images:
         cpp.write(create_resource_bytes(img))
         hpp.write(f"extern const unsigned char {normalize_filename(img)}[];\n")
-        hpp.write(f"extern const unsigned char {normalize_filename(img)}_length;\n\n")
+        hpp.write(f"extern const unsigned int {normalize_filename(img)}_length;\n\n")
 
     cpp.close()
     hpp.close()
