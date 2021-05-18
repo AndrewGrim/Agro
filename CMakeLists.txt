@@ -66,33 +66,42 @@ if (UNIX)
 	)
 endif()
 
-add_executable(example_treeview examples/treeview.cpp)
-target_include_directories(example_treeview PUBLIC
-	include/glm
-)
-if (UNIX)
-	target_link_libraries(example_treeview
-		gui
-		freetype
-		SDL2main
-		SDL2
-		GL
-		X11 
-		pthread 
-		Xrandr 
-		Xi 
-		dl
+# Build all tests
+file(GLOB tests "${PROJECT_SOURCE_DIR}/tests/*.cpp")
+foreach(test ${tests})
+	get_filename_component(test_name ${test} NAME_WE)
+	add_executable("test_${test_name}" ${test})
+	target_include_directories("test_${test_name}" PUBLIC
+		include/glm
 	)
-endif()
-if (MSVC)
-	target_link_libraries(example_treeview
-		gui
-		../msvc_lib/freetype
-		../msvc_lib/SDL2main
-		../msvc_lib/SDL2
-		opengl32
+	if (UNIX)
+		target_link_libraries("test_${test_name}"
+			gui freetype SDL2main SDL2 GL X11  pthread  Xrandr  Xi  dl
+		)
+	elseif (MSVC)
+		target_link_libraries("test_${test_name}"
+			gui ../msvc_lib/freetype ../msvc_lib/SDL2main ../msvc_lib/SDL2 opengl32
+		)
+	endif()
+endforeach()
+# Build all examples
+file(GLOB examples "${PROJECT_SOURCE_DIR}/examples/*.cpp")
+foreach(example ${examples})
+	get_filename_component(example_name ${example} NAME_WE)
+	add_executable("example_${example_name}" ${example})
+	target_include_directories("example_${example_name}" PUBLIC
+		include/glm
 	)
-endif()
+	if (UNIX)
+		target_link_libraries("example_${example_name}"
+			gui freetype SDL2main SDL2 GL X11  pthread  Xrandr  Xi  dl
+		)
+	elseif (MSVC)
+		target_link_libraries("example_${example_name}"
+			gui ../msvc_lib/freetype ../msvc_lib/SDL2main ../msvc_lib/SDL2 opengl32
+		)
+	endif()
+endforeach()
 
 # Copy the dlls to the output dir for visual studio
 if (MSVC)
