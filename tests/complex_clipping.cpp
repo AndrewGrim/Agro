@@ -30,11 +30,11 @@ int main(int argc, char **argv) {
                         inner_right->append(new Button(std::string(100, i)), Fill::Both);
                     }
                 right->append(inner_right, Fill::Both);
-                auto tv = new TreeView<void>(Size(400, 800));
+                auto tv = new TreeView<char>(Size(400, 800));
                     for (int i = 0; i < 5; i++) {
-                        tv->append(new Column<void>("Column: " + std::to_string(i)));
+                        tv->append(new Column<char>("Column: " + std::to_string(i)));
                     }
-                    auto model = new Tree<void>();
+                    auto model = new Tree<char>();
                         for (int row = 0; row < 100; row++) {
                             std::vector<CellRenderer*> columns = {
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 1"),
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 4"),
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 5"),
                             };
-                            auto node = new TreeNode<void>(columns, nullptr);
+                            auto node = new TreeNode<char>(columns, nullptr);
                             model->append(nullptr, node);
                         }
                     tv->setTableMode(true);
