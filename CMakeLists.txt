@@ -78,3 +78,31 @@ if (MSVC)
 		${EXECUTABLE_OUTPUT_PATH}
 	)
 endif()
+
+# Install the lib and header files
+if (UNIX)
+	install(
+		TARGETS ${PROJECT_NAME}
+		ARCHIVE DESTINATION lib
+	)
+	file(GLOB root "${PROJECT_SOURCE_DIR}/src/*.hpp")
+	install(
+		FILES ${root}
+		DESTINATION include/${PROJECT_NAME}
+	)
+	file(GLOB common "${PROJECT_SOURCE_DIR}/src/common/*.hpp")
+	install(
+		FILES ${common}
+		DESTINATION include/${PROJECT_NAME}/common
+	)
+	file(GLOB controls "${PROJECT_SOURCE_DIR}/src/controls/*.hpp")
+	install(
+		FILES ${controls}
+		DESTINATION include/${PROJECT_NAME}/controls
+	)
+	file(GLOB renderer "${PROJECT_SOURCE_DIR}/src/renderer/*.hpp" "${PROJECT_SOURCE_DIR}/src/renderer/*.h")
+	install(
+		FILES ${renderer}
+		DESTINATION include/${PROJECT_NAME}/renderer
+	)
+endif()
