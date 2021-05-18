@@ -1,5 +1,7 @@
+import os
+
 def normalize_filename(filename):
-    return filename.replace(" ", "_").replace(".", "_")
+    return os.path.basename(filename).replace(" ", "_").replace(".", "_")
 
 
 def create_resource_bytes(filename):
@@ -20,14 +22,17 @@ def create_resource_bytes(filename):
 
 
 def main():
-    images = ["close.png", "close_thin.png", "up_arrow.png"]
+    BASE_DIR = "images"
+    images = os.listdir(BASE_DIR)
+    # We do not want to embed this file since its just for the README
+    images.remove("screenshot_mhwi_db.png")
     cpp = open("src/resources.cpp", "w")
     cpp.write('#include "resources.hpp"\n\n')
     hpp = open("src/resources.hpp", "w")
     hpp.write("#pragma once\n\n")
 
     for img in images:
-        cpp.write(create_resource_bytes(img))
+        cpp.write(create_resource_bytes(f"{BASE_DIR}/{img}"))
         hpp.write(f"extern const unsigned char {normalize_filename(img)}[];\n")
         hpp.write(f"extern const unsigned int {normalize_filename(img)}_length;\n\n")
 
