@@ -130,7 +130,7 @@ Size SimpleScrollBar::sizeHint(DrawingContext *dc) {
 }
 
 ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
-    m_begin_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(COLOR_BLACK));
+    m_begin_button = new ScrollBarArrowButton((new Image(Application::get()->icons["up_arrow"]))->setForeground(COLOR_BLACK));
     if (alignment == Align::Horizontal) {
         m_begin_button->image()->counterClockwise90();
     }
@@ -146,7 +146,7 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     m_slider = new ScrollBarSlider(alignment);
     append(m_slider, Fill::Both);
 
-    m_end_button = new ScrollBarArrowButton((new Image("up_arrow.png"))->setForeground(COLOR_BLACK));
+    m_end_button = new ScrollBarArrowButton((new Image(Application::get()->icons["up_arrow"]))->setForeground(COLOR_BLACK));
     m_end_button->image()->flipVertically();
     if (alignment == Align::Horizontal) {
         m_end_button->image()->clockwise90();

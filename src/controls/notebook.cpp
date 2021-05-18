@@ -123,7 +123,7 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
         setImage(image);
     }
     setCloseButton(close_button);
-    m_close_image = (new Image("close_thin.png"))->setForeground(COLOR_BLACK);
+    m_close_image = (new Image(Application::get()->icons["close_thin"]))->setForeground(COLOR_BLACK);
     m_close_image->onMouseClick.addEventListener([=](Widget *widget,MouseEvent event) {
         notebook->destroyTab(m_close_image->parent->parent_index);
     });
