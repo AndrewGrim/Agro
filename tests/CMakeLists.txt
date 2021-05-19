@@ -12,7 +12,15 @@ foreach(test ${tests})
 		)
 	elseif (MSVC)
 		target_link_libraries("test_${test_name}"
-			gui ../msvc_lib/freetype ../msvc_lib/SDL2main ../msvc_lib/SDL2 opengl32
+			gui 
+			../../msvc_lib/freetype 
+			../../msvc_lib/SDL2main 
+			../../msvc_lib/SDL2 
+			opengl32 
+			winmm 
+			imm32 
+			version 
+			setupapi
 		)
 	endif()
 endforeach()
