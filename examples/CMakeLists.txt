@@ -13,9 +13,9 @@ foreach(example ${examples})
 	elseif (MSVC)
 		target_link_libraries("example_${example_name}"
 			gui 
-			../../msvc_lib/freetype 
-			../../msvc_lib/SDL2main 
-			../../msvc_lib/SDL2 
+			../../msvc_lib/FreeType2/freetype 
+			../../msvc_lib/SDL2/SDL2main 
+			../../msvc_lib/SDL2/SDL2 
 			opengl32 
 			winmm 
 			imm32 
