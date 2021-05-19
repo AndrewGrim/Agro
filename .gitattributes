@@ -1,0 +1,14 @@
+* linguist-vendored
+*.py linguist-vendored=false
+src/*.cpp linguist-vendored=false
+src/common/*.cpp linguist-vendored=false
+src/controls/*.cpp linguist-vendored=false
+src/renderer/*.cpp linguist-vendored=false
+examples/*.cpp linguist-vendored=false
+tests/*.cpp linguist-vendored=false
+
+src/common/*.hpp linguist-vendored=false
+src/controls/*.hpp linguist-vendored=false
+src/renderer/*.hpp linguist-vendored=false
+examples/*.hpp linguist-vendored=false
+tests/*.hpp linguist-vendored=false
