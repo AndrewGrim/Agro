@@ -1,6 +1,8 @@
+#include <cassert>
+
+#include "../src/application.hpp"
 #include "../src/common/rect.hpp"
 #include "../src/util.hpp"
-#include <cassert>
 
 void lesser_x_or_y() {
     auto r = Rect(20, 20, 30, 30);

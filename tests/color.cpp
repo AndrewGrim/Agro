@@ -1,3 +1,4 @@
+#include "../src/application.hpp"
 #include "../src/common/color.hpp"
 
 int main(int argc, char **argv) {
