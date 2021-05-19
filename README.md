@@ -12,7 +12,7 @@ FreeType2 is used for making bitmaps for drawing text.
 The library is tested and working on Windows 10 and Linux (Mint 20.1).
 You will need:
 * C++14 compatible version of g++
-* CMake at least `3.13.4`
+* CMake at least `3.16.3`
 * SDL2
 * FreeType2
 * Graphics card that supports OpenGL Core 3.3 at least (Tested on RX 5700XT and Intel HD 4000)
