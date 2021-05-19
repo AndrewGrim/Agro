@@ -40,16 +40,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)
 
-# Copy the dlls to the output dir for visual studio
-if (MSVC)
-	file(COPY
-		${PROJECT_SOURCE_DIR}/msvc_lib/freetype.dll
-		${PROJECT_SOURCE_DIR}/msvc_lib/SDL2.dll
-		DESTINATION
-		${EXECUTABLE_OUTPUT_PATH}
-	)
-endif()
-
 # Install the lib and header files
 if (UNIX)
 	install(
