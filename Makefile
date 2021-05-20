@@ -3,7 +3,7 @@ build:
 	cmake -S . -B build
 	cmake --build build
 install: build
-	cmake --install build
+	sudo cmake --install build
 clean:
 	rm -f -r build
 	rm -f -r gui
