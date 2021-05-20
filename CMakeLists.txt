@@ -68,24 +68,8 @@ if (UNIX)
 		TARGETS ${PROJECT_NAME}
 		ARCHIVE DESTINATION lib
 	)
-	file(GLOB root "${PROJECT_SOURCE_DIR}/src/*.hpp")
 	install(
-		FILES ${root}
+		DIRECTORY ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/
 		DESTINATION include/${PROJECT_NAME}
-	)
-	file(GLOB common "${PROJECT_SOURCE_DIR}/src/common/*.hpp")
-	install(
-		FILES ${common}
-		DESTINATION include/${PROJECT_NAME}/common
-	)
-	file(GLOB controls "${PROJECT_SOURCE_DIR}/src/controls/*.hpp")
-	install(
-		FILES ${controls}
-		DESTINATION include/${PROJECT_NAME}/controls
-	)
-	file(GLOB renderer "${PROJECT_SOURCE_DIR}/src/renderer/*.hpp" "${PROJECT_SOURCE_DIR}/src/renderer/*.h")
-	install(
-		FILES ${renderer}
-		DESTINATION include/${PROJECT_NAME}/renderer
 	)
 endif()
