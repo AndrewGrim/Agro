@@ -954,7 +954,7 @@
                 Traversal _unused = Traversal::Continue;
                 for (TreeNode<T> *tree_root : tree_roots) {
                     if (tree_root->children.size()) {
-                        float tree_line_start = y_start + column_header;
+                        float tree_line_start = y_start + (!areColumnHeadersHidden() ? m_children_size.h : 0.0f);
                         if (m_model->roots[0] != tree_root) {
                             for (TreeNode<T> *_root : m_model->roots) {
                                 if (tree_root == _root) {
