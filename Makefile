@@ -6,7 +6,7 @@ install: build
 	sudo cmake --install build
 clean:
 	rm -f -r build
-	rm -f -r gui
+	rm -f -r Agro
 test: build
 	python3 run_tests.py
 resources:

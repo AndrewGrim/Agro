@@ -8,11 +8,11 @@ foreach(test ${tests})
 	)
 	if (UNIX)
 		target_link_libraries("test_${test_name}"
-			gui freetype SDL2main SDL2 GL X11 pthread Xrandr Xi dl
+			Agro freetype SDL2main SDL2 GL X11 pthread Xrandr Xi dl
 		)
 	elseif (MSVC)
 		target_link_libraries("test_${test_name}"
-			gui 
+			Agro 
 			../../msvc_lib/FreeType2/freetype 
 			../../msvc_lib/SDL2/SDL2main 
 			../../msvc_lib/SDL2/SDL2 

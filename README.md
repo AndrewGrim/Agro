@@ -1,4 +1,4 @@
-# OpenGLGUI
+# Agro
 This is an object-oriented GUI library that I'm currently working on.
 The drawing backend uses an OpenGL batch renderer.
 Cross-platform system events and windowing is done using SDL2.
@@ -31,11 +31,11 @@ apt install libsdl2-dev
 3. Run `cmake --build build` in the terminal to build the actual project.
 
 You can verify that the library has built correctly by running one of the example files.
-For example: in the terminal from the root directory run the `gui/bin/example_treeview` executable.
+For example: in the terminal from the root directory run the `Agro/bin/example_treeview` executable.
 For the moment this is required because we don't embed any fonts yet.
 
 ### Installing
 On Unix platforms you can run `cmake --install build` to install the library.
-From then on you can link against the library by specifying its name `gui` (Subject to change).
+From then on you can link against the library by specifying its name `Agro`.
 
 **The instructions for Windows are incomplete for the moment!**
