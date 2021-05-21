@@ -15,27 +15,14 @@ const char* Label::name() {
 void Label::draw(DrawingContext *dc, Rect rect) {
     this->rect = rect;
 
-    // We pretend that the widget always gets enough space.
-    // This allows us to draw the widget exactly how its meant to look.
-    // Not explicitly clipping should not be a problem because
-    // as long as there is a scrollable somewhere in the tree everything will get its
-    // requested size and otherwise if its boxes all the way up
-    // you only wont get enough space if the widget is going to go outside the window.
-    Rect drawing_rect = Rect(
-        rect.x, 
-        rect.y, 
-        sizeHint(dc).w > rect.w ? sizeHint(dc).w : rect.w, 
-        sizeHint(dc).h > rect.h ? sizeHint(dc).h : rect.h
-    );
-
-    dc->fillRect(drawing_rect, Widget::m_bg);
-    dc->padding(drawing_rect, style);
+    dc->fillRect(rect, Widget::m_bg);
+    dc->padding(rect, style);
     dc->fillTextAligned(
         font(),
         m_text,
         m_horizontal_align,
         m_vertical_align,
-        drawing_rect,
+        rect,
         0,
         m_fg
     );

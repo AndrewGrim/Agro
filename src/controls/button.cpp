@@ -31,41 +31,28 @@ void Button::draw(DrawingContext *dc, Rect rect) {
     } else {
         color = background();
     }
-    
-    // We pretend that the widget always gets enough space.
-    // This allows us to draw the widget exactly how its meant to look.
-    // Not explicitly clipping should not be a problem because
-    // as long as there is a scrollable somewhere in the tree everything will get its
-    // requested size and otherwise if its boxes all the way up
-    // you only wont get enough space if the widget is going to go outside the window.
-    Rect drawing_rect = Rect(
-        rect.x, 
-        rect.y, 
-        sizeHint(dc).w > rect.w ? sizeHint(dc).w : rect.w, 
-        sizeHint(dc).h > rect.h ? sizeHint(dc).h : rect.h
-    );
 
-    dc->margin(drawing_rect, style);
-    dc->drawBorder(drawing_rect, style);
-    dc->fillRect(drawing_rect, color);
-    dc->padding(drawing_rect, style);
+    dc->margin(rect, style);
+    dc->drawBorder(rect, style);
+    dc->fillRect(rect, color);
+    dc->padding(rect, style);
 
     Size text_size = dc->measureText(font(), text());
     if (m_image) {
         Size image_size = m_image->sizeHint(dc);
         dc->drawTexture(
             Point(
-                round(drawing_rect.x + (drawing_rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
-                round(drawing_rect.y + (drawing_rect.h * 0.5) - (image_size.h * 0.5))
+                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
             m_image->_texture(),
             m_image->coords(),
             m_image->foreground()
         );
-        // Resize drawing_rect to account for image before the label is drawn.
-        drawing_rect.x += image_size.w;
-        drawing_rect.w -= image_size.w;
+        // Resize rect to account for image before the label is drawn.
+        rect.x += image_size.w;
+        rect.w -= image_size.w;
     }
     HorizontalAlignment h_text_align = m_horizontal_align;
     VerticalAlignment v_text_align = m_vertical_align;
@@ -79,7 +66,7 @@ void Button::draw(DrawingContext *dc, Rect rect) {
             m_text,
             h_text_align,
             v_text_align,
-            drawing_rect,
+            rect,
             0,
             m_fg
         );
