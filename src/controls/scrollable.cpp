@@ -41,9 +41,9 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &r
         if (rect.h < virtual_size.h) {
             if (!m_vertical_scrollbar) {
                 m_vertical_scrollbar = new ScrollBar(Align::Vertical);
-                if (!vert) {
-                    rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
-                }
+            }
+            if (!vert) {
+                rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
             }
         }
     } else {
