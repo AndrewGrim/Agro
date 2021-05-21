@@ -1092,6 +1092,7 @@
                     }
                     m_virtual_size_changed = true;
                     update();
+                    if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
                 }
             }
 
@@ -1111,6 +1112,7 @@
                     }
                     m_virtual_size_changed = true;
                     update();
+                    if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
                 }
             }
  
@@ -1290,6 +1292,7 @@
                     });
                     m_virtual_size_changed = true;
                     update();
+                    if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
                 }
             }
 
@@ -1305,6 +1308,7 @@
                 }
                 m_virtual_size_changed = true;
                 update();
+                if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
             }
 
             void calculateVirtualSize(DrawingContext *dc) {
