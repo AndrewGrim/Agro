@@ -44,22 +44,22 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/examples)
 file(GLOB root "${PROJECT_SOURCE_DIR}/src/*.hpp")
 file(
 	COPY ${root}
-	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include
+	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}
 )
 file(GLOB common "${PROJECT_SOURCE_DIR}/src/common/*.hpp")
 file(
 	COPY ${common}
-	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/common
+	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}/common
 )
 file(GLOB controls "${PROJECT_SOURCE_DIR}/src/controls/*.hpp")
 file(
 	COPY ${controls}
-	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/controls
+	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}/controls
 )
 file(GLOB renderer "${PROJECT_SOURCE_DIR}/src/renderer/*.hpp" "${PROJECT_SOURCE_DIR}/src/renderer/*.h")
 file(
 	COPY ${renderer}
-	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/renderer
+	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}/renderer
 )
 
 # Install the lib and header files
@@ -70,6 +70,6 @@ if (UNIX)
 	)
 	install(
 		DIRECTORY ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/
-		DESTINATION include/${PROJECT_NAME}
+		DESTINATION include/
 	)
 endif()
