@@ -19,9 +19,9 @@ You will need:
 
 On debian based system you should be able to install the dependencies like so:
 ```
-apt install cmake
-apt install libfreetype6-dev
-apt install libsdl2-dev
+sudo apt install cmake
+sudo apt install libfreetype6-dev
+sudo apt install libsdl2-dev
 ```
 
 ### Instructions
