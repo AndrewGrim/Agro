@@ -227,7 +227,6 @@
             Size size();
             void setStyle(Style style);
 
-        protected:
             bool m_is_hovered = false;
             bool m_is_pressed = false;
             bool m_is_focused = false;
