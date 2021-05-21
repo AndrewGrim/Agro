@@ -940,7 +940,7 @@
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc->setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (float width : m_column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h), Color(0.85f, 0.85f, 0.85f));
+                            dc->fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
                         }
                     }
