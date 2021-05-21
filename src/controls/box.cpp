@@ -116,30 +116,6 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
             child->rect = widget_rect;
         } else {
             if (child->isVisible()) {
-                // When the widget is wider than the parent
-                // clip to the parent's width accounting for scroll.
-                if (widget_rect.x + widget_rect.w > rect.x + rect.w) {
-                    widget_rect.w = (rect.x + rect.w) - widget_rect.x;
-                }
-                // When the widget is taller than the parent
-                // clip to the parent's height accounting for scroll.
-                if (widget_rect.y + widget_rect.h > rect.y + rect.h) {
-                    widget_rect.h = (rect.y + rect.h) - widget_rect.y;
-                }
-                // When the widget is visible within the parent but
-                // starts outside of the visible area
-                // clip only whats visible.
-                if (widget_rect.x + widget_rect.w >= rect.x && !(widget_rect.x > rect.x)) {
-                    widget_rect.x = rect.x;
-                    widget_rect.w = widget_rect.x + widget_rect.w - rect.x;
-                }
-                // When the widget is visible within the parent but
-                // starts outside of the visible area
-                // clip only whats visible.
-                if (widget_rect.y + widget_rect.h >= rect.y && !(widget_rect.y > rect.y)) {
-                    widget_rect.y = rect.y;
-                    widget_rect.h = widget_rect.y + widget_rect.h - rect.y;
-                }
                 child->draw(dc, widget_rect);
             }
             if (m_align_policy == Align::Horizontal) {
