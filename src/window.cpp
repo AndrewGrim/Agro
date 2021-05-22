@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include "resources.hpp"
 
 uint32_t tooltipCallback(uint32_t interval, void *window) {
     Window *win = (Window*)window;
@@ -106,7 +107,7 @@ void Window::show() {
 }
 
 void Window::run() {
-    dc->default_font = new Font("fonts/DejaVu/DejaVuSans.ttf", 14, Font::Type::Sans);
+    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
     setMainWidget(m_main_widget);
     show();
     if (onReady) {
