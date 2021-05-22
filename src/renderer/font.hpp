@@ -43,9 +43,11 @@
         unsigned int atlas_ID;
 
         Font(std::string file_path, unsigned int pixel_size, Type type);
+        Font(const unsigned char *data, signed long length, unsigned int pixel_size, Type type);
         ~Font();
 
         private:
             void load();
+            void loadFromMemory(const unsigned char *data, signed long length);
     };
 #endif
