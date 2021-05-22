@@ -1,15 +1,31 @@
+#include <cassert>
+
 #include "../src/application.hpp"
 #include "../src/common/color.hpp"
 
 int main(int argc, char **argv) {
-    Color c = Color(1.0f, 0.7f, 0.3f, 0.05f);
-        c = Color::fromInt(255, 150, 50, 17);
-        c = Color::fromInt(0xff, 0x96, 0x32, 0x11);
-        c = Color("#ff");
-        c = Color("#ff96");
-        c = Color("#ff9632");
-        c = Color("#ff963211");
-        c = Color("ff963211");
+    assert(Color("") == Color::fromInt(0, 0, 0, 0));
+    assert(Color("!") == Color::fromInt(0, 0, 0, 0));
+    assert(Color("f") == Color::fromInt(240, 0, 0, 0));
+    assert(Color("ff") == Color::fromInt(255, 0, 0, 0));
+    assert(Color("ff9") == Color::fromInt(255, 144, 0, 0));
+    assert(Color("ff9b") == Color::fromInt(255, 155, 0, 0));
+    assert(Color("ff9b0") == Color::fromInt(255, 155, 0, 0));
+    assert(Color("ff9b00") == Color::fromInt(255, 155, 0, 0));
+    assert(Color("ff9b00f") == Color::fromInt(255, 155, 0, 240));
+    assert(Color("ff9b00ff") == Color::fromInt(255, 155, 0, 255));
+    assert(Color("ff9b00ff123uisndof") == Color::fromInt(255, 155, 0, 255));
+    assert(Color("#") == Color::fromInt(0, 0, 0, 0));
+    assert(Color("#!") == Color::fromInt(0, 0, 0, 0));
+    assert(Color("#f") == Color::fromInt(240, 0, 0, 0));
+    assert(Color("#ff") == Color::fromInt(255, 0, 0, 0));
+    assert(Color("#ff9") == Color::fromInt(255, 144, 0, 0));
+    assert(Color("#ff9b") == Color::fromInt(255, 155, 0, 0));
+    assert(Color("#ff9b0") == Color::fromInt(255, 155, 0, 0));
+    assert(Color("#ff9b00") == Color::fromInt(255, 155, 0, 0));
+    assert(Color("#ff9b00f") == Color::fromInt(255, 155, 0, 240));
+    assert(Color("#ff9b00ff") == Color::fromInt(255, 155, 0, 255));
+    assert(Color("#ff9b00ff123uisndof") == Color::fromInt(255, 155, 0, 255));
 
     return 0;
 }
