@@ -19,7 +19,7 @@
         float r = 0.0f;
         float g = 0.0f;
         float b = 0.0f;
-        float a = 1.0f;
+        float a = 0.0f;
 
 
         Color(IsDefault is_default) : is_default{is_default} {
@@ -32,31 +32,22 @@
         }
 
         Color(const char *string) {
-            if (*string == '#') ++string;
-
-            r = hexStringColorToInt(string) / 255.0f;
-            string += 2;
-
             if (*string == '\0') return;
-            g = hexStringColorToInt(string) / 255.0f;
-            string += 2;
+            else if (*string == '#') string++;
 
-            if (*string == '\0') return;
-            b = hexStringColorToInt(string) / 255.0f;
-            string += 2;
-
-            if (*string == '\0') return;
-            a = hexStringColorToInt(string) / 255.0f;
+            float *color_attribute = &r;
+            for (int i = 0; i < 4; i++) {
+                if (*string == '\0') { return; }
+                *color_attribute += (matchHexFromChar(*string) * 16) / 255.0f;
+                string++;
+                if (*string == '\0') { return; }
+                *color_attribute += matchHexFromChar(*string) / 255.0f;
+                string++;
+                color_attribute++;
+            }
         }
 
-        uint8_t hexStringColorToInt(const char *s) {
-            uint8_t c = 0;
-                c += hexCharToInt(*s) * 16;
-                c += hexCharToInt(*(++s));
-            return c;
-        }
-
-        uint8_t hexCharToInt(char c) {
+        uint8_t matchHexFromChar(char c) {
             switch (c) {
                 case '0': return 0;
                 case '1': return 1;
@@ -74,13 +65,22 @@
                 case 'd': case 'D': return 13;
                 case 'e': case 'E': return 14;
                 case 'f': case 'F': return 15;
-                default: assert(true && "Invalid hex number.");
+                default: assert(true && "Invalid hex number."); return 0;
             }
-            return -1;
         }
 
         static Color fromInt(uint8_t r, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255) {
             return Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        }
+
+        bool operator==(Color &&rhs) {
+            if (this->r == rhs.r &&
+                this->g == rhs.g &&
+                this->b == rhs.b &&
+                this->a == rhs.a) {
+                return true;
+            }
+            return false;
         }
     };
 #endif
