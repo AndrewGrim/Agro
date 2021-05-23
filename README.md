@@ -28,7 +28,9 @@ sudo apt install libsdl2-dev
 **Note that the project builds in release mode and as a static lib by default!**
 1. First make sure you are in the root directory of the project.
 2. Run `cmake -S . -B build` in the terminal to build the required CMake files.
-3. Run `cmake --build build` in the terminal to build the actual project.
+3. Building is slightly different using MSVC vs GCC
+    * When using GCC use `cmake --build build` in the terminal to build the actual project.
+    * When using MSVC use `cmake --build build --config Release` in the terminal to build the actual project.
 
 You can verify that the library has built correctly by running one of the example files.
 For example: in the terminal from the root directory run the `Agro/bin/example_treeview` executable.
