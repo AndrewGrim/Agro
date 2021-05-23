@@ -1,6 +1,9 @@
 import subprocess
 import os
 
+def windows():
+    return os.name == "nt"
+
 ESCAPE_RED = "\033[38;2;255;0;0m"
 ESCAPE_GREEN = "\033[38;2;0;255;0m"
 ESCAPE_BLUE = "\033[38;2;0;0;255m"
@@ -22,6 +25,8 @@ failed = 0
 BIN_PATH = "Agro/bin"
 
 executables = os.listdir(BIN_PATH)
+if windows():
+    os.system("color") # Enables colored output in the terminal.
 i = 0
 for exe in executables:
     command = [f"./{BIN_PATH}/{exe}", "quit"]
