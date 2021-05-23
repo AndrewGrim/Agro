@@ -32,9 +32,7 @@ sudo apt install libsdl2-dev
     * When using GCC use `cmake --build build` in the terminal to build the actual project.
     * When using MSVC use `cmake --build build --config Release` in the terminal to build the actual project.
 
-You can verify that the library has built correctly by running one of the example files.
-For example: in the terminal from the root directory run the `Agro/bin/example_treeview` executable.
-For the moment this is required because we don't embed any fonts yet.
+You can verify that the library has built correctly by running one of the example files in the `Agro/bin` folder.
 
 ### Installing
 On Unix platforms you can run `cmake --install build` to install the library.
