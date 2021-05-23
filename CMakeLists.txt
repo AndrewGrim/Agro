@@ -17,8 +17,6 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
 endif()
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin)
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib)
 
 file(GLOB sources
 	"${PROJECT_SOURCE_DIR}/src/*.cpp"
@@ -36,6 +34,9 @@ add_library(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
 	include
 	include/freetype2
+)
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
 )
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)

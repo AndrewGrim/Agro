@@ -3,6 +3,9 @@ file(GLOB examples "${PROJECT_SOURCE_DIR}/examples/*.cpp")
 foreach(example ${examples})
 	get_filename_component(example_name ${example} NAME_WE)
 	add_executable("example_${example_name}" ${example})
+	set_target_properties("example_${example_name}" PROPERTIES 
+		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin"
+	)
 	target_include_directories("example_${example_name}" PUBLIC
 		include/glm
 	)
