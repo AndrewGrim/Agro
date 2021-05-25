@@ -7,7 +7,7 @@ foreach(example ${examples})
 		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin"
 	)
 	target_include_directories("example_${example_name}" PUBLIC
-		include/glm
+		include
 	)
 	if (UNIX)
 		target_link_libraries("example_${example_name}"
