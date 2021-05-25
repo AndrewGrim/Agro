@@ -21,14 +21,12 @@ Font::~Font() {
 void Font::load() {
     FT_Library ft;    
     if (FT_Init_FreeType(&ft)) {
-        println("Error: Failed to initialise FreeType!");
-        exit(1); // TODO should we have an enum with different errors and return the appropriate one? probably
+        error("FAILED_TO_INITIALISE_FREETYPE");
     }
     
     FT_Face face;
     if (FT_New_Face(ft, this->file_path.c_str(), 0, &face)) {
-        println("Error: Failed to load font!");
-        exit(1);
+        error("FAILED_TO_LOAD_FONT",  file_path);
     }
     
     FT_Set_Pixel_Sizes(face, 0, this->pixel_size);
@@ -36,7 +34,7 @@ void Font::load() {
     FT_GlyphSlot g = face->glyph;
     for (GLubyte c = 32; c < 128; c++)   {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            exit(1);
+            error("FAILED_TO_LOAD_CHAR",  std::string(1, c));
         }
         this->atlas_width += g->bitmap.width;
         if (g->bitmap.rows > this->atlas_height) {
@@ -66,7 +64,7 @@ void Font::load() {
     int x = 0;
     for (GLubyte c = 32; c < 128; c++)   {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            exit(1);
+            error("FAILED_TO_LOAD_CHAR",  std::string(1, c));
         }
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
         Font::Character character = {
@@ -89,14 +87,12 @@ void Font::load() {
 void Font::loadFromMemory(const unsigned char *data, signed long length) {
     FT_Library ft;    
     if (FT_Init_FreeType(&ft)) {
-        println("Error: Failed to initialise FreeType!");
-        exit(1); // TODO should we have an enum with different errors and return the appropriate one? probably
+        error("FAILED_TO_INITIALISE_FREETYPE");
     }
     
     FT_Face face;
     if (FT_New_Memory_Face(ft, data, length, 0, &face)) {
-        println("Error: Failed to load font!");
-        exit(1);
+        error("FAILED_TO_LOAD_FONT",  file_path);
     }
     
     FT_Set_Pixel_Sizes(face, 0, this->pixel_size);
@@ -104,7 +100,7 @@ void Font::loadFromMemory(const unsigned char *data, signed long length) {
     FT_GlyphSlot g = face->glyph;
     for (GLubyte c = 32; c < 128; c++)   {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            exit(1);
+            error("FAILED_TO_LOAD_CHAR",  std::string(1, c));
         }
         this->atlas_width += g->bitmap.width;
         if (g->bitmap.rows > this->atlas_height) {
@@ -134,7 +130,7 @@ void Font::loadFromMemory(const unsigned char *data, signed long length) {
     int x = 0;
     for (GLubyte c = 32; c < 128; c++)   {
         if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-            exit(1);
+            error("FAILED_TO_LOAD_CHAR",  std::string(1, c));
         }
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
         Font::Character character = {
