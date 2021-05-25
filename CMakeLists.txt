@@ -41,7 +41,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)
 
-# Copy the header files into an include folder
+# TODO Should happen at build time
+# Copy the header files into the include folder
 file(GLOB root "${PROJECT_SOURCE_DIR}/src/*.hpp")
 file(
 	COPY ${root}
