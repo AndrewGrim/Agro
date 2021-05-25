@@ -21,4 +21,7 @@
         template <typename T> void println(T message) {
             std::cout << message << std::endl;
         }
+
+        void warn(std::string message, std::string text);
+        void error(std::string message, std::string text);
 #endif
