@@ -38,7 +38,7 @@
             float *color_attribute = &r;
             for (int i = 0; i < 4; i++) {
                 if (*string == '\0') { return; }
-                *color_attribute += (matchHexFromChar(*string) * 16) / 255.0f;
+                *color_attribute = (matchHexFromChar(*string) * 16) / 255.0f;
                 string++;
                 if (*string == '\0') { return; }
                 *color_attribute += matchHexFromChar(*string) / 255.0f;
