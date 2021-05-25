@@ -6,6 +6,7 @@
     #include "widget.hpp"
     #include "scrollable.hpp"
     #include "spacer.hpp"
+    #include "../application.hpp"
 
     class CellRenderer {
         public:
