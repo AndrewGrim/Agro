@@ -29,7 +29,7 @@ if windows():
     os.system("color") # Enables colored output in the terminal.
 i = 0
 for exe in executables:
-    command = [f"./{BIN_PATH}/{exe}", "quit"]
+    command = [f"{BIN_PATH}/{exe}", "quit"]
 
     p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.wait()
