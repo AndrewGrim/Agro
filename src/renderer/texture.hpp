@@ -106,7 +106,7 @@
                 glGenerateMipmap(GL_TEXTURE_2D);
                 stbi_image_free(data);
             } else {
-                println("Error: Failed to load texture! '" + file_path + "'");
+                error("FAILED_TO_LOAD_TEXTURE", file_path);
             }
         }
 
