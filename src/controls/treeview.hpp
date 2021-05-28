@@ -482,9 +482,6 @@
                 this->inner_rect = rect;
                 dc->fillRect(rect, COLOR_WHITE);
 
-                // TODO somewhere around here make a variable
-                // for virtual_size that wont modify the m version
-                // and account in it for the header height if is there or not etc.
                 Size virtual_size = m_virtual_size;
                 if (areColumnHeadersHidden()) {
                     virtual_size.h -= m_children_size.h;
