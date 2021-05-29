@@ -1,6 +1,8 @@
 #ifndef DRAWING_CONTEXT_HPP
     #define DRAWING_CONTEXT_HPP
 
+    #include <cmath>
+
     #include <SDL2/SDL.h>
 
     #include "../common/enums.hpp"

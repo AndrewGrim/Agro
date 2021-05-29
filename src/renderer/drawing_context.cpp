@@ -1,5 +1,3 @@
-#include <cmath>
-
 #include "drawing_context.hpp"
 
 DrawingContext::DrawingContext() {
