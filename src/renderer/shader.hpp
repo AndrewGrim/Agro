@@ -6,10 +6,6 @@
     #include <sstream>
     #include <iostream>
 
-    #include <glm/glm.hpp>
-    #include <glm/gtc/matrix_transform.hpp>
-    #include <glm/gtc/type_ptr.hpp>
-
     #include "glad.h"
     #include "../util.hpp"
 
@@ -18,7 +14,7 @@
             unsigned int ID;
 
             Shader() {
-                
+
             }
 
             Shader(const char *vertext_shader, const char *fragment_shader) {
@@ -32,18 +28,18 @@
                 glShaderSource(vertex, 1, &vertext_shader, NULL);
                 glCompileShader(vertex);
                 checkCompileErrors(vertex, "VERTEX");
-                
+
                 fragment = glCreateShader(GL_FRAGMENT_SHADER);
                 glShaderSource(fragment, 1, &fragment_shader, NULL);
                 glCompileShader(fragment);
                 checkCompileErrors(fragment, "FRAGMENT");
-                
+
                 ID = glCreateProgram();
                 glAttachShader(ID, vertex);
                 glAttachShader(ID, fragment);
                 glLinkProgram(ID);
                 checkCompileErrors(ID, "PROGRAM");
-                
+
                 glDeleteShader(vertex);
                 glDeleteShader(fragment);
             }
@@ -67,26 +63,21 @@
             void setVector2f(const char *name, float x, float y) {
                 glUniform2f(glGetUniformLocation(this->ID, name), x, y);
             }
-            void setVector2f(const char *name, const glm::vec2 &value) {
-                glUniform2f(glGetUniformLocation(this->ID, name), value.x, value.y);
-            }
+
             void setVector3f(const char *name, float x, float y, float z) {
                 glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
             }
-            void setVector3f(const char *name, const glm::vec3 &value) {
-                glUniform3f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z);
-            }
+
             void setVector4f(const char *name, Color &color) {
                 glUniform4f(glGetUniformLocation(this->ID, name), color.r, color.g, color.b, color.a);
             }
+
             void setVector4f(const char *name, float x, float y, float z, float w) {
                 glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
             }
-            void setVector4f(const char *name, const glm::vec4 &value) {
-                glUniform4f(glGetUniformLocation(this->ID, name), value.x, value.y, value.z, value.w);
-            }
-            void setMatrix4(const char *name, const glm::mat4 &matrix) {
-                glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, glm::value_ptr(matrix));
+
+            void setMatrix4(const char *name, const float *matrix) {
+                glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, matrix);
             }
 
             void checkCompileErrors(unsigned int shader, std::string type) {

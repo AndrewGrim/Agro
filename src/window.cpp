@@ -43,9 +43,9 @@ Window::Window(const char* title, Size size) {
     this->size = size;
 
     m_win = SDL_CreateWindow(
-        title, 
-        SDL_WINDOWPOS_CENTERED, 
-        SDL_WINDOWPOS_CENTERED, 
+        title,
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
         static_cast<int>(size.w), static_cast<int>(size.h),
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
@@ -74,14 +74,13 @@ Window::~Window() {
 
 void Window::draw() {
     dc->renderer->shader.use();
-    dc->renderer->shader.setMatrix4(
-        "u_projection", 
-        glm::ortho(
-            0.0f, static_cast<float>(size.w),
-            static_cast<float>(size.h), 0.0f,
-            -1.0f, 1.0f
-        ) 
-    );
+    float projection[16] = {
+        2.0f / size.w, 0.0f, 0.0f, 0.0f,
+        0.0f, -2.0f / size.h, 0.0f, 0.0f,
+        0.0f, 0.0f, -1.0f, 0.0f,
+        -1.0f, 1.0f, -0.0f, 1.0f
+    };
+    dc->renderer->shader.setMatrix4("u_projection", projection);
     dc->clear();
     dc->setClip(Rect(0, 0, size.w, size.h));
     m_main_widget->draw(dc, Rect(0, 0, size.w, size.h));
@@ -338,10 +337,10 @@ int Window::bind(int key, int modifiers, std::function<void()> callback) {
     if (modifiers & KMOD_GUI) {
         mods[3] = Mod::Gui;
     }
-    
+
     m_keyboard_shortcuts.insert(
         std::make_pair(
-            m_binding_id, 
+            m_binding_id,
             KeyboardShortcut(
                 key,
                 mods[0], mods[1], mods[2], mods[3],
@@ -425,7 +424,7 @@ void Window::drawTooltip() {
     r.shrink(1); // Shrink by border
     dc->fillRect(r, Color(1.0f, 1.0f, 0.55f));
     dc->fillTextAligned(
-        nullptr, 
+        nullptr,
         w->tooltip,
         HorizontalAlignment::Center,
         VerticalAlignment::Center,
