@@ -96,6 +96,8 @@ Widget* Window::mainWidget() {
     return m_main_widget;
 }
 
+// TODO need to free the previous main widget but perhaps
+// leave that to the user??
 void Window::setMainWidget(Widget *widget) {
     m_main_widget = widget;
     widget->update();

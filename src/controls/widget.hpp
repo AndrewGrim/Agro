@@ -43,7 +43,10 @@
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
 
-            size_t parent_index = 0;
+            size_t parent_index = 0; // TODO this would not be representative
+            // when there is a parent but the widget its not part of the children
+            // like in Splitter
+            // also means remove is gonna totally break for splitter
             
             /// Stores all the child Widgets of this Widget.
             /// Its not meant to be interacted with directly but
