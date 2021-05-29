@@ -19,7 +19,6 @@ class Splitter : public Widget {
         void setSplit(float new_split);
         float split();
 
-    protected:
         Align m_align_policy;
         Size m_viewport;
         Widget *m_first = nullptr;
