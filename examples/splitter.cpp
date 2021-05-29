@@ -3,8 +3,54 @@
 #include "../src/controls/splitter.hpp"
 #include "../src/controls/button.hpp"
 
+struct SplitBox : Box {
+    Button *h = new Button("Split Horizontally");
+    Button *v = new Button("Split Vertically");
+    SplitBox() : Box(Align::Vertical) {
+        h->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
+            auto split = new Splitter(Align::Vertical);
+            if (!this->parent) {
+                Application::get()->setMainWidget(split);
+            } else {
+                if (this == ((Splitter*)this->parent)->m_first) {
+                    ((Splitter*)this->parent)->left(split);
+                } else if (this == ((Splitter*)this->parent)->m_second) {
+                    ((Splitter*)this->parent)->right(split);
+                } else {
+                    error("somethings wrong");
+                }
+            }
+            split->left(this);
+            auto other = new SplitBox();
+            split->right(other);
+        });
+        v->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
+            auto split = new Splitter(Align::Horizontal);
+            if (!this->parent) {
+                Application::get()->setMainWidget(split);
+            } else {
+                if (this == ((Splitter*)this->parent)->m_first) {
+                    ((Splitter*)this->parent)->left(split);
+                } else if (this == ((Splitter*)this->parent)->m_second) {
+                    ((Splitter*)this->parent)->right(split);
+                } else {
+                    error("somethings wrong");
+                }
+            }
+            split->left(this);
+            auto other = new SplitBox();
+            split->right(other);
+        });
+
+        append(h, Fill::Both);
+        append(v, Fill::Both);
+    }
+};
+
 int main(int argc, char **argv) { 
     Application *app = Application::get();
+        delete app->mainWidget();
+        app->setMainWidget(new SplitBox());
         app->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
@@ -13,18 +59,6 @@ int main(int argc, char **argv) {
             }
         };
         app->setTitle("Splitter");
-        Splitter *h = new Splitter(Align::Horizontal);
-            h->left(new Button("Left"));
-            Box *box = new Box(Align::Vertical);
-                box->append(new Button("Inner box top"), Fill::Both);
-                box->append(new Button("Inner box bottom"), Fill::Both);
-            h->right(box);
-        app->append(h, Fill::Both);
-
-        Splitter *v = new Splitter(Align::Vertical);
-            v->top(new Button("Top"));
-            v->bottom(new Button("Bottom"));
-        app->append(v, Fill::Both);
     app->run();
 
     return 0; 
