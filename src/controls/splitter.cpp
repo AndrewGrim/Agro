@@ -161,18 +161,20 @@ void Splitter::append() {
 
 void Splitter::top(Widget *widget) {
     m_first = widget;
+    widget->parent = this;
 }
 
 void Splitter::bottom(Widget *widget) {
     m_second = widget;
+    widget->parent = this;
 }
 
 void Splitter::left(Widget *widget) {
-    m_first = widget;
+    top(widget);
 }
 
 void Splitter::right(Widget *widget) {
-    m_second = widget;
+    bottom(widget);
 }
 
 // Note the split value goes from 0.0 to 1.0.
