@@ -58,7 +58,7 @@ Window::Window(const char* title, Size size) {
     SDL_GL_MakeCurrent(m_win, m_sdl_context); // TODO this will need to be called when switching between windows
     SDL_GL_SetSwapInterval(1);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-        println("Failed to initialize GLAD");
+        error("FAILED_TO_INITIALIZE_GLAD");
     }
 
     dc = new DrawingContext();
