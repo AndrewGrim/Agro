@@ -5,7 +5,6 @@
     #include <string>
     #include <vector>
 
-    #include <glm/glm.hpp>
     #include <ft2build.h>
     #include FT_FREETYPE_H
 
@@ -37,7 +36,7 @@
             float rect[4];
             float clip_rect[4];
         };
-        
+
         int max_texture_slots;
         int current_texture_slot = 2;
         unsigned int gl_texture_begin = GL_TEXTURE0;
@@ -59,7 +58,7 @@
         void check();
         void textCheck(Font *font);
         void render();
-        
+
         private:
             void reset();
     };

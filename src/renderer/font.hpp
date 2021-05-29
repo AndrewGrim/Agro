@@ -4,14 +4,13 @@
     #include <map>
     #include <string>
 
-    // TODO get rid of glm, we can just use size here and perhaps point for bearing? or another size
-    #include <glm/glm.hpp>
     #include <ft2build.h>
     #include FT_FREETYPE_H
 
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
+    #include "../common/point.hpp"
 
     #include "glad.h"
     #include "shader.hpp"
@@ -26,8 +25,8 @@
         };
 
         struct Character {
-            glm::ivec2 size;
-            glm::ivec2 bearing;
+            Point bearing;
+            Size size;
             long int advance;
             float textureX;
         };

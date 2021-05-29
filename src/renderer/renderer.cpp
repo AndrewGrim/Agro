@@ -14,7 +14,7 @@ Renderer::Renderer(unsigned int *indices) {
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
-    
+
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_uv));
     glEnableVertexAttribArray(1);
 
@@ -139,7 +139,7 @@ void Renderer::check() {
 void Renderer::textCheck(Font *font) {
     if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) {
         render();
-        glActiveTexture(gl_texture_begin + current_texture_slot); 
+        glActiveTexture(gl_texture_begin + current_texture_slot);
         glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     }
 }
@@ -154,7 +154,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
     if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
-    glActiveTexture(gl_texture_begin + current_texture_slot); 
+    glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
         textCheck(font);
@@ -164,12 +164,12 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
             float xpos = point.x + ch.bearing.x * scale;
             float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y) * scale;
 
-            float w = ch.size.x * scale;
-            float h = ch.size.y * scale;
-            
+            float w = ch.size.w * scale;
+            float h = ch.size.h * scale;
+
             // TOP LEFT
             vertices[index++] = {
-                {xpos, ypos + h}, 
+                {xpos, ypos + h},
                 {ch.textureX, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
@@ -179,7 +179,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
             };
             // BOTTOM LEFT
             vertices[index++] = {
-                {xpos, ypos}, 
+                {xpos, ypos},
                 {ch.textureX, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
@@ -189,7 +189,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
             };
             // BOTTOM RIGHT
             vertices[index++] = {
-                {xpos + w, ypos}, 
+                {xpos + w, ypos},
                 {ch.textureX + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
@@ -199,7 +199,7 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
             };
             // TOP RIGHT
             vertices[index++] = {
-                {xpos + w, ypos + h}, 
+                {xpos + w, ypos + h},
                 {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
@@ -300,7 +300,7 @@ void Renderer::render() {
 
 void Renderer::fillRect(Rect rect, Color color) {
     check();
-    
+
     // TOP LEFT
     vertices[index++] = {
         {0.0, 1.0},
@@ -347,7 +347,7 @@ void Renderer::fillRect(Rect rect, Color color) {
 
 void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation) {
     check();
-    
+
     switch (orientation) {
         case Gradient::TopToBottom: {
             // TOP LEFT

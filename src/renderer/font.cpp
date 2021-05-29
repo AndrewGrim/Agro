@@ -74,8 +74,8 @@ void Font::load(FT_Face face) {
         }
         glTexSubImage2D(GL_TEXTURE_2D, 0, x, 0, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
         Font::Character character = {
-            glm::ivec2(g->bitmap.width, g->bitmap.rows),
-            glm::ivec2(g->bitmap_left, g->bitmap_top),
+            Point(g->bitmap_left, g->bitmap_top),
+            Size(g->bitmap.width, g->bitmap.rows),
             g->advance.x,
             (float)x / (float)atlas_width
         };
