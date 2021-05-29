@@ -31,15 +31,16 @@
             float textureX;
         };
 
-        std::map<char, Font::Character> characters;
-        unsigned int max_height = 0;
+        std::string file_path;
         unsigned int pixel_size = 0;
+        Type type;
+        
+        unsigned int max_height = 0;
+        unsigned int tab_width = 4;
         unsigned int atlas_width = 0;
         unsigned int atlas_height = 0;
-        unsigned int tab_width = 4;
-        Type type;
-        std::string file_path;
         unsigned int atlas_ID;
+        std::map<char, Font::Character> characters;
 
         Font(std::string file_path, unsigned int pixel_size, Type type);
         Font(const unsigned char *data, signed long length, unsigned int pixel_size, Type type);
