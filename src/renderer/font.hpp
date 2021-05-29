@@ -47,7 +47,6 @@
         ~Font();
 
         private:
-            void load();
-            void loadFromMemory(const unsigned char *data, signed long length);
+            void load(FT_Face face);
     };
 #endif
