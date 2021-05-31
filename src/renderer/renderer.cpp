@@ -214,23 +214,114 @@ void Renderer::fillText(Font *font, std::string text, Point point, Color color, 
     current_texture_slot++;
 }
 
+void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, float scale, float line_spacing) {
+    Size window = Application::get()->size;
+    std::string::const_iterator c;
+    // TODO handle tab characters
+
+    if (current_texture_slot > max_texture_slots - 1) {
+        render();
+    }
+    glActiveTexture(gl_texture_begin + current_texture_slot);
+    glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
+    float x = point.x;
+    for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
+        textCheck(font);
+        Font::Character ch = font->characters[*c];
+        float advance = ((ch.advance >> 6) * scale);
+        if (x + advance >= 0) {
+            if (*c == '\n') {
+                point.y += font->max_height + line_spacing;
+                x = point.x;
+            }
+            float xpos = x + ch.bearing.x * scale;
+            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y) * scale;
+
+            float w = ch.size.w * scale;
+            float h = ch.size.h * scale;
+
+            // TOP LEFT
+            vertices[index++] = {
+                {xpos, ypos + h},
+                {ch.textureX, (h / font->atlas_height)},
+                {color.r, color.g, color.b, color.a},
+                (float)current_texture_slot,
+                (float)Renderer::Sampler::Text,
+                {1.0, 1.0, 1.0, 1.0},
+                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+            };
+            // BOTTOM LEFT
+            vertices[index++] = {
+                {xpos, ypos},
+                {ch.textureX, 0.0},
+                {color.r, color.g, color.b, color.a},
+                (float)current_texture_slot,
+                (float)Renderer::Sampler::Text,
+                {1.0, 1.0, 1.0, 1.0},
+                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+            };
+            // BOTTOM RIGHT
+            vertices[index++] = {
+                {xpos + w, ypos},
+                {ch.textureX + (w / font->atlas_width), 0.0},
+                {color.r, color.g, color.b, color.a},
+                (float)current_texture_slot,
+                (float)Renderer::Sampler::Text,
+                {1.0, 1.0, 1.0, 1.0},
+                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+            };
+            // TOP RIGHT
+            vertices[index++] = {
+                {xpos + w, ypos + h},
+                {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
+                {color.r, color.g, color.b, color.a},
+                (float)current_texture_slot,
+                (float)Renderer::Sampler::Text,
+                {1.0, 1.0, 1.0, 1.0},
+                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+            };
+            quad_count++;
+        }
+        x += advance;
+    }
+    current_texture_slot++;
+}
+
 Size Renderer::measureText(Font *font, std::string text, float scale) {
     std::string::const_iterator c;
-    Size size;
+    Size size = Size(0.0f, font->max_height);
     for (char c : text) {
         Font::Character ch = font->characters[c];
         size.w += (ch.advance >> 6) * scale;
-        size.h = font->max_height; // TODO this should account for newlines
     }
 
     return size;
 }
 
 Size Renderer::measureText(Font *font, char c, float scale) {
-    Size size;
+    Size size = Size(0.0f, font->max_height);
     Font::Character ch = font->characters[c];
     size.w = ch.advance >> 6;
-    size.h = font->max_height;
+
+    return size;
+}
+
+Size Renderer::measureTextMultiline(Font *font, std::string text, float scale, float line_spacing) {
+    std::string::const_iterator c;
+    Size size = Size(0.0f, font->max_height);
+    float line_width = 0.0f;
+    for (char c : text) {
+        Font::Character ch = font->characters[c];
+        line_width += (ch.advance >> 6) * scale;
+        if (c == '\n') {
+            size.h += font->max_height + line_spacing;
+            if (line_width > size.w) {
+                size.w = line_width;
+                line_width = 0.0f;
+            }
+        }
+    }
+    if (line_width > size.w) { size.w = line_width; }
 
     return size;
 }
