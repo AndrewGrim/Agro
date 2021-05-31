@@ -69,8 +69,22 @@ void DrawingContext::render() {
 }
 
 void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, float scale) {
+    // The reason for the rounding here is because in order
+    // to avoid horrible texture wrapping issues on text we need to give it a
+    // nice whole number to start from.
+    //
+    // This causes something that looks like dithering which is caused
+    // by the rounding of x and or y.
+    // This is only really noticeable when scrolling or resizing a window
+    // and doing it slowely, if you just resize the window as you would
+    // normally this isn't really perceptible.
     Point rounded = Point(round(point.x), round(point.y));
-    renderer->fillText(font ? font : default_font, text, rounded, color, scale);
+    renderer->fillText(font ? font : default_font, text.c_str(), text.length(), rounded, color, scale);
+}
+
+void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, float scale, float line_spacing) {
+    Point rounded = Point(round(point.x), round(point.y));
+    renderer->fillTextMultiline(font ? font : default_font, text, rounded, color, scale, line_spacing);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text, float scale) {
@@ -81,16 +95,11 @@ Size DrawingContext::measureText(Font *font, char c, float scale) {
     return renderer->measureText(font ? font : default_font, c, scale);
 }
 
+Size DrawingContext::measureTextMultiline(Font *font, std::string text, float scale, float line_spacing) {
+    return renderer->measureTextMultiline(font ? font : default_font, text, scale, line_spacing);
+}
+
 void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color) {
-    // The reason for the rounding here is because in order
-    // to avoid horrible texture wrapping issues on text we need to give it a
-    // nice whole number to start from.
-    //
-    // This causes something that looks like dithering which is caused
-    // by the rounding of x and or y.
-    // This is only really noticeable when scrolling or resizing a window
-    // and doing it slowely, if you just resize the window as you would
-    // normally this isn't really perceptible.
     Point pos = Point();
     switch (h_align) {
         case HorizontalAlignment::Left:
@@ -120,6 +129,62 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
         pos,
         color
     );
+}
+
+void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, float line_spacing) {
+    font = font ? font : default_font;
+    Point pos = Point(rect.x, rect.y);
+    Size text_size = measureTextMultiline(font, text, 1.0f, line_spacing);
+    switch (v_align) {
+        case VerticalAlignment::Top:
+            pos.y = round(rect.y + padding);
+            break;
+        case VerticalAlignment::Bottom:
+            pos.y = round((rect.y + rect.h) - (text_size.h + padding));
+            break;
+        case VerticalAlignment::Center:
+            pos.y = round(rect.y + (rect.h * 0.5) - (text_size.h * 0.5));
+            break;
+    }
+
+    float line_width = 0.0f;
+    const char *start = text.data();
+    size_t count = 0;
+    for (char c : text) {
+        line_width += measureText(font, c).w;
+        count++;
+        if (c == '\n') {
+            switch (h_align) {
+                case HorizontalAlignment::Left:
+                    pos.x = round(rect.x + padding);
+                    break;
+                case HorizontalAlignment::Right:
+                    pos.x = round((rect.x + rect.w) - (line_width + padding));
+                    break;
+                case HorizontalAlignment::Center:
+                    pos.x = round(rect.x + (rect.w * 0.5) - (line_width * 0.5));
+                    break;
+            }
+            renderer->fillText(font, start, count, pos, color);
+            start += count;
+            pos.y += font->max_height + line_spacing;
+            pos.x = rect.x;
+            line_width = 0.0f;
+            count = 0;
+        }
+    }
+    switch (h_align) {
+        case HorizontalAlignment::Left:
+            pos.x = round(rect.x + padding);
+            break;
+        case HorizontalAlignment::Right:
+            pos.x = round((rect.x + rect.w) - (line_width + padding));
+            break;
+        case HorizontalAlignment::Center:
+            pos.x = round(rect.x + (rect.w * 0.5) - (line_width * 0.5));
+            break;
+    }
+    renderer->fillText(font, start, count, pos, color);
 }
 
 Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color) {
@@ -192,9 +257,9 @@ Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color)
 
     // resize rectangle to account for border
     rect = Rect(
-        rect.x + border_width, 
-        rect.y + border_width, 
-        rect.w - border_width * 2, 
+        rect.x + border_width,
+        rect.y + border_width,
+        rect.w - border_width * 2,
         rect.h - border_width * 2
     );
 
@@ -373,7 +438,7 @@ void DrawingContext::drawTextureAligned(Rect rect, Size size, Texture *texture, 
             break;
     }
     this->drawTexture(
-        pos, 
+        pos,
         size,
         texture,
         coords,
