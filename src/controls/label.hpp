@@ -22,9 +22,9 @@
             VerticalAlignment verticalAlignment();
             Label* setVerticalAlignment(VerticalAlignment text_align);
 
-        protected:
             std::string m_text;
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Left;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
+            float m_line_spacing = 5.0f;
     };
 #endif

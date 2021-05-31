@@ -17,20 +17,21 @@ void Label::draw(DrawingContext *dc, Rect rect) {
 
     dc->fillRect(rect, Widget::m_bg);
     dc->padding(rect, style);
-    dc->fillTextAligned(
+    dc->fillTextMultilineAligned(
         font(),
         m_text,
         m_horizontal_align,
         m_vertical_align,
         rect,
         0,
-        m_fg
+        m_fg,
+        m_line_spacing
     );
 }
 
 Size Label::sizeHint(DrawingContext *dc) {
     if (m_size_changed) {
-        Size size = dc->measureText(font(), text());
+        Size size = dc->measureTextMultiline(font(), text(), 1.0f, m_line_spacing);
         dc->sizeHintPadding(size, style);
         m_size = size;
         m_size_changed = false;
