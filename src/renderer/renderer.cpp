@@ -144,21 +144,19 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, std::string text, Point point, Color color, float scale) {
+void Renderer::fillText(Font *font, const char *text, size_t text_length, Point point, Color color, float scale) {
     Size window = Application::get()->size;
-    std::string::const_iterator c;
-    // TODO handle newlines and tab characters
-    // TODO also we should probably find the max height for each font and store that information somewhere
-    // then we could use that to calculate the height of text by multiplying the max with amound of newlines
+    // TODO handle tab characters
 
     if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
     glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
-    for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
+    for (size_t i = 0; i < text_length && point.x <= window.w; i++) {
+        char c = text[i];
         textCheck(font);
-        Font::Character ch = font->characters[*c];
+        Font::Character ch = font->characters[c];
         float advance = ((ch.advance >> 6) * scale);
         if (point.x + advance >= 0) {
             float xpos = point.x + ch.bearing.x * scale;
