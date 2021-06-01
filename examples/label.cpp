@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
         app->resize(600, 600);
         app->center();
         app->setTitle("Label");
+        app->append(new Label("Space: ' ', Tab: '\t'."));
         VerticalAlignment v_align[3] = {
             VerticalAlignment::Top,
             VerticalAlignment::Center,

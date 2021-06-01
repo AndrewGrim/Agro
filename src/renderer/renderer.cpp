@@ -144,7 +144,7 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, const char *text, size_t text_length, Point point, Color color) {
+void Renderer::fillText(Font *font, const char *text, size_t text_length, Point point, Color color, float tab_width) {
     Size window = Application::get()->size;
     // TODO handle tab characters
 
@@ -157,7 +157,9 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
         char c = text[i];
         textCheck(font);
         Font::Character ch = font->characters[c];
-        if (point.x + ch.advance >= 0) {
+        float advance = ch.advance;
+        if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
+        if (point.x + advance >= 0) {
             float xpos = point.x + ch.bearing.x;
             float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
 
@@ -206,12 +208,12 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
             };
             quad_count++;
         }
-        point.x += ch.advance;
+        point.x += advance;
     }
     current_texture_slot++;
 }
 
-void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, float line_spacing) {
+void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, float line_spacing, float tab_width) {
     Size window = Application::get()->size;
     std::string::const_iterator c;
     // TODO handle tab characters
@@ -225,7 +227,9 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
     for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
         textCheck(font);
         Font::Character ch = font->characters[*c];
-        if (x + ch.advance >= 0) {
+        float advance = ch.advance;
+        if (*c == '\t') { advance = font->characters[' '].advance * tab_width; }
+        if (x + advance >= 0) {
             if (*c == '\n') {
                 point.y += font->max_height + line_spacing;
                 x = point.x;
@@ -278,37 +282,49 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
             };
             quad_count++;
         }
-        x += ch.advance;
+        x += advance;
     }
     current_texture_slot++;
 }
 
-Size Renderer::measureText(Font *font, std::string text) {
+Size Renderer::measureText(Font *font, std::string text, float tab_width) {
     std::string::const_iterator c;
     Size size = Size(0.0f, font->max_height);
     for (char c : text) {
         Font::Character ch = font->characters[c];
-        size.w += ch.advance;
+        if (c == '\t') {
+            size.w = font->characters[' '].advance * tab_width;
+        } else {
+            size.w = ch.advance;
+        }
     }
 
     return size;
 }
 
-Size Renderer::measureText(Font *font, char c) {
+Size Renderer::measureText(Font *font, char c, float tab_width) {
     Size size = Size(0.0f, font->max_height);
     Font::Character ch = font->characters[c];
-    size.w = ch.advance;
+    if (c == '\t') {
+        size.w = font->characters[' '].advance * tab_width;
+    } else {
+        size.w = ch.advance;
+    }
 
     return size;
 }
 
-Size Renderer::measureTextMultiline(Font *font, std::string text, float line_spacing) {
+Size Renderer::measureTextMultiline(Font *font, std::string text, float line_spacing, float tab_width) {
     std::string::const_iterator c;
     Size size = Size(0.0f, font->max_height);
     float line_width = 0.0f;
     for (char c : text) {
         Font::Character ch = font->characters[c];
-        line_width += ch.advance;
+        if (c == '\t') {
+            line_width += font->characters[' '].advance * tab_width;
+        } else {
+            line_width += ch.advance;
+        }
         if (c == '\n') {
             size.h += font->max_height + line_spacing;
             if (line_width > size.w) {

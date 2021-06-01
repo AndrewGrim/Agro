@@ -49,11 +49,11 @@
 
         Renderer(unsigned int *indices);
         ~Renderer();
-        void fillText(Font *font, const char *text, size_t text_length, Point point, Color color = COLOR_BLACK);
-        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, float line_spacing = 5.0f);
-        Size measureText(Font *font, std::string text);
-        Size measureText(Font *font, char c);
-        Size measureTextMultiline(Font *font, std::string text, float line_spacing = 5.0f);
+        void fillText(Font *font, const char *text, size_t text_length, Point point, Color color = COLOR_BLACK, float tab_width = 4.0f);
+        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, float line_spacing = 5.0f, float tab_width = 4.0f);
+        Size measureText(Font *font, std::string text, float tab_width = 4.0f);
+        Size measureText(Font *font, char c, float tab_width = 4.0f);
+        Size measureTextMultiline(Font *font, std::string text, float line_spacing = 5.0f, float tab_width = 4.0f);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
