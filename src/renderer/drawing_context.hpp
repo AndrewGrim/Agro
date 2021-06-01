@@ -33,11 +33,11 @@
         ~DrawingContext();
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
-        void fillText(Font *font, std::string text, Point point, Color color = COLOR_BLACK, float scale = 1.0f);
-        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, float scale = 1.0f, float line_spacing = 5.0f);
-        Size measureText(Font *font, std::string text, float scale = 1.0f);
-        Size measureText(Font *font, char c, float scale = 1.0f);
-        Size measureTextMultiline(Font *font, std::string text, float scale = 1.0f, float line_spacing = 5.0f);
+        void fillText(Font *font, std::string text, Point point, Color color = COLOR_BLACK);
+        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, float line_spacing = 5.0f);
+        Size measureText(Font *font, std::string text);
+        Size measureText(Font *font, char c);
+        Size measureTextMultiline(Font *font, std::string text, float line_spacing = 5.0f);
         void render();
         void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = COLOR_BLACK);
         void fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = COLOR_BLACK, float line_spacing = 5.0f);

@@ -68,7 +68,7 @@ void DrawingContext::render() {
     renderer->render();
 }
 
-void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, float scale) {
+void DrawingContext::fillText(Font *font, std::string text, Point point, Color color) {
     // The reason for the rounding here is because in order
     // to avoid horrible texture wrapping issues on text we need to give it a
     // nice whole number to start from.
@@ -79,24 +79,24 @@ void DrawingContext::fillText(Font *font, std::string text, Point point, Color c
     // and doing it slowely, if you just resize the window as you would
     // normally this isn't really perceptible.
     Point rounded = Point(round(point.x), round(point.y));
-    renderer->fillText(font ? font : default_font, text.c_str(), text.length(), rounded, color, scale);
+    renderer->fillText(font ? font : default_font, text.c_str(), text.length(), rounded, color);
 }
 
-void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, float scale, float line_spacing) {
+void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, float line_spacing) {
     Point rounded = Point(round(point.x), round(point.y));
-    renderer->fillTextMultiline(font ? font : default_font, text, rounded, color, scale, line_spacing);
+    renderer->fillTextMultiline(font ? font : default_font, text, rounded, color, line_spacing);
 }
 
-Size DrawingContext::measureText(Font *font, std::string text, float scale) {
-    return renderer->measureText(font ? font : default_font, text, scale);
+Size DrawingContext::measureText(Font *font, std::string text) {
+    return renderer->measureText(font ? font : default_font, text);
 }
 
-Size DrawingContext::measureText(Font *font, char c, float scale) {
-    return renderer->measureText(font ? font : default_font, c, scale);
+Size DrawingContext::measureText(Font *font, char c) {
+    return renderer->measureText(font ? font : default_font, c);
 }
 
-Size DrawingContext::measureTextMultiline(Font *font, std::string text, float scale, float line_spacing) {
-    return renderer->measureTextMultiline(font ? font : default_font, text, scale, line_spacing);
+Size DrawingContext::measureTextMultiline(Font *font, std::string text, float line_spacing) {
+    return renderer->measureTextMultiline(font ? font : default_font, text, line_spacing);
 }
 
 void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color) {
@@ -134,7 +134,7 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
 void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, float line_spacing) {
     font = font ? font : default_font;
     Point pos = Point(rect.x, rect.y);
-    Size text_size = measureTextMultiline(font, text, 1.0f, line_spacing);
+    Size text_size = measureTextMultiline(font, text, line_spacing);
     switch (v_align) {
         case VerticalAlignment::Top:
             pos.y = round(rect.y + padding);

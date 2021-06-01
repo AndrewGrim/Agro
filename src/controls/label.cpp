@@ -31,7 +31,7 @@ void Label::draw(DrawingContext *dc, Rect rect) {
 
 Size Label::sizeHint(DrawingContext *dc) {
     if (m_size_changed) {
-        Size size = dc->measureTextMultiline(font(), text(), 1.0f, m_line_spacing);
+        Size size = dc->measureTextMultiline(font(), text(), m_line_spacing);
         dc->sizeHintPadding(size, style);
         m_size = size;
         m_size_changed = false;

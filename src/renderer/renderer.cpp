@@ -144,7 +144,7 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, const char *text, size_t text_length, Point point, Color color, float scale) {
+void Renderer::fillText(Font *font, const char *text, size_t text_length, Point point, Color color) {
     Size window = Application::get()->size;
     // TODO handle tab characters
 
@@ -157,13 +157,13 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
         char c = text[i];
         textCheck(font);
         Font::Character ch = font->characters[c];
-        float advance = ((ch.advance >> 6) * scale);
+        float advance = ch.advance >> 6;
         if (point.x + advance >= 0) {
-            float xpos = point.x + ch.bearing.x * scale;
-            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y) * scale;
+            float xpos = point.x + ch.bearing.x;
+            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
 
-            float w = ch.size.w * scale;
-            float h = ch.size.h * scale;
+            float w = ch.size.w;
+            float h = ch.size.h;
 
             // TOP LEFT
             vertices[index++] = {
@@ -212,7 +212,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
     current_texture_slot++;
 }
 
-void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, float scale, float line_spacing) {
+void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, float line_spacing) {
     Size window = Application::get()->size;
     std::string::const_iterator c;
     // TODO handle tab characters
@@ -226,17 +226,17 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
     for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
         textCheck(font);
         Font::Character ch = font->characters[*c];
-        float advance = ((ch.advance >> 6) * scale);
+        float advance = ch.advance >> 6;
         if (x + advance >= 0) {
             if (*c == '\n') {
                 point.y += font->max_height + line_spacing;
                 x = point.x;
             }
-            float xpos = x + ch.bearing.x * scale;
-            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y) * scale;
+            float xpos = x + ch.bearing.x;
+            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
 
-            float w = ch.size.w * scale;
-            float h = ch.size.h * scale;
+            float w = ch.size.w;
+            float h = ch.size.h;
 
             // TOP LEFT
             vertices[index++] = {
@@ -285,18 +285,18 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
     current_texture_slot++;
 }
 
-Size Renderer::measureText(Font *font, std::string text, float scale) {
+Size Renderer::measureText(Font *font, std::string text) {
     std::string::const_iterator c;
     Size size = Size(0.0f, font->max_height);
     for (char c : text) {
         Font::Character ch = font->characters[c];
-        size.w += (ch.advance >> 6) * scale;
+        size.w += ch.advance >> 6;
     }
 
     return size;
 }
 
-Size Renderer::measureText(Font *font, char c, float scale) {
+Size Renderer::measureText(Font *font, char c) {
     Size size = Size(0.0f, font->max_height);
     Font::Character ch = font->characters[c];
     size.w = ch.advance >> 6;
@@ -304,13 +304,13 @@ Size Renderer::measureText(Font *font, char c, float scale) {
     return size;
 }
 
-Size Renderer::measureTextMultiline(Font *font, std::string text, float scale, float line_spacing) {
+Size Renderer::measureTextMultiline(Font *font, std::string text, float line_spacing) {
     std::string::const_iterator c;
     Size size = Size(0.0f, font->max_height);
     float line_width = 0.0f;
     for (char c : text) {
         Font::Character ch = font->characters[c];
-        line_width += (ch.advance >> 6) * scale;
+        line_width += ch.advance >> 6;
         if (c == '\n') {
             size.h += font->max_height + line_spacing;
             if (line_width > size.w) {
