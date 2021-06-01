@@ -157,8 +157,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
         char c = text[i];
         textCheck(font);
         Font::Character ch = font->characters[c];
-        float advance = ch.advance >> 6;
-        if (point.x + advance >= 0) {
+        if (point.x + ch.advance >= 0) {
             float xpos = point.x + ch.bearing.x;
             float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
 
@@ -207,7 +206,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
             };
             quad_count++;
         }
-        point.x += advance;
+        point.x += ch.advance;
     }
     current_texture_slot++;
 }
@@ -226,8 +225,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
     for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
         textCheck(font);
         Font::Character ch = font->characters[*c];
-        float advance = ch.advance >> 6;
-        if (x + advance >= 0) {
+        if (x + ch.advance >= 0) {
             if (*c == '\n') {
                 point.y += font->max_height + line_spacing;
                 x = point.x;
@@ -280,7 +278,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
             };
             quad_count++;
         }
-        x += advance;
+        x += ch.advance;
     }
     current_texture_slot++;
 }
@@ -290,7 +288,7 @@ Size Renderer::measureText(Font *font, std::string text) {
     Size size = Size(0.0f, font->max_height);
     for (char c : text) {
         Font::Character ch = font->characters[c];
-        size.w += ch.advance >> 6;
+        size.w += ch.advance;
     }
 
     return size;
@@ -299,7 +297,7 @@ Size Renderer::measureText(Font *font, std::string text) {
 Size Renderer::measureText(Font *font, char c) {
     Size size = Size(0.0f, font->max_height);
     Font::Character ch = font->characters[c];
-    size.w = ch.advance >> 6;
+    size.w = ch.advance;
 
     return size;
 }
@@ -310,7 +308,7 @@ Size Renderer::measureTextMultiline(Font *font, std::string text, float line_spa
     float line_width = 0.0f;
     for (char c : text) {
         Font::Character ch = font->characters[c];
-        line_width += ch.advance >> 6;
+        line_width += ch.advance;
         if (c == '\n') {
             size.h += font->max_height + line_spacing;
             if (line_width > size.w) {
