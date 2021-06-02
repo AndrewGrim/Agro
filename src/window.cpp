@@ -83,7 +83,7 @@ void Window::draw() {
     dc->renderer->shader.setMatrix4("u_projection", projection);
     dc->clear();
     dc->setClip(Rect(0, 0, size.w, size.h));
-    m_main_widget->draw(*dc, Rect(0, 0, size.w, size.h));
+    m_main_widget->draw(*dc, Rect(0, 0, size.w, size.h), m_main_widget->state());
     if (m_state->tooltip && draw_tooltip) {
         drawTooltip();
         draw_tooltip = false;
@@ -126,7 +126,7 @@ void Window::run() {
                 case SDL_MOUSEBUTTONDOWN:
                     m_is_mouse_captured = true;
                     SDL_CaptureMouse(SDL_TRUE);
-                    m_state->pressed = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
+                    m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
                     break;
                 case SDL_MOUSEBUTTONUP:
                     if (m_mouse_inside) {
@@ -138,12 +138,12 @@ void Window::run() {
                                 if (m_state->pressed) {
                                     SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
                                     ((Widget*)m_state->pressed)->onMouseLeft.notify(((Widget*)m_state->pressed), MouseEvent(event));
-                                    ((Widget*)m_state->pressed)->setPressed(false);
                                     m_state->pressed = nullptr;
+                                    update();
                                 }
                                 if (m_state->hovered) {
-                                    ((Widget*)m_state->hovered)->setHovered(false);
                                     m_state->hovered = nullptr;
+                                    update();
                                 }
                                 break;
                             }
@@ -151,8 +151,8 @@ void Window::run() {
                         m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
                     } else {
                         if (m_state->pressed) {
-                            ((Widget*)m_state->pressed)->setPressed(false);
                             m_state->pressed = nullptr;
+                            update();
                         }
                     }
                     break;
@@ -160,7 +160,7 @@ void Window::run() {
                     if (event.motion.timestamp >= frame_start) {
                         event.motion.xrel += mouse_movement_x;
                         event.motion.yrel += mouse_movement_y;
-                        m_state->hovered = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
+                        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
                         mouse_movement_x = 0;
                         mouse_movement_y = 0;
                     } else {
@@ -202,10 +202,10 @@ void Window::run() {
                         case SDL_WINDOWEVENT_LEAVE:
                             m_mouse_inside = false;
                             if (m_state->hovered && !m_state->pressed) {
-                                ((Widget*)m_state->hovered)->setHovered(false);
                                 SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
                                 ((Widget*)m_state->hovered)->onMouseLeft.notify(((Widget*)m_state->hovered), MouseEvent(event));
                                 m_state->hovered = nullptr;
+                                update();
                                 SDL_RemoveTimer(m_tooltip_callback);
                             }
                             break;
