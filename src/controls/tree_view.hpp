@@ -11,7 +11,7 @@
 
     template <typename T> class TreeNode {
         public:
-            std::vector<CellRenderer*> columns;
+            std::vector<Drawable*> columns;
             T *hidden;
             TreeNode<T> *parent;
             std::vector<TreeNode<T>*> children;
@@ -19,7 +19,7 @@
             float max_cell_height = 0.0;
             int depth = 0;
 
-            TreeNode(std::vector<CellRenderer*> columns, T *hidden) {
+            TreeNode(std::vector<Drawable*> columns, T *hidden) {
                 this->columns = columns;
                 this->hidden = hidden;
             }
@@ -28,8 +28,8 @@
                 for (TreeNode<T> *child : children) {
                     delete child;
                 }
-                for (CellRenderer *renderer : columns) {
-                    delete renderer;
+                for (Drawable *drawable : columns) {
+                    delete drawable;
                 }
                 delete hidden;
             }
@@ -212,7 +212,7 @@
                 return "Column";
             }
 
-            virtual void draw(DrawingContext &dc, Rect rect) override {
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override {
                 this->rect = rect;
                 Color color;
                 if (m_dragging) {
@@ -475,7 +475,7 @@
                 return "TreeView";
             }
 
-            virtual void draw(DrawingContext &dc, Rect rect) override {
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override {
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 sizeHint(dc);
@@ -527,7 +527,7 @@
                             local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w,
                             m_children_size.h
                         ).clipTo(tv_clip));
-                        child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h));
+                        child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h), child->state());
                         local_pos_x += s.w;
                     }
                     i++;
@@ -573,8 +573,8 @@
                                 float cell_start = pos.x;
                                 for (size_t i = 0; i < node->columns.size(); i++) {
                                     float col_width = m_column_widths[i];
-                                    CellRenderer *renderer = node->columns[i];
-                                    Size s = renderer->sizeHint(dc);
+                                    Drawable *drawable = node->columns[i];
+                                    Size s = drawable->sizeHint(dc);
                                     if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
                                         Rect cell_clip =
                                             Rect(cell_start, pos.y, col_width, node->max_cell_height)
@@ -592,14 +592,14 @@
                                         if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
                                         }
-                                        int state = CellRenderer::State::STATE_DEFAULT;
-                                        if (m_selected == node) {
-                                            state = state | CellRenderer::State::STATE_SELECTED;
+                                        int state = STATE_DEFAULT;
+                                        if (drawable->isWidget()) {
+                                            state = ((Widget*)drawable)->state();
+                                        } else {
+                                            if (m_focused == node) { state |= STATE_PRESSED; }
+                                            if (m_hovered == node) { state |= STATE_HOVERED; }
                                         }
-                                        if (m_hovered == node) {
-                                            state = state | CellRenderer::State::STATE_HOVERED;
-                                        }
-                                        renderer->draw(
+                                        drawable->draw(
                                             dc,
                                             Rect(
                                                 cell_x, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
@@ -707,7 +707,7 @@
                     m_model->clear();
                     m_virtual_size_changed = true;
                     m_hovered = nullptr;
-                    m_selected = nullptr;
+                    m_focused = nullptr;
                     if (m_last_sort) {
                         m_last_sort->sort(Sort::None);
                         m_last_sort = nullptr;
@@ -732,7 +732,7 @@
 
             /// Can return null.
             TreeNode<T>* selected() {
-                return m_selected;
+                return m_focused;
             }
 
             uint8_t indent() {
@@ -747,9 +747,9 @@
             }
 
             void select(TreeNode<T> *node) {
-                if (m_selected != node) {
+                if (m_focused != node) {
                     deselect();
-                    m_selected = node;
+                    m_focused = node;
                     if (onNodeSelected) {
                         onNodeSelected(this, node);
                     }
@@ -772,11 +772,11 @@
             }
 
             void deselect() {
-                if (m_selected) {
+                if (m_focused) {
                     if (onNodeDeselected) {
-                        onNodeDeselected(this, m_selected);
+                        onNodeDeselected(this, m_focused);
                     }
-                    m_selected = nullptr;
+                    m_focused = nullptr;
                     update();
                 }
             }
@@ -963,7 +963,7 @@
             Mode m_mode = Mode::Scroll;
             uint8_t m_indent = 24;
             TreeNode<T> *m_hovered = nullptr;
-            TreeNode<T> *m_selected = nullptr;
+            TreeNode<T> *m_focused = nullptr;
             GridLines m_grid_lines = GridLines::Both;
             int m_treeline_size = 2;
             Column<T> *m_last_sort = nullptr;
@@ -1024,8 +1024,8 @@
                             // Check and set the max height of the node.
                             int index = 0;
                             assert(node->columns.size() == children.size() && "The amount of Column<T>s and CellRenderers should be the same!");
-                            for (CellRenderer *renderer : node->columns) {
-                                Size s = renderer->sizeHint(dc);
+                            for (Drawable *drawable : node->columns) {
+                                Size s = drawable->sizeHint(dc);
                                 Column<T> *col = (Column<T>*)children[index];
                                 if (!m_table && !index) {
                                     s.w += node->depth * indent();

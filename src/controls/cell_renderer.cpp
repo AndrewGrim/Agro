@@ -11,7 +11,7 @@ EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}
 
 void EmptyCell::draw(DrawingContext &dc, Rect rect, int state) {
-    if (state & STATE_SELECTED) {
+    if (state & STATE_FOCUSED) {
         dc.fillRect(rect, Color(0.2f, 0.5f, 1.0f));
     }
     if (state & STATE_HOVERED) {
@@ -36,7 +36,7 @@ TextCellRenderer::~TextCellRenderer() {
 void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = foreground;
     Color bg = background;
-    if (state & STATE_SELECTED) {
+    if (state & STATE_FOCUSED) {
         fg = COLOR_WHITE;
         bg = Color(0.2f, 0.5f, 1.0f);
     }
@@ -91,7 +91,7 @@ ImageCellRenderer::~ImageCellRenderer() {
 
 void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = image->background();
-    if (state & STATE_SELECTED) {
+    if (state & STATE_FOCUSED) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }
     dc.fillRect(
@@ -122,7 +122,7 @@ MultipleImagesCellRenderer::~MultipleImagesCellRenderer() {}
 
 void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = COLOR_NONE;
-    if (state & STATE_SELECTED) {
+    if (state & STATE_FOCUSED) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }
     dc.fillRect(
@@ -181,7 +181,7 @@ ImageTextCellRenderer::~ImageTextCellRenderer() {
 void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = foreground;
     Color bg = background;
-    if (state & STATE_SELECTED) {
+    if (state & STATE_FOCUSED) {
         fg = COLOR_WHITE;
         bg = Color(0.2f, 0.5f, 1.0f);
     }
