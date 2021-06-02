@@ -7,7 +7,7 @@
     #include "scrollable.hpp"
     #include "spacer.hpp"
     #include "../application.hpp"
-    #include "cellrenderer.hpp"
+    #include "cell_renderer.hpp"
 
     template <typename T> class TreeNode {
         public:

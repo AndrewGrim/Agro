@@ -1,4 +1,4 @@
-#include "notebook.hpp"
+#include "note_book.hpp"
 #include "../application.hpp"
 
 NoteBookTabBar::NoteBookTabBar() : Widget() {

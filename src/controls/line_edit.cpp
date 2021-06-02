@@ -1,4 +1,4 @@
-#include "lineedit.hpp"
+#include "line_edit.hpp"
 #include "../application.hpp"
 
 LineEdit::LineEdit(std::string text) : Widget() {

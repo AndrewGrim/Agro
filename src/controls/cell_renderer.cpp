@@ -1,4 +1,4 @@
-#include "cellrenderer.hpp"
+#include "cell_renderer.hpp"
 
 EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}

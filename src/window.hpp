@@ -13,7 +13,7 @@
     #include "state.hpp"
     #include "keyboard.hpp"
     #include "controls/widget.hpp"
-    #include "controls/scrolledbox.hpp"
+    #include "controls/scrolled_box.hpp"
 
     class Window {
         public:

@@ -6,9 +6,9 @@
 #include "../src/application.hpp"
 #include "../src/controls/box.hpp"
 #include "../src/controls/button.hpp"
-#include "../src/controls/scrolledbox.hpp"
+#include "../src/controls/scrolled_box.hpp"
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->onReady = [&](Window *window) {
             if (argc > 1) {
@@ -52,5 +52,5 @@ int main(int argc, char **argv) {
         app->append(bottom, Fill::Both);
     app->run();
 
-    return 0; 
+    return 0;
 }

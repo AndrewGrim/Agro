@@ -1,9 +1,9 @@
 #include "../src/application.hpp"
-#include "../src/controls/treeview.hpp"
+#include "../src/controls/tree_view.hpp"
 #include "../src/controls/splitter.hpp"
-#include "../src/controls/lineedit.hpp"
+#include "../src/controls/line_edit.hpp"
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->onReady = [&](Window *window) {
             if (argc > 1) {

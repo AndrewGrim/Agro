@@ -2,7 +2,7 @@
     #define SCROLLABLE_HPP
 
     #include "widget.hpp"
-    #include "scrollbar.hpp"
+    #include "scroll_bar.hpp"
 
     class Scrollable : public Widget {
         public:

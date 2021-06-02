@@ -1,5 +1,5 @@
 #include "../application.hpp"
-#include "scrolledbox.hpp"
+#include "scrolled_box.hpp"
 
 ScrolledBox::ScrolledBox(Align align_policy, Size min_size) : Scrollable(min_size) {
     m_align_policy = align_policy;

@@ -3,7 +3,7 @@
 #include "../src/controls/box.hpp"
 #include "../src/controls/button.hpp"
 #include "../src/controls/label.hpp"
-#include "../src/controls/scrolledbox.hpp"
+#include "../src/controls/scrolled_box.hpp"
 
 // This test is used for checking that each ScrolledBox (SB) clips correctly.
 // Both horizontal and vertical ScrolledBoxes are tested.
@@ -14,7 +14,7 @@
 //  3 - Inner SB is fully within the outer SB's rect (Either Align::).
 // When the SB's parent is not an SB:
 //  4 - Regular old clip.
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->onReady = [&](Window *window) {
             if (argc > 1) {
@@ -90,5 +90,5 @@ int main(int argc, char **argv) {
         app->append(new Button("Bottom"), Fill::Horizontal);
     app->run();
 
-    return 0; 
+    return 0;
 }

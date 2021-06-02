@@ -1,5 +1,5 @@
 #include "../src/application.hpp"
-#include "../src/controls/treeview.hpp"
+#include "../src/controls/tree_view.hpp"
 
 struct Hidden {
     int id = -1;

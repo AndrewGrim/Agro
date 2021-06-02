@@ -1,6 +1,6 @@
 #include "../application.hpp"
 #include "widget.hpp"
-#include "scrollbar.hpp"
+#include "scroll_bar.hpp"
 #include "image.hpp"
 
 ScrollBarArrowButton::ScrollBarArrowButton(Image *image) : Button(image) {

@@ -2,7 +2,7 @@
     #define NOTEBOOK_HPP
 
     #include "widget.hpp"
-    #include "scrollbar.hpp"
+    #include "scroll_bar.hpp"
     #include "image.hpp"
 
     class NoteBookTabBar : public Widget {
