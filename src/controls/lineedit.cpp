@@ -16,11 +16,11 @@ LineEdit::LineEdit(std::string text) : Widget() {
             if (!(m_virtual_size.w < rect.w)) {
                 local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
             }
-            DrawingContext *dc = Application::get()->dc;
+            DrawingContext &dc = *Application::get()->dc;
             float x = this->padding() + (this->borderWidth() / 2);
             size_t index = 0;
             for (char c : this->text()) {
-                float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                float w = dc.measureText(this->font() ? this->font() : dc.default_font, c).w;
                 if (x + w > (local_rect.x * -1) + event.x) {
                     if (x + (w / 2) < (local_rect.x * -1) + event.x) {
                         x += w;
@@ -48,7 +48,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
             if (!(m_virtual_size.w < rect.w)) {
                 local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
             }
-            DrawingContext *dc = Application::get()->dc;
+            DrawingContext &dc = *Application::get()->dc;
 
             float x = m_selection.x_begin;
             size_t index = m_selection.begin;
@@ -57,7 +57,7 @@ LineEdit::LineEdit(std::string text) : Widget() {
             if (event.x >= x) {
                 while (index < this->text().length()) {
                     char c = this->text()[index];
-                    float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                    float w = dc.measureText(this->font() ? this->font() : dc.default_font, c).w;
                     if (x + w > (local_rect.x * -1) + event.x) {
                         break;
                     }
@@ -68,14 +68,14 @@ LineEdit::LineEdit(std::string text) : Widget() {
             } else {
                 while (index) {
                     char c = this->text()[--index];
-                    float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+                    float w = dc.measureText(this->font() ? this->font() : dc.default_font, c).w;
                     x -= w;
                     if (x < (local_rect.x * -1) + event.x) {
                         break;
                     }
                 }
             }
-            
+
             if (!index) {
                 m_current_view = m_min_view;
             } else if (index == this->text().size()) {
@@ -180,29 +180,29 @@ const char* LineEdit::name() {
     return "LineEdit";
 }
 
-void LineEdit::draw(DrawingContext *dc, Rect rect) {
+void LineEdit::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
 
-    Rect old_clip = dc->clip();
-    dc->fillRect(
-        rect, 
+    Rect old_clip = dc.clip();
+    dc.fillRect(
+        rect,
         m_fg
     );
     // resize rectangle to account for border
     rect.shrink(m_border_width);
-    dc->setClip(rect.clipTo(old_clip));
+    dc.setClip(rect.clipTo(old_clip));
 
-    dc->fillRect(rect, this->background());
+    dc.fillRect(rect, this->background());
     if (!(m_virtual_size.w < rect.w)) {
         rect.x -= m_current_view * (m_virtual_size.w - rect.w);
     }
     // Draw placeholder text.
     if (!text().size()) {
-        dc->fillTextAligned(
-            this->font() ? this->font() : dc->default_font, 
-            this->placeholderText(), 
-            HorizontalAlignment::Left, 
-            VerticalAlignment::Center, 
+        dc.fillTextAligned(
+            this->font() ? this->font() : dc.default_font,
+            this->placeholderText(),
+            HorizontalAlignment::Left,
+            VerticalAlignment::Center,
             rect,
             this->m_padding,
             Color(0.7f, 0.7f, 0.7f)
@@ -210,35 +210,35 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
     // Draw normal text;
     } else {
         if (m_selection.mouse_selection) {
-            float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
+            float text_height = (float)(this->font() ? this->font()->max_height : dc.default_font->max_height);
             text_height += m_padding;
-            dc->fillRect(
+            dc.fillRect(
                 Rect(
-                    rect.x + m_selection.x_begin, 
-                    rect.y + (rect.h / 2) - (text_height / 2), 
-                    m_selection.x_end - m_selection.x_begin, 
+                    rect.x + m_selection.x_begin,
+                    rect.y + (rect.h / 2) - (text_height / 2),
+                    m_selection.x_end - m_selection.x_begin,
                     text_height
                 ),
                 Color(0.2f, 0.5f, 1.0f)
             );
         } else if (isFocused() && m_selection.hasSelection()) {
-            float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
+            float text_height = (float)(this->font() ? this->font()->max_height : dc.default_font->max_height);
             text_height += m_padding;
-            dc->fillRect(
+            dc.fillRect(
                 Rect(
-                    rect.x + m_selection.x_begin, 
-                    rect.y + (rect.h / 2) - (text_height / 2), 
-                    m_selection.x_end - m_selection.x_begin, 
+                    rect.x + m_selection.x_begin,
+                    rect.y + (rect.h / 2) - (text_height / 2),
+                    m_selection.x_end - m_selection.x_begin,
                     text_height
                 ),
                 Color(0.2f, 0.5f, 1.0f)
             );
         }
-        dc->fillTextAligned(
-            this->font() ? this->font() : dc->default_font, 
-            this->text(), 
-            HorizontalAlignment::Left, 
-            VerticalAlignment::Center, 
+        dc.fillTextAligned(
+            this->font() ? this->font() : dc.default_font,
+            this->text(),
+            HorizontalAlignment::Left,
+            VerticalAlignment::Center,
             rect,
             this->m_padding,
             m_fg
@@ -247,29 +247,29 @@ void LineEdit::draw(DrawingContext *dc, Rect rect) {
 
     // Draw the text insertion cursor.
     if (this->isFocused()) {
-        float text_height = (float)(this->font() ? this->font()->max_height : dc->default_font->max_height);
+        float text_height = (float)(this->font() ? this->font()->max_height : dc.default_font->max_height);
         text_height += m_padding;
-        dc->fillRect(
+        dc.fillRect(
             Rect(
-                rect.x + this->m_selection.x_end, 
-                rect.y + (rect.h / 2) - (text_height / 2), 
-                1, 
+                rect.x + this->m_selection.x_end,
+                rect.y + (rect.h / 2) - (text_height / 2),
+                1,
                 text_height
-            ), 
+            ),
             m_fg
         );
     }
-    dc->setClip(old_clip);
+    dc.setClip(old_clip);
 }
 
-Size LineEdit::sizeHint(DrawingContext *dc) {
+Size LineEdit::sizeHint(DrawingContext &dc) {
     if (m_text_changed) {
-        m_virtual_size = dc->measureText(font() ? font() : dc->default_font, text());
+        m_virtual_size = dc.measureText(font() ? font() : dc.default_font, text());
         m_virtual_size.w += this->m_padding * 2 + this->m_border_width;
         m_virtual_size.h += this->m_padding * 2 + this->m_border_width;
     }
     if (this->m_size_changed) {
-        Size size = Size(m_min_length, font() ? font()->max_height : dc->default_font->max_height);
+        Size size = Size(m_min_length, font() ? font()->max_height : dc.default_font->max_height);
         // Note: full padding is applied on both sides but
         // border width is divided in half for each side
         size.w += this->m_padding * 2 + this->m_border_width;
@@ -318,11 +318,11 @@ LineEdit* LineEdit::setPadding(unsigned int padding) {
         m_padding = padding;
         this->layout();
     }
-    
+
     return this;
 }
 
-void LineEdit::handleTextEvent(DrawingContext *dc, const char *text) {
+void LineEdit::handleTextEvent(DrawingContext &dc, const char *text) {
     insert(m_selection.end, text);
 }
 
@@ -353,9 +353,9 @@ LineEdit* LineEdit::moveCursorLeft() {
             m_selection.end = m_selection.begin;
             goto END;
         }
-        DrawingContext *dc = Application::get()->dc;
+        DrawingContext &dc = *Application::get()->dc;
         m_selection.end--;
-        float char_size = dc->measureText(font(), text()[m_selection.end]).w;
+        float char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end -= char_size;
         if (!isShiftPressed()) {
             m_selection.x_begin = m_selection.x_end;
@@ -386,8 +386,8 @@ LineEdit* LineEdit::moveCursorRight() {
             m_selection.begin = m_selection.end;
             goto END;
         }
-        DrawingContext *dc = Application::get()->dc;
-        float char_size = dc->measureText(font() ? font() : dc->default_font, text()[m_selection.end]).w;
+        DrawingContext &dc = *Application::get()->dc;
+        float char_size = dc.measureText(font() ? font() : dc.default_font, text()[m_selection.end]).w;
         m_selection.x_end += char_size;
         m_selection.end++;
         if (!isShiftPressed()) {
@@ -415,7 +415,7 @@ LineEdit* LineEdit::moveCursorBegin() {
     }
     m_current_view = m_min_view;
     update();
-    
+
     return this;
 }
 
@@ -428,7 +428,7 @@ LineEdit* LineEdit::moveCursorEnd() {
     }
     m_current_view = m_max_view;
     update();
-    
+
     return this;
 }
 
@@ -560,13 +560,13 @@ void LineEdit::swapSelection() {
 }
 
 void LineEdit::insert(size_t index, const char *text, bool skip) {
-    DrawingContext *dc = Application::get()->dc;
+    DrawingContext &dc = *Application::get()->dc;
 
     if (m_selection.hasSelection()) {
         deleteSelection(skip);
     }
 
-    m_selection.x_end += dc->measureText(font() ? font() : dc->default_font, text).w;
+    m_selection.x_end += dc.measureText(font() ? font() : dc.default_font, text).w;
     m_selection.end += strlen(text);
     if (!skip) {
         // Pass a fake selection for the new text.
@@ -601,11 +601,11 @@ void LineEdit::setCursor(size_t index) {
         if (!(m_virtual_size.w < rect.w)) {
             local_rect.x -= m_current_view * (m_virtual_size.w - rect.w);
         }
-        DrawingContext *dc = Application::get()->dc;
+        DrawingContext &dc = *Application::get()->dc;
         float x = this->padding() + (this->borderWidth() / 2);
         size_t local_index = 0;
         for (char c : this->text()) {
-            float w = dc->measureText(this->font() ? this->font() : dc->default_font, c).w;
+            float w = dc.measureText(this->font() ? this->font() : dc.default_font, c).w;
             x += w;
             local_index++;
             if (index == local_index) {

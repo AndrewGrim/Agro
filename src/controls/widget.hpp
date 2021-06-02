@@ -39,7 +39,7 @@
             /// A rectangle representing the Widget position and size.
             Rect rect = Rect(0, 0, 0, 0);
             Rect inner_rect = Rect(0, 0, 0, 0);
-            
+
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
 
@@ -47,7 +47,7 @@
             // when there is a parent but the widget its not part of the children
             // like in Splitter
             // also means remove is gonna totally break for splitter
-            
+
             /// Stores all the child Widgets of this Widget.
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
@@ -58,7 +58,7 @@
             std::string tooltip;
 
             /// The following functions pointers are responsible
-            /// for callbacks that the Widget can execute as 
+            /// for callbacks that the Widget can execute as
             /// certain events happen. If not in use these should
             /// always be `nullptr` or `NULL`.
             /// std::function allows the assigned function pointer
@@ -69,11 +69,11 @@
             /// will always fire in this order: Down, Up, Click.
             /// Furthermore, the Click event will **ONLY** fire if
             /// both the target of Down and Up are the same.
-            
+
             /// `onMouseDown` gets called when the user presses
-            /// down **ANY** mouse button over the target Widget. 
+            /// down **ANY** mouse button over the target Widget.
             EventListener onMouseDown = EventListener();
-            
+
             ///`onMouseUp` gets called when the user releases
             /// **ANY** mouse button over the target Widget.
             EventListener onMouseUp = EventListener();
@@ -112,8 +112,8 @@
             /// It should handle drawing the widgets in different
             /// states; such as Disabled, Focused, Pressed, Hovered.
             /// When applicable it should prefer to use global
-            /// color theme values. 
-            virtual void draw(DrawingContext *dc, Rect rect) = 0;
+            /// color theme values.
+            virtual void draw(DrawingContext &dc, Rect rect) = 0;
 
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
@@ -137,20 +137,20 @@
             // TODO add example from box layout
             // TODO note about performance and avoiding recomputing the sizeHint
             // unless something has changed
-            virtual Size sizeHint(DrawingContext *dc) = 0;
+            virtual Size sizeHint(DrawingContext &dc) = 0;
 
             /// Returns the background Color of the Widget.
             Color background();
-            
+
             /// Sets the background Color of the Widget.
             virtual Widget* setBackground(Color background);
 
             /// Returns the foreground Color of the Widget.
             Color foreground();
-            
+
             /// Sets the foreground Color of the Widget.
             virtual Widget* setForeground(Color foreground);
-            
+
             /// This method sets the Fill policy of the Widget.
             /// Fill dicates how the Widget will expand.
             /// Options are: None, Horizontal, Vertical and Both.
@@ -160,17 +160,17 @@
             Fill fillPolicy();
 
             Widget* show();
-            
+
             Widget* hide();
-            
+
             bool isVisible();
-            
+
             /// Used to check if the Widget implements a Layout interface.
             virtual bool isLayout();
-            
+
             /// Used to check if the Widget implements a Scrollable interface.
             virtual bool isScrollable();
-            
+
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
 
@@ -211,7 +211,7 @@
             /// Handles the MouseEvent sent by the Application.
             virtual void handleMouseEvent(Window *window, State *state, MouseEvent event);
 
-            virtual void handleTextEvent(DrawingContext *dc, const char *text);
+            virtual void handleTextEvent(DrawingContext &dc, const char *text);
 
             virtual bool handleScrollEvent(ScrollEvent event);
 
@@ -249,7 +249,7 @@
             /// invalidate the sizeHint() calculation.
             Size m_size = Size();
 
-            /// Stores whether the sizeHint() calculation 
+            /// Stores whether the sizeHint() calculation
             /// needs to be recomputed.
             bool m_size_changed = true;
 

@@ -20,29 +20,29 @@ const char* Button::name() {
     return "Button";
 }
 
-void Button::draw(DrawingContext *dc, Rect rect) {
+void Button::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
 
-    Color color; 
+    Color color;
     if (isPressed() && isHovered()) {
-        color = m_pressed_bg; 
+        color = m_pressed_bg;
     } else if (isHovered()) {
         color = m_hovered_bg;
     } else {
         color = background();
     }
 
-    dc->margin(rect, style);
-    dc->drawBorder(rect, style);
-    dc->fillRect(rect, color);
-    dc->padding(rect, style);
+    dc.margin(rect, style);
+    dc.drawBorder(rect, style);
+    dc.fillRect(rect, color);
+    dc.padding(rect, style);
 
-    Size text_size = dc->measureText(font(), text());
+    Size text_size = dc.measureText(font(), text());
     if (m_image) {
         Size image_size = m_image->sizeHint(dc);
-        dc->drawTexture(
+        dc.drawTexture(
             Point(
-                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2),
                 round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
@@ -61,7 +61,7 @@ void Button::draw(DrawingContext *dc, Rect rect) {
         v_text_align = VerticalAlignment::Center;
     }
     if (m_text.length()) {
-        dc->fillTextAligned(
+        dc.fillTextAligned(
             font(),
             m_text,
             h_text_align,
@@ -73,9 +73,9 @@ void Button::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size Button::sizeHint(DrawingContext *dc) {
+Size Button::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size size = dc->measureText(font(), text());
+        Size size = dc.measureText(font(), text());
         if (m_image) {
             Size i = m_image->sizeHint(dc);
             size.w += i.w;
@@ -84,9 +84,9 @@ Size Button::sizeHint(DrawingContext *dc) {
             }
         }
 
-        dc->sizeHintMargin(size, style);
-        dc->sizeHintBorder(size, style);
-        dc->sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style);
+        dc.sizeHintBorder(size, style);
+        dc.sizeHintPadding(size, style);
 
         m_size = size;
         m_size_changed = false;

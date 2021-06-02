@@ -7,8 +7,8 @@ class Splitter : public Widget {
         Splitter(Align alignment, Size min_size = Size(100, 100));
         ~Splitter();
         virtual const char* name() override;
-        virtual void draw(DrawingContext *dc, Rect rect) override;
-        virtual Size sizeHint(DrawingContext *dc);
+        virtual void draw(DrawingContext &dc, Rect rect) override;
+        virtual Size sizeHint(DrawingContext &dc);
         virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event);
         virtual  bool isLayout() override;
         void append();

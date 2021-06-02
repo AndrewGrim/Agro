@@ -11,13 +11,13 @@ Box::~Box() {
 
 }
 
-void Box::draw(DrawingContext *dc, Rect rect) {
+void Box::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    dc->fillRect(rect, this->background());
+    dc.fillRect(rect, this->background());
     layoutChildren(dc, rect);
 }
 
-void Box::layoutChildren(DrawingContext *dc, Rect rect) {
+void Box::layoutChildren(DrawingContext &dc, Rect rect) {
     this->sizeHint(dc);
     Align parent_layout = this->alignPolicy();
     int generic_non_expandable_widgets;
@@ -57,23 +57,23 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
             case Align::Vertical:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
-                        size = Size { 
-                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
+                        size = Size {
+                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w,
                             child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
                     }
                     case Fill::Vertical: {
-                        size = Size { 
-                            child_hint.w, 
+                        size = Size {
+                            child_hint.w,
                             child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
                     }
                     case Fill::Horizontal:
-                        size = Size { 
-                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
-                            child_hint.h 
+                        size = Size {
+                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w,
+                            child_hint.h
                         };
                         break;
                     case Fill::None:
@@ -84,21 +84,21 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
             case Align::Horizontal:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
-                            size = Size { 
-                                child_hint.w + (expandable_length * child->proportion()), 
+                            size = Size {
+                                child_hint.w + (expandable_length * child->proportion()),
                                 expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                             };
                             break;
                         }
                         case Fill::Vertical:
-                            size = Size { 
-                                child_hint.w, 
-                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h 
+                            size = Size {
+                                child_hint.w,
+                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                             };
                             break;
                         case Fill::Horizontal: {
-                            size = Size { 
-                                child_hint.w + (expandable_length * child->proportion()), 
+                            size = Size {
+                                child_hint.w + (expandable_length * child->proportion()),
                                 child_hint.h
                             };
                             break;
@@ -134,7 +134,7 @@ void Box::layoutChildren(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size Box::sizeHint(DrawingContext *dc) {
+Size Box::sizeHint(DrawingContext &dc) {
     unsigned int visible = 0;
     unsigned int vertical_non_expandable = 0;
     unsigned int horizontal_non_expandable = 0;

@@ -3,30 +3,30 @@
 EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}
 
-void EmptyCell::draw(DrawingContext *dc, Rect rect, int state) {
+void EmptyCell::draw(DrawingContext &dc, Rect rect, int state) {
     if (state & STATE_SELECTED) {
-        dc->fillRect(rect, Color(0.2f, 0.5f, 1.0f));
+        dc.fillRect(rect, Color(0.2f, 0.5f, 1.0f));
     }
     if (state & STATE_HOVERED) {
-        dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
     }
 }
 
-Size EmptyCell::sizeHint(DrawingContext *dc) {
+Size EmptyCell::sizeHint(DrawingContext &dc) {
     return Size();
 }
 
 TextCellRenderer::TextCellRenderer(
     std::string text, Color foreground, Color background, int padding
-) : 
-text{text}, foreground{foreground}, 
+) :
+text{text}, foreground{foreground},
 background{background}, padding{padding} {}
 
 TextCellRenderer::~TextCellRenderer() {
 
 }
 
-void TextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
+void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = foreground;
     Color bg = background;
     if (state & STATE_SELECTED) {
@@ -34,9 +34,9 @@ void TextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }
 
-    dc->fillRect(rect, bg);
-    dc->fillTextAligned(
-        font ? font : dc->default_font,
+    dc.fillRect(rect, bg);
+    dc.fillTextAligned(
+        font ? font : dc.default_font,
         text,
         h_align,
         v_align,
@@ -46,13 +46,13 @@ void TextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
     );
 
     if (state & STATE_HOVERED) {
-        dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
     }
 }
 
-Size TextCellRenderer::sizeHint(DrawingContext *dc) {
+Size TextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc->measureText(font ? font : dc->default_font, text);
+        Size s = dc.measureText(font ? font : dc.default_font, text);
             s.w += padding * 2;
             s.h += padding * 2;
         m_size = s;
@@ -82,16 +82,16 @@ ImageCellRenderer::~ImageCellRenderer() {
     delete image;
 }
 
-void ImageCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
+void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = image->background();
     if (state & STATE_SELECTED) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }
-    dc->fillRect(
+    dc.fillRect(
         rect,
         bg
     );
-    dc->drawTextureAligned(
+    dc.drawTextureAligned(
         rect,
         image->size(),
         image->_texture(),
@@ -101,24 +101,24 @@ void ImageCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
         image->foreground()
     );
     if (state & STATE_HOVERED) {
-        dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
     }
 
 }
 
-Size ImageCellRenderer::sizeHint(DrawingContext *dc) {
+Size ImageCellRenderer::sizeHint(DrawingContext &dc) {
     return image->size();
 }
 
 MultipleImagesCellRenderer::MultipleImagesCellRenderer(std::vector<Image> &&images) : images{images} {}
 MultipleImagesCellRenderer::~MultipleImagesCellRenderer() {}
 
-void MultipleImagesCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
+void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = COLOR_NONE;
     if (state & STATE_SELECTED) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }
-    dc->fillRect(
+    dc.fillRect(
         rect,
         bg
     );
@@ -126,7 +126,7 @@ void MultipleImagesCellRenderer::draw(DrawingContext *dc, Rect rect, int state) 
     Size size = sizeHint(dc);
     drawing_rect.x = drawing_rect.x + (drawing_rect.w / 2) - (size.w / 2);
     for (auto img : images) {
-        dc->drawTextureAligned(
+        dc.drawTextureAligned(
             drawing_rect,
             img.size(),
             img._texture(),
@@ -138,11 +138,11 @@ void MultipleImagesCellRenderer::draw(DrawingContext *dc, Rect rect, int state) 
         drawing_rect.x += img.size().w;
     }
     if (state & STATE_HOVERED) {
-        dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
     }
 }
 
-Size MultipleImagesCellRenderer::sizeHint(DrawingContext *dc) {
+Size MultipleImagesCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = Size();
         for (auto img : images) {
@@ -157,13 +157,13 @@ Size MultipleImagesCellRenderer::sizeHint(DrawingContext *dc) {
 
 ImageTextCellRenderer::ImageTextCellRenderer(
     Image *image,
-    std::string text, 
-    Color foreground, 
-    Color background, 
+    std::string text,
+    Color foreground,
+    Color background,
     HorizontalAlignment h_align,
     int padding
-) : 
-image{image}, text{text}, foreground{foreground}, 
+) :
+image{image}, text{text}, foreground{foreground},
 background{background}, h_align{h_align}, padding{padding} {
 }
 
@@ -171,7 +171,7 @@ ImageTextCellRenderer::~ImageTextCellRenderer() {
     delete image;
 }
 
-void ImageTextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
+void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = foreground;
     Color bg = background;
     if (state & STATE_SELECTED) {
@@ -179,8 +179,8 @@ void ImageTextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }
 
-    dc->fillRect(rect, bg);
-    Size text_size = dc->measureText(font, text);
+    dc.fillRect(rect, bg);
+    Size text_size = dc.measureText(font, text);
     Rect local_rect = rect;
     Size image_size = image->size();
     float x = rect.x;
@@ -189,9 +189,9 @@ void ImageTextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
         case HorizontalAlignment::Center: x = rect.x + (rect.w / 2) - ((image_size.w + text_size.w + (padding * 2)) / 2); break;
         default: break;
     }
-    dc->drawTexture(
+    dc.drawTexture(
         Point(
-            round(x), 
+            round(x),
             round(local_rect.y + (local_rect.h * 0.5) - (image_size.h * 0.5))
         ),
         image_size,
@@ -202,7 +202,7 @@ void ImageTextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
     // Resize local_rect to account for image before the label is drawn.
     local_rect.x += image_size.w;
     local_rect.w -= image_size.w;
-    dc->fillTextAligned(
+    dc.fillTextAligned(
         font,
         text,
         h_align,
@@ -214,13 +214,13 @@ void ImageTextCellRenderer::draw(DrawingContext *dc, Rect rect, int state) {
 
 
     if (state & STATE_HOVERED) {
-        dc->fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
     }
 }
 
-Size ImageTextCellRenderer::sizeHint(DrawingContext *dc) {
+Size ImageTextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc->measureText(font, text);
+        Size s = dc.measureText(font, text);
             s.w += image->size().w;
             if (image->size().h > s.h) {
                 s.h = image->size().h;

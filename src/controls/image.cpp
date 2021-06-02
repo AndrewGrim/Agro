@@ -31,10 +31,10 @@ const char* Image::name() {
     return "Image";
 }
 
-void Image::draw(DrawingContext *dc, Rect rect) {
+void Image::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    
-    dc->fillRect(rect, Widget::m_bg);
+
+    dc.fillRect(rect, Widget::m_bg);
     if (m_expand) {
         if (m_maintain_aspect_ratio) {
             Size size = Size();
@@ -52,7 +52,7 @@ void Image::draw(DrawingContext *dc, Rect rect) {
             } else {
                 size = Size(rect.w < rect.h ? rect.w : rect.h, rect.h < rect.w ? rect.h : rect.w);
             }
-            dc->drawTextureAligned(
+            dc.drawTextureAligned(
                 rect,
                 size,
                 this->_texture(),
@@ -62,7 +62,7 @@ void Image::draw(DrawingContext *dc, Rect rect) {
                 Widget::m_fg
             );
         } else {
-            dc->drawTextureAligned(
+            dc.drawTextureAligned(
                 rect,
                 Size(rect.w, rect.h),
                 this->_texture(),
@@ -73,7 +73,7 @@ void Image::draw(DrawingContext *dc, Rect rect) {
             );
         }
     } else {
-        dc->drawTextureAligned(
+        dc.drawTextureAligned(
             rect,
             m_size,
             this->_texture(),
@@ -85,7 +85,7 @@ void Image::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size Image::sizeHint(DrawingContext *dc) {
+Size Image::sizeHint(DrawingContext &dc) {
     return m_size;
 }
 
@@ -184,13 +184,13 @@ Image* Image::flipBoth() {
 
 Image* Image::clockwise90() {
     m_coords.clockwise90();
-    
+
     return this;
 }
 
 Image* Image::counterClockwise90() {
     m_coords.counterClockwise90();
-    
+
     return this;
 }
 

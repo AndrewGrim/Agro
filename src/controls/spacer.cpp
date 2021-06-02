@@ -13,12 +13,12 @@ const char* Spacer::name() {
     return "Spacer";
 }
 
-void Spacer::draw(DrawingContext *dc, Rect rect) {
+void Spacer::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    dc->fillRect(rect, m_bg);
+    dc.fillRect(rect, m_bg);
 }
 
-Size Spacer::sizeHint(DrawingContext *dc) {
+Size Spacer::sizeHint(DrawingContext &dc) {
     return m_size;
 }
 

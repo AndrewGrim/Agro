@@ -13,16 +13,16 @@ class CellRenderer {
 
         CellRenderer() {}
         virtual ~CellRenderer() {}
-        virtual void draw(DrawingContext *dc, Rect rect, int state) = 0;
-        virtual Size sizeHint(DrawingContext *dc) = 0;
+        virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
+        virtual Size sizeHint(DrawingContext &dc) = 0;
 };
 
 class EmptyCell : public CellRenderer {
     public:
         EmptyCell();
         ~EmptyCell();
-        void draw(DrawingContext *dc, Rect rect, int state);
-        Size sizeHint(DrawingContext *dc);
+        void draw(DrawingContext &dc, Rect rect, int state);
+        Size sizeHint(DrawingContext &dc);
 };
 
 class TextCellRenderer : public CellRenderer {
@@ -37,14 +37,14 @@ class TextCellRenderer : public CellRenderer {
         VerticalAlignment v_align = VerticalAlignment::Center;
 
         TextCellRenderer(
-            std::string text, 
-            Color foreground = COLOR_BLACK, 
-            Color background = COLOR_NONE, 
+            std::string text,
+            Color foreground = COLOR_BLACK,
+            Color background = COLOR_NONE,
             int padding = 5
         );
         ~TextCellRenderer();
-        void draw(DrawingContext *dc, Rect rect, int state) override;
-        Size sizeHint(DrawingContext *dc) override;
+        void draw(DrawingContext &dc, Rect rect, int state) override;
+        Size sizeHint(DrawingContext &dc) override;
 
     protected:
         Size m_size;
@@ -63,8 +63,8 @@ class ImageCellRenderer : public CellRenderer {
         ImageCellRenderer(std::shared_ptr<Texture> texture);
         ImageCellRenderer(Image *img);
         ~ImageCellRenderer();
-        void draw(DrawingContext *dc, Rect rect, int state) override;
-        Size sizeHint(DrawingContext *dc) override;
+        void draw(DrawingContext &dc, Rect rect, int state) override;
+        Size sizeHint(DrawingContext &dc) override;
 };
 
 class MultipleImagesCellRenderer : public CellRenderer {
@@ -73,8 +73,8 @@ class MultipleImagesCellRenderer : public CellRenderer {
 
         MultipleImagesCellRenderer(std::vector<Image> &&images);
         ~MultipleImagesCellRenderer();
-        void draw(DrawingContext *dc, Rect rect, int state) override;
-        Size sizeHint(DrawingContext *dc) override;
+        void draw(DrawingContext &dc, Rect rect, int state) override;
+        Size sizeHint(DrawingContext &dc) override;
 
     protected:
         Size m_size;
@@ -86,7 +86,7 @@ class ImageTextCellRenderer : public CellRenderer {
         // TODO account for alignment, especially important for the first col
         Image *image = nullptr;
         Font *font = nullptr;
-        std::string text; 
+        std::string text;
         Color foreground;
         Color background;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
@@ -94,15 +94,15 @@ class ImageTextCellRenderer : public CellRenderer {
 
         ImageTextCellRenderer(
             Image *image,
-            std::string text, 
-            Color foreground = COLOR_BLACK, 
-            Color background = COLOR_NONE, 
+            std::string text,
+            Color foreground = COLOR_BLACK,
+            Color background = COLOR_NONE,
             HorizontalAlignment h_align = HorizontalAlignment::Left,
             int padding = 5
         );
         ~ImageTextCellRenderer();
-        void draw(DrawingContext *dc, Rect rect, int state) override;
-        Size sizeHint(DrawingContext *dc) override;
+        void draw(DrawingContext &dc, Rect rect, int state) override;
+        Size sizeHint(DrawingContext &dc) override;
 
     protected:
         Size m_size;

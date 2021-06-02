@@ -12,12 +12,12 @@ const char* Label::name() {
     return "Label";
 }
 
-void Label::draw(DrawingContext *dc, Rect rect) {
+void Label::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
 
-    dc->fillRect(rect, Widget::m_bg);
-    dc->padding(rect, style);
-    dc->fillTextMultilineAligned(
+    dc.fillRect(rect, Widget::m_bg);
+    dc.padding(rect, style);
+    dc.fillTextMultilineAligned(
         font(),
         m_text,
         m_horizontal_align,
@@ -29,10 +29,10 @@ void Label::draw(DrawingContext *dc, Rect rect) {
     );
 }
 
-Size Label::sizeHint(DrawingContext *dc) {
+Size Label::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size size = dc->measureTextMultiline(font(), text(), m_line_spacing);
-        dc->sizeHintPadding(size, style);
+        Size size = dc.measureTextMultiline(font(), text(), m_line_spacing);
+        dc.sizeHintPadding(size, style);
         m_size = size;
         m_size_changed = false;
 

@@ -13,16 +13,16 @@ const char* ScrolledBox::name() {
     return "ScrolledBox";
 }
 
-void ScrolledBox::draw(DrawingContext *dc, Rect rect) {
+void ScrolledBox::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    Rect previous_clip = dc->clip();
+    Rect previous_clip = dc.clip();
     clip();
-    dc->fillRect(rect, background());
+    dc.fillRect(rect, background());
     layoutChildren(dc, rect);
-    dc->setClip(previous_clip);
+    dc.setClip(previous_clip);
 }
 
-void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
+void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     sizeHint(dc);
     Align parent_layout = m_align_policy;
     int generic_non_expandable_widgets;
@@ -72,23 +72,23 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             case Align::Vertical:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
-                        size = Size { 
-                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
+                        size = Size {
+                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w,
                             child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
                     }
                     case Fill::Vertical: {
-                        size = Size { 
-                            child_hint.w, 
+                        size = Size {
+                            child_hint.w,
                             child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
                     }
                     case Fill::Horizontal:
-                        size = Size { 
-                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w, 
-                            child_hint.h 
+                        size = Size {
+                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w,
+                            child_hint.h
                         };
                         break;
                     case Fill::None:
@@ -99,21 +99,21 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
             case Align::Horizontal:
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
-                            size = Size { 
-                                child_hint.w + (expandable_length * child->proportion()), 
+                            size = Size {
+                                child_hint.w + (expandable_length * child->proportion()),
                                 expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                             };
                             break;
                         }
                         case Fill::Vertical:
-                            size = Size { 
-                                child_hint.w, 
-                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h 
+                            size = Size {
+                                child_hint.w,
+                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
                             };
                             break;
                         case Fill::Horizontal: {
-                            size = Size { 
-                                child_hint.w + (expandable_length * child->proportion()), 
+                            size = Size {
+                                child_hint.w + (expandable_length * child->proportion()),
                                 child_hint.h
                             };
                             break;
@@ -146,7 +146,7 @@ void ScrolledBox::layoutChildren(DrawingContext *dc, Rect rect) {
     drawScrollBars(dc, rect, m_size);
 }
 
-Size ScrolledBox::sizeHint(DrawingContext *dc) {
+Size ScrolledBox::sizeHint(DrawingContext &dc) {
     unsigned int visible = 0;
     unsigned int vertical_non_expandable = 0;
     unsigned int horizontal_non_expandable = 0;

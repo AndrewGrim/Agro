@@ -23,30 +23,30 @@ class CustomWidget : public Widget {
             return "CustomWidget";
         }
 
-        void draw(DrawingContext *dc, Rect rect) {
+        void draw(DrawingContext &dc, Rect rect) {
             this->rect = rect;
             lena->flipBoth();
-            dc->fillRect(rect, Color(0.7f, 0.7f, 0.7f));
-            dc->fillRectWithGradient(Rect(rect.x, rect.y, 125, 100), COLOR_BLACK, Color(1.0f, 0.1f), Gradient::LeftToRight);
-            dc->fillRectWithGradient(Rect(rect.x + 125, rect.y, 125, 100), COLOR_BLACK, Color(0.2f, 0.7f, 0.9f), Gradient::TopToBottom);
-            dc->fillTextAligned(dc->default_font, "Left Aligned Text", HorizontalAlignment::Left, VerticalAlignment::Top, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
-            dc->fillTextAligned(dc->default_font, "Centered Aligned Text", HorizontalAlignment::Center, VerticalAlignment::Center, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
-            dc->fillTextAligned(dc->default_font, "Right Aligned Text", HorizontalAlignment::Right, VerticalAlignment::Bottom, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
-            dc->fillText(dc->default_font, "lena.png", Point(rect.x + 25, rect.y + 130));
-            dc->drawTexture(Point(rect.x + 50, rect.y + 150), Size(24, 24), lena->_texture(), lena->coords());
-            dc->drawTexture(Point(rect.x + 125, rect.y + 100), Size(72, 72), lena->_texture(), lena->coords());
-            dc->fillRect(Rect(rect.x, rect.y + 175, rect.w, 20), COLOR_BLACK);
+            dc.fillRect(rect, Color(0.7f, 0.7f, 0.7f));
+            dc.fillRectWithGradient(Rect(rect.x, rect.y, 125, 100), COLOR_BLACK, Color(1.0f, 0.1f), Gradient::LeftToRight);
+            dc.fillRectWithGradient(Rect(rect.x + 125, rect.y, 125, 100), COLOR_BLACK, Color(0.2f, 0.7f, 0.9f), Gradient::TopToBottom);
+            dc.fillTextAligned(dc.default_font, "Left Aligned Text", HorizontalAlignment::Left, VerticalAlignment::Top, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
+            dc.fillTextAligned(dc.default_font, "Centered Aligned Text", HorizontalAlignment::Center, VerticalAlignment::Center, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
+            dc.fillTextAligned(dc.default_font, "Right Aligned Text", HorizontalAlignment::Right, VerticalAlignment::Bottom, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
+            dc.fillText(dc.default_font, "lena.png", Point(rect.x + 25, rect.y + 130));
+            dc.drawTexture(Point(rect.x + 50, rect.y + 150), Size(24, 24), lena->_texture(), lena->coords());
+            dc.drawTexture(Point(rect.x + 125, rect.y + 100), Size(72, 72), lena->_texture(), lena->coords());
+            dc.fillRect(Rect(rect.x, rect.y + 175, rect.w, 20), COLOR_BLACK);
             for (int i = 0; i < rect.w - 5; i += 10) {
-                dc->drawPoint(Point(rect.x + i, rect.y + 180), Color(0, 1));
-                dc->drawPoint(Point(rect.x + i + 5, rect.y + 190), COLOR_WHITE);
+                dc.drawPoint(Point(rect.x + i, rect.y + 180), Color(0, 1));
+                dc.drawPoint(Point(rect.x + i + 5, rect.y + 190), COLOR_WHITE);
             }
-            dc->drawTexture(Point(rect.x, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords());
-            dc->drawTexture(Point(rect.x + 60, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(1.0f));
-            dc->drawTexture(Point(rect.x + 120, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(0.0f, 1.0f));
-            dc->drawTexture(Point(rect.x + 180, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(0.0f, 0.0f, 1.0f));
+            dc.drawTexture(Point(rect.x, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords());
+            dc.drawTexture(Point(rect.x + 60, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(1.0f));
+            dc.drawTexture(Point(rect.x + 120, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(0.0f, 1.0f));
+            dc.drawTexture(Point(rect.x + 180, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(0.0f, 0.0f, 1.0f));
         }
 
-        Size sizeHint(DrawingContext *dc) {
+        Size sizeHint(DrawingContext &dc) {
             return Size(250, 250);
         }
 };
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
             }
         };
         app->setTitle("Custom Widget Drawing");
-        app->append(new CustomWidget());    
+        app->append(new CustomWidget());
     app->run();
 
     return 0;

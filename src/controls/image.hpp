@@ -16,8 +16,8 @@
             Image(std::shared_ptr<Texture> texture);
             ~Image();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
             virtual Image* setBackground(Color background) override;
             virtual Image* setForeground(Color background) override;
             bool expand();
@@ -47,6 +47,6 @@
             bool m_maintain_aspect_ratio = true;
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
-            TextureCoordinates m_coords;     
+            TextureCoordinates m_coords;
     };
 #endif

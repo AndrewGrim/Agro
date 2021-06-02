@@ -65,43 +65,43 @@ const char* Splitter::name() {
     return "Splitter";
 }
 
-void Splitter::draw(DrawingContext *dc, Rect rect) {
+void Splitter::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
 
-    Rect old_clip = dc->clip();
+    Rect old_clip = dc.clip();
     if (m_align_policy == Align::Horizontal) {
         Rect local_rect = Rect(rect.x, rect.y, (rect.w - m_sash_size) * m_split, rect.h);
         if (m_first) {
-            dc->setClip(local_rect);
+            dc.setClip(local_rect);
             m_first->draw(dc, local_rect);
         }
         local_rect = Rect(local_rect.x + local_rect.w, rect.y, m_sash_size, rect.h);
-        dc->setClip(local_rect);
-        dc->fillRect(local_rect, Color("#000000"));
+        dc.setClip(local_rect);
+        dc.fillRect(local_rect, Color("#000000"));
         if (m_second) {
             local_rect = Rect(local_rect.x + m_sash_size, rect.y, (rect.w - m_sash_size) * (1.0f - m_split), rect.h);
-            dc->setClip(local_rect);
+            dc.setClip(local_rect);
             m_second->draw(dc, local_rect);
         }
     } else {
         Rect local_rect = Rect(rect.x, rect.y, rect.w, (rect.h - m_sash_size) * m_split);
         if (m_first) {
-            dc->setClip(local_rect);
+            dc.setClip(local_rect);
             m_first->draw(dc, local_rect);
         }
         local_rect = Rect(rect.x, local_rect.y + local_rect.h, rect.w, m_sash_size);
-        dc->setClip(local_rect);
-        dc->fillRect(local_rect, Color("#000000"));
+        dc.setClip(local_rect);
+        dc.fillRect(local_rect, Color("#000000"));
         if (m_second) {
             local_rect = Rect(rect.x, local_rect.y + m_sash_size, rect.w, (rect.h - m_sash_size) * (1.0f - m_split));
-            dc->setClip(local_rect);
+            dc.setClip(local_rect);
             m_second->draw(dc, local_rect);
         }
     }
-    dc->setClip(old_clip);
+    dc.setClip(old_clip);
 }
 
-Size Splitter::sizeHint(DrawingContext *dc) {
+Size Splitter::sizeHint(DrawingContext &dc) {
     Size s = m_viewport;
     if (m_align_policy == Align::Horizontal) {
         s.w += m_sash_size;
@@ -126,7 +126,7 @@ void* Splitter::propagateMouseEvent(Window *window, State *state, MouseEvent eve
                 return last;
             }
         }
-    } 
+    }
     if (m_second) {
         if (m_second->isVisible()) {
             if ((event.x >= m_second->rect.x && event.x <= m_second->rect.x + m_second->rect.w) &&
@@ -142,7 +142,7 @@ void* Splitter::propagateMouseEvent(Window *window, State *state, MouseEvent eve
             }
         }
     }
-    
+
     handleMouseEvent(window, state, event);
     return this;
 }

@@ -8,9 +8,9 @@
             ScrolledBox(Align align_policy, Size min_size = Size(100, 100));
             ~ScrolledBox();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
-            void layoutChildren(DrawingContext *dc, Rect rect);
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
+            void layoutChildren(DrawingContext &dc, Rect rect);
             virtual bool handleScrollEvent(ScrollEvent event) override;
             void setAlignPolicy(Align align_policy);
             Align alignPolicy();

@@ -94,7 +94,7 @@ Widget* Widget::show() {
         this->m_is_visible = true;
         this->layout();
     }
-    
+
     return this;
 }
 
@@ -103,7 +103,7 @@ Widget* Widget::hide() {
         this->m_is_visible = false;
         this->layout();
     }
-    
+
     return this;
 }
 
@@ -120,7 +120,7 @@ Widget* Widget::setHovered(bool hover) {
         this->m_is_hovered = hover;
         this->update();
     }
-    
+
     return this;
 }
 
@@ -133,7 +133,7 @@ Widget* Widget::setPressed(bool pressed) {
         this->m_is_pressed = pressed;
         this->update();
     }
-    
+
     return this;
 }
 
@@ -146,13 +146,13 @@ Widget* Widget::setFocused(bool focused) {
         this->m_is_focused = focused;
         this->update();
     }
-    
+
     return this;
 }
 
 Widget* Widget::update() {
     Application::get()->update();
-    
+
     return this;
 }
 
@@ -167,7 +167,7 @@ Widget* Widget::layout() {
         parent = parent->parent;
     }
     update();
-    
+
     return this;
 }
 
@@ -255,7 +255,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
     }
 }
 
-void Widget::handleTextEvent(DrawingContext *dc, const char *text) {
+void Widget::handleTextEvent(DrawingContext &dc, const char *text) {
     // Up to the widget to implement!
 }
 
@@ -284,7 +284,7 @@ Widget* Widget::setProportion(unsigned int proportion) {
         this->m_proportion = proportion ? proportion : 1;
         this->layout();
     }
-    
+
     return this;
 }
 
@@ -297,7 +297,7 @@ Widget* Widget::setFont(Font *font) {
         this->m_font = font;
         this->layout();
     }
-    
+
     return this;
 }
 
@@ -348,7 +348,7 @@ int Widget::bind(int key, int modifiers, std::function<void()> callback) {
     // }
     this->m_keyboard_shortcuts.insert(
         std::make_pair(
-            m_binding_id, 
+            m_binding_id,
             KeyboardShortcut(
                 key,
                 mods[0], mods[1], mods[2], mods[3],

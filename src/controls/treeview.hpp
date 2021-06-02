@@ -62,8 +62,8 @@
                 if (!parent_node) {
                     node->parent = nullptr;
                     node->depth = 1;
-                    roots.push_back(node); 
-                    
+                    roots.push_back(node);
+
                     return node;
                 } else {
                     parent_node->children.push_back(node);
@@ -128,8 +128,8 @@
             std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_fn = nullptr;
 
             Column(
-                std::string text, Image *image = nullptr, 
-                HorizontalAlignment alignment = HorizontalAlignment::Center, 
+                std::string text, Image *image = nullptr,
+                HorizontalAlignment alignment = HorizontalAlignment::Center,
                 std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr) : Box(Align::Horizontal) {
                 Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
                 if (alignment == HorizontalAlignment::Right) {
@@ -209,21 +209,21 @@
                 return "Column";
             }
 
-            virtual void draw(DrawingContext *dc, Rect rect) override {
+            virtual void draw(DrawingContext &dc, Rect rect) override {
                 this->rect = rect;
                 Color color;
                 if (m_dragging) {
                     color = this->background();
                 } else if (this->isPressed() && this->isHovered()) {
-                    color = this->m_pressed_bg; 
+                    color = this->m_pressed_bg;
                 } else if (this->isHovered()) {
                     color = this->m_hovered_bg;
                 } else {
                     color = this->background();
                 }
-                dc->drawBorder(rect, style);
+                dc.drawBorder(rect, style);
 
-                dc->fillRect(rect, color);
+                dc.fillRect(rect, color);
                 layoutChildren(dc, rect);
             }
 
@@ -259,7 +259,7 @@
                 m_model = model;
             }
 
-            virtual Size sizeHint(DrawingContext *dc) override {
+            virtual Size sizeHint(DrawingContext &dc) override {
                 unsigned int visible = 0;
                 unsigned int horizontal_non_expandable = 0;
                 if (m_size_changed) {
@@ -276,7 +276,7 @@
                         }
                     }
 
-                    dc->sizeHintBorder(size, style);
+                    dc.sizeHintBorder(size, style);
 
                     m_horizontal_non_expandable = horizontal_non_expandable;
                     m_visible_children = visible;
@@ -355,7 +355,7 @@
     };
 
     template <typename T> class TreeView : public Scrollable {
-        public:        
+        public:
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeHovered = nullptr;
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeSelected = nullptr;
             std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeDeselected = nullptr;
@@ -472,21 +472,21 @@
                 return "TreeView";
             }
 
-            virtual void draw(DrawingContext *dc, Rect rect) override {
+            virtual void draw(DrawingContext &dc, Rect rect) override {
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
                 sizeHint(dc);
 
-                dc->margin(rect, style);
-                dc->drawBorder(rect, style);
+                dc.margin(rect, style);
+                dc.drawBorder(rect, style);
                 this->inner_rect = rect;
-                dc->fillRect(rect, COLOR_WHITE);
+                dc.fillRect(rect, COLOR_WHITE);
 
                 Size virtual_size = m_virtual_size;
                 if (areColumnHeadersHidden()) {
                     virtual_size.h -= m_children_size.h;
                 }
-                Rect old_clip = dc->clip();
+                Rect old_clip = dc.clip();
                 Point pos = Point(rect.x, rect.y);
                 if (m_mode == Mode::Scroll) {
                     pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
@@ -518,9 +518,9 @@
                     }
                     m_current_header_width += s.w;
                     if (!areColumnHeadersHidden()) {
-                        dc->setClip(Rect(
-                            local_pos_x, 
-                            rect.y, 
+                        dc.setClip(Rect(
+                            local_pos_x,
+                            rect.y,
                             local_pos_x + s.w > rect.x + rect.w ? (rect.x + rect.w) - local_pos_x : s.w,
                             m_children_size.h
                         ).clipTo(tv_clip));
@@ -540,7 +540,7 @@
                 Rect drawing_rect = Rect(rect);
                 if (m_mode == Mode::Unroll) {
                     if (parent) {
-                        drawing_rect = parent->rect; 
+                        drawing_rect = parent->rect;
                     }
                     column_header = 0.0f;
                 }
@@ -573,18 +573,18 @@
                                     CellRenderer *renderer = node->columns[i];
                                     Size s = renderer->sizeHint(dc);
                                     if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
-                                        Rect cell_clip = 
+                                        Rect cell_clip =
                                             Rect(cell_start, pos.y, col_width, node->max_cell_height)
                                                 .clipTo(
                                                     Rect(
-                                                        rect.x, 
+                                                        rect.x,
                                                         rect.y + column_header,
-                                                        rect.w, 
+                                                        rect.w,
                                                         rect.h - column_header
                                                     )
                                                 );
                                         // Clip and draw the current cell.
-                                        dc->setClip(cell_clip.clipTo(tv_clip));
+                                        dc.setClip(cell_clip.clipTo(tv_clip));
                                         float cell_x = cell_start;
                                         if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
@@ -613,8 +613,8 @@
                             pos.y += node->max_cell_height;
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
-                                dc->setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                                dc->fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f));
+                                dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
+                                dc.fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f));
                             }
                         }
 
@@ -632,16 +632,16 @@
                     float local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0.0f;
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
-                        dc->setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
+                        dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (float width : m_column_widths) {
-                            dc->fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
+                            dc.fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
                         }
                     }
                 }
 
                 // Draw the tree lines
-                dc->setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
+                dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
                 // TODO we could optimse here by keeping track of where
                 // we left off between the tree_roots so we could just
                 // continue from there rather than from the beginning
@@ -677,7 +677,7 @@
                     }
                 }
 
-                dc->setClip(old_clip);
+                dc.setClip(old_clip);
                 if (m_mode == Mode::Scroll) {
                     drawScrollBars(dc, rect, virtual_size);
                 }
@@ -809,7 +809,7 @@
                     if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
                 }
             }
- 
+
             void expandRecursively(TreeNode<T> *node) {
                 collapseOrExpandRecursively(node, false);
             }
@@ -844,7 +844,7 @@
                 return this;
             }
 
-            virtual Size sizeHint(DrawingContext *dc) override {
+            virtual Size sizeHint(DrawingContext &dc) override {
                 if (m_size_changed) { // TODO this will be slow for a large number of columns
                     m_virtual_size.w = 0.0;
                     m_column_widths.clear();
@@ -866,19 +866,19 @@
                 }
                 if (m_mode == Mode::Scroll) {
                     Size viewport_and_style = m_viewport;
-                        dc->sizeHintMargin(viewport_and_style, style);
-                        dc->sizeHintBorder(viewport_and_style, style);
+                        dc.sizeHintMargin(viewport_and_style, style);
+                        dc.sizeHintBorder(viewport_and_style, style);
                     return viewport_and_style;
                 }
                 if (areColumnHeadersHidden()) {
                     Size virtual_size_and_style = Size(m_virtual_size.w, m_virtual_size.h - m_children_size.h);
-                        dc->sizeHintMargin(virtual_size_and_style, style);
-                        dc->sizeHintBorder(virtual_size_and_style, style);
+                        dc.sizeHintMargin(virtual_size_and_style, style);
+                        dc.sizeHintBorder(virtual_size_and_style, style);
                     return virtual_size_and_style;
                 }
                 Size virtual_size_and_style = m_virtual_size;
-                    dc->sizeHintMargin(virtual_size_and_style, style);
-                    dc->sizeHintBorder(virtual_size_and_style, style);
+                    dc.sizeHintMargin(virtual_size_and_style, style);
+                    dc.sizeHintBorder(virtual_size_and_style, style);
                 return virtual_size_and_style;
             }
 
@@ -1005,7 +1005,7 @@
                 if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
             }
 
-            void calculateVirtualSize(DrawingContext *dc) {
+            void calculateVirtualSize(DrawingContext &dc) {
                 m_virtual_size = m_children_size;
                 bool collapsed = false;
                 int collapsed_depth = -1;
@@ -1027,7 +1027,7 @@
                                 if (!m_table && !index) {
                                     s.w += node->depth * indent();
                                 }
-                                
+
                                 // Automatically set the columns to be wide
                                 // enough for their contents.
                                 if (m_auto_size_columns && s.w > col->width()) {
@@ -1055,13 +1055,13 @@
                         return Traversal::Continue;
                     }
                 );
-                
+
                 m_virtual_size.w = m_children_size.w;
                 m_virtual_size_changed = false;
                 m_auto_size_columns = false;
             }
 
-            void drawTreeLinesToChildren(DrawingContext *dc, float x, float y, TreeNode<T> *node) {
+            void drawTreeLinesToChildren(DrawingContext &dc, float x, float y, TreeNode<T> *node) {
                 if (node->children.size()) {
                     x += node->depth * m_indent;
                     // Begin drawing at the center of the node cell height.
@@ -1073,7 +1073,7 @@
                         last_y += node->max_cell_height / 2;
                         // Draw the horizontal line going to the icon.
                         last_y += node->children[0]->max_cell_height / 2;
-                        dc->fillRect(
+                        dc.fillRect(
                             Rect(
                                 x - (m_indent / 2),
                                 last_y,
@@ -1099,7 +1099,7 @@
                             });
                             last_node_height = node->children[i + 1]->max_cell_height / 2;
                             // Draw the horizontal line going to the icon.
-                            dc->fillRect(
+                            dc.fillRect(
                                 Rect(
                                     x - (m_indent / 2),
                                     last_y + last_node_height,
@@ -1111,7 +1111,7 @@
                         }
                         last_y += last_node_height;
                         // Draw the line going down to the last child node.
-                        dc->fillRect(
+                        dc.fillRect(
                             Rect(
                                 x - (m_indent / 2) - 1,
                                 y,
@@ -1120,7 +1120,7 @@
                             ),
                             Color(0.5f, 0.5f, 0.5f)
                         );
-                        dc->drawTextureAligned(
+                        dc.drawTextureAligned(
                             Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
                             Size(m_indent / 2, m_indent / 2),
                             m_expanded->_texture(),
@@ -1130,7 +1130,7 @@
                             m_expanded->foreground()
                         );
                     } else {
-                        dc->drawTextureAligned(
+                        dc.drawTextureAligned(
                             Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
                             Size(m_indent / 2, m_indent / 2),
                             m_collapsed->_texture(),
@@ -1143,11 +1143,11 @@
                 // End of the line.
                 } else {
                     if (node->parent) {
-                        dc->fillRect(
+                        dc.fillRect(
                             Rect(
-                                x + ((node->depth - 1) * m_indent) + (m_indent / 3), 
+                                x + ((node->depth - 1) * m_indent) + (m_indent / 3),
                                 y + (node->max_cell_height / 2) - (m_indent / 8) + (m_treeline_size / 2),
-                                m_indent / 4, 
+                                m_indent / 4,
                                 m_indent / 4
                             ),
                             COLOR_BLACK

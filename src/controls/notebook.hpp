@@ -11,9 +11,9 @@
 
             NoteBookTabBar();
             ~NoteBookTabBar();
-            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
             virtual const char* name() override;
-            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
@@ -23,9 +23,9 @@
         public:
             NoteBook();
             ~NoteBook();
-            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
             virtual const char* name() override;
-            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
@@ -45,8 +45,8 @@
             NoteBookTabButton(NoteBook *notebook, std::string text, Image *image = nullptr, bool close_button = false);
             ~NoteBookTabButton();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             bool isActive();

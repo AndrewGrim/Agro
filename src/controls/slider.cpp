@@ -17,23 +17,23 @@ const char* SliderButton::name() {
     return "SliderButton";
 }
 
-void SliderButton::draw(DrawingContext *dc, Rect rect) {
+void SliderButton::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    Color color = COLOR_BLACK; 
+    Color color = COLOR_BLACK;
     if (this->isPressed()) {
-        color = this->m_pressed_bg; 
+        color = this->m_pressed_bg;
     } else if (this->isHovered()) {
         color = this->m_hovered_bg;
     } else {
         color = this->background();
     }
-    dc->drawBorder(rect, style);
-    dc->fillRect(rect, color);
+    dc.drawBorder(rect, style);
+    dc.fillRect(rect, color);
 }
 
-Size SliderButton::sizeHint(DrawingContext *dc) {
+Size SliderButton::sizeHint(DrawingContext &dc) {
     return m_size;
-} 
+}
 
 SliderButton* SliderButton::setMinSize(Size size) {
     m_size = size;
@@ -114,7 +114,7 @@ const char* Slider::name() {
     return "Slider";
 }
 
-void Slider::draw(DrawingContext *dc, Rect rect) {
+void Slider::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
 
     // Get the size of the slider button.
@@ -134,9 +134,9 @@ void Slider::draw(DrawingContext *dc, Rect rect) {
 
     // Draw the "rail" for the slider button.
     if (m_align_policy == Align::Horizontal) {
-        dc->fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), background());
+        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), background());
     } else {
-        dc->fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), background());
+        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), background());
     }
 
     // Determine and draw the location of the slider button.
@@ -150,7 +150,7 @@ void Slider::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size Slider::sizeHint(DrawingContext *dc) {
+Size Slider::sizeHint(DrawingContext &dc) {
     Size size = this->m_slider_button->sizeHint(dc);
     if (this->m_align_policy == Align::Horizontal) {
         // The 3 is because we want the slider to be

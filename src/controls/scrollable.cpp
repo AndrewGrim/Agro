@@ -14,15 +14,15 @@ const char* Scrollable::name() {
     return "Scrollable";
 }
 
-void Scrollable::draw(DrawingContext *dc, Rect rect) {
+void Scrollable::draw(DrawingContext &dc, Rect rect) {
 
 }
 
-Size Scrollable::sizeHint(DrawingContext *dc) {
+Size Scrollable::sizeHint(DrawingContext &dc) {
     return m_viewport;
 }
 
-Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &rect, const Size &virtual_size) {
+Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size) {
     float content_x = rect.x;
     float content_y = rect.y;
     bool vert = false;
@@ -70,7 +70,7 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext *dc, Rect &r
     return Point(content_x, content_y);
 }
 
-void Scrollable::drawScrollBars(DrawingContext *dc, Rect &rect, const Size &virtual_size) {
+void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size) {
     if (m_vertical_scrollbar) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
         float slider_size = rect.h * ((rect.h - size.h / 2) / virtual_size.h);
@@ -81,9 +81,9 @@ void Scrollable::drawScrollBars(DrawingContext *dc, Rect &rect, const Size &virt
         }
         m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_vertical_scrollbar->draw(dc, Rect(
-            rect.x + rect.w, 
-            rect.y, 
-            size.w, 
+            rect.x + rect.w,
+            rect.y,
+            size.w,
             rect.h > size.h ? rect.h : size.h
         ));
     }
@@ -97,18 +97,18 @@ void Scrollable::drawScrollBars(DrawingContext *dc, Rect &rect, const Size &virt
         }
         m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_horizontal_scrollbar->draw(dc, Rect(
-            rect.x, 
-            rect.y + rect.h, 
-            rect.w > size.w ? rect.w : size.w, 
+            rect.x,
+            rect.y + rect.h,
+            rect.w > size.w ? rect.w : size.w,
             size.h
         ));
     }
     if (m_vertical_scrollbar && m_horizontal_scrollbar) {
-        dc->fillRect(Rect(
-            rect.x + rect.w, 
-            rect.y + rect.h, 
-            m_vertical_scrollbar->sizeHint(dc).w, 
-            m_horizontal_scrollbar->sizeHint(dc).h), 
+        dc.fillRect(Rect(
+            rect.x + rect.w,
+            rect.y + rect.h,
+            m_vertical_scrollbar->sizeHint(dc).w,
+            m_horizontal_scrollbar->sizeHint(dc).h),
             m_vertical_scrollbar->background()
         );
     }
@@ -177,19 +177,19 @@ void Scrollable::setMinSize(Size min_size) {
 }
 
 Rect Scrollable::clip() {
-    auto dc = Application::get()->dc;
+    DrawingContext &dc = *Application::get()->dc;
 
     if (parent) {
         if (parent->isScrollable()) {
-            dc->setClip(rect.clipTo(parent->rect));
+            dc.setClip(rect.clipTo(parent->rect));
         } else {
             // Non-inception Scrollable
-            dc->setClip(rect);
+            dc.setClip(rect);
         }
     } else {
         // No parent
-        dc->setClip(rect);
+        dc.setClip(rect);
     }
 
-    return dc->clip();
+    return dc.clip();
 }

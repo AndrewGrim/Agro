@@ -34,38 +34,38 @@ class CustomStyle : public Widget {
         }
 
         ~CustomStyle() {
-            
+
         }
 
         const char* name() override {
             return "CustomStyle";
         }
 
-        void draw(DrawingContext *dc, Rect rect) {
+        void draw(DrawingContext &dc, Rect rect) {
             this->rect = rect;
 
-            dc->fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
-            dc->margin(rect, style);
-            dc->drawBorder(rect, style);
-            dc->fillRect(rect, Color(0.0f, 1.0f, 0.0f, 0.5f));
-            dc->padding(rect, style);
+            dc.fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
+            dc.margin(rect, style);
+            dc.drawBorder(rect, style);
+            dc.fillRect(rect, Color(0.0f, 1.0f, 0.0f, 0.5f));
+            dc.padding(rect, style);
             this->inner_rect = rect;
 
-            dc->fillRect(rect, Color(0.0f, 0.0f, 1.0f, 0.5f));
+            dc.fillRect(rect, Color(0.0f, 0.0f, 1.0f, 0.5f));
         }
 
-        Size sizeHint(DrawingContext *dc) {
+        Size sizeHint(DrawingContext &dc) {
             Size s = Size(96, 96);
-            dc->sizeHintMargin(s, style);
-            dc->sizeHintBorder(s, style);
-            dc->sizeHintPadding(s, style);
+            dc.sizeHintMargin(s, style);
+            dc.sizeHintBorder(s, style);
+            dc.sizeHintPadding(s, style);
             return s;
         }
 };
 
 void update_rect_labels(std::string text, Button *button, Rect rect) {
     button->setText(
-        text 
+        text
         + std::to_string((int)rect.x) + ", "
         + std::to_string((int)rect.y) + ", "
         + std::to_string((int)rect.w) + ", "
@@ -73,7 +73,7 @@ void update_rect_labels(std::string text, Button *button, Rect rect) {
     );
 }
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->setTitle("Custom Widget Styling");
         app->resize(600, 400);

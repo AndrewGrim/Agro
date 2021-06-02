@@ -9,7 +9,7 @@ NoteBookTabBar::~NoteBookTabBar() {
     delete m_horizontal_scrollbar;
 }
 
-void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
+void NoteBookTabBar::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
     float x = rect.x;
 
@@ -49,9 +49,9 @@ void NoteBookTabBar::draw(DrawingContext *dc, Rect rect) {
         }
         m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_horizontal_scrollbar->draw(dc, Rect(
-            rect.x, 
-            (rect.y + rect.h) - scroll_size.h, 
-            rect.w > scroll_size.w ? rect.w : scroll_size.w, 
+            rect.x,
+            (rect.y + rect.h) - scroll_size.h,
+            rect.w > scroll_size.w ? rect.w : scroll_size.w,
             scroll_size.h
         ));
     }
@@ -61,7 +61,7 @@ const char* NoteBookTabBar::name() {
     return "NoteBookTabBar";
 }
 
-Size NoteBookTabBar::sizeHint(DrawingContext *dc) {
+Size NoteBookTabBar::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = Size();
         for (Widget *child : children) {
@@ -143,33 +143,33 @@ const char* NoteBookTabButton::name() {
     return "NoteBookTabButton";
 }
 
-void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
+void NoteBookTabButton::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    Color color; 
+    Color color;
     if (isActive()) {
         color = Color(0.5f, 0.5f, 0.5f);
     } else if (this->isPressed() && this->isHovered()) {
-        color = this->m_pressed_bg; 
+        color = this->m_pressed_bg;
     } else if (this->isHovered()) {
         color = this->m_hovered_bg;
     } else {
         color = this->background();
     }
-    
-    dc->drawBorder(rect, style);
-    dc->fillRect(rect, color);
-    dc->padding(rect, style);
 
-    Size text_size = dc->measureText(font(), text());
+    dc.drawBorder(rect, style);
+    dc.fillRect(rect, color);
+    dc.padding(rect, style);
+
+    Size text_size = dc.measureText(font(), text());
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
         float width = rect.w;
         if (m_close_button) {
             width -= 22;
         }
-        dc->drawTexture(
+        dc.drawTexture(
             Point(
-                round(rect.x + (width / 2 - text_size.w / 2) - image_size.w / 2), 
+                round(rect.x + (width / 2 - text_size.w / 2) - image_size.w / 2),
                 round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
@@ -194,7 +194,7 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
         if (m_close_button && !m_image) {
             rect.w -= 22;
         }
-        dc->fillTextAligned(
+        dc.fillTextAligned(
             font(),
             m_text,
             h_text_align,
@@ -213,9 +213,9 @@ void NoteBookTabButton::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
+Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
     if (this->m_size_changed) {
-        Size size = dc->measureText(this->font() ? this->font() : dc->default_font, text());
+        Size size = dc.measureText(this->font() ? this->font() : dc.default_font, text());
         if (m_image) {
             Size i = m_image->sizeHint(dc);
             size.w += i.w;
@@ -223,9 +223,9 @@ Size NoteBookTabButton::sizeHint(DrawingContext *dc) {
                 size.h = i.h;
             }
         }
-        
-        dc->sizeHintBorder(size, style);
-        dc->sizeHintPadding(size, style);
+
+        dc.sizeHintBorder(size, style);
+        dc.sizeHintPadding(size, style);
 
         // Account for the close button if present;
         if (m_close_button) {
@@ -289,7 +289,7 @@ NoteBook::~NoteBook() {
 
 }
 
-void NoteBook::draw(DrawingContext *dc, Rect rect) {
+void NoteBook::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
     if (m_tabs->children.size()) {
         // NoteBookTabBar.
@@ -307,7 +307,7 @@ const char* NoteBook::name() {
     return "NoteBook";
 }
 
-Size NoteBook::sizeHint(DrawingContext *dc) {
+Size NoteBook::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = m_tabs->sizeHint(dc);
         if (this->children.size()) {

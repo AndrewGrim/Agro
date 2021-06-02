@@ -12,8 +12,8 @@
             ScrollBarArrowButton(Image *image);
             ~ScrollBarArrowButton();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
     };
 
     class ScrollBarSlider : public Slider {
@@ -21,7 +21,7 @@
             ScrollBarSlider(Align alignment, float value = 0.0f);
             ~ScrollBarSlider();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
     };
 
     class SimpleScrollBar : public Box {
@@ -31,9 +31,9 @@
             SimpleScrollBar(Align alignment, Size min_size = Size(10, 10));
             ~SimpleScrollBar();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
-    };  
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
+    };
 
     class ScrollBar : public Box {
         public:
@@ -44,7 +44,7 @@
             ScrollBar(Align alignment);
             ~ScrollBar();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
-    };  
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
+    };
 #endif

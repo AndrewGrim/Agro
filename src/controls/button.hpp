@@ -13,13 +13,13 @@
             Button(Image *image);
             ~Button();
             virtual const char* name() override;
-            virtual void draw(DrawingContext *dc, Rect rect) override;
-            virtual Size sizeHint(DrawingContext *dc) override;
+            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual Size sizeHint(DrawingContext &dc) override;
             virtual Button* setBackground(Color background) override;
             virtual Button* setForeground(Color foreground) override;
             std::string text();
             Button* setText(std::string text);
-            Image* image(); 
+            Image* image();
             Button* setImage(Image *image);
             HorizontalAlignment horizontalAlignment();
             Button* setHorizontalAlignment(HorizontalAlignment text_align);

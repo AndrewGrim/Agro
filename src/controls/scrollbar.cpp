@@ -19,26 +19,26 @@ const char* ScrollBarArrowButton::name() {
     return "ScrollBarArrowButton";
 }
 
-void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
+void ScrollBarArrowButton::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
-    Color color; 
+    Color color;
     if (this->isPressed() && this->isHovered()) {
-        color = this->m_pressed_bg; 
+        color = this->m_pressed_bg;
     } else if (this->isHovered()) {
         color = this->m_hovered_bg;
     } else {
         color = this->background();
     }
-    
-    dc->drawBorder(rect, style);
-    dc->fillRect(rect, color);
-    dc->padding(rect, style);
+
+    dc.drawBorder(rect, style);
+    dc.fillRect(rect, color);
+    dc.padding(rect, style);
 
     if (this->m_image) {
         Size image_size = Size(8, 8);
-        dc->drawTexture(
+        dc.drawTexture(
             Point(
-                (rect.x + (rect.w * 0.5) - (image_size.w * 0.5)), 
+                (rect.x + (rect.w * 0.5) - (image_size.w * 0.5)),
                 (rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
             ),
             image_size,
@@ -49,10 +49,10 @@ void ScrollBarArrowButton::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size ScrollBarArrowButton::sizeHint(DrawingContext *dc) {
+Size ScrollBarArrowButton::sizeHint(DrawingContext &dc) {
     Size size = Size(8, 8);
-    dc->sizeHintBorder(size, style);
-    dc->sizeHintPadding(size, style);
+    dc.sizeHintBorder(size, style);
+    dc.sizeHintPadding(size, style);
 
     return size;
 }
@@ -69,7 +69,7 @@ const char* ScrollBarSlider::name() {
     return "ScrollBarSlider";
 }
 
-void ScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
+void ScrollBarSlider::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
 
     // Get the size of the slider button.
@@ -88,7 +88,7 @@ void ScrollBarSlider::draw(DrawingContext *dc, Rect rect) {
     }
 
     // Draw the background.
-    dc->fillRect(rect, background());
+    dc.fillRect(rect, background());
 
     // Determine and draw the location of the slider button.
     if (m_align_policy == Align::Horizontal) {
@@ -120,12 +120,12 @@ const char* SimpleScrollBar::name() {
     return "SimpleScrollBar";
 }
 
-void SimpleScrollBar::draw(DrawingContext *dc, Rect rect) {
+void SimpleScrollBar::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
     this->m_slider->draw(dc, rect);
 }
 
-Size SimpleScrollBar::sizeHint(DrawingContext *dc) {
+Size SimpleScrollBar::sizeHint(DrawingContext &dc) {
     return m_slider->sizeHint(dc);
 }
 
@@ -170,7 +170,7 @@ const char* ScrollBar::name() {
     return "ScrollBar";
 }
 
-void ScrollBar::draw(DrawingContext *dc, Rect rect) {
+void ScrollBar::draw(DrawingContext &dc, Rect rect) {
     this->rect = rect;
     Size button_size = this->m_begin_button->sizeHint(dc);
     this->m_begin_button->draw(dc, Rect(rect.x, rect.y, button_size.w, button_size.h));
@@ -187,7 +187,7 @@ void ScrollBar::draw(DrawingContext *dc, Rect rect) {
     }
 }
 
-Size ScrollBar::sizeHint(DrawingContext *dc) {
+Size ScrollBar::sizeHint(DrawingContext &dc) {
     Size size = m_slider->sizeHint(dc);
     Size button_size = m_begin_button->sizeHint(dc);
     if (m_align_policy == Align::Horizontal) {

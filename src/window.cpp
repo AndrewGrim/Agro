@@ -83,7 +83,7 @@ void Window::draw() {
     dc->renderer->shader.setMatrix4("u_projection", projection);
     dc->clear();
     dc->setClip(Rect(0, 0, size.w, size.h));
-    m_main_widget->draw(dc, Rect(0, 0, size.w, size.h));
+    m_main_widget->draw(*dc, Rect(0, 0, size.w, size.h));
     if (m_state->tooltip && draw_tooltip) {
         drawTooltip();
         draw_tooltip = false;
@@ -281,7 +281,7 @@ void Window::run() {
                     break;
                 case SDL_TEXTINPUT:
                     if (m_state->focused) {
-                        ((Widget*)m_state->focused)->handleTextEvent(dc, event.text.text);
+                        ((Widget*)m_state->focused)->handleTextEvent(*dc, event.text.text);
                     }
                     break;
                 case SDL_QUIT:
