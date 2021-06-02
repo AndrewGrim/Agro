@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
             h_box->append(unroll, Fill::Both);
         app->append(h_box, Fill::Horizontal);
         tv = new TreeView<Hidden>();
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 4; i++) {
                 auto c = new Column<Hidden>(
                     "Column: " + std::to_string(i),
                     nullptr,
@@ -47,10 +47,11 @@ int main(int argc, char **argv) {
             }
             Tree<Hidden> *model = new Tree<Hidden>();
                 for (int i = 0; i < 1000; i++) {
-                    std::vector<CellRenderer*> columns = {
+                    std::vector<Drawable*> columns = {
                         new TextCellRenderer("Row: " + std::to_string(i) + "\nColumn: 0"),
                         new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 1"),
                         new ImageTextCellRenderer((new Image(app->icons["close"]))->setForeground(COLOR_BLACK), "Row: " + std::to_string(i) + "\nColumn: 2"),
+                        new Button("Button: " + std::to_string(i)),
                     };
                     ((TextCellRenderer*)columns[0])->h_align = HorizontalAlignment::Left;
                     ((TextCellRenderer*)columns[1])->h_align = HorizontalAlignment::Right;
