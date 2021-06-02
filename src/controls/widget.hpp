@@ -8,6 +8,7 @@
     #include "../state.hpp"
     #include "../event.hpp"
     #include "../keyboard.hpp"
+    #include "../drawable.hpp"
     #include "../common/enums.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
@@ -34,7 +35,7 @@
             }
     };
 
-    class Widget {
+    class Widget : public Drawable {
         public:
             /// A rectangle representing the Widget position and size.
             Rect rect = Rect(0, 0, 0, 0);
@@ -229,6 +230,8 @@
             const std::unordered_map<int, KeyboardShortcut> keyboardShortcuts();
             Size size();
             void setStyle(Style style);
+
+            bool isWidget();
 
             bool m_is_hovered = false;
             bool m_is_pressed = false;

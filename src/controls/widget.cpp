@@ -380,3 +380,7 @@ void Widget::setStyle(Style style) {
     this->style = style;
     layout();
 }
+
+bool Widget::isWidget() {
+    return true;
+}
