@@ -288,7 +288,6 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
 }
 
 Size Renderer::measureText(Font *font, std::string text, float tab_width) {
-    std::string::const_iterator c;
     Size size = Size(0.0f, font->max_height);
     for (char c : text) {
         Font::Character ch = font->characters[c];
@@ -315,7 +314,6 @@ Size Renderer::measureText(Font *font, char c, float tab_width) {
 }
 
 Size Renderer::measureTextMultiline(Font *font, std::string text, float line_spacing, float tab_width) {
-    std::string::const_iterator c;
     Size size = Size(0.0f, font->max_height);
     float line_width = 0.0f;
     for (char c : text) {
