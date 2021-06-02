@@ -28,9 +28,6 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
 
 Widget* Widget::remove(size_t parent_index) {
     Widget *child = this->children[parent_index];
-    child->setPressed(false);
-    child->setHovered(false);
-    child->setFocused(false);
     Application::get()->removeFromState(child);
     this->children.erase(this->children.begin() + parent_index);
     size_t i = 0;
@@ -112,42 +109,25 @@ bool Widget::isVisible() {
 }
 
 bool Widget::isHovered() {
-    return this->m_is_hovered;
-}
-
-Widget* Widget::setHovered(bool hover) {
-    if (this->m_is_hovered != hover) {
-        this->m_is_hovered = hover;
-        this->update();
-    }
-
-    return this;
+    return Application::get()->m_state->hovered == this;
 }
 
 bool Widget::isPressed() {
-    return this->m_is_pressed;
-}
-
-Widget* Widget::setPressed(bool pressed) {
-    if (this->m_is_pressed != pressed) {
-        this->m_is_pressed = pressed;
-        this->update();
-    }
-
-    return this;
+    return Application::get()->m_state->pressed == this;
 }
 
 bool Widget::isFocused() {
-    return this->m_is_focused;
+    return Application::get()->m_state->focused == this;
 }
 
-Widget* Widget::setFocused(bool focused) {
-    if (this->m_is_focused != focused) {
-        this->m_is_focused = focused;
-        this->update();
-    }
+int Widget::state() {
+    int _state = STATE_DEFAULT;
+    auto app = Application::get();
+    if (app->m_state->hovered == this) { _state |= STATE_HOVERED; }
+    if (app->m_state->pressed == this) { _state |= STATE_PRESSED; }
+    if (app->m_state->focused == this) { _state |= STATE_FOCUSED; }
 
-    return this;
+    return _state;
 }
 
 Widget* Widget::update() {
@@ -193,29 +173,14 @@ void* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event
 }
 
 void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
-    // Note: The hovered state is not set as it is returned
-    // from the propagateMouseEvent function.
-
     switch (event.type) {
         case MouseEvent::Type::Down:
-            if (state->pressed) {
-                ((Widget*)state->pressed)->setPressed(false);
-            }
-            this->setPressed(true);
-            if (state->focused) {
-                ((Widget*)state->focused)->setFocused(false);
-            }
-            this->setFocused(true);
+            state->pressed = this;
             state->focused = this;
             // TODO maybe add an on_focus callback?
             onMouseDown.notify(this, event);
             break;
         case MouseEvent::Type::Up:
-            if (state->pressed) {
-                ((Widget*)state->pressed)->setPressed(false);
-                ((Widget*)state->pressed)->setHovered(false);
-            }
-            this->setHovered(true);
             state->hovered = this;
             onMouseUp.notify(this, event);
             if (this == state->pressed) {
@@ -233,26 +198,19 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
             if (!state->pressed) {
                 if (state->hovered) {
                     if (this != state->hovered) {
-                        ((Widget*)state->hovered)->setHovered(false);
                         ((Widget*)state->hovered)->onMouseLeft.notify(this, event);
-                        this->setHovered(true);
-                        onMouseEntered.notify(this, event);
                     }
-                } else {
-                    this->setHovered(true);
-                    onMouseEntered.notify(this, event);
                 }
-                this->onMouseMotion.notify(this, event);
+                state->hovered = this;
+                onMouseEntered.notify(this, event);
+                onMouseMotion.notify(this, event);
             } else {
-                if (state->pressed == state->hovered) {
-                    ((Widget*)state->pressed)->setHovered(true);
-                } else {
-                    ((Widget*)state->pressed)->setHovered(false);
-                }
+                state->hovered = this;
                 ((Widget*)state->pressed)->onMouseMotion.notify(this, event);
             }
             break;
     }
+    update();
 }
 
 void Widget::handleTextEvent(DrawingContext &dc, const char *text) {

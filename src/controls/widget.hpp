@@ -114,7 +114,7 @@
             /// states; such as Disabled, Focused, Pressed, Hovered.
             /// When applicable it should prefer to use global
             /// color theme values.
-            virtual void draw(DrawingContext &dc, Rect rect) = 0;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
 
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
@@ -175,29 +175,11 @@
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
 
-            /// Sets whether the Widget is currently hovered or not.
-            /// To avoid unecessary redraws it first checks if the new
-            /// value is the same as the one stored in the Widget
-            /// and if its not it will call update().
-            Widget* setHovered(bool hover);
-
             /// Returns whether the Widget is currently pressed or not.
             bool isPressed();
 
-            /// Sets whether the Widget is currently pressed or not.
-            /// To avoid unecessary redraws it first checks if the new
-            /// value is the same as the one stored in the Widget
-            /// and if its not it will call update().
-            Widget* setPressed(bool pressed);
-
             /// Returns whether the Widget is currently focused or not.
             bool isFocused();
-
-            /// Sets whether the Widget is currently focused or not.
-            /// To avoid unecessary redraws it first checks if the new
-            /// value is the same as the one stored in the Widget
-            /// and if its not it will call update().
-            Widget* setFocused(bool focused);
 
             /// Tells the Application that it needs to redraw.
             Widget* update();
@@ -224,6 +206,8 @@
 
             Widget* setFont(Font *font);
 
+            int state();
+
             int bind(int key, int modifiers, std::function<void()> callback);
             int bind(int key, Mod modifier, std::function<void()> callback);
             void unbind(int map_key);
@@ -233,9 +217,6 @@
 
             bool isWidget();
 
-            bool m_is_hovered = false;
-            bool m_is_pressed = false;
-            bool m_is_focused = false;
             bool m_is_visible = true;
             Fill m_fill_policy = Fill::None;
 
