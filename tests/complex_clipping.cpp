@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
                     }
                     auto model = new Tree<char>();
                         for (int row = 0; row < 100; row++) {
-                            std::vector<CellRenderer*> columns = {
+                            std::vector<Drawable*> columns = {
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 1"),
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 2"),
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 3"),
