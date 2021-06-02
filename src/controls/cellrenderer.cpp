@@ -35,7 +35,7 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     dc.fillRect(rect, bg);
-    dc.fillTextAligned(
+    dc.fillTextMultilineAligned(
         font,
         text,
         h_align,
@@ -52,7 +52,7 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size TextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc.measureText(font, text);
+        Size s = dc.measureTextMultiline(font, text);
             s.w += padding * 2;
             s.h += padding * 2;
         m_size = s;
@@ -180,7 +180,7 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     dc.fillRect(rect, bg);
-    Size text_size = dc.measureText(font, text);
+    Size text_size = dc.measureTextMultiline(font, text);
     Rect local_rect = rect;
     Size image_size = image->size();
     float x = rect.x;
@@ -202,7 +202,7 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     // Resize local_rect to account for image before the label is drawn.
     local_rect.x += image_size.w;
     local_rect.w -= image_size.w;
-    dc.fillTextAligned(
+    dc.fillTextMultilineAligned(
         font,
         text,
         h_align,
@@ -220,7 +220,7 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size ImageTextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc.measureText(font, text);
+        Size s = dc.measureTextMultiline(font, text);
             s.w += image->size().w;
             if (image->size().h > s.h) {
                 s.h = image->size().h;
