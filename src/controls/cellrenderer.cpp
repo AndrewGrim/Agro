@@ -36,7 +36,7 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
 
     dc.fillRect(rect, bg);
     dc.fillTextAligned(
-        font ? font : dc.default_font,
+        font,
         text,
         h_align,
         v_align,
@@ -52,7 +52,7 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size TextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc.measureText(font ? font : dc.default_font, text);
+        Size s = dc.measureText(font, text);
             s.w += padding * 2;
             s.h += padding * 2;
         m_size = s;
