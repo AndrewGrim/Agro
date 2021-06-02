@@ -1,5 +1,9 @@
 # Code Style
 
+## Files
+All files created for the project should follow `snake_case`.
+Any files included from other projects should keep the original naming.
+
 ## Constants and C-style Enums
 Should follow `SCREAMING_CASE`.
 
@@ -20,12 +24,11 @@ All of the above should follow the `CamelCase` convention.
 All `{ }` should be used like `if (condition) {` with the first brace on the same line.
 The exception would be if you're using braces purely to create a specific scope.
 All if statements and all loops should **ALWAYS** have braces even if the body
-contains only one statement.
+contains only one statement. This is acceptable `if (condition) { statement; }`.
 
 ## General
 All language keywords should be followed by a single space ` ` even if not stricly required.
 Like in a loop `for () {` or an if `if () {` or ` void func() override {`.
 
-Accessing a member function or variables should always be prefaced with `this`.
-
-TODO provide code examples
+Accessing a member function or variables should only be prefaced with `this`
+if there is a naming clash.
