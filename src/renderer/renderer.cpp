@@ -292,9 +292,9 @@ Size Renderer::measureText(Font *font, std::string text, float tab_width) {
     for (char c : text) {
         Font::Character ch = font->characters[c];
         if (c == '\t') {
-            size.w = font->characters[' '].advance * tab_width;
+            size.w += font->characters[' '].advance * tab_width;
         } else {
-            size.w = ch.advance;
+            size.w += ch.advance;
         }
     }
 
