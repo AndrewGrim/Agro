@@ -101,15 +101,16 @@ Size DrawingContext::measureTextMultiline(Font *font, std::string text, float li
 
 void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color) {
     Point pos = Point();
+    Size text_size = measureText(font, text);
     switch (h_align) {
         case HorizontalAlignment::Left:
             pos.x = rect.x + padding;
             break;
         case HorizontalAlignment::Right:
-            pos.x = (rect.x + rect.w) - (measureText(font, text).w + padding);
+            pos.x = (rect.x + rect.w) - (text_size.w + padding);
             break;
         case HorizontalAlignment::Center:
-            pos.x = rect.x + (rect.w * 0.5) - (measureText(font, text).w * 0.5);
+            pos.x = rect.x + (rect.w * 0.5) - (text_size.w * 0.5);
             break;
     }
     switch (v_align) {
@@ -117,10 +118,10 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
             pos.y = rect.y + padding;
             break;
         case VerticalAlignment::Bottom:
-            pos.y = (rect.y + rect.h) - (measureText(font, text).h + padding);
+            pos.y = (rect.y + rect.h) - (text_size.h + padding);
             break;
         case VerticalAlignment::Center:
-            pos.y = rect.y + (rect.h * 0.5) - (measureText(font, text).h * 0.5);
+            pos.y = rect.y + (rect.h * 0.5) - (text_size.h * 0.5);
             break;
     }
     fillText(
