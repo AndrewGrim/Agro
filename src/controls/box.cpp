@@ -11,7 +11,7 @@ Box::~Box() {
 
 }
 
-void Box::draw(DrawingContext &dc, Rect rect) {
+void Box::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     dc.fillRect(rect, this->background());
     layoutChildren(dc, rect);
@@ -116,7 +116,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
             child->rect = widget_rect;
         } else {
             if (child->isVisible()) {
-                child->draw(dc, widget_rect);
+                child->draw(dc, widget_rect, child->state());
             }
             if (m_align_policy == Align::Horizontal) {
                 if ((*generic_position_coord + *generic_length) > rect.x + rect.w) {

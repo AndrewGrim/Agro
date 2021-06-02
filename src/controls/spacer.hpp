@@ -8,7 +8,7 @@
             Spacer(Size min_size = Size());
             ~Spacer();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             Size minSize();
             void setMinSize(Size min_size);

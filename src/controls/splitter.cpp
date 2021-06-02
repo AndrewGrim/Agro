@@ -65,7 +65,7 @@ const char* Splitter::name() {
     return "Splitter";
 }
 
-void Splitter::draw(DrawingContext &dc, Rect rect) {
+void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     Rect old_clip = dc.clip();
@@ -73,7 +73,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect) {
         Rect local_rect = Rect(rect.x, rect.y, (rect.w - m_sash_size) * m_split, rect.h);
         if (m_first) {
             dc.setClip(local_rect);
-            m_first->draw(dc, local_rect);
+            m_first->draw(dc, local_rect, m_first->state());
         }
         local_rect = Rect(local_rect.x + local_rect.w, rect.y, m_sash_size, rect.h);
         dc.setClip(local_rect);
@@ -81,13 +81,13 @@ void Splitter::draw(DrawingContext &dc, Rect rect) {
         if (m_second) {
             local_rect = Rect(local_rect.x + m_sash_size, rect.y, (rect.w - m_sash_size) * (1.0f - m_split), rect.h);
             dc.setClip(local_rect);
-            m_second->draw(dc, local_rect);
+            m_second->draw(dc, local_rect, m_second->state());
         }
     } else {
         Rect local_rect = Rect(rect.x, rect.y, rect.w, (rect.h - m_sash_size) * m_split);
         if (m_first) {
             dc.setClip(local_rect);
-            m_first->draw(dc, local_rect);
+            m_first->draw(dc, local_rect, m_first->state());
         }
         local_rect = Rect(rect.x, local_rect.y + local_rect.h, rect.w, m_sash_size);
         dc.setClip(local_rect);
@@ -95,7 +95,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect) {
         if (m_second) {
             local_rect = Rect(rect.x, local_rect.y + m_sash_size, rect.w, (rect.h - m_sash_size) * (1.0f - m_split));
             dc.setClip(local_rect);
-            m_second->draw(dc, local_rect);
+            m_second->draw(dc, local_rect, m_second->state());
         }
     }
     dc.setClip(old_clip);

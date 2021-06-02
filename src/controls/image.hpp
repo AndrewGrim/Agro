@@ -16,7 +16,7 @@
             Image(std::shared_ptr<Texture> texture);
             ~Image();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual Image* setBackground(Color background) override;
             virtual Image* setForeground(Color background) override;

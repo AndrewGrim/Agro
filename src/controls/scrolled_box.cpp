@@ -13,7 +13,7 @@ const char* ScrolledBox::name() {
     return "ScrolledBox";
 }
 
-void ScrolledBox::draw(DrawingContext &dc, Rect rect) {
+void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Rect previous_clip = dc.clip();
     clip();
@@ -132,7 +132,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
             child->rect = widget_rect;
         } else {
             if (child->isVisible()) {
-                child->draw(dc, widget_rect);
+                child->draw(dc, widget_rect, child->state());
             }
             if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
                 break;

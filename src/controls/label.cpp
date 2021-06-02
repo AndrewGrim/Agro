@@ -12,7 +12,7 @@ const char* Label::name() {
     return "Label";
 }
 
-void Label::draw(DrawingContext &dc, Rect rect) {
+void Label::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     dc.fillRect(rect, Widget::m_bg);

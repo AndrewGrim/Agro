@@ -9,7 +9,7 @@ NoteBookTabBar::~NoteBookTabBar() {
     delete m_horizontal_scrollbar;
 }
 
-void NoteBookTabBar::draw(DrawingContext &dc, Rect rect) {
+void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     float x = rect.x;
 
@@ -31,7 +31,7 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect) {
         if (x + child_hint.w < rect.x) {
             child->rect = child_rect;
         } else {
-            child->draw(dc, child_rect);
+            child->draw(dc, child_rect, child->state());
             if ((x + child_hint.w) > (rect.x + rect.w)) {
                 break;
             }
@@ -48,12 +48,16 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect) {
             slider_size = rect.w - 10;
         }
         m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
-        m_horizontal_scrollbar->draw(dc, Rect(
-            rect.x,
-            (rect.y + rect.h) - scroll_size.h,
-            rect.w > scroll_size.w ? rect.w : scroll_size.w,
-            scroll_size.h
-        ));
+        m_horizontal_scrollbar->draw(
+            dc,
+            Rect(
+                rect.x,
+                (rect.y + rect.h) - scroll_size.h,
+                rect.w > scroll_size.w ? rect.w : scroll_size.w,
+                scroll_size.h
+            ),
+            m_horizontal_scrollbar->state()
+        );
     }
 }
 
@@ -143,7 +147,7 @@ const char* NoteBookTabButton::name() {
     return "NoteBookTabButton";
 }
 
-void NoteBookTabButton::draw(DrawingContext &dc, Rect rect) {
+void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
     if (isActive()) {
@@ -209,7 +213,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect) {
     if (m_close_button) {
         // TODO would be nice if the icon lit up when being hover / active
         // 12 being the size of the icon in pixels
-        m_close_image->draw(dc, Rect(rect.x + 10, rect.y + (rect.h / 2) - (12 / 2), 12, 12));
+        m_close_image->draw(dc, Rect(rect.x + 10, rect.y + (rect.h / 2) - (12 / 2), 12, 12), m_close_image->state());
     }
 }
 
@@ -289,17 +293,17 @@ NoteBook::~NoteBook() {
 
 }
 
-void NoteBook::draw(DrawingContext &dc, Rect rect) {
+void NoteBook::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     if (m_tabs->children.size()) {
         // NoteBookTabBar.
         Size tab_bar_size = m_tabs->sizeHint(dc);
-        m_tabs->draw(dc, Rect(rect.x, rect.y, rect.w, tab_bar_size.h));
+        m_tabs->draw(dc, Rect(rect.x, rect.y, rect.w, tab_bar_size.h), m_tabs->state());
         rect.y += tab_bar_size.h;
         rect.h -= tab_bar_size.h;
 
         // Tab content.
-        this->children[m_tab_index]->draw(dc, rect);
+        this->children[m_tab_index]->draw(dc, rect, children[m_tab_index]->state());
     }
 }
 

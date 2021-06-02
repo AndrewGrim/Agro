@@ -13,7 +13,7 @@
             Button(Image *image);
             ~Button();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual Button* setBackground(Color background) override;
             virtual Button* setForeground(Color foreground) override;

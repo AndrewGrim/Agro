@@ -180,7 +180,7 @@ const char* LineEdit::name() {
     return "LineEdit";
 }
 
-void LineEdit::draw(DrawingContext &dc, Rect rect) {
+void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     Rect old_clip = dc.clip();

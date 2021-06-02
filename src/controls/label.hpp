@@ -11,7 +11,7 @@
             Label(std::string text);
             ~Label();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual Label* setBackground(Color background) override;
             virtual Label* setForeground(Color foreground) override;

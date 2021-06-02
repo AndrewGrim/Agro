@@ -12,7 +12,7 @@
             Scrollable(Size min_size = Size(400, 400));
             ~Scrollable();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual bool isScrollable() override;

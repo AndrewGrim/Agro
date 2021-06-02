@@ -19,7 +19,7 @@ const char* ScrollBarArrowButton::name() {
     return "ScrollBarArrowButton";
 }
 
-void ScrollBarArrowButton::draw(DrawingContext &dc, Rect rect) {
+void ScrollBarArrowButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
     if (this->isPressed() && this->isHovered()) {
@@ -69,7 +69,7 @@ const char* ScrollBarSlider::name() {
     return "ScrollBarSlider";
 }
 
-void ScrollBarSlider::draw(DrawingContext &dc, Rect rect) {
+void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     // Get the size of the slider button.
@@ -96,13 +96,13 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect) {
         if (result > 0) {
             rect.x += result;
         }
-        m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
+        m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h), m_slider_button->state());
     } else {
         float result = ((rect.h - size) * m_value);
         if (result > 0) {
             rect.y += result;
         }
-        m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
+        m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size), m_slider_button->state());
     }
 }
 
@@ -120,9 +120,9 @@ const char* SimpleScrollBar::name() {
     return "SimpleScrollBar";
 }
 
-void SimpleScrollBar::draw(DrawingContext &dc, Rect rect) {
+void SimpleScrollBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
-    this->m_slider->draw(dc, rect);
+    this->m_slider->draw(dc, rect, m_slider->state());
 }
 
 Size SimpleScrollBar::sizeHint(DrawingContext &dc) {
@@ -170,20 +170,20 @@ const char* ScrollBar::name() {
     return "ScrollBar";
 }
 
-void ScrollBar::draw(DrawingContext &dc, Rect rect) {
+void ScrollBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Size button_size = this->m_begin_button->sizeHint(dc);
-    this->m_begin_button->draw(dc, Rect(rect.x, rect.y, button_size.w, button_size.h));
+    this->m_begin_button->draw(dc, Rect(rect.x, rect.y, button_size.w, button_size.h), m_begin_button->state());
     if (this->m_align_policy == Align::Horizontal) {
         rect.x += button_size.w;
         rect.w -= button_size.w * 2;
-        this->m_slider->draw(dc, rect);
-        this->m_end_button->draw(dc, Rect(rect.x + rect.w, rect.y, button_size.w, button_size.h));
+        this->m_slider->draw(dc, rect, m_slider->state());
+        this->m_end_button->draw(dc, Rect(rect.x + rect.w, rect.y, button_size.w, button_size.h), m_end_button->state());
     } else {
         rect.y += button_size.h;
         rect.h -= button_size.h * 2;
-        this->m_slider->draw(dc, rect);
-        this->m_end_button->draw(dc, Rect(rect.x, rect.y + rect.h, button_size.w, button_size.h));
+        this->m_slider->draw(dc, rect, m_slider->state());
+        this->m_end_button->draw(dc, Rect(rect.x, rect.y + rect.h, button_size.w, button_size.h), m_end_button->state());
     }
 }
 

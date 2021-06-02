@@ -8,7 +8,7 @@
             SliderButton(Size min_size = Size(10, 10));
             ~SliderButton();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             SliderButton* setMinSize(Size size);
             Size minSize();
@@ -29,7 +29,7 @@
             Slider(Align alignment, float value = 0.0f);
             ~Slider();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect) override;
+            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
     };

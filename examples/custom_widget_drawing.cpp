@@ -23,7 +23,7 @@ class CustomWidget : public Widget {
             return "CustomWidget";
         }
 
-        void draw(DrawingContext &dc, Rect rect) {
+        void draw(DrawingContext &dc, Rect rect, int state) {
             this->rect = rect;
             lena->flipBoth();
             dc.fillRect(rect, Color(0.7f, 0.7f, 0.7f));

@@ -13,7 +13,7 @@ const char* Spacer::name() {
     return "Spacer";
 }
 
-void Spacer::draw(DrawingContext &dc, Rect rect) {
+void Spacer::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     dc.fillRect(rect, m_bg);
 }

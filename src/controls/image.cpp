@@ -31,7 +31,7 @@ const char* Image::name() {
     return "Image";
 }
 
-void Image::draw(DrawingContext &dc, Rect rect) {
+void Image::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     dc.fillRect(rect, Widget::m_bg);

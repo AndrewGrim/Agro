@@ -20,7 +20,7 @@ const char* Button::name() {
     return "Button";
 }
 
-void Button::draw(DrawingContext &dc, Rect rect) {
+void Button::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     Color color;

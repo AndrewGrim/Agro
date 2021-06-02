@@ -41,7 +41,7 @@ class CustomStyle : public Widget {
             return "CustomStyle";
         }
 
-        void draw(DrawingContext &dc, Rect rect) {
+        void draw(DrawingContext &dc, Rect rect, int state) {
             this->rect = rect;
 
             dc.fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));

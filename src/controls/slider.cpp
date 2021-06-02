@@ -17,7 +17,7 @@ const char* SliderButton::name() {
     return "SliderButton";
 }
 
-void SliderButton::draw(DrawingContext &dc, Rect rect) {
+void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color = COLOR_BLACK;
     if (this->isPressed()) {
@@ -114,7 +114,7 @@ const char* Slider::name() {
     return "Slider";
 }
 
-void Slider::draw(DrawingContext &dc, Rect rect) {
+void Slider::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     // Get the size of the slider button.
@@ -143,10 +143,10 @@ void Slider::draw(DrawingContext &dc, Rect rect) {
     int start = size - m_origin;
     if (m_align_policy == Align::Horizontal) {
         rect.x += (rect.w - start - m_origin) * m_value;
-        m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h));
+        m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h), m_slider_button->state());
     } else {
         rect.y += (rect.h - start - m_origin) * m_value;
-        m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size));
+        m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size), m_slider_button->state());
     }
 }
 
