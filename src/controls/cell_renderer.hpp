@@ -3,18 +3,13 @@
 #include "../renderer/drawing_context.hpp"
 #include "../controls/image.hpp"
 
-class CellRenderer {
+class CellRenderer : public Drawable {
     public:
-        enum State {
-            STATE_DEFAULT = 0x0000,
-            STATE_HOVERED = 0x0010,
-            STATE_SELECTED = 0x0100,
-        };
-
-        CellRenderer() {}
-        virtual ~CellRenderer() {}
+        CellRenderer();
+        virtual ~CellRenderer();
         virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
         virtual Size sizeHint(DrawingContext &dc) = 0;
+        virtual bool isWidget() override;
 };
 
 class EmptyCell : public CellRenderer {

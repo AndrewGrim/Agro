@@ -1,5 +1,12 @@
 #include "cell_renderer.hpp"
 
+CellRenderer::CellRenderer() {}
+CellRenderer::~CellRenderer() {}
+
+bool CellRenderer::isWidget() {
+    return false;
+}
+
 EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}
 
