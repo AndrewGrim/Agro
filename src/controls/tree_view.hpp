@@ -367,88 +367,30 @@
 
             TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-                    Size virtual_size = m_virtual_size;
-                    if (areColumnHeadersHidden()) {
-                        virtual_size.h -= m_children_size.h;
-                    }
-                    float x = inner_rect.x;
-                    float y = inner_rect.y;
-                    if (m_horizontal_scrollbar) {
-                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
-                    }
-                    if (m_vertical_scrollbar) {
-                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
-                    }
-                    if (!areColumnHeadersHidden()) {
-                        y += m_children_size.h;
-                    }
-                    if (event.x <= x + m_current_header_width) {
-                        m_model->forEachNode(
-                            m_model->roots,
-                            [&](TreeNode<T> *node) -> Traversal {
-                                if (event.y >= y && event.y <= y + node->max_cell_height) {
-                                    if (m_hovered != node) {
-                                        m_hovered = node;
-                                        if (onNodeHovered) {
-                                            onNodeHovered(this, node);
-                                        }
-                                        update();
-                                    }
-                                }
-                                y += node->max_cell_height;
-                                if (node->is_collapsed) {
-                                    return Traversal::Next;
-                                } else if (y > event.y) {
-                                    return Traversal::Break;
-                                }
-                                return Traversal::Continue;
-                            }
-                        );
-                    } else {
-                        m_hovered = nullptr;
+                    if (m_event_node && m_hovered != m_event_node) {
+                        m_hovered = m_event_node;
+                        if (onNodeHovered) {
+                            onNodeHovered(this, m_event_node);
+                        }
                         update();
                     }
                 });
-                this->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
-                    Size virtual_size = m_virtual_size;
-                    if (areColumnHeadersHidden()) {
-                        virtual_size.h -= m_children_size.h;
-                    }
-                    float x = inner_rect.x;
-                    float y = inner_rect.y;
-                    if (m_horizontal_scrollbar) {
-                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
-                    }
-                    if (m_vertical_scrollbar) {
-                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
-                    }
-                    if (!areColumnHeadersHidden()) {
-                        y += m_children_size.h;
-                    }
-                    if (event.x <= x + m_current_header_width) {
-                        m_model->forEachNode(
-                            m_model->roots,
-                            [&](TreeNode<T> *node) -> Traversal {
-                                if (event.y >= y && event.y <= y + node->max_cell_height) {
-                                    if (node->children.size() && (!m_table && (event.x >= x + (node->depth - 1) * m_indent && event.x <= x + node->depth * m_indent))) {
-                                        if (node->is_collapsed) {
-                                            expand(node);
-                                        } else {
-                                            collapse(node);
-                                        }
-                                    } else {
-                                        select(node);
-                                    }
-                                }
-                                y += node->max_cell_height;
-                                if (node->is_collapsed) {
-                                    return Traversal::Next;
-                                } else if (y > event.y) {
-                                    return Traversal::Break;
-                                }
-                                return Traversal::Continue;
+                this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+                    if (m_event_node) {
+                        float x = inner_rect.x;
+                        if (m_horizontal_scrollbar) {
+                            x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
+                        }
+                        if (m_event_node->children.size() &&
+                            (!m_table && (event.x >= x + (m_event_node->depth - 1) * m_indent && event.x <= x + m_event_node->depth * m_indent))) {
+                            if (m_event_node->is_collapsed) {
+                                expand(m_event_node);
+                            } else {
+                                collapse(m_event_node);
                             }
-                        );
+                        } else {
+                            select(m_event_node);
+                        }
                     }
                 });
                 this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -947,6 +889,54 @@
                         }
                     }
                 }
+                {
+                    // Go down the Node tree to find either a Widget to pass the event to
+                    // or simply record the node and pass the event to the TreeView itself as per usual.
+                    float x = inner_rect.x;
+                    float y = inner_rect.y;
+                    if (m_horizontal_scrollbar) {
+                        x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
+                    }
+                    if (m_vertical_scrollbar) {
+                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
+                    }
+                    if (!areColumnHeadersHidden()) {
+                        y += m_children_size.h;
+                    }
+                    Widget *widget = nullptr;
+                    if (event.x <= x + m_current_header_width) {
+                        m_model->forEachNode(
+                            m_model->roots,
+                            [&](TreeNode<T> *node) -> Traversal {
+                                if (event.y >= y && event.y <= y + node->max_cell_height) {
+                                    for (size_t i = 0; i < children.size(); i++) {
+                                        Column<T> *col = (Column<T>*)children[i];
+                                        if ((event.x >= col->rect.x) && (event.x <= (col->rect.x + col->rect.w))) {
+                                            if (node->columns[i]->isWidget()) {
+                                                Application *app = Application::get();
+                                                ((Widget*)node->columns[i])->handleMouseEvent(app, app->m_state, event);
+                                                widget = (Widget*)node->columns[i];
+                                            } else {
+                                                m_event_node = node;
+                                            }
+                                            return Traversal::Break;
+                                        }
+                                    }
+                                }
+                                y += node->max_cell_height;
+                                if (node->is_collapsed) {
+                                    return Traversal::Next;
+                                } else if (y > event.y) {
+                                    return Traversal::Break;
+                                }
+                                return Traversal::Continue;
+                            }
+                        );
+                        if (widget) { return widget; }
+                    } else {
+                        m_event_node = nullptr;
+                    }
+                }
 
                 handleMouseEvent(window, state, event);
                 return this;
@@ -964,6 +954,7 @@
             uint8_t m_indent = 24;
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_focused = nullptr;
+            TreeNode<T> *m_event_node = nullptr;
             GridLines m_grid_lines = GridLines::Both;
             int m_treeline_size = 2;
             Column<T> *m_last_sort = nullptr;
