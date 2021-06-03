@@ -2,20 +2,25 @@
 
 class CustomWidget : public Widget {
     public:
-        Font *mono = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 16, Font::Type::Mono);
         Font *small = new Font("fonts/DejaVu/DejaVuSans.ttf", 12, Font::Type::Sans);
         Font *big = new Font("fonts/DejaVu/DejaVuSans-Bold.ttf", 22, Font::Type::Sans);
-        Image *lena = new Image("lena.png");
+        Font *mono = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 16, Font::Type::Mono);
+        std::shared_ptr<Texture> lena = std::make_shared<Texture>("lena.png");
+        Image *normal = new Image(lena);
+        Image *flipped_h = (new Image(lena))->flipHorizontally();
+        Image *flipped_v = (new Image(lena))->flipVertically();
 
         CustomWidget() {
-
+            normal->setMinSize(Size(24, 24));
         }
 
         ~CustomWidget() {
-            delete lena;
-            delete mono;
             delete small;
             delete big;
+            delete mono;
+            delete normal;
+            delete flipped_h;
+            delete flipped_v;
         }
 
 
@@ -25,29 +30,118 @@ class CustomWidget : public Widget {
 
         void draw(DrawingContext &dc, Rect rect, int state) {
             this->rect = rect;
-            lena->flipBoth();
-            dc.fillRect(rect, Color(0.7f, 0.7f, 0.7f));
-            dc.fillRectWithGradient(Rect(rect.x, rect.y, 125, 100), COLOR_BLACK, Color(1.0f, 0.1f), Gradient::LeftToRight);
-            dc.fillRectWithGradient(Rect(rect.x + 125, rect.y, 125, 100), COLOR_BLACK, Color(0.2f, 0.7f, 0.9f), Gradient::TopToBottom);
-            dc.fillTextAligned(dc.default_font, "Left Aligned Text", HorizontalAlignment::Left, VerticalAlignment::Top, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
-            dc.fillTextAligned(dc.default_font, "Centered Aligned Text", HorizontalAlignment::Center, VerticalAlignment::Center, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
-            dc.fillTextAligned(dc.default_font, "Right Aligned Text", HorizontalAlignment::Right, VerticalAlignment::Bottom, Rect(rect.x, rect.y, 250, 100), 10, COLOR_WHITE);
-            dc.fillText(dc.default_font, "lena.png", Point(rect.x + 25, rect.y + 130));
-            dc.drawTexture(Point(rect.x + 50, rect.y + 150), Size(24, 24), lena->_texture(), lena->coords());
-            dc.drawTexture(Point(rect.x + 125, rect.y + 100), Size(72, 72), lena->_texture(), lena->coords());
-            dc.fillRect(Rect(rect.x, rect.y + 175, rect.w, 20), COLOR_BLACK);
-            for (int i = 0; i < rect.w - 5; i += 10) {
-                dc.drawPoint(Point(rect.x + i, rect.y + 180), Color(0, 1));
-                dc.drawPoint(Point(rect.x + i + 5, rect.y + 190), COLOR_WHITE);
+
+            HorizontalAlignment h_align[3] = {
+                HorizontalAlignment::Left, HorizontalAlignment::Right, HorizontalAlignment::Center
+            };
+            VerticalAlignment v_align[3] = {
+                VerticalAlignment::Top, VerticalAlignment::Bottom, VerticalAlignment::Center
+            };
+            { // Text
+                Font *fonts[3] = { small, big, mono };
+                {
+                    Color colors[3] = { Color("#ffaaaa"), Color("#aaffaa"), Color("#aaaaff") };
+                    for (int i = 0; i < 3; i++) {
+                        dc.fillRect(Rect(rect.x, rect.y, rect.w, 50), colors[i]);
+                        dc.fillTextAligned(
+                            fonts[i], "This text\n is on a\n single line.",
+                            h_align[i], v_align[i],
+                            Rect(rect.x, rect.y, rect.w, 50), 5, COLOR_BLACK
+                        );
+                        rect.y += 50;
+                    }
+                }
+                {
+                    Color colors[3] = { Color("#ffffaa"), Color("#aaffff"), Color("#ffaaff") };
+                    for (int i = 0; i < 3; i++) {
+                        dc.fillRect(Rect(rect.x, rect.y, rect.w, 100), colors[i]);
+                        dc.fillTextMultilineAligned(
+                            fonts[i], "This text\nspans multiple\nlines.",
+                            h_align[i], v_align[i],
+                            Rect(rect.x, rect.y, rect.w, 100), 5, COLOR_BLACK, 5.0f
+                        );
+                        rect.y += 100;
+                    }
+                }
+                // There are another two methods: fillText() and fillTextMultiline().
+                // These are essentially the same as the aligned variants with
+                // HorizontalAlignment::Left and VerticalAlignment::Center used, and so
+                // the aligned versions should be preferred as they already deal
+                // with the text measurement, padding and alignment.
+                //
+                // When the text drawn by the Widget is relevant to its size
+                // it is important to use the corresponding text measurement method.
+                // When drawing using fillText() or fillTextAligned() you should use measureText().
+                // Likewise when drawing using fillTextMultiline() and fillTextMultilineAligned()
+                // you should use measureTextMultiline().
+                // Lastly there is a measureText() overload for individual characters.
             }
-            dc.drawTexture(Point(rect.x, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords());
-            dc.drawTexture(Point(rect.x + 60, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(1.0f));
-            dc.drawTexture(Point(rect.x + 120, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(0.0f, 1.0f));
-            dc.drawTexture(Point(rect.x + 180, rect.y + 200), Size(48, 48), lena->_texture(), lena->coords(), Color(0.0f, 0.0f, 1.0f));
+
+            { // Gradients
+                // At the moment only two color gradients are supported.
+                dc.fillRectWithGradient(Rect(rect.x, rect.y, rect.w, 100), COLOR_BLACK, Color(1.0f, 0.1f), Gradient::LeftToRight);
+                rect.y += 100;
+                dc.fillRectWithGradient(Rect(rect.x, rect.y, rect.w, 100), COLOR_BLACK, Color(0.2f, 0.7f, 0.9f), Gradient::TopToBottom);
+                rect.y += 100;
+            }
+
+            { // Images and Textures
+                // An Image is a Widget that draws a Texture.
+                // A Texture is a bitmap of some graphic that is stored on the GPU.
+                // If a particular Texture is only used in one place
+                // you can just create an Image and it will automatically create the Texture.
+                // Example: `Image *lena = new Image("lena.png");`
+                // Later if you would like to reuse the same Texture for other images
+                // you can access it with `image->_texture()`.
+                //
+                // However if the same Texture is going to be used in different places
+                // and perhaps at different sizes and with different colors, you should create the Texture
+                // manually, and pass that Texture to the Images.
+                // Example:
+                // `auto tex = std::make_shared<Texture>("lena.png");`
+                // `Image *lena1 = new Image(tex);`
+                // `Image *lena2 = new Image(tex);`
+                // Here both Images use the exact same Texture but can draw it
+                // at any size and color without affecting the other.
+                Color colors[3] = { Color("#ffffff"), Color("#ffaa55"), Color("#55aaff") };
+                Image *images[3] = { normal, flipped_h, flipped_v };
+                Size sizes[3] = { Size(48, 48), Size(72, 72), Size(96, 96) };
+                dc.fillRect(Rect(rect.x, rect.y, rect.w, 128), Color("#ffaa5555"));
+                for (int i = 0; i < 3; i++) {
+                    dc.drawTextureAligned(
+                        Rect(rect.x, rect.y, rect.w, 128), sizes[i],
+                        images[i]->_texture(),
+                        images[i]->coords(),
+                        h_align[i], v_align[i],
+                        colors[i]
+                    );
+                }
+                rect.y += 128;
+                // Just like for text there is a drawTexture() variant wihout alignment
+                // but similarly you probably want to use the aligned version most of the time.
+                //
+                // It is important to note that in order to draw a Texture at its original color
+                // you need to pass `COLOR_WHITE` or `Color("#ffffff")` to the drawing function.
+                // This is due to how the drawing works in the renderer.
+                // However this also means that if a graphic is only or mostly composed of white
+                // then you can change the white pixels on it to any color you want.
+                // This can be great for icons.
+
+                // In this classe's constructor we override the minimum size of the `normal`
+                // Image to be 24 by 24 pixels.
+                // Below you can see that the Image expands into its given rectangle
+                // and can even stretch when you disable maintaining the aspect ratio.
+                normal->setExpand(true)->setMaintainAspectRatio(true);
+                normal->draw(dc, Rect(rect.x, rect.y, rect.w, 256), normal->state());
+                rect.y += 256;
+                normal->setExpand(true)->setMaintainAspectRatio(false);
+                normal->draw(dc, Rect(rect.x, rect.y, rect.w, 256), normal->state());
+                rect.y += 256;
+            }
         }
 
         Size sizeHint(DrawingContext &dc) {
-            return Size(250, 250);
+            return Size(500, 1500);
         }
 };
 
@@ -60,8 +154,10 @@ int main(int argc, char **argv) {
                 }
             }
         };
+        app->resize(600, 600);
+        app->center();
         app->setTitle("Custom Widget Drawing");
-        app->append(new CustomWidget());
+        app->append(new CustomWidget(), Fill::Both);
     app->run();
 
     return 0;
