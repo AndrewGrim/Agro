@@ -205,7 +205,8 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
                 onMouseEntered.notify(this, event);
                 onMouseMotion.notify(this, event);
             } else {
-                state->hovered = this;
+                if (state->pressed == this) { state->hovered = this; }
+                else { state->hovered = nullptr; }
                 ((Widget*)state->pressed)->onMouseMotion.notify(this, event);
             }
             break;
