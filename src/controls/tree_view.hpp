@@ -189,10 +189,12 @@
                             setWidth(rect.w + event.xrel);
                         }
                     } else {
-                        if (event.x >= (rect.x + rect.w) - 5) {
-                            Application::get()->setMouseCursor(Cursor::SizeWE);
-                        } else {
-                            Application::get()->setMouseCursor(Cursor::Default);
+                        if (!isPressed()) {
+                            if (event.x >= (rect.x + rect.w) - 5) {
+                                Application::get()->setMouseCursor(Cursor::SizeWE);
+                            } else {
+                                Application::get()->setMouseCursor(Cursor::Default);
+                            }
                         }
                     }
                 });
