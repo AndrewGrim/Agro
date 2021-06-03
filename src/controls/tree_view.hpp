@@ -596,7 +596,7 @@
                                         if (drawable->isWidget()) {
                                             state = ((Widget*)drawable)->state();
                                         } else {
-                                            if (m_focused == node) { state |= STATE_PRESSED; }
+                                            if (m_focused == node) { state |= STATE_FOCUSED; }
                                             if (m_hovered == node) { state |= STATE_HOVERED; }
                                         }
                                         drawable->draw(
