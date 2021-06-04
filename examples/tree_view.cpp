@@ -57,6 +57,9 @@ int main(int argc, char **argv) {
                     ((TextCellRenderer*)columns[0])->h_align = HorizontalAlignment::Left;
                     ((TextCellRenderer*)columns[1])->h_align = HorizontalAlignment::Right;
                     ((ImageTextCellRenderer*)columns[2])->h_align = HorizontalAlignment::Center;
+                    ((Widget*)columns[3])->onMouseDown.addEventListener([](Widget *widget, MouseEvent event) {
+                        println(widget->name());
+                    });
                     TreeNode<Hidden> *node = new TreeNode<Hidden>(columns, new Hidden(i));
                     model->append(nullptr, node);
                 }
