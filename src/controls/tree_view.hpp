@@ -546,7 +546,7 @@
                                         drawable->draw(
                                             dc,
                                             Rect(
-                                                cell_x, pos.y, col_width > s.w ? col_width : s.w, node->max_cell_height
+                                                cell_x, pos.y, col_width > s.w ? col_width - 1 : s.w - 1, node->max_cell_height - 1 // - 1 to account for the pixels used when drawing the grid.
                                             ),
                                             state
                                         );
@@ -561,7 +561,7 @@
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                                 dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                                dc.fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f));
+                                dc.fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f)); // - 1 to account for the pixels used when drawing the grid.
                             }
                         }
 
@@ -581,7 +581,7 @@
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (float width : m_column_widths) {
-                            dc.fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
+                            dc.fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f)); // - 1 to account for the pixels used when drawing the grid.
                             pos.x += width;
                         }
                     }
@@ -1027,7 +1027,7 @@
                         if (!collapsed) {
                             // Check and set the max height of the node.
                             int index = 0;
-                            assert(node->columns.size() == children.size() && "The amount of Column<T>s and CellRenderers should be the same!");
+                            assert(node->columns.size() == children.size() && "The amount of Column<T>s and Drawables should be the same!");
                             for (Drawable *drawable : node->columns) {
                                 Size s = drawable->sizeHint(dc);
                                 Column<T> *col = (Column<T>*)children[index];
@@ -1038,6 +1038,7 @@
                                 // Automatically set the columns to be wide
                                 // enough for their contents.
                                 if (m_auto_size_columns && s.w > col->width()) {
+                                    s.w += 1; // + 1 to account for the pixel used when drawing the grid.
                                     col->setWidth(s.w);
                                     // The below is necessary because sizeHint won't run
                                     // again until the next update().
@@ -1048,7 +1049,7 @@
                                     m_size_changed = false;
                                 }
                                 if (s.h > node->max_cell_height) {
-                                    node->max_cell_height = s.h;
+                                    node->max_cell_height = s.h + 1; // + 1 to account for the pixel used when drawing the grid.
                                 }
                                 index++;
                             }
