@@ -546,7 +546,7 @@
                                         drawable->draw(
                                             dc,
                                             Rect(
-                                                cell_x, pos.y, col_width > s.w ? col_width - 1 : s.w - 1, node->max_cell_height - 1 // - 1 to account for the pixels used when drawing the grid.
+                                                cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
                                             ),
                                             state
                                         );
@@ -561,7 +561,7 @@
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                                 dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                                dc.fillRect(Rect(rect.x, pos.y - 1, m_current_header_width, 1), Color(0.85f, 0.85f, 0.85f)); // - 1 to account for the pixels used when drawing the grid.
+                                dc.fillRect(Rect(rect.x, pos.y - m_grid_line_width, m_current_header_width, m_grid_line_width), Color(0.85f, 0.85f, 0.85f));
                             }
                         }
 
@@ -581,7 +581,7 @@
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (float width : m_column_widths) {
-                            dc.fillRect(Rect(pos.x + width - 1, rect.y + local_column_header, 1, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f)); // - 1 to account for the pixels used when drawing the grid.
+                            dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
                         }
                     }
@@ -970,6 +970,7 @@
             TreeNode<T> *m_event_node = nullptr;
             GridLines m_grid_lines = GridLines::Both;
             int m_treeline_size = 2;
+            int m_grid_line_width = 1;
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
             float m_current_header_width = 0.0f;
@@ -1038,7 +1039,7 @@
                                 // Automatically set the columns to be wide
                                 // enough for their contents.
                                 if (m_auto_size_columns && s.w > col->width()) {
-                                    s.w += 1; // + 1 to account for the pixel used when drawing the grid.
+                                    s.w += m_grid_line_width;
                                     col->setWidth(s.w);
                                     // The below is necessary because sizeHint won't run
                                     // again until the next update().
@@ -1049,7 +1050,7 @@
                                     m_size_changed = false;
                                 }
                                 if (s.h > node->max_cell_height) {
-                                    node->max_cell_height = s.h + 1; // + 1 to account for the pixel used when drawing the grid.
+                                    node->max_cell_height = s.h + m_grid_line_width;
                                 }
                                 index++;
                             }
