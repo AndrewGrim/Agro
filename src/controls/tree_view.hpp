@@ -876,6 +876,17 @@
                         return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
                     }
                 }
+                if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+                    if ((event.x > m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+                        (event.y > m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+                        if (state->hovered) {
+                            ((Widget*)state->hovered)->onMouseLeft.notify(this, event);
+                        }
+                        state->hovered = nullptr;
+                        update();
+                        return nullptr;
+                    }
+                }
                 if (!areColumnHeadersHidden()) {
                     for (Widget *child : children) {
                         if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
