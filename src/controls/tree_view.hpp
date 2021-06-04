@@ -926,9 +926,16 @@
                                         Column<T> *col = (Column<T>*)children[i];
                                         if ((event.x >= col->rect.x) && (event.x <= (col->rect.x + col->rect.w))) {
                                             if (node->columns[i]->isWidget()) {
-                                                Application *app = Application::get();
-                                                ((Widget*)node->columns[i])->handleMouseEvent(app, app->m_state, event);
-                                                widget = (Widget*)node->columns[i];
+                                                auto _widget = (Widget*)node->columns[i];
+                                                if ((event.x >= _widget->rect.x && event.x <= _widget->rect.x + _widget->rect.w) &&
+                                                    (event.y >= _widget->rect.y && event.y <= _widget->rect.y + _widget->rect.h)
+                                                ) {
+                                                    Application *app = Application::get();
+                                                    ((Widget*)node->columns[i])->handleMouseEvent(app, app->m_state, event);
+                                                    widget = _widget;
+                                                } else {
+                                                    m_event_node = node;
+                                                }
                                             } else {
                                                 m_event_node = node;
                                             }
