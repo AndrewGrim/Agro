@@ -21,8 +21,6 @@ const char* Button::name() {
 }
 
 void Button::draw(DrawingContext &dc, Rect rect, int state) {
-    this->rect = rect;
-
     Color color;
     if (isPressed() && isHovered()) {
         color = m_pressed_bg;
@@ -33,6 +31,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     dc.margin(rect, style);
+    this->rect = rect;
     dc.drawBorder(rect, style);
     dc.fillRect(rect, color);
     dc.padding(rect, style);
