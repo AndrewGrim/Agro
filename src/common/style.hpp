@@ -3,6 +3,17 @@
 
     #include "color.hpp"
 
+    #define TOP_PADDING(widget) (widget->style.padding.top == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.top : widget->style.padding.top)
+    #define BOTTOM_PADDING(widget) (widget->style.padding.bottom == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.bottom : widget->style.padding.bottom)
+    #define LEFT_PADDING(widget) (widget->style.padding.left == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.left : widget->style.padding.left)
+    #define RIGHT_PADDING(widget) (widget->style.padding.right == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.right : widget->style.padding.right)
+
+    #define TOP_BORDER(widget) (widget->style.border.top == STYLE_DEFAULT ? Application::get()->dc->default_style.border.top : widget->style.border.top)
+    #define BOTTOM_BORDER(widget) (widget->style.border.bottom == STYLE_DEFAULT ? Application::get()->dc->default_style.border.bottom : widget->style.border.bottom)
+    #define LEFT_BORDER(widget) (widget->style.border.left == STYLE_DEFAULT ? Application::get()->dc->default_style.border.left : widget->style.border.left)
+    #define RIGHT_BORDER(widget) (widget->style.border.right == STYLE_DEFAULT ? Application::get()->dc->default_style.border.right : widget->style.border.right)
+
+
     enum StyleOptions {
         STYLE_DEFAULT = -1,
         STYLE_NONE = 0x0000,
@@ -13,15 +24,6 @@
         STYLE_ALL = 0x1111,
     };
 
-    // TODO we need to think about color somewhat
-    // cause we want to be able to tell when a color
-    // is not overriden
-    // i though about using uint32_t for 8bits per color/alpha
-    // but then we couldnt really set it to -1 unless we checked for
-    // the max uint32_t value instead
-    // and on the flip side int32_t would quite work for bitshifting?
-    // i pressume anyway, the uint32_t method should also be easier
-    // to work with rgba int and hex | string
     struct Style {
         struct Margin {
             int type = STYLE_DEFAULT;
