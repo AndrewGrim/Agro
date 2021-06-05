@@ -177,13 +177,13 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style);
+    dc.fillRect(rect, background());
     dc.padding(rect, style);
     inner_rect = rect;
 
     Rect old_clip = dc.clip();
     dc.setClip(Rect(rect.x, rect.y, rect.w + 1, rect.h).clipTo(old_clip));
 
-    dc.fillRect(inner_rect, background());
     if (m_virtual_size.w > inner_rect.w) {
         inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
     }
