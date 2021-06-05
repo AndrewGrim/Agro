@@ -61,7 +61,7 @@
         public:
             std::function<void()> onTextChanged = nullptr;
 
-            LineEdit(std::string text = "");
+            LineEdit(std::string text = "", std::string placeholder = "");
             ~LineEdit();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
@@ -69,10 +69,6 @@
             virtual void handleTextEvent(DrawingContext &dc, const char *text);
             LineEdit* setText(std::string text);
             std::string text();
-            unsigned int borderWidth();
-            LineEdit* setBorderWidth(unsigned int border_width);
-            unsigned int padding();
-            LineEdit* setPadding(unsigned int padding);
             float minLength();
             LineEdit* setMinLength(float length);
             LineEdit* moveCursorLeft();
@@ -98,14 +94,14 @@
         protected:
             std::string m_text;
             std::string m_placeholder_text;
-            unsigned int m_border_width = 2;
-            unsigned int m_padding = 10;
             float m_min_length = 50;
             float m_min_view = 0.0;
             float m_max_view = 1.0;
             float m_current_view = m_min_view;
             Size m_virtual_size = Size();
+            float m_text_height = 0.0f;
             bool m_text_changed = false;
+            float m_cursor_width = 1.0f;
             Selection m_selection;
             History m_history;
     };
