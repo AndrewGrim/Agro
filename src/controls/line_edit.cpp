@@ -290,7 +290,7 @@ LineEdit* LineEdit::setMinLength(float length) {
 
 LineEdit* LineEdit::moveCursorLeft() {
     if (m_selection.end == 0) {
-       if (m_selection.hasSelection()) {
+       if (m_selection.hasSelection() && !isShiftPressed()) {
             swapSelection();
             m_selection.x_end = m_selection.x_begin;
             m_selection.end = m_selection.begin;
@@ -324,7 +324,7 @@ LineEdit* LineEdit::moveCursorLeft() {
 
 LineEdit* LineEdit::moveCursorRight() {
     if (m_selection.end == text().size()) {
-       if (m_selection.hasSelection()) {
+       if (m_selection.hasSelection() && !isShiftPressed()) {
             m_selection.x_begin = m_selection.x_end;
             m_selection.begin = m_selection.end;
         }
