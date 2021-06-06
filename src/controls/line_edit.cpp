@@ -47,7 +47,7 @@ LineEdit::LineEdit(std::string text, std::string placeholder) : Widget() {
             float offset_event = event.x - inner_rect.x;
 
             // Selection is to the right of the origin point.
-            if (event.x >= x) {
+            if (offset_event >= x) {
                 while (index < this->text().length()) {
                     char c = this->text()[index];
                     float w = dc.measureText(font(), c).w;
