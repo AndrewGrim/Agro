@@ -202,11 +202,13 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     } else {
         if (m_selection.mouse_selection || (isFocused() && m_selection.hasSelection())) {
             float text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
+            float start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
+            float end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
             dc.fillRect(
                 Rect(
-                    inner_rect.x + m_selection.x_begin,
+                    inner_rect.x + start,
                     inner_rect.y + (inner_rect.h / 2) - (text_height / 2),
-                    m_selection.x_end - m_selection.x_begin,
+                    (end - start) + m_cursor_width,
                     text_height
                 ),
                 Color(0.2f, 0.5f, 1.0f)
