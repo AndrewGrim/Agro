@@ -27,7 +27,7 @@ sudo apt install libsdl2-dev
 ### Instructions
 **Note that the project builds in release mode and as a static lib by default!**
 1. First make sure you are in the root directory of the project.
-2. Run `cmake -S . -B build` in the terminal to build the required CMake files.
+2. Run `cmake -S . -B build  -DCMAKE_BUILD_TYPE=RELEASE` in the terminal to build the required CMake files.
 3. Building is slightly different using MSVC vs GCC
     * When using GCC use `cmake --build build` in the terminal to build the actual project.
     * When using MSVC use `cmake --build build --config Release` in the terminal to build the actual project.
