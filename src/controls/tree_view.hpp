@@ -639,6 +639,10 @@
                 }
                 m_virtual_size_changed = true;
                 m_auto_size_columns = true;
+                if (m_last_sort) {
+                    m_last_sort->sort(Sort::None);
+                    m_last_sort = nullptr;
+                }
                 update();
             }
 
