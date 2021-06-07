@@ -25,6 +25,7 @@ failed = 0
 BIN_PATH = "Agro/bin"
 
 executables = os.listdir(BIN_PATH)
+executables.sort()
 if windows():
     os.system("color") # Enables colored output in the terminal.
 i = 0
