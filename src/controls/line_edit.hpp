@@ -40,7 +40,6 @@
 
         HistoryItem get(size_t index) {
             HistoryItem item = items[index];
-            index = !index ? index : items.size() - 1;
             return item;
         }
 
@@ -52,7 +51,7 @@
             }
 
             items.push_back(item);
-            index = !items.size() ? items.size() : items.size() - 1;
+            index = items.size() - 1;
             undo_end = false;
         }
     };

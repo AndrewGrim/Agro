@@ -511,16 +511,14 @@ void LineEdit::insert(size_t index, const char *text, bool skip) {
         deleteSelection(skip);
     }
 
-    m_selection.x_end += dc.measureText(font(), text).w;
-    m_selection.end += strlen(text);
     if (!skip) {
-        // Pass a fake selection for the new text.
-        // This is needed for properly deleting it when calling undo.
         m_history.append({HistoryItem::Action::Insert, text, m_selection});
     }
     m_text.insert(m_selection.begin, text);
     m_text_changed = true;
 
+    m_selection.x_end += dc.measureText(font(), text).w;
+    m_selection.end += strlen(text);
     m_selection.x_begin = m_selection.x_end;
     m_selection.begin = m_selection.end;
 
@@ -566,12 +564,17 @@ void LineEdit::setCursor(size_t index) {
 void LineEdit::undo() {
     if (!m_history.undo_end) {
         HistoryItem item = m_history.get(m_history.index);
-        m_selection = item.selection;
         if (item.action == HistoryItem::Action::Delete) {
             insert(m_selection.begin, item.text.c_str(), true);
+            m_selection = item.selection;
         } else {
+            m_selection = item.selection;
             if (m_selection.hasSelection()) {
                 deleteSelection(true);
+            } else if (item.text.length() > 1) {
+                for (size_t i = 0; i < item.text.length(); i++) {
+                    deleteAt(m_selection.begin, true);
+                }
             } else {
                 deleteAt(m_selection.begin, true);
             }
@@ -587,23 +590,26 @@ void LineEdit::undo() {
 
 void LineEdit::redo() {
     if (m_history.index < m_history.items.size() && !m_history.redo_end) {
-        HistoryItem item = m_history.get(m_history.index);
-        m_selection = item.selection;
+        HistoryItem item = m_history.get(m_history.undo_end ? 0 : ++m_history.index);
         if (item.action == HistoryItem::Action::Delete) {
+            m_selection = item.selection;
             if (m_selection.hasSelection()) {
                 deleteSelection(true);
+            } else if (item.text.length() > 1) {
+                for (size_t i = 0; i < item.text.length(); i++) {
+                    deleteAt(m_selection.begin, true);
+                }
             } else {
                 deleteAt(m_selection.begin, true);
             }
         } else {
+            m_selection = item.selection;
             insert(m_selection.begin, item.text.c_str(), true);
         }
         if (!m_history.index) {
             m_history.undo_end = false;
         }
-        if (m_history.index < m_history.items.size() - 1) {
-            m_history.index++;
-        } else {
+        if (m_history.index == m_history.items.size() - 1) {
             m_history.redo_end = true;
         }
     }
