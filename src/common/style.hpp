@@ -40,6 +40,7 @@
             int left = STYLE_DEFAULT;
             int right = STYLE_DEFAULT;
 
+            // #adadad
             Color color_top = COLOR_DEFAULT;
             Color color_bottom = COLOR_DEFAULT;
             Color color_left = COLOR_DEFAULT;
@@ -57,13 +58,17 @@
         Margin margin;
         Border border;
         Padding padding;
-        Color text_color = COLOR_BLACK;
-        Color background_color = Color(0.9f, 0.9f, 0.9f);
-        Color window_color = Color(0.5f, 0.5f, 0.5f);
-        Color selection_color = Color(0.2f, 0.5f, 1.0f);
-        Color hover_color = Color(0.5f, 0.5f, 0.5f, 0.1f);
 
-        Style();
-        ~Style();
+        Color window_background = COLOR_DEFAULT;
+        Color widget_background = COLOR_DEFAULT;
+
+        Color text_foreground = COLOR_DEFAULT;
+        Color text_background = COLOR_DEFAULT;
+        Color selected_text = COLOR_DEFAULT;
+        Color text_disabled = COLOR_DEFAULT;
+
+        Color selected_background = COLOR_DEFAULT;
+        Color hovered_background = COLOR_DEFAULT;
+        Color pressed_background = COLOR_DEFAULT;
     };
 #endif

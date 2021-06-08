@@ -43,11 +43,15 @@ DrawingContext::DrawingContext() {
         default_style.padding.left = 5;
         default_style.padding.right = 5;
 
-        default_style.text_color = COLOR_BLACK;
-        default_style.background_color = Color(0.9f, 0.9f, 0.9f);
-        default_style.window_color = Color(0.5f, 0.5f, 0.5f);
-        default_style.selection_color = Color(0.2f, 0.5f, 1.0f);
-        default_style.hover_color = Color(0.5f, 0.5f, 0.5f, 0.1f);
+        default_style.window_background = Color("#f0f0f0");
+        default_style.widget_background = Color("#e1e1e1");
+        default_style.text_foreground = Color("#000000");
+        default_style.text_background = Color("#ffffff");
+        default_style.selected_text = Color("#ffffff");
+        default_style.text_disabled = Color("#aaaaaa");
+        default_style.selected_background = Color("#337fff");
+        default_style.hovered_background = Color("#d0d0d0");
+        default_style.pressed_background = Color("#c0c0c0");
     }
 }
 
@@ -457,4 +461,36 @@ void DrawingContext::setClip(Rect rect) {
 
 Rect DrawingContext::clip() {
     return this->renderer->clip_rect;
+}
+
+Color DrawingContext::windowBackground(Style &style) {
+    return style.window_background ? this->default_style.window_background : style.window_background;
+}
+
+Color DrawingContext::widgetBackground(Style &style) {
+    return style.widget_background ? this->default_style.widget_background : style.widget_background;
+}
+
+Color DrawingContext::selectedBackground(Style &style) {
+    return style.selected_background ? this->default_style.selected_background : style.selected_background;
+}
+
+Color DrawingContext::hoveredBackground(Style &style) {
+    return style.hovered_background ? this->default_style.hovered_background : style.hovered_background;
+}
+
+Color DrawingContext::pressedBackground(Style &style) {
+    return style.pressed_background ? this->default_style.pressed_background : style.pressed_background;
+}
+
+Color DrawingContext::textForeground(Style &style) {
+    return style.text_foreground ? this->default_style.text_foreground : style.text_foreground;
+}
+
+Color DrawingContext::textBackground(Style &style) {
+    return style.text_background ? this->default_style.text_background : style.text_background;
+}
+
+Color DrawingContext::textDisabled(Style &style) {
+    return style.text_disabled ? this->default_style.text_disabled : style.text_disabled;
 }
