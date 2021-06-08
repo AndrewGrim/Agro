@@ -39,16 +39,16 @@
         Cursors();
         ~Cursors();
     };
-    
+
     class Application : public Window {
         public:
             int scroll_amount = 50;
             void setMouseCursor(Cursor cursor);
             static Application* get();
             std::unordered_map<std::string, std::shared_ptr<Texture>> icons = {
-                {"close", std::make_shared<Texture>(true, close_png, close_png_length)},
-                {"close_thin", std::make_shared<Texture>(true, close_thin_png, close_thin_png_length)},
-                {"up_arrow", std::make_shared<Texture>(true, up_arrow_png, up_arrow_png_length)},
+                {"close", std::make_shared<Texture>(close_png, close_png_length)},
+                {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
+                {"up_arrow", std::make_shared<Texture>(up_arrow_png, up_arrow_png_length)},
             };
 
         private:
