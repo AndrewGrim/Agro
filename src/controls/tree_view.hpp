@@ -137,7 +137,6 @@
                 }
                 Button *b = new Button(text);
                     b->setImage(image);
-                    b->style.widget_background = COLOR_NONE;
                 if (alignment == HorizontalAlignment::Left || alignment == HorizontalAlignment::Right) {
                     this->append(b, Fill::Vertical);
                 } else {
@@ -405,6 +404,7 @@
                 m_column_style.margin.type = STYLE_NONE;
 
                 m_column_button_style = Style();
+                m_column_button_style.widget_background = COLOR_NONE;
                 m_column_button_style.border.type = STYLE_NONE;
                 m_column_button_style.margin.type = STYLE_NONE;
             }
