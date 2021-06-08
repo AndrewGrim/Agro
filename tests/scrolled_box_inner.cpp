@@ -21,12 +21,12 @@ int main(int argc, char **argv) {
         app->resize(500, 500);
         ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(200, 200));
             for (char i = 'a'; i <= 'z'; i++) {
-                top->append((new Button(std::string(100, i)))->setBackground(Color(0.6f, 0.0f, 0.6f)), Fill::Both);
+                top->append(new Button(std::string(100, i)), Fill::Both);
             }
         app->append(top, Fill::Both);
         ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size(200, 200));
             for (char i = 'A'; i < 'Z'; i++) {
-                bottom->append((new Button(std::string(100, i)))->setBackground(Color(0.0f, 0.6f, 0.6f)), Fill::Both);
+                bottom->append(new Button(std::string(100, i)), Fill::Both);
             }
         app->append(bottom, Fill::Both);
     app->run();

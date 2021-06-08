@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         Color colors[3] = { Color("#ff5555"), Color("#55ff55"), Color("#5555ff") };
         for (int i = 0; i < 3; i++) {
             Box *box = new Box(Align::Horizontal);
-                box->setBackground(colors[i]);
+                box->style.window_background = colors[i];
                 for (int j = 0; j < 3; j++) {
                     Label *label = new Label("This text spans\nmultiple\nlines!");
                         label->setVerticalAlignment(v_align[i]);

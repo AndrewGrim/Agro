@@ -8,7 +8,7 @@
 #include "../src/controls/box.hpp"
 #include "../src/controls/button.hpp"
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->onReady = [&](Window *window) {
             if (argc > 1) {
@@ -23,35 +23,35 @@ int main(int argc, char **argv) {
         app->append(align_button, Fill::None);
 
         // [0]: Align::Vertical, Fill::None
-        Box *av_fn = (new Box(Align::Vertical))->setBackground(COLOR_BLACK);
-            av_fn->append((new Button("P: Fill::None, C: Fill::None"))->setBackground(Color(0.7f, 0.2f, 0.2f)), Fill::None);
-            av_fn->append((new Button("P: Fill::None, C: Fill::Horizontal"))->setBackground(Color(0.7f, 0.2f, 0.2f)), Fill::Horizontal);
-            av_fn->append((new Button("P: Fill::None, C: Fill::Vertical"))->setBackground(Color(0.7f, 0.2f, 0.2f)), Fill::Vertical);
-            av_fn->append((new Button("P: Fill::None, C: Fill::Both"))->setBackground(Color(0.7f, 0.2f, 0.2f)), Fill::Both);
+        Box *av_fn = new Box(Align::Vertical);
+            av_fn->append(new Button("P: Fill::None, C: Fill::None"), Fill::None);
+            av_fn->append(new Button("P: Fill::None, C: Fill::Horizontal"), Fill::Horizontal);
+            av_fn->append(new Button("P: Fill::None, C: Fill::Vertical"), Fill::Vertical);
+            av_fn->append(new Button("P: Fill::None, C: Fill::Both"), Fill::Both);
         app->append(av_fn, Fill::None);
 
         // [1]: Align::Vertical, Fill::Horizontal
-        Box *av_fh = (new Box(Align::Vertical))->setBackground(COLOR_BLACK);
-            av_fh->append((new Button("P: Fill::Horizontal, C: Fill::None"))->setBackground(Color(0.2f, 0.7f, 0.2f)), Fill::None);
-            av_fh->append((new Button("P: Fill::Horizontal, C: Fill::Horizontal"))->setBackground(Color(0.2f, 0.7f, 0.2f)), Fill::Horizontal);
-            av_fh->append((new Button("P: Fill::Horizontal, C: Fill::Vertical"))->setBackground(Color(0.2f, 0.7f, 0.2f)), Fill::Vertical);
-            av_fh->append((new Button("P: Fill::Horizontal, C: Fill::Both"))->setBackground(Color(0.2f, 0.7f, 0.2f)), Fill::Both);
+        Box *av_fh = new Box(Align::Vertical);
+            av_fh->append(new Button("P: Fill::Horizontal, C: Fill::None"), Fill::None);
+            av_fh->append(new Button("P: Fill::Horizontal, C: Fill::Horizontal"), Fill::Horizontal);
+            av_fh->append(new Button("P: Fill::Horizontal, C: Fill::Vertical"), Fill::Vertical);
+            av_fh->append(new Button("P: Fill::Horizontal, C: Fill::Both"), Fill::Both);
         app->append(av_fh, Fill::Horizontal);
 
         // [2]: Align::Vertical, Fill::Vertical
-        Box *av_fv = (new Box(Align::Vertical))->setBackground(COLOR_BLACK);
-            av_fv->append((new Button("P: Fill::Vertical, C: Fill::None"))->setBackground(Color(0.2f, 0.2f, 0.7f)), Fill::None);
-            av_fv->append((new Button("P: Fill::Vertical, C: Fill::Horizontal"))->setBackground(Color(0.2f, 0.2f, 0.7f)), Fill::Horizontal);
-            av_fv->append((new Button("P: Fill::Vertical, C: Fill::Vertical"))->setBackground(Color(0.2f, 0.2f, 0.7f)), Fill::Vertical);
-            av_fv->append((new Button("P: Fill::Vertical, C: Fill::Both"))->setBackground(Color(0.2f, 0.2f, 0.7f)), Fill::Both);
+        Box *av_fv = new Box(Align::Vertical);
+            av_fv->append(new Button("P: Fill::Vertical, C: Fill::None"), Fill::None);
+            av_fv->append(new Button("P: Fill::Vertical, C: Fill::Horizontal"), Fill::Horizontal);
+            av_fv->append(new Button("P: Fill::Vertical, C: Fill::Vertical"), Fill::Vertical);
+            av_fv->append(new Button("P: Fill::Vertical, C: Fill::Both"), Fill::Both);
         app->append(av_fv, Fill::Vertical);
 
         // [3]: Align::Vertical, Fill::Both
-        Box *av_fb = (new Box(Align::Vertical))->setBackground(COLOR_BLACK);
-            av_fb->append((new Button("P: Fill::Both, C: Fill::None"))->setBackground(Color(0.7f, 0.7f, 0.2f)), Fill::None);
-            av_fb->append((new Button("P: Fill::Both, C: Fill::Horizontal"))->setBackground(Color(0.7f, 0.7f, 0.2f)), Fill::Horizontal);
-            av_fb->append((new Button("P: Fill::Both, C: Fill::Vertical"))->setBackground(Color(0.7f, 0.7f, 0.2f)), Fill::Vertical);
-            av_fb->append((new Button("P: Fill::Both, C: Fill::Both"))->setBackground(Color(0.7f, 0.7f, 0.2f)), Fill::Both);
+        Box *av_fb = new Box(Align::Vertical);
+            av_fb->append(new Button("P: Fill::Both, C: Fill::None"), Fill::None);
+            av_fb->append(new Button("P: Fill::Both, C: Fill::Horizontal"), Fill::Horizontal);
+            av_fb->append(new Button("P: Fill::Both, C: Fill::Vertical"), Fill::Vertical);
+            av_fb->append(new Button("P: Fill::Both, C: Fill::Both"), Fill::Both);
         app->append(av_fb, Fill::Both);
 
         Align a = Align::Vertical;
@@ -68,5 +68,5 @@ int main(int argc, char **argv) {
         });
     app->run();
 
-    return 0; 
+    return 0;
 }

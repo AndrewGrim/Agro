@@ -78,13 +78,12 @@ int main(int argc, char **argv) {
         app->setTitle("Custom Widget Styling");
         app->resize(600, 400);
         // LEFT
-        app->setMainWidget((new Box(Align::Horizontal))->setBackground(COLOR_WHITE));
+        app->setMainWidget(new Box(Align::Horizontal));
         CustomStyle *custom = new CustomStyle();
         app->append(custom, Fill::Both);
 
         // RIOHT
         Box *right = new Box(Align::Vertical);
-            right->setBackground(Color(0.8f, 0.8f, 0.8f));
 
             Button *csr = new Button("Rect: ");
             right->append(csr, Fill::Horizontal);
@@ -95,7 +94,6 @@ int main(int argc, char **argv) {
                         + std::to_string(custom->style.margin.left) + ", "
                         + std::to_string(custom->style.margin.right)
                     );
-                    margin->setBackground(Color(1.0f, 0.0f, 0.0f, 0.5f));
                 right->append(margin, Fill::Horizontal);
                 Button *border = new Button(
                         "Border: "
@@ -104,8 +102,6 @@ int main(int argc, char **argv) {
                         + std::to_string(custom->style.border.left) + ", "
                         + std::to_string(custom->style.border.right)
                     );
-                    border->setBackground(COLOR_BLACK);
-                    border->setForeground(COLOR_WHITE);
                 right->append(border, Fill::Horizontal);
                 Button *padding = new Button(
                         "Padding: "
@@ -114,10 +110,8 @@ int main(int argc, char **argv) {
                         + std::to_string(custom->style.padding.left) + ", "
                         + std::to_string(custom->style.padding.right)
                     );
-                    padding->setBackground(Color(0.0f, 1.0f, 0.0f, 0.5f));
                 right->append(padding, Fill::Horizontal);
             Button *csir = new Button("Content Rect: ");
-                csir->setBackground(Color(0.0f, 0.0f, 1.0f, 0.5f));
             right->append(csir, Fill::Horizontal);
         app->append(right);
 
