@@ -10,6 +10,7 @@
 	#define COLOR_WHITE Color(1.0f, 1.0f, 1.0f, 1.0f)
 
     struct Color {
+        // TODO why not bool? use_default true|false
         enum class IsDefault {
             Yes, No
         };
@@ -28,7 +29,7 @@
 
         Color(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) :
             r{r}, g{g}, b{b}, a{a} {
-        
+
         }
 
         Color(const char *string) {
@@ -71,6 +72,13 @@
 
         static Color fromInt(uint8_t r, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255) {
             return Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        }
+
+        operator bool() {
+            if (is_default == IsDefault::Yes) {
+                return true;
+            }
+            return false;
         }
 
         bool operator==(Color &&rhs) {
