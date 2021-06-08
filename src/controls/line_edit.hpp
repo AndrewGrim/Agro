@@ -90,7 +90,6 @@
             void undo();
             void redo();
 
-        protected:
             std::string m_text;
             std::string m_placeholder_text;
             float m_min_length = 50;

@@ -1,26 +1,21 @@
 #include "image.hpp"
 
 Image::Image(std::string file_path) : Widget() {
-    Widget::m_fg = COLOR_WHITE;
-    Widget::m_bg = COLOR_NONE;
     m_texture = std::make_shared<Texture>(file_path);
     m_size = Size(m_texture->width, m_texture->height);
+    style.widget_background = COLOR_NONE;
 }
 
-Image::Image(bool from_memory, const unsigned char *image_data, int length) : Widget() {
-    Widget::m_fg = COLOR_WHITE;
-    Widget::m_bg = COLOR_NONE;
-    m_texture = std::make_shared<Texture>(from_memory, image_data, length);
+Image::Image(const unsigned char *image_data, int length) : Widget() {
+    m_texture = std::make_shared<Texture>(image_data, length);
     m_size = Size(m_texture->width, m_texture->height);
+    style.widget_background = COLOR_NONE;
 }
 
-// TODO not to sure about the order and defaultness
-// of owning here, think about it
-Image::Image(std::shared_ptr<Texture> texture) {
-    Widget::m_fg = COLOR_WHITE;
-    Widget::m_bg = COLOR_NONE;
+Image::Image(std::shared_ptr<Texture> texture) : Widget() {
     m_texture = texture;
     m_size = Size(m_texture->width, m_texture->height);
+    style.widget_background = COLOR_NONE;
 }
 
 Image::~Image() {
@@ -34,7 +29,7 @@ const char* Image::name() {
 void Image::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
-    dc.fillRect(rect, Widget::m_bg);
+    dc.fillRect(rect, dc.widgetBackground(style));
     if (m_expand) {
         if (m_maintain_aspect_ratio) {
             Size size = Size();
@@ -59,7 +54,7 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
                 this->coords(),
                 m_horizontal_align,
                 m_vertical_align,
-                Widget::m_fg
+                foreground()
             );
         } else {
             dc.drawTextureAligned(
@@ -69,7 +64,7 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
                 this->coords(),
                 m_horizontal_align,
                 m_vertical_align,
-                Widget::m_fg
+                foreground()
             );
         }
     } else {
@@ -80,7 +75,7 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
             this->coords(),
             m_horizontal_align,
             m_vertical_align,
-            Widget::m_fg
+            foreground()
         );
     }
 }
@@ -89,25 +84,23 @@ Size Image::sizeHint(DrawingContext &dc) {
     return m_size;
 }
 
-void Image::setMinSize(Size min_size) {
+Image* Image::setMinSize(Size min_size) {
     m_size = min_size;
     layout();
+    return this;
 }
 
 Size Image::originalSize() {
     return Size(m_texture->width, m_texture->height);
 }
 
-Image* Image::setBackground(Color background) {
-    Widget::m_bg = background;
-    this->update();
-
-    return this;
+Color Image::foreground() {
+    return m_foreground;
 }
 
 Image* Image::setForeground(Color foreground) {
-    Widget::m_fg = foreground;
-    this->update();
+    m_foreground = foreground;
+    update();
 
     return this;
 }

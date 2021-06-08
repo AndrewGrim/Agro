@@ -50,13 +50,7 @@ class ImageCellRenderer : public CellRenderer {
     public:
         Image *image = nullptr;
 
-        // TOOD why? lol
-        // because its just passing the parameters to image constructors
-        // we could just pass image and nothing else
-        ImageCellRenderer(std::string file_path);
-        ImageCellRenderer(bool from_memory, const unsigned char *image_data, int length);
-        ImageCellRenderer(std::shared_ptr<Texture> texture);
-        ImageCellRenderer(Image *img);
+        ImageCellRenderer(Image *image);
         ~ImageCellRenderer();
         void draw(DrawingContext &dc, Rect rect, int state) override;
         Size sizeHint(DrawingContext &dc) override;

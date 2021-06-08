@@ -22,19 +22,19 @@ const char* ScrollBarArrowButton::name() {
 void ScrollBarArrowButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
-    if (this->isPressed() && this->isHovered()) {
-        color = this->m_pressed_bg;
-    } else if (this->isHovered()) {
-        color = this->m_hovered_bg;
+    if (isPressed() && isHovered()) {
+        color = dc.pressedBackground(style);
+    } else if (isHovered()) {
+        color = dc.hoveredBackground(style);
     } else {
-        color = this->background();
+        color = dc.widgetBackground(style);
     }
 
     dc.drawBorder(rect, style);
     dc.fillRect(rect, color);
     dc.padding(rect, style);
 
-    if (this->m_image) {
+    if (m_image) {
         Size image_size = Size(8, 8);
         dc.drawTexture(
             Point(
@@ -88,7 +88,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     // Draw the background.
-    dc.fillRect(rect, background());
+    dc.fillRect(rect, dc.widgetBackground(style));
 
     // Determine and draw the location of the slider button.
     if (m_align_policy == Align::Horizontal) {
@@ -109,7 +109,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
 SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Box(alignment) {
     m_slider = new ScrollBarSlider(alignment);
     m_slider->m_slider_button->setMinSize(min_size);
-    this->append(m_slider, Fill::Both);
+    append(m_slider, Fill::Both);
 }
 
 SimpleScrollBar::~SimpleScrollBar() {
@@ -122,7 +122,7 @@ const char* SimpleScrollBar::name() {
 
 void SimpleScrollBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
-    this->m_slider->draw(dc, rect, m_slider->state());
+    m_slider->draw(dc, rect, m_slider->state());
 }
 
 Size SimpleScrollBar::sizeHint(DrawingContext &dc) {
@@ -172,18 +172,18 @@ const char* ScrollBar::name() {
 
 void ScrollBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
-    Size button_size = this->m_begin_button->sizeHint(dc);
-    this->m_begin_button->draw(dc, Rect(rect.x, rect.y, button_size.w, button_size.h), m_begin_button->state());
-    if (this->m_align_policy == Align::Horizontal) {
+    Size button_size = m_begin_button->sizeHint(dc);
+    m_begin_button->draw(dc, Rect(rect.x, rect.y, button_size.w, button_size.h), m_begin_button->state());
+    if (m_align_policy == Align::Horizontal) {
         rect.x += button_size.w;
         rect.w -= button_size.w * 2;
-        this->m_slider->draw(dc, rect, m_slider->state());
-        this->m_end_button->draw(dc, Rect(rect.x + rect.w, rect.y, button_size.w, button_size.h), m_end_button->state());
+        m_slider->draw(dc, rect, m_slider->state());
+        m_end_button->draw(dc, Rect(rect.x + rect.w, rect.y, button_size.w, button_size.h), m_end_button->state());
     } else {
         rect.y += button_size.h;
         rect.h -= button_size.h * 2;
-        this->m_slider->draw(dc, rect, m_slider->state());
-        this->m_end_button->draw(dc, Rect(rect.x, rect.y + rect.h, button_size.w, button_size.h), m_end_button->state());
+        m_slider->draw(dc, rect, m_slider->state());
+        m_end_button->draw(dc, Rect(rect.x, rect.y + rect.h, button_size.w, button_size.h), m_end_button->state());
     }
 }
 

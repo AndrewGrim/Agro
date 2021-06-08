@@ -3,6 +3,7 @@
 Label::Label(std::string text) {
     setText(text);
     Widget::m_bg = COLOR_NONE;
+    style.widget_background = COLOR_NONE;
 }
 
 Label::~Label() {
@@ -15,7 +16,7 @@ const char* Label::name() {
 void Label::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
-    dc.fillRect(rect, Widget::m_bg);
+    dc.fillRect(rect, dc.widgetBackground(style));
     dc.padding(rect, style);
     dc.fillTextMultilineAligned(
         font(),
@@ -24,7 +25,7 @@ void Label::draw(DrawingContext &dc, Rect rect, int state) {
         m_vertical_align,
         rect,
         0,
-        m_fg,
+        dc.textForeground(style),
         m_line_spacing
     );
 }
@@ -40,20 +41,6 @@ Size Label::sizeHint(DrawingContext &dc) {
     } else {
         return m_size;
     }
-}
-
-Label* Label::setForeground(Color foreground) {
-    Widget::m_fg = foreground;
-    update();
-
-    return this;
-}
-
-Label* Label::setBackground(Color background) {
-    Widget::m_bg = background;
-    update();
-
-    return this;
 }
 
 std::string Label::text() {

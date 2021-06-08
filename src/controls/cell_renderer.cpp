@@ -69,28 +69,14 @@ Size TextCellRenderer::sizeHint(DrawingContext &dc) {
     }
 }
 
-ImageCellRenderer::ImageCellRenderer(std::string file_path) {
-    image = new Image(file_path);
-}
-
-ImageCellRenderer::ImageCellRenderer(bool from_memory, const unsigned char *image_data, int length) {
-    image = new Image(from_memory, image_data, length);
-}
-
-ImageCellRenderer::ImageCellRenderer(std::shared_ptr<Texture> texture) {
-    image = new Image(texture);
-}
-
-ImageCellRenderer::ImageCellRenderer(Image *img) {
-    image = img;
-}
+ImageCellRenderer::ImageCellRenderer(Image *image) : image{image} {}
 
 ImageCellRenderer::~ImageCellRenderer() {
     delete image;
 }
 
 void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
-    Color bg = image->background();
+    Color bg = dc.widgetBackground(image->style);
     if (state & STATE_FOCUSED) {
         bg = Color(0.2f, 0.5f, 1.0f);
     }

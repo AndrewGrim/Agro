@@ -17,7 +17,7 @@ void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Rect previous_clip = dc.clip();
     clip();
-    dc.fillRect(rect, background());
+    dc.fillRect(rect, dc.windowBackground(style));
     layoutChildren(dc, rect);
     dc.setClip(previous_clip);
 }

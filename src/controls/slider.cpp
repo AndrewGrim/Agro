@@ -19,13 +19,13 @@ const char* SliderButton::name() {
 
 void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
-    Color color = COLOR_BLACK;
-    if (this->isPressed()) {
-        color = this->m_pressed_bg;
-    } else if (this->isHovered()) {
-        color = this->m_hovered_bg;
+    Color color;
+    if (isPressed()) {
+        color = dc.pressedBackground(style);
+    } else if (isHovered()) {
+        color = dc.hoveredBackground(style);
     } else {
-        color = this->background();
+        color = dc.widgetBackground(style);
     }
     dc.drawBorder(rect, style);
     dc.fillRect(rect, color);
@@ -134,9 +134,9 @@ void Slider::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Draw the "rail" for the slider button.
     if (m_align_policy == Align::Horizontal) {
-        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), background());
+        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), dc.textForeground(style)); // TODO probably use the same color as default border
     } else {
-        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), background());
+        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), dc.textForeground(style)); // TODO probably use the same color as default border
     }
 
     // Determine and draw the location of the slider button.

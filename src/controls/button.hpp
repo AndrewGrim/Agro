@@ -15,8 +15,6 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
-            virtual Button* setBackground(Color background) override;
-            virtual Button* setForeground(Color foreground) override;
             std::string text();
             Button* setText(std::string text);
             Image* image();
@@ -26,7 +24,6 @@
             VerticalAlignment verticalAlignment();
             Button* setVerticalAlignment(VerticalAlignment text_align);
 
-        protected:
             std::string m_text = "";
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;

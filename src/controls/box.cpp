@@ -2,9 +2,8 @@
 #include "../common/point.hpp"
 #include "../application.hpp"
 
-Box::Box(Align align_policy) {
-    this->m_align_policy = align_policy;
-    Widget::m_bg = Color(0.5f, 0.5f, 0.5f);
+Box::Box(Align align_policy) : m_align_policy{align_policy} {
+
 }
 
 Box::~Box() {
@@ -13,7 +12,7 @@ Box::~Box() {
 
 void Box::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
-    dc.fillRect(rect, this->background());
+    dc.fillRect(rect, dc.windowBackground(style));
     layoutChildren(dc, rect);
 }
 
@@ -179,21 +178,6 @@ Size Box::sizeHint(DrawingContext &dc) {
     } else {
         return m_size;
     }
-}
-
-Box* Box::setBackground(Color background) {
-    Widget::m_bg = background;
-    this->update();
-
-    return this;
-}
-
-
-Box* Box::setForeground(Color foreground) {
-    Widget::m_fg = foreground;
-    this->update();
-
-    return this;
 }
 
 bool Box::isLayout() {

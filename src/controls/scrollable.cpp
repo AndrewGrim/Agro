@@ -117,7 +117,7 @@ void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
             rect.y + rect.h,
             m_vertical_scrollbar->sizeHint(dc).w,
             m_horizontal_scrollbar->sizeHint(dc).h),
-            m_vertical_scrollbar->background()
+            dc.widgetBackground(m_vertical_scrollbar->style)
         );
     }
 }

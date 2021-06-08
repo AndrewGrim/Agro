@@ -177,7 +177,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style);
-    dc.fillRect(rect, background());
+    dc.fillRect(rect, dc.textBackground(style));
     dc.padding(rect, style);
     inner_rect = rect;
 
@@ -196,7 +196,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             VerticalAlignment::Center,
             inner_rect,
             0.0f,
-            Color(0.7f, 0.7f, 0.7f)
+            dc.textDisabled(style)
         );
     // Draw normal text;
     } else {
@@ -211,7 +211,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
                     (end - start) + m_cursor_width,
                     text_height
                 ),
-                Color(0.2f, 0.5f, 1.0f)
+                dc.selectedBackground(style)
             );
         }
         dc.fillTextAligned(
@@ -221,7 +221,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             VerticalAlignment::Center,
             inner_rect,
             0.0f,
-            m_fg
+            dc.textForeground(style)
         );
     }
 
@@ -235,7 +235,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
                 m_cursor_width,
                 text_height
             ),
-            m_fg
+            dc.textForeground(style) // TODO should be a separate color setting
         );
     }
     dc.setClip(old_clip);

@@ -11,8 +11,6 @@
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual void layoutChildren(DrawingContext &dc, Rect rect);
             virtual Size sizeHint(DrawingContext &dc) override;
-            virtual Box* setBackground(Color background) override;
-            virtual Box* setForeground(Color background) override;
             void setAlignPolicy(Align align_policy);
             Align alignPolicy();
             virtual bool isLayout() override;

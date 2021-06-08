@@ -140,18 +140,6 @@
             // unless something has changed
             virtual Size sizeHint(DrawingContext &dc) = 0;
 
-            /// Returns the background Color of the Widget.
-            Color background();
-
-            /// Sets the background Color of the Widget.
-            virtual Widget* setBackground(Color background);
-
-            /// Returns the foreground Color of the Widget.
-            Color foreground();
-
-            /// Sets the foreground Color of the Widget.
-            virtual Widget* setForeground(Color foreground);
-
             /// This method sets the Fill policy of the Widget.
             /// Fill dicates how the Widget will expand.
             /// Options are: None, Horizontal, Vertical and Both.
@@ -237,12 +225,14 @@
             /// needs to be recomputed.
             bool m_size_changed = true;
 
-            Color m_fg = COLOR_BLACK;
-            Color m_bg = COLOR_WHITE;
-            Color m_hovered_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
-            // as an altered fg, bg color? dynamic i mean
-            Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
-            // as an altered fg, bg color? dynamic i mean
+            // TODO remove a bit later
+                Color m_fg = COLOR_BLACK;
+                Color m_bg = COLOR_WHITE;
+                Color m_hovered_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
+                // as an altered fg, bg color? dynamic i mean
+                Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
+                // as an altered fg, bg color? dynamic i mean
+            ////////////////////////
 
             Font *m_font = nullptr;
 

@@ -2,12 +2,10 @@
 
 Button::Button(std::string text) {
     setText(text);
-    Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
 }
 
 Button::Button(Image *image) {
     setImage(image);
-    Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
 }
 
 Button::~Button() {
@@ -23,11 +21,11 @@ const char* Button::name() {
 void Button::draw(DrawingContext &dc, Rect rect, int state) {
     Color color;
     if (isPressed() && isHovered()) {
-        color = m_pressed_bg;
+        color = dc.pressedBackground(style);
     } else if (isHovered()) {
-        color = m_hovered_bg;
+        color = dc.hoveredBackground(style);
     } else {
-        color = background();
+        color = dc.widgetBackground(style);
     }
 
     dc.margin(rect, style);
@@ -67,7 +65,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
             v_text_align,
             rect,
             0,
-            m_fg
+            dc.textForeground(style)
         );
     }
 }
@@ -94,20 +92,6 @@ Size Button::sizeHint(DrawingContext &dc) {
     } else {
         return m_size;
     }
-}
-
-Button* Button::setForeground(Color foreground) {
-    Widget::m_fg = foreground;
-    update();
-
-    return this;
-}
-
-Button* Button::setBackground(Color background) {
-    Widget::m_bg = background;
-    update();
-
-    return this;
 }
 
 std::string Button::text() {

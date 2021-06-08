@@ -2,7 +2,7 @@
 #include "../application.hpp"
 
 NoteBookTabBar::NoteBookTabBar() : Widget() {
-
+    style.border.type = STYLE_BOTTOM;
 }
 
 NoteBookTabBar::~NoteBookTabBar() {
@@ -11,6 +11,8 @@ NoteBookTabBar::~NoteBookTabBar() {
 
 void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
+
+    dc.drawBorder(rect, style);
     float x = rect.x;
 
     if (rect.w < m_size.w) {
@@ -68,6 +70,7 @@ const char* NoteBookTabBar::name() {
 Size NoteBookTabBar::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = Size();
+        dc.sizeHintBorder(size, style);
         for (Widget *child : children) {
             Size s = child->sizeHint(dc);
             size.w += s.w;
@@ -151,13 +154,13 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
     if (isActive()) {
-        color = Color(0.5f, 0.5f, 0.5f);
-    } else if (this->isPressed() && this->isHovered()) {
-        color = this->m_pressed_bg;
-    } else if (this->isHovered()) {
-        color = this->m_hovered_bg;
+        color = dc.selectedBackground(style);
+    } else if (isPressed() && isHovered()) {
+        color = dc.pressedBackground(style);
+    } else if (isHovered()) {
+        color = dc.hoveredBackground(style);
     } else {
-        color = this->background();
+        color = dc.widgetBackground(style);
     }
 
     dc.drawBorder(rect, style);
@@ -205,7 +208,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
             v_text_align,
             rect,
             0,
-            m_fg
+            dc.textForeground(style)
         );
         rect.x += text_size.w;
     }

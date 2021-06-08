@@ -10,16 +10,14 @@
     class Image : public Widget {
         public:
             Image(std::string file_path);
-            // TODO actually check if we need the from_memory bool
-            // its there to disambiguate ctor overload
-            Image(bool from_memory, const unsigned char *image_data, int length);
+            Image(const unsigned char *image_data, int length);
             Image(std::shared_ptr<Texture> texture);
             ~Image();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
-            virtual Image* setBackground(Color background) override;
-            virtual Image* setForeground(Color background) override;
+            Color foreground();
+            Image* setForeground(Color foreground);
             bool expand();
             Image* setExpand(bool expand);
             HorizontalAlignment horizontalAlignment();
@@ -34,14 +32,14 @@
             Image* clockwise90();
             Image* counterClockwise90();
             void resetOrientation();
-            void setMinSize(Size min_size);
+            Image* setMinSize(Size min_size);
             Size originalSize();
             void setTexture(std::shared_ptr<Texture> texture);
             TextureCoordinates* coords();
             std::shared_ptr<Texture> texture();
             Texture* _texture();
 
-        protected:
+            Color m_foreground = COLOR_WHITE;
             std::shared_ptr<Texture> m_texture;
             bool m_expand = false;
             bool m_maintain_aspect_ratio = true;

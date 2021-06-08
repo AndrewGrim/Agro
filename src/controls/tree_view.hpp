@@ -137,7 +137,7 @@
                 }
                 Button *b = new Button(text);
                     b->setImage(image);
-                    b->setBackground(COLOR_NONE);
+                    b->style.widget_background = COLOR_NONE;
                 if (alignment == HorizontalAlignment::Left || alignment == HorizontalAlignment::Right) {
                     this->append(b, Fill::Vertical);
                 } else {
@@ -218,13 +218,13 @@
                 this->rect = rect;
                 Color color;
                 if (m_dragging) {
-                    color = this->background();
-                } else if (this->isPressed() && this->isHovered()) {
-                    color = this->m_pressed_bg;
-                } else if (this->isHovered()) {
-                    color = this->m_hovered_bg;
+                    color = dc.widgetBackground(style);
+                } else if (isPressed() && isHovered()) {
+                    color = dc.pressedBackground(style);
+                } else if (isHovered()) {
+                    color = dc.hoveredBackground(style);
                 } else {
-                    color = this->background();
+                    color = dc.widgetBackground(style);
                 }
                 dc.drawBorder(rect, style);
 

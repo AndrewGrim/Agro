@@ -47,29 +47,6 @@ void Widget::destroy() {
     delete this;
 }
 
-
-Color Widget::background() {
-    return this->m_bg;
-}
-
-Widget* Widget::setBackground(Color background) {
-    this->m_bg = background;
-    this->update();
-
-    return this;
-}
-
-Color Widget::foreground() {
-    return this->m_fg;
-}
-
-Widget* Widget::setForeground(Color foreground) {
-    this->m_fg = foreground;
-    this->update();
-
-    return this;
-}
-
 Widget* Widget::setFillPolicy(Fill fill_policy) {
     if (this->m_fill_policy != fill_policy) {
         this->m_fill_policy = fill_policy;
