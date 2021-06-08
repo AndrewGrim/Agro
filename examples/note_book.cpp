@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
             for (int t = 1; t < 15; t++) {
                 Box *_b = new Box(Align::Vertical);
                     for (int i = 0; i < 5; i++) {
-                        _b->append((new Button(std::to_string(i)))->setBackground(Color(t / 100.0 * 5)), Fill::Both);
+                        _b->append(new Button(std::to_string(i)), Fill::Both);
                     }
                 if (t % 3 == 0) {
                     nb->appendTab(_b, "Tab " + std::to_string(t), new Image("notes.png"), true);
