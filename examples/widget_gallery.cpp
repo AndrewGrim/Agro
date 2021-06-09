@@ -36,6 +36,7 @@ Widget* simple(Application &app) {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
+        Color default_widget_background = app->dc->default_style.widget_background;
         delete app->mainWidget();
         app->setMainWidget(new Box(Align::Vertical));
         app->onReady = [&](Window *window) {
@@ -48,7 +49,11 @@ int main(int argc, char **argv) {
         app->setTitle("Widget Gallery");
          LineEdit *change_background = new LineEdit("", "Enter color ex: #ff000055");
             change_background->onTextChanged = [&]() {
-                app->dc->default_style.widget_background = Color(change_background->text().c_str());
+                if (change_background->text().length()) {
+                    app->dc->default_style.widget_background = Color(change_background->text().c_str());
+                } else {
+                    app->dc->default_style.widget_background = Color(default_widget_background);
+                }
                 app->update();
             };
         app->append(change_background, Fill::Horizontal);
