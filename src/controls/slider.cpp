@@ -5,7 +5,6 @@
 #define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
 
 SliderButton::SliderButton(Size min_size) : Widget() {
-    Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
     setMinSize(min_size);
 }
 
@@ -47,7 +46,6 @@ Size SliderButton::minSize() {
 }
 
 Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
-    Widget::m_bg = COLOR_BLACK;
     m_slider_button = new SliderButton();
     append(m_slider_button, Fill::Both);
     m_slider_button->parent = this;

@@ -225,15 +225,6 @@
             /// needs to be recomputed.
             bool m_size_changed = true;
 
-            // TODO remove a bit later
-                Color m_fg = COLOR_BLACK;
-                Color m_bg = COLOR_WHITE;
-                Color m_hovered_bg = Color(0.8f, 0.8f, 0.8f); // TODO i think these should be implemented
-                // as an altered fg, bg color? dynamic i mean
-                Color m_pressed_bg = Color(0.6f, 0.6f, 0.6f); // TODO i think these should be implemented
-                // as an altered fg, bg color? dynamic i mean
-            ////////////////////////
-
             Font *m_font = nullptr;
 
             int m_binding_id = 0;

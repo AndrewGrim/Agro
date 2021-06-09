@@ -2,7 +2,6 @@
 #include "../application.hpp"
 
 LineEdit::LineEdit(std::string text, std::string placeholder) : Widget() {
-    Widget::m_bg = COLOR_WHITE;
     setText(text);
     setPlaceholderText(placeholder);
     m_selection.x_begin = 0;

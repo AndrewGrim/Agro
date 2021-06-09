@@ -2,7 +2,6 @@
 
 Label::Label(std::string text) {
     setText(text);
-    Widget::m_bg = COLOR_NONE;
     style.widget_background = COLOR_NONE;
 }
 

@@ -131,7 +131,6 @@
                 std::string text, Image *image = nullptr,
                 HorizontalAlignment alignment = HorizontalAlignment::Center,
                 std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr) : Box(Align::Horizontal) {
-                Widget::m_bg = Color(0.9f, 0.9f, 0.9f);
                 if (alignment == HorizontalAlignment::Right) {
                     this->append(new Spacer(), Fill::Both);
                 }
