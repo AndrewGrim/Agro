@@ -124,8 +124,6 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
 }
 
 NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image *image,  bool close_button) : Button(text) {
-    // TODO outdate beause of the new style
-    // setBorderWidth(1);
     if (image) {
         setImage(image);
     }
@@ -134,12 +132,19 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     m_close_image->onMouseClick.addEventListener([=](Widget *widget,MouseEvent event) {
         notebook->destroyTab(m_close_image->parent->parent_index);
     });
-    this->append(m_close_image);
-    this->style.padding.type = STYLE_ALL;
-    this->style.padding.top = 5;
-    this->style.padding.bottom = 5;
-    this->style.padding.left = 5;
-    this->style.padding.right = 5;
+    append(m_close_image);
+    style.padding.type = STYLE_ALL;
+    style.padding.top = 5;
+    style.padding.bottom = 5;
+    style.padding.left = 10;
+    style.padding.right = 20;
+
+    // Setup the border to get the correct sizeHint.
+    style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
+    style.border.top = 4;
+    style.border.left = 1;
+    style.border.right = 1;
+    style.border.color_top = Application::get()->dc->selectedBackground(style);
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
@@ -153,8 +158,11 @@ const char* NoteBookTabButton::name() {
 void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
+
+    style.border.type = STYLE_NONE;
     if (isActive()) {
-        color = dc.selectedBackground(style);
+        style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
+        color = dc.widgetBackground(style);
     } else if (isPressed() && isHovered()) {
         color = dc.pressedBackground(style);
     } else if (isHovered()) {
@@ -216,8 +224,11 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     if (m_close_button) {
         // TODO would be nice if the icon lit up when being hover / active
         // 12 being the size of the icon in pixels
-        m_close_image->draw(dc, Rect(rect.x + 10, rect.y + (rect.h / 2) - (12 / 2), 12, 12), m_close_image->state());
+        m_close_image->draw(dc, Rect(rect.x + 10 + (RIGHT_PADDING(this) / 2), rect.y + (rect.h / 2) - (12 / 2), 12, 12), m_close_image->state());
     }
+
+    // Reset the border after drawing for correct sizeHint.
+    style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
 }
 
 Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
