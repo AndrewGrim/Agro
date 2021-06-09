@@ -15,7 +15,6 @@
             Align alignPolicy();
             virtual bool isLayout() override;
 
-        protected:
             /// Align policy dictates in on which axis
             /// the child Widgets will be layed out
             Align m_align_policy;

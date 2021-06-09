@@ -2,13 +2,9 @@
 #include "../common/point.hpp"
 #include "../application.hpp"
 
-Box::Box(Align align_policy) : m_align_policy{align_policy} {
+Box::Box(Align align_policy) : m_align_policy{align_policy} {}
 
-}
-
-Box::~Box() {
-
-}
+Box::~Box() {}
 
 void Box::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
@@ -172,7 +168,7 @@ Size Box::sizeHint(DrawingContext &dc) {
         m_horizontal_non_expandable = horizontal_non_expandable;
         m_visible_children = visible;
         m_size = size;
-        m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
+        m_size_changed = false;
 
         return size;
     } else {
