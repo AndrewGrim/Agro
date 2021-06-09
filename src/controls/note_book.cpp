@@ -162,8 +162,8 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     style.border.type = STYLE_NONE;
     if (isActive()) {
         style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-        color = dc.widgetBackground(style);
-    } else if (isPressed() && isHovered()) {
+    }
+    if (isPressed() && isHovered()) {
         color = dc.pressedBackground(style);
     } else if (isHovered()) {
         color = dc.hoveredBackground(style);
