@@ -19,6 +19,7 @@ You will need:
 
 On debian based system you should be able to install the dependencies like so:
 ```
+sudo apt install g++
 sudo apt install cmake
 sudo apt install libfreetype6-dev
 sudo apt install libsdl2-dev
