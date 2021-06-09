@@ -29,9 +29,7 @@ def main():
 
     # ICONS
     BASE_DIR = "images"
-    images = os.listdir(BASE_DIR)
-    # We do not want to embed this file since its just for the README
-    images.remove("screenshot_mhwi_db.png")
+    images = filter(lambda img : not img.startswith("screenshot"), os.listdir(BASE_DIR))
     for img in images:
         cpp.write(create_resource_bytes(f"{BASE_DIR}/{img}"))
         hpp.write(f"extern const unsigned char {normalize_filename(img)}[];\n")
