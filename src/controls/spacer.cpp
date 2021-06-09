@@ -14,7 +14,6 @@ const char* Spacer::name() {
 
 void Spacer::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
-    dc.fillRect(rect, m_bg);
 }
 
 Size Spacer::sizeHint(DrawingContext &dc) {
