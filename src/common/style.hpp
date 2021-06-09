@@ -40,7 +40,6 @@
             int left = STYLE_DEFAULT;
             int right = STYLE_DEFAULT;
 
-            // #adadad
             Color color_top = COLOR_DEFAULT;
             Color color_bottom = COLOR_DEFAULT;
             Color color_left = COLOR_DEFAULT;

@@ -32,10 +32,10 @@ DrawingContext::DrawingContext() {
         default_style.border.bottom = 1;
         default_style.border.left = 1;
         default_style.border.right = 1;
-        default_style.border.color_top = COLOR_BLACK;
-        default_style.border.color_bottom = COLOR_BLACK;
-        default_style.border.color_left = COLOR_BLACK;
-        default_style.border.color_right = COLOR_BLACK;
+        default_style.border.color_top = Color("#777777");
+        default_style.border.color_bottom = Color("#777777");
+        default_style.border.color_left = Color("#777777");
+        default_style.border.color_right = Color("#777777");
 
         default_style.padding.type = STYLE_ALL;
         default_style.padding.top = 5;
