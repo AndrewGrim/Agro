@@ -13,6 +13,8 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     dc.drawBorder(rect, style);
+    rect.x += 5; // account for the 5 pixels on the left to give the first tab some breathing room
+    rect.w -= 5; // account for the 5 pixels on the left to give the first tab some breathing room
     float x = rect.x;
 
     if (rect.w < m_size.w) {
@@ -53,9 +55,9 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
         m_horizontal_scrollbar->draw(
             dc,
             Rect(
-                rect.x,
+                rect.x - 5, // account for the 5 pixel padding on the left
                 (rect.y + rect.h) - scroll_size.h,
-                rect.w > scroll_size.w ? rect.w : scroll_size.w,
+                rect.w + 5 > scroll_size.w ? rect.w + 5 : scroll_size.w, // account for the 5 pixel padding on the left
                 scroll_size.h
             ),
             m_horizontal_scrollbar->state()
@@ -69,7 +71,7 @@ const char* NoteBookTabBar::name() {
 
 Size NoteBookTabBar::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size size = Size();
+        Size size = Size(5, 0); // 5 extra pixels so the first tab button doesnt look weird
         dc.sizeHintBorder(size, style);
         for (Widget *child : children) {
             Size s = child->sizeHint(dc);
@@ -162,13 +164,14 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     style.border.type = STYLE_NONE;
     if (isActive()) {
         style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-    }
-    if (isPressed() && isHovered()) {
+        rect.h += BOTTOM_BORDER(this->parent);
+        color = dc.windowBackground(style);
+    } else if (isPressed() && isHovered()) {
         color = dc.pressedBackground(style);
     } else if (isHovered()) {
         color = dc.hoveredBackground(style);
     } else {
-        color = dc.widgetBackground(style);
+        color = dc.windowBackground(style);
     }
 
     dc.drawBorder(rect, style);
@@ -180,7 +183,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
         Size image_size = m_image->sizeHint(dc);
         float width = rect.w;
         if (m_close_button) {
-            width -= 22;
+            width -= 22; // 12 icon size + 10 padding
         }
         dc.drawTexture(
             Point(
@@ -196,7 +199,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
         rect.x += image_size.w;
         rect.w -= image_size.w;
         if (m_close_button) {
-            rect.w -= 22;
+            rect.w -= 22; // 12 icon size + 10 padding
         }
     }
     HorizontalAlignment h_text_align = m_horizontal_align;
@@ -207,7 +210,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     }
     if (m_text.length()) {
         if (m_close_button && !m_image) {
-            rect.w -= 22;
+            rect.w -= 22; // 12 icon size + 10 padding
         }
         dc.fillTextAligned(
             font(),
