@@ -1,6 +1,7 @@
 #include "../src/util.hpp"
 #include "../src/application.hpp"
 #include "../src/controls/box.hpp"
+#include "../src/controls/group_box.hpp"
 #include "../src/controls/note_book.hpp"
 #include "../src/controls/label.hpp"
 #include "../src/controls/button.hpp"
@@ -9,12 +10,12 @@
 Widget* simple(Application &app) {
     Box *box = new Box(Align::Vertical);
         Box *labels_and_buttons = new Box(Align::Horizontal);
-            Box *labels = new Box(Align::Vertical);
-                labels->append(new Label("Label that occupies one line."));
-                labels->append(new Label("Label that\nspans\nmultiple lines."));
+            GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
+                labels->append(new Label("This text occupies one line."));
+                labels->append(new Label("This text\nspans\nmultiple lines."));
             labels_and_buttons->append(labels, Fill::Both);
 
-            Box *buttons = new Box(Align::Vertical);
+            GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
                 buttons->append(new Button("Button"));
                 buttons->append(new Button((new Image(app.icons["close_thin"]))->setForeground(COLOR_BLACK)));
                 Button *image_and_text = new Button(new Image(app.icons["close_thin"]));
@@ -24,9 +25,9 @@ Widget* simple(Application &app) {
             labels_and_buttons->append(buttons, Fill::Both);
         box->append(labels_and_buttons, Fill::Both);
 
-        Box *line_edits = new Box(Align::Vertical);
-            line_edits->append(new LineEdit("", "LineEdit placeholder text"), Fill::Horizontal);
-            line_edits->append(new LineEdit("LineEdit default text", ""), Fill::Horizontal);
+        GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
+            line_edits->append(new LineEdit("", "Placeholder text"), Fill::Horizontal);
+            line_edits->append(new LineEdit("Default text", ""), Fill::Horizontal);
             line_edits->append(new LineEdit("", ""), Fill::Horizontal);
         box->append(line_edits, Fill::Both);
 
