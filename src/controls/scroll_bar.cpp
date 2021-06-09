@@ -109,6 +109,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
 SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Box(alignment) {
     m_slider = new ScrollBarSlider(alignment);
     m_slider->m_slider_button->setMinSize(min_size);
+    m_slider->style.widget_background = COLOR_NONE;
     append(m_slider, Fill::Both);
 }
 
