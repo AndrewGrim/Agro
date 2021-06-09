@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
             }
         };
         app->setTitle("Widget Gallery");
-         LineEdit *change_background = new LineEdit("", "Enter color ex: #ff000055");
+        LineEdit *change_background = new LineEdit("", "Enter color ex: #ff000055");
             change_background->onTextChanged = [&]() {
                 if (change_background->text().length()) {
                     app->dc->default_style.widget_background = Color(change_background->text().c_str());
