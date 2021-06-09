@@ -37,6 +37,6 @@ You can verify that the library has built correctly by running one of the exampl
 
 ### Installing
 On Unix platforms you can run `cmake --install build` to install the library.
-From then on you can link against the library by specifying its name `Agro`.
+From then on you can link against the library by specifying its name `Agro` and including it like so `#include <Agro/application.hpp>`
 
 **The instructions for Windows are incomplete for the moment!**
