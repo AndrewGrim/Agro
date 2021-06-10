@@ -60,7 +60,7 @@
         public:
             std::function<void()> onTextChanged = nullptr;
 
-            LineEdit(std::string text = "", std::string placeholder = "");
+            LineEdit(std::string text = "", std::string placeholder = "", float min_length = 50);
             ~LineEdit();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;

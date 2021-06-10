@@ -1,9 +1,10 @@
 #include "line_edit.hpp"
 #include "../application.hpp"
 
-LineEdit::LineEdit(std::string text, std::string placeholder) : Widget() {
+LineEdit::LineEdit(std::string text, std::string placeholder, float min_length) : Widget() {
     setText(text);
     setPlaceholderText(placeholder);
+    setMinLength(min_length);
     m_selection.x_begin = 0;
     m_selection.x_end = m_selection.x_begin;
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
