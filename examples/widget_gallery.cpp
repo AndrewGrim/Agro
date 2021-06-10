@@ -7,6 +7,7 @@
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
 #include "../src/controls/splitter.hpp"
+#include "../src/controls/tree_view.hpp"
 
 Widget* basic(Application &app) {
     Box *box = new Box(Align::Vertical);
@@ -40,9 +41,9 @@ Widget* basic(Application &app) {
 
         GroupBox *images = new GroupBox(Align::Horizontal, "Images");
             auto lena = std::make_shared<Texture>("lena.png");
-            images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff5555")));
-            images->append((new Image(lena))->setMinSize(Size(56, 56))->setForeground(Color("#55ff55")));
-            images->append((new Image(lena))->setMinSize(Size(72, 72))->setForeground(Color("#5555ff")));
+            images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff0000")));
+            images->append((new Image(lena))->setMinSize(Size(56, 56))->setForeground(Color("#00ff00")));
+            images->append((new Image(lena))->setMinSize(Size(72, 72))->setForeground(Color("#0000ff")));
             images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true), Fill::Both);
             images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true)->setMaintainAspectRatio(false), Fill::Both);
         box->append(images, Fill::Both);
@@ -84,6 +85,102 @@ Widget* splitter(Application &app) {
     return box;
 }
 
+struct Hidden {
+    int id = -1;
+    Hidden(int id) : id{id} {}
+};
+
+Widget* treeView(Application &app) {
+    ScrolledBox * box = new ScrolledBox(Align::Horizontal);
+        {
+            GroupBox *group = new GroupBox(Align::Vertical, "Mode::Unroll");
+                TreeView<Hidden> *tv = new TreeView<Hidden>();
+                    for (int i = 1; i < 4; i++) {
+                        auto c = new Column<Hidden>(
+                            "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
+                            [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                                return lhs->hidden->id > rhs->hidden->id;
+                            }
+                        );
+                        c->setExpand(true);
+                        tv->append(c);
+                    }
+                    Tree<Hidden> *model = new Tree<Hidden>();
+                    for (int i = 1; i < 101; i++) {
+                        model->append(nullptr, new TreeNode<Hidden>(
+                            {
+                                new TextCellRenderer("Row " + std::to_string(i)),
+                                new Button("TreeView"),
+                                new LineEdit("", "TreeView"),
+                            },
+                            new Hidden(i)
+                        ));
+                    }
+                    tv->setModel(model);
+                    tv->setTableMode(true);
+                    tv->setMode(Mode::Unroll);
+                group->append(tv, Fill::Both);
+            box->append(group, Fill::Both);
+        }
+        {
+            GroupBox *group = new GroupBox(Align::Vertical, "Mode::Scroll");
+                TreeView<Hidden> *tv = new TreeView<Hidden>(Size(400, 400));
+                    tv->hideColumnHeaders();
+                    for (int i = 1; i < 4; i++) {
+                        auto c = new Column<Hidden>(
+                            "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
+                            [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                                return lhs->hidden->id > rhs->hidden->id;
+                            }
+                        );
+                        tv->append(c);
+                        if (i == 1) { c->setExpand(true); }
+                    }
+                    Tree<Hidden> *model = new Tree<Hidden>();
+                    int count = 0;
+                    float ic = 0.0f;
+                    for (int i = 1; i < 6; i++) {
+                        TreeNode<Hidden> *parent = nullptr;
+                        for (int j = 1; j < 21; j++) {
+                            if (j == 1) {
+                                parent = model->append(parent, new TreeNode<Hidden>(
+                                    {
+                                        new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
+                                        new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
+                                        new MultipleImagesCellRenderer({
+                                            *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                            *(Image(app.icons["up_arrow"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                            *(Image(app.icons["close_thin"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                        }),
+                                    },
+                                    new Hidden(count)
+                                ));
+                            } else {
+                                model->append(parent, new TreeNode<Hidden>(
+                                    {
+                                        new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
+                                        new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
+                                        new MultipleImagesCellRenderer({
+                                            *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                            *(Image(app.icons["up_arrow"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                            *(Image(app.icons["close_thin"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                        }),
+                                    },
+                                    new Hidden(count)
+                                ));
+                            }
+                            count++;
+                            ic += 0.01f;
+                        }
+                    }
+                    tv->setModel(model);
+                group->append(tv, Fill::Both);
+            box->append(group, Fill::Both);
+        }
+
+    return box;
+}
+
 int main(int argc, char **argv) {
     Application *app = Application::get();
         Color default_widget_background = app->dc->default_style.widget_background;
@@ -113,6 +210,7 @@ int main(int argc, char **argv) {
             notebook->appendTab(basic(*app), "Basic", nullptr, false);
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
             notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
+            notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
         app->append(notebook, Fill::Both);
     app->run();
 
