@@ -932,6 +932,7 @@
                                         if ((event.x >= col->rect.x) && (event.x <= (col->rect.x + col->rect.w))) {
                                             if (node->columns[i]->isWidget()) {
                                                 auto _widget = (Widget*)node->columns[i];
+                                                _widget->parent = this;
                                                 if ((event.x >= _widget->rect.x && event.x <= _widget->rect.x + _widget->rect.w) &&
                                                     (event.y >= _widget->rect.y && event.y <= _widget->rect.y + _widget->rect.h)
                                                 ) {
