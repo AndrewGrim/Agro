@@ -4,13 +4,13 @@
 Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{alignment}, m_viewport{min_size} {
     this->onMouseDown.addEventListener([&](Widget *splitter, MouseEvent event) {
         if (m_align_policy == Align::Horizontal) {
-            Rect sash = Rect(rect.x + (rect.w - m_sash_size) * m_split, rect.y, m_sash_size, rect.h);
+            Rect sash = Rect(rect.x + ((rect.w - m_sash_size) * m_split), rect.y, m_sash_size, rect.h);
             if (event.x >= sash.x && event.x <= sash.x + sash.w) {
                 m_dragging = true;
                 Application::get()->setMouseCursor(Cursor::SizeWE);
             }
         } else {
-            Rect sash = Rect(rect.x, rect.y + (rect.h - m_sash_size) * m_split, rect.w, m_sash_size);
+            Rect sash = Rect(rect.x, rect.y + ((rect.h - m_sash_size) * m_split), rect.w, m_sash_size);
             if (event.y >= sash.y && event.y <= sash.y + sash.h) {
                 m_dragging = true;
                 Application::get()->setMouseCursor(Cursor::SizeNS);
@@ -73,7 +73,10 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         Rect local_rect = Rect(rect.x, rect.y, (rect.w - m_sash_size) * m_split, rect.h);
         if (m_first) {
             dc.setClip(local_rect);
-            m_first->draw(dc, local_rect, m_first->state());
+            Size s = m_first->size();
+            s.w = s.w > local_rect.w ? s.w : local_rect.w;
+            s.h = s.h > local_rect.h ? s.h : local_rect.h;
+            m_first->draw(dc, Rect(local_rect.x, local_rect.y, s.w, s.h), m_first->state());
         }
         local_rect = Rect(local_rect.x + local_rect.w, rect.y, m_sash_size, rect.h);
         dc.setClip(local_rect);
@@ -81,13 +84,19 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         if (m_second) {
             local_rect = Rect(local_rect.x + m_sash_size, rect.y, (rect.w - m_sash_size) * (1.0f - m_split), rect.h);
             dc.setClip(local_rect);
-            m_second->draw(dc, local_rect, m_second->state());
+            Size s = m_second->size();
+            s.w = s.w > local_rect.w ? s.w : local_rect.w;
+            s.h = s.h > local_rect.h ? s.h : local_rect.h;
+            m_second->draw(dc, Rect(local_rect.x, local_rect.y, s.w, s.h), m_second->state());
         }
     } else {
         Rect local_rect = Rect(rect.x, rect.y, rect.w, (rect.h - m_sash_size) * m_split);
         if (m_first) {
             dc.setClip(local_rect);
-            m_first->draw(dc, local_rect, m_first->state());
+            Size s = m_first->size();
+            s.w = s.w > local_rect.w ? s.w : local_rect.w;
+            s.h = s.h > local_rect.h ? s.h : local_rect.h;
+            m_first->draw(dc, Rect(local_rect.x, local_rect.y, s.w, s.h), m_first->state());
         }
         local_rect = Rect(rect.x, local_rect.y + local_rect.h, rect.w, m_sash_size);
         dc.setClip(local_rect);
@@ -95,7 +104,10 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         if (m_second) {
             local_rect = Rect(rect.x, local_rect.y + m_sash_size, rect.w, (rect.h - m_sash_size) * (1.0f - m_split));
             dc.setClip(local_rect);
-            m_second->draw(dc, local_rect, m_second->state());
+            Size s = m_second->size();
+            s.w = s.w > local_rect.w ? s.w : local_rect.w;
+            s.h = s.h > local_rect.h ? s.h : local_rect.h;
+            m_second->draw(dc, Rect(local_rect.x, local_rect.y, s.w, s.h), m_second->state());
         }
     }
     dc.setClip(old_clip);
@@ -103,6 +115,8 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size Splitter::sizeHint(DrawingContext &dc) {
     Size s = m_viewport;
+    m_first->sizeHint(dc);
+    m_second->sizeHint(dc);
     if (m_align_policy == Align::Horizontal) {
         s.w += m_sash_size;
     } else {
@@ -112,6 +126,22 @@ Size Splitter::sizeHint(DrawingContext &dc) {
 }
 
 void* Splitter::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
+    if (m_align_policy == Align::Horizontal) {
+        Rect sash_rect = Rect(rect.x + ((rect.w - m_sash_size) * m_split), rect.y, m_sash_size, rect.h);
+        if ((event.x >= sash_rect.x && event.x <= sash_rect.x + sash_rect.w) &&
+            (event.y >= sash_rect.y && event.y <= sash_rect.y + sash_rect.h)) {
+            handleMouseEvent(window, state, event);
+            return this;
+        }
+    } else {
+        Rect sash_rect = Rect(rect.x, rect.y + ((rect.h - m_sash_size) * m_split), rect.w, m_sash_size);
+        if ((event.x >= sash_rect.x && event.x <= sash_rect.x + sash_rect.w) &&
+            (event.y >= sash_rect.y && event.y <= sash_rect.y + sash_rect.h)) {
+            handleMouseEvent(window, state, event);
+            return this;
+        }
+    }
+
     if (m_first) {
         if (m_first->isVisible()) {
             if ((event.x >= m_first->rect.x && event.x <= m_first->rect.x + m_first->rect.w) &&
