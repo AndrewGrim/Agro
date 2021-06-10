@@ -37,6 +37,13 @@ Widget* simple(Application &app) {
             line_edits->append(new LineEdit("", ""), Fill::Horizontal);
         box->append(line_edits, Fill::Horizontal);
 
+        GroupBox *sliders = new GroupBox(Align::Horizontal, "Sliders");
+            Slider *sh = new Slider(Align::Horizontal, 0.5);
+                sh->m_slider_button_size = 50;
+            sliders->append(sh, Fill::Horizontal);
+            sliders->append(new Slider(Align::Vertical, 0.5), Fill::Vertical);
+        box->append(sliders, Fill::Both);
+
         GroupBox *images = new GroupBox(Align::Horizontal, "Images");
             auto lena = std::make_shared<Texture>("lena.png");
             images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff5555")));
