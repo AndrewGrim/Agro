@@ -73,6 +73,8 @@ Size GroupBox::sizeHint(DrawingContext &dc) {
                 }
             }
         }
+        m_widgets_only = size;
+
         dc.sizeHintMargin(size, style);
         dc.sizeHintBorder(size, style);
         dc.sizeHintPadding(size, style);

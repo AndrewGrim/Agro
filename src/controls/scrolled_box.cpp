@@ -23,12 +23,12 @@ void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
 }
 
 void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
+    // TODO same changes as for box, generic_max and total layout stuff
     sizeHint(dc);
     Align parent_layout = m_align_policy;
     int generic_non_expandable_widgets;
     Point pos;
     float generic_total_layout_length;
-    float generic_max_layout_length;
     float *generic_position_coord; // Needs to be a ptr because the value will change.
     float *generic_rect_coord;
     float *rect_length;
@@ -37,8 +37,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     float *generic_length; // Needs to be a ptr because the value will change.
     if (parent_layout == Align::Vertical) {
         generic_non_expandable_widgets = m_vertical_non_expandable;
-        generic_total_layout_length = m_size.h;
-        generic_max_layout_length = m_size.w;
+        generic_total_layout_length = m_widgets_only.h;
         generic_position_coord = &pos.y;
         generic_rect_coord = &rect.y;
         rect_length = &rect.h;
@@ -46,8 +45,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
         generic_length = &size.h;
     } else {
         generic_non_expandable_widgets = m_horizontal_non_expandable;
-        generic_total_layout_length = m_size.w;
-        generic_max_layout_length = m_size.h;
+        generic_total_layout_length = m_widgets_only.w;
         generic_position_coord = &pos.x;
         generic_rect_coord = &rect.x;
         rect_length = &rect.w;
@@ -62,10 +60,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
         child_count = 1; // Protects from division by zero
     }
     float expandable_length = (*rect_length - generic_total_layout_length) / child_count;
-    float expandable_opposite_length = *rect_opposite_length > generic_max_layout_length ? *rect_opposite_length : generic_max_layout_length;
-    if (expandable_length < 0) {
-        expandable_length = 0;
-    }
+    if (expandable_length < 0) { expandable_length = 0; }
     for (Widget* child : children) {
         Size child_hint = child->sizeHint(dc);
         switch (parent_layout) {
@@ -73,7 +68,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
                 switch (child->fillPolicy()) {
                     case Fill::Both: {
                         size = Size {
-                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w,
+                            *rect_opposite_length > child_hint.w ? *rect_opposite_length : child_hint.w,
                             child_hint.h + (expandable_length * child->proportion())
                         };
                         break;
@@ -87,7 +82,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
                     }
                     case Fill::Horizontal:
                         size = Size {
-                            expandable_opposite_length > child_hint.w ? expandable_opposite_length : child_hint.w,
+                            *rect_opposite_length > child_hint.w ? *rect_opposite_length : child_hint.w,
                             child_hint.h
                         };
                         break;
@@ -101,14 +96,14 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
                     case Fill::Both: {
                             size = Size {
                                 child_hint.w + (expandable_length * child->proportion()),
-                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
+                                *rect_opposite_length > child_hint.h ? *rect_opposite_length : child_hint.h
                             };
                             break;
                         }
                         case Fill::Vertical:
                             size = Size {
                                 child_hint.w,
-                                expandable_opposite_length > child_hint.h ? expandable_opposite_length : child_hint.h
+                                *rect_opposite_length > child_hint.h ? *rect_opposite_length : child_hint.h
                             };
                             break;
                         case Fill::Horizontal: {
@@ -185,6 +180,7 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
         m_horizontal_non_expandable = horizontal_non_expandable;
         m_visible_children = visible;
         m_size = size;
+        m_widgets_only = size;
         m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
 
         return m_viewport;

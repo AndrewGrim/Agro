@@ -21,5 +21,7 @@
             unsigned int m_visible_children = 0;
             unsigned int m_vertical_non_expandable = 0;
             unsigned int m_horizontal_non_expandable = 0;
+
+            Size m_widgets_only; // The layout's size without padding, border, margin etc.
     };
 #endif
