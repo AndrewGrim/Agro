@@ -464,6 +464,7 @@
                         m_column_widths[i] = s.w;
                     }
                     m_current_header_width += s.w;
+                    child->rect = Rect(local_pos_x, rect.y, s.w, m_children_size.h); // Always set rect because we need it for event handling.
                     if (!areColumnHeadersHidden()) {
                         dc.setClip(Rect(
                             local_pos_x,
