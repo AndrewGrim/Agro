@@ -7,7 +7,7 @@
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
 
-Widget* simple(Application &app) {
+Widget* basic(Application &app) {
     Box *box = new Box(Align::Vertical);
         Box *labels_and_buttons = new Box(Align::Horizontal);
             GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
@@ -37,13 +37,6 @@ Widget* simple(Application &app) {
             line_edits->append(new LineEdit("", ""), Fill::Horizontal);
         box->append(line_edits, Fill::Horizontal);
 
-        GroupBox *sliders = new GroupBox(Align::Horizontal, "Sliders");
-            Slider *sh = new Slider(Align::Horizontal, 0.5);
-                sh->m_slider_button_size = 50;
-            sliders->append(sh, Fill::Horizontal);
-            sliders->append(new Slider(Align::Vertical, 0.5), Fill::Vertical);
-        box->append(sliders, Fill::Both);
-
         GroupBox *images = new GroupBox(Align::Horizontal, "Images");
             auto lena = std::make_shared<Texture>("lena.png");
             images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff5555")));
@@ -52,6 +45,25 @@ Widget* simple(Application &app) {
             images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true), Fill::Both);
             images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true)->setMaintainAspectRatio(false), Fill::Both);
         box->append(images, Fill::Both);
+
+    return box;
+}
+
+Widget* slidersAndScrollbars(Application &app) {
+    Box *box = new Box(Align::Vertical);
+        GroupBox *sliders = new GroupBox(Align::Horizontal, "Sliders");
+            Slider *sh = new Slider(Align::Horizontal, 0.5);
+                sh->m_slider_button_size = 50;
+            sliders->append(sh, Fill::Horizontal);
+            sliders->append(new Slider(Align::Vertical, 0.5), Fill::Vertical);
+        box->append(sliders, Fill::Both);
+
+        GroupBox *scroll_bars = new GroupBox(Align::Horizontal, "ScrollBars");
+            ScrollBar *sbh = new ScrollBar(Align::Horizontal);
+                sbh->m_slider->m_slider_button_size = 50;
+            scroll_bars->append(sbh, Fill::Horizontal);
+            scroll_bars->append(new ScrollBar(Align::Vertical), Fill::Vertical);
+        box->append(scroll_bars, Fill::Both);
 
     return box;
 }
@@ -82,7 +94,8 @@ int main(int argc, char **argv) {
             };
         app->append(change_background, Fill::Horizontal);
         NoteBook *notebook = new NoteBook();
-            notebook->appendTab(simple(*app), "Simple", nullptr, false);
+            notebook->appendTab(basic(*app), "Basic", nullptr, false);
+            notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
         app->append(notebook, Fill::Both);
     app->run();
 
