@@ -95,6 +95,7 @@ Widget* treeView(Application &app) {
         {
             GroupBox *group = new GroupBox(Align::Vertical, "Mode::Unroll");
                 TreeView<Hidden> *tv = new TreeView<Hidden>();
+                    tv->hideColumnHeaders();
                     for (int i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
                             "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
@@ -125,7 +126,6 @@ Widget* treeView(Application &app) {
         {
             GroupBox *group = new GroupBox(Align::Vertical, "Mode::Scroll");
                 TreeView<Hidden> *tv = new TreeView<Hidden>(Size(400, 400));
-                    tv->hideColumnHeaders();
                     for (int i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
                             "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
