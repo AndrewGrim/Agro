@@ -442,7 +442,7 @@ void DrawingContext::drawTextureAligned(Rect rect, Size size, Texture *texture, 
             pos.y = rect.y + (rect.h / 2) - size.h / 2;
             break;
     }
-    this->drawTexture(
+    drawTexture(
         pos,
         size,
         texture,

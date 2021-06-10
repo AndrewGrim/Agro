@@ -2,19 +2,19 @@
 
 Image::Image(std::string file_path) : Widget() {
     m_texture = std::make_shared<Texture>(file_path);
-    m_size = Size(m_texture->width, m_texture->height);
+    m_size = originalSize();
     style.widget_background = COLOR_NONE;
 }
 
 Image::Image(const unsigned char *image_data, int length) : Widget() {
     m_texture = std::make_shared<Texture>(image_data, length);
-    m_size = Size(m_texture->width, m_texture->height);
+    m_size = originalSize();
     style.widget_background = COLOR_NONE;
 }
 
 Image::Image(std::shared_ptr<Texture> texture) : Widget() {
     m_texture = texture;
-    m_size = Size(m_texture->width, m_texture->height);
+    m_size = originalSize();
     style.widget_background = COLOR_NONE;
 }
 
@@ -34,14 +34,14 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
         if (m_maintain_aspect_ratio) {
             Size size = Size();
             if (rect.w > rect.h) {
-                size.w = 1;
+                size.w = 1; // Expand based on width.
             } else if (rect.h > rect.w) {
-                size.h = 1;
+                size.h = 1; // Expand based on height.
             }
-            if (size.w) {
+            if (size.w) { // More space horizontally.
                 size.w = rect.h;
                 size.h = size.w / (size.w / rect.h);
-            } else if (size.h) {
+            } else if (size.h) { // More space vertically.
                 size.h = rect.w;
                 size.w = size.h / (size.h / rect.w);
             } else {
@@ -50,8 +50,8 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
             dc.drawTextureAligned(
                 rect,
                 size,
-                this->_texture(),
-                this->coords(),
+                _texture(),
+                coords(),
                 m_horizontal_align,
                 m_vertical_align,
                 foreground()
@@ -60,8 +60,8 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
             dc.drawTextureAligned(
                 rect,
                 Size(rect.w, rect.h),
-                this->_texture(),
-                this->coords(),
+                _texture(),
+                coords(),
                 m_horizontal_align,
                 m_vertical_align,
                 foreground()
@@ -70,9 +70,9 @@ void Image::draw(DrawingContext &dc, Rect rect, int state) {
     } else {
         dc.drawTextureAligned(
             rect,
-            m_size,
-            this->_texture(),
-            this->coords(),
+            size(),
+            _texture(),
+            coords(),
             m_horizontal_align,
             m_vertical_align,
             foreground()
@@ -106,52 +106,52 @@ Image* Image::setForeground(Color foreground) {
 }
 
 bool Image::expand() {
-    return this->m_expand;
+    return m_expand;
 }
 
 Image* Image::setExpand(bool expand) {
-    if (this->m_expand != expand) {
-        this->m_expand = expand;
-        this->update();
+    if (m_expand != expand) {
+        m_expand = expand;
+        update();
     }
 
     return this;
 }
 
 HorizontalAlignment Image::horizontalAlignment() {
-    return this->m_horizontal_align;
+    return m_horizontal_align;
 }
 
 Image* Image::setHorizontalAlignment(HorizontalAlignment image_align) {
     if (m_horizontal_align != image_align) {
         m_horizontal_align = image_align;
-        this->update();
+        update();
     }
 
     return this;
 }
 
 VerticalAlignment Image::verticalAlignment() {
-    return this->m_vertical_align;
+    return m_vertical_align;
 }
 
 Image* Image::setVerticalAlignment(VerticalAlignment image_align) {
     if (m_vertical_align != image_align) {
         m_vertical_align = image_align;
-        this->update();
+        update();
     }
 
     return this;
 }
 
 bool Image::maintainAspectRation() {
-    return this->m_maintain_aspect_ratio;
+    return m_maintain_aspect_ratio;
 }
 
 Image* Image::setMaintainAspectRatio(bool aspect_ratio) {
     if (m_maintain_aspect_ratio != aspect_ratio) {
         m_maintain_aspect_ratio = aspect_ratio;
-        this->update();
+        update();
     }
 
     return this;
