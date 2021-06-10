@@ -11,8 +11,14 @@ Widget* simple(Application &app) {
     Box *box = new Box(Align::Vertical);
         Box *labels_and_buttons = new Box(Align::Horizontal);
             GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
-                labels->append(new Label("This text occupies one line."));
-                labels->append(new Label("This text\nspans\nmultiple lines."));
+                Label *lr = new Label("This text occupies one line and is right aligned.");
+                    lr->setHorizontalAlignment(HorizontalAlignment::Right);
+                Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.");
+                    lc->setHorizontalAlignment(HorizontalAlignment::Center);
+                labels->append(new Label("This text occupies one line and is left aligned."), Fill::Both);
+                labels->append(lr, Fill::Both);
+                labels->append(lc, Fill::Both);
+
             labels_and_buttons->append(labels, Fill::Both);
 
             GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
@@ -21,15 +27,15 @@ Widget* simple(Application &app) {
                 Button *image_and_text = new Button(new Image(app.icons["close_thin"]));
                     image_and_text->m_image->setForeground(COLOR_BLACK);
                     image_and_text->setText("Button");
-                buttons->append(image_and_text);
+                buttons->append(image_and_text, Fill::Both);
             labels_and_buttons->append(buttons, Fill::Both);
         box->append(labels_and_buttons, Fill::Both);
 
         GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
-            line_edits->append(new LineEdit("", "Placeholder text"), Fill::Horizontal);
-            line_edits->append(new LineEdit("Default text", ""), Fill::Horizontal);
+            line_edits->append(new LineEdit("", "Placeholder text", 200));
+            line_edits->append(new LineEdit("Default text", "", 300));
             line_edits->append(new LineEdit("", ""), Fill::Horizontal);
-        box->append(line_edits, Fill::Both);
+        box->append(line_edits, Fill::Horizontal);
 
         GroupBox *images = new GroupBox(Align::Horizontal, "Images");
             auto lena = std::make_shared<Texture>("lena.png");
@@ -55,6 +61,8 @@ int main(int argc, char **argv) {
                 }
             }
         };
+        app->resize(800, 600);
+        app->center();
         app->setTitle("Widget Gallery");
         LineEdit *change_background = new LineEdit("", "Enter color ex: #ff000055");
             change_background->onTextChanged = [&]() {
