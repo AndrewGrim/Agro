@@ -6,6 +6,7 @@
 #include "../src/controls/label.hpp"
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
+#include "../src/controls/splitter.hpp"
 
 Widget* basic(Application &app) {
     Box *box = new Box(Align::Vertical);
@@ -68,6 +69,21 @@ Widget* slidersAndScrollbars(Application &app) {
     return box;
 }
 
+Widget* splitter(Application &app) {
+    Box * box = new Box(Align::Vertical);
+        Splitter *h = new Splitter(Align::Horizontal);
+            h->left(new Button("Left"));
+            h->right(new Button("Right"));
+        box->append(h, Fill::Both);
+
+        Splitter *v = new Splitter(Align::Vertical);
+            v->top(new Button("Top"));
+            v->bottom(new Button("Bottom"));
+        box->append(v, Fill::Both);
+
+    return box;
+}
+
 int main(int argc, char **argv) {
     Application *app = Application::get();
         Color default_widget_background = app->dc->default_style.widget_background;
@@ -96,6 +112,7 @@ int main(int argc, char **argv) {
         NoteBook *notebook = new NoteBook();
             notebook->appendTab(basic(*app), "Basic", nullptr, false);
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
+            notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
         app->append(notebook, Fill::Both);
     app->run();
 
