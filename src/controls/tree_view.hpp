@@ -473,8 +473,8 @@
                             m_children_size.h
                         ).clipTo(tv_clip).clipTo(rect));
                         child->draw(dc, Rect(local_pos_x, rect.y, s.w, m_children_size.h), child->state());
-                        local_pos_x += s.w;
                     }
+                    local_pos_x += s.w;
                     i++;
                 }
                 float column_header = 0.0f;
