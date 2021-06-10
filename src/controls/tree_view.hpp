@@ -278,6 +278,7 @@
                             horizontal_non_expandable++;
                         }
                     }
+                    m_widgets_only = size;
 
                     dc.sizeHintBorder(size, style);
 
