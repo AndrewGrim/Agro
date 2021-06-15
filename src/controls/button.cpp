@@ -35,6 +35,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
     dc.padding(rect, style);
 
     Size text_size = dc.measureText(font(), text());
+    if (text().length()) { text_size.w += 5; } // Padding between image and text
     if (m_image) {
         Size image_size = m_image->sizeHint(dc);
         dc.drawTexture(
@@ -76,6 +77,7 @@ Size Button::sizeHint(DrawingContext &dc) {
         if (m_image) {
             Size i = m_image->sizeHint(dc);
             size.w += i.w;
+            if (text().length()) { size.w += 5; } // Padding between image and text
             if (i.h > size.h) {
                 size.h = i.h;
             }
