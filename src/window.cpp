@@ -56,7 +56,7 @@ Window::Window(const char* title, Size size) {
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     m_sdl_context = SDL_GL_CreateContext(m_win);
     SDL_GL_MakeCurrent(m_win, m_sdl_context); // TODO this will need to be called when switching between windows
-    SDL_GL_SetSwapInterval(1);
+    SDL_GL_SetSwapInterval(0);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         error("FAILED_TO_INITIALIZE_GLAD");
     }
@@ -117,6 +117,7 @@ void Window::run() {
     m_state->hovered = m_main_widget;
     int32_t mouse_movement_x = 0;
     int32_t mouse_movement_y = 0;
+    int32_t fps = 60; // TODO make this dynamically changable in app
     SDL_StartTextInput();
     while (m_running) {
         uint32_t frame_start = SDL_GetTicks();
@@ -286,6 +287,12 @@ void Window::run() {
                     break;
                 case SDL_QUIT:
                     quit();
+            }
+
+            uint32_t frame_end = SDL_GetTicks() - frame_start;
+            uint32_t frame_time = 1000 / fps;
+            if (frame_time > frame_end && frame_time - frame_end < frame_time) {
+                SDL_Delay(frame_time - frame_end);
             }
         }
         if (this->m_needs_update) {
