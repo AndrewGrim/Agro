@@ -1,4 +1,5 @@
 #include "drawing_context.hpp"
+#include "../application.hpp"
 
 DrawingContext::DrawingContext() {
     glEnable(GL_BLEND);
@@ -493,4 +494,12 @@ Color DrawingContext::textBackground(Style &style) {
 
 Color DrawingContext::textDisabled(Style &style) {
     return style.text_disabled ? this->default_style.text_disabled : style.text_disabled;
+}
+
+Color DrawingContext::getColor(Point point) {
+    float data[4] = { 0, 0, 0, 0 };
+    Size win = Application::get()->size;
+    if (point.x >= win.w || point.y >= win.h) { return COLOR_NONE; }
+    glReadPixels(point.x, win.h - point.y, 1, 1, GL_RGBA, GL_FLOAT, data);
+    return Color(data[0], data[1], data[2], data[3]);
 }
