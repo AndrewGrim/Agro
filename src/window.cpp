@@ -115,12 +115,8 @@ void Window::run() {
         onReady(this);
     }
     m_state->hovered = m_main_widget;
-    int32_t mouse_movement_x = 0;
-    int32_t mouse_movement_y = 0;
-    int32_t fps = 60; // TODO make this dynamically changable in app
     SDL_StartTextInput();
     while (m_running) {
-        uint32_t frame_start = SDL_GetTicks();
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
             switch (event.type) {
@@ -158,16 +154,7 @@ void Window::run() {
                     }
                     break;
                 case SDL_MOUSEMOTION:
-                    if (event.motion.timestamp >= frame_start) {
-                        event.motion.xrel += mouse_movement_x;
-                        event.motion.yrel += mouse_movement_y;
-                        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
-                        mouse_movement_x = 0;
-                        mouse_movement_y = 0;
-                    } else {
-                        mouse_movement_x += event.motion.xrel;
-                        mouse_movement_y += event.motion.yrel;
-                    }
+                    m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
                     break;
                 case SDL_MOUSEWHEEL:
                     if (m_state->hovered) {
@@ -287,12 +274,6 @@ void Window::run() {
                     break;
                 case SDL_QUIT:
                     quit();
-            }
-
-            uint32_t frame_end = SDL_GetTicks() - frame_start;
-            uint32_t frame_time = 1000 / fps;
-            if (frame_time > frame_end && frame_time - frame_end < frame_time) {
-                SDL_Delay(frame_time - frame_end);
             }
         }
         if (this->m_needs_update) {
