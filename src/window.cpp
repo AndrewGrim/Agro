@@ -25,6 +25,8 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
 int forcePaintWhileResizing(void *data, SDL_Event *event) {
     switch (event->type) {
         case SDL_WINDOWEVENT:
+            // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
+            // supposedly also triggers when the system changes the window size.
             if (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
                 Window *win = (Window*)data;
                 win->handleResizeEvent(event->window.data1, event->window.data2);
@@ -175,15 +177,6 @@ void Window::run() {
                     break;
                 case SDL_WINDOWEVENT:
                     switch (event.window.event) {
-                        // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
-                        // supposedly also triggers when the system changes the window size.
-                        case SDL_WINDOWEVENT_SIZE_CHANGED:
-                            // TODO Gets handled in `forcePaintWhileResizing()` so this is probably not needed anymore.
-                            handleResizeEvent(event.window.data1, event.window.data2);
-                            if (onResize) {
-                                onResize(this);
-                            }
-                            break;
                         case SDL_WINDOWEVENT_ENTER:
                             m_mouse_inside = true;
                             break;
@@ -216,7 +209,6 @@ void Window::run() {
                             mods[3] = Mod::Gui;
                         }
                         bool matched = false;
-                        // TODO add matching for hotkeys and the widget itself
                         for (auto hotkey : m_keyboard_shortcuts) {
                             if (hotkey.second.key == key) {
                                 bool mods_matched = true;
@@ -276,9 +268,9 @@ void Window::run() {
                     quit();
             }
         }
-        if (this->m_needs_update) {
-            this->show();
-            this->m_needs_update = false;
+        if (m_needs_update) {
+            show();
+            m_needs_update = false;
         }
     }
     SDL_StopTextInput();
