@@ -49,6 +49,7 @@
                 {"close", std::make_shared<Texture>(close_png, close_png_length)},
                 {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
                 {"up_arrow", std::make_shared<Texture>(up_arrow_png, up_arrow_png_length)},
+                {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
             };
 
         private:

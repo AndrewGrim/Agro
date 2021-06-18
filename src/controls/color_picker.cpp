@@ -8,7 +8,21 @@ ColorPicker::ColorPicker() {
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
             m_position = Point(event.x, event.y);
-            m_color = Application::get()->dc->getColor(m_position);
+            float texture_data[260*260*4] = {};
+            glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, texture_data);
+            Point pos = Point(m_position.x - rect.x, m_position.y - rect.y);
+            if ((pos.x >= 0 && pos.x < 260) &&
+                (pos.y >= 0 && pos.y < 260)) {
+                m_color = Color(
+                    texture_data[(int)(pos.y * 260 * 4 + pos.x * 4 + 0)],
+                    texture_data[(int)(pos.y * 260 * 4 + pos.x * 4 + 1)],
+                    texture_data[(int)(pos.y * 260 * 4 + pos.x * 4 + 2)],
+                    texture_data[(int)(pos.y * 260 * 4 + pos.x * 4 + 3)]
+                );
+            } else {
+                m_color = COLOR_NONE;
+            }
             if (onColorChanged) { onColorChanged(this, m_color); }
         }
     });
@@ -24,14 +38,13 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Rect old_clip = dc.clip();
     dc.setClip(rect.clipTo(old_clip));
-    dc.fillRectWithGradient(Rect(rect.x, rect.y, rect.w / 5, rect.h), Color("#ff0000ff"), Color("#ffff00ff"), Gradient::LeftToRight);
-    dc.fillRectWithGradient(Rect(rect.x + rect.w / 5, rect.y, rect.w / 5, rect.h), Color("#ffff00ff"), Color("#00ff00ff"), Gradient::LeftToRight);
-    dc.fillRectWithGradient(Rect(rect.x + rect.w / 5 * 2, rect.y, rect.w / 5, rect.h), Color("#00ff00ff"), Color("#00ffffff"), Gradient::LeftToRight);
-    dc.fillRectWithGradient(Rect(rect.x + rect.w / 5 * 3, rect.y, rect.w / 5, rect.h), Color("#00ffffff"), Color("#0000ffff"), Gradient::LeftToRight);
-    dc.fillRectWithGradient(Rect(rect.x + rect.w / 5 * 4, rect.y, rect.w / 5, rect.h), Color("#0000ffff"), Color("#ff00ffff"), Gradient::LeftToRight);
-
-    dc.fillRectWithGradient(Rect(rect.x, rect.y, rect.w, rect.h / 2), Color("#ffffffff"), Color("#ffffff00"), Gradient::TopToBottom);
-    dc.fillRectWithGradient(Rect(rect.x, rect.y + rect.h - rect.h / 2, rect.w, rect.h / 2), Color("#00000000"), Color("#000000ff"), Gradient::TopToBottom);
+    dc.drawTexture(
+        Point(rect.x, rect.y),
+        sizeHint(dc),
+        Application::get()->icons["color_picker_gradient"].get(),
+        &m_coords,
+        COLOR_WHITE
+    );
 
     Color cur_color = COLOR_BLACK;
     if (m_position.y >= rect.y + rect.h / 2) { cur_color = COLOR_WHITE; }

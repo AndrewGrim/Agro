@@ -16,4 +16,5 @@ class ColorPicker : public Widget {
         Color m_color = COLOR_NONE;
         Point m_position;
         float m_cursor_width = 10;
+        TextureCoordinates m_coords;
 };
