@@ -67,7 +67,7 @@
                 case 'd': case 'D': return 13;
                 case 'e': case 'E': return 14;
                 case 'f': case 'F': return 15;
-                default: assert(true && "Invalid hex number."); return 0;
+                default: return 0;
             }
         }
 
