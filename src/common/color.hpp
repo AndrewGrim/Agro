@@ -3,6 +3,7 @@
 
     #include <cinttypes>
     #include <cassert>
+    #include <string>
 
     #define COLOR_DEFAULT Color(Color::IsDefault::Yes)
     #define COLOR_NONE Color(0.0f, 0.0f, 0.0f, 0.0f)
@@ -70,6 +71,12 @@
             }
         }
 
+        std::string toString() {
+            char buffer[10] = {};
+            sprintf(buffer, "#%.02X%.02X%.02X%.02X", (int)(r * 255), (int)(g * 255), (int)(b * 255), (int)(a * 255));
+            return std::string(buffer);
+        }
+
         static Color fromInt(uint8_t r, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255) {
             return Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
         }
@@ -89,6 +96,23 @@
                 return true;
             }
             return false;
+        }
+
+        Color& operator+=(const Color &rhs) {
+            this->r += rhs.r;
+            this->g += rhs.g;
+            this->b += rhs.b;
+            this->a += rhs.a;
+            return *this;
+        }
+
+        static Color interpolate(Color from, Color to, float step) {
+            float r = (to.r - from.r) * step;
+            float g = (to.g - from.g) * step;
+            float b = (to.b - from.b) * step;
+            float a = (to.a - from.a) * step;
+
+            return from += Color(r, g, b, a);
         }
     };
 #endif
