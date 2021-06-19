@@ -269,9 +269,7 @@ LineEdit* LineEdit::setText(std::string text) {
     m_text = text;
     m_text_changed = true;
     update();
-    if (onTextChanged) {
-        onTextChanged();
-    }
+    onTextChanged.notify();
 
     return this;
 }
@@ -394,9 +392,7 @@ LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
         m_text.erase(index, 1);
         m_text_changed = true;
         update();
-        if (onTextChanged) {
-            onTextChanged();
-        }
+        onTextChanged.notify();
     }
 
     return this;
@@ -412,9 +408,7 @@ LineEdit* LineEdit::clear() {
     m_current_view = m_min_view;
     m_history = History();
     update();
-    if (onTextChanged) {
-        onTextChanged();
-    }
+    onTextChanged.notify();
 
     return this;
 }
@@ -484,9 +478,7 @@ void LineEdit::deleteSelection(bool skip) {
     // Reset selection after deletion.
     m_selection.x_end = m_selection.x_begin;
     m_selection.end = m_selection.begin;
-    if (onTextChanged) {
-        onTextChanged();
-    }
+    onTextChanged.notify();
 }
 
 void LineEdit::selectAll() {
@@ -533,9 +525,7 @@ void LineEdit::insert(size_t index, const char *text, bool skip) {
         m_current_view = m_selection.x_end / m_virtual_size.w;
     }
     update();
-    if (onTextChanged) {
-        onTextChanged();
-    }
+    onTextChanged.notify();
 }
 
 void LineEdit::setCursor(size_t index) {

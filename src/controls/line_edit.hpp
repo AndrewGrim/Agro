@@ -58,7 +58,7 @@
 
     class LineEdit : public Widget {
         public:
-            std::function<void()> onTextChanged = nullptr;
+            EventListener<> onTextChanged = EventListener<>();
 
             LineEdit(std::string text = "", std::string placeholder = "", float min_length = 50);
             ~LineEdit();

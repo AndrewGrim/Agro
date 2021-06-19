@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
         ScrolledBox *results_view;
         LineEdit *edit = new LineEdit();
             edit->setPlaceholderText("Search by name");
-            edit->onTextChanged = [&]{
+            edit->onTextChanged.addEventListener([&]{
                 while (results_view->children.size()) {
                     results_view->children[0]->destroy();
                 }
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
                         results_view->append(new Label(m));
                     }
                 }
-            };
+            });
         app->append(edit, Fill::Horizontal);
         results_view = new ScrolledBox(Align::Vertical);
             for (auto m : monster_names) {

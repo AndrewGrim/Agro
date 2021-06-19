@@ -24,7 +24,7 @@
 
             float m_slider_button_size = 0;
             SliderButton *m_slider_button = nullptr;
-            std::function<void(void)> onValueChanged = nullptr;
+            EventListener<> onValueChanged = EventListener<>();
 
             Slider(Align alignment, float value = 0.0f);
             ~Slider();

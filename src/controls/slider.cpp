@@ -84,9 +84,7 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
             float value = (event_pos - (position + start)) / (length - start - m_origin);
             m_value = NORMALIZE(m_min, m_max, value);
 
-            if (onValueChanged) {
-                onValueChanged();
-            }
+            onValueChanged.notify();
             update();
         }
     });
@@ -172,10 +170,7 @@ bool Slider::handleScrollEvent(ScrollEvent event) {
     event.y *= -1;
     m_value = NORMALIZE(m_min, m_max, m_value + m_step * event.y);
 
-    if (onValueChanged) {
-        onValueChanged();
-    }
-
+    onValueChanged.notify();
     update();
     return true;
 }

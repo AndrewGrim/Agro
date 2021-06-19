@@ -360,19 +360,17 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
-            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeHovered = nullptr;
-            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeSelected = nullptr;
-            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeDeselected = nullptr;
-            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeCollapsed = nullptr;
-            std::function<void(TreeView<T> *treeview, TreeNode<T> *node)> onNodeExpanded = nullptr;
+            EventListener<TreeView<T>*, TreeNode<T>*> onNodeHovered = EventListener<TreeView<T>*, TreeNode<T>*>();
+            EventListener<TreeView<T>*, TreeNode<T>*> onNodeSelected = EventListener<TreeView<T>*, TreeNode<T>*>();
+            EventListener<TreeView<T>*, TreeNode<T>*> onNodeDeselected = EventListener<TreeView<T>*, TreeNode<T>*>();
+            EventListener<TreeView<T>*, TreeNode<T>*> onNodeCollapsed = EventListener<TreeView<T>*, TreeNode<T>*>();
+            EventListener<TreeView<T>*, TreeNode<T>*> onNodeExpanded = EventListener<TreeView<T>*, TreeNode<T>*>();
 
             TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_event_node && m_hovered != m_event_node) {
                         m_hovered = m_event_node;
-                        if (onNodeHovered) {
-                            onNodeHovered(this, m_event_node);
-                        }
+                        onNodeHovered.notify(this, m_event_node);
                         update();
                     }
                 });
@@ -699,9 +697,7 @@
                 if (m_focused != node) {
                     deselect();
                     m_focused = node;
-                    if (onNodeSelected) {
-                        onNodeSelected(this, node);
-                    }
+                    onNodeSelected.notify(this, node);
                     update();
                 } else {
                     deselect();
@@ -722,9 +718,7 @@
 
             void deselect() {
                 if (m_focused) {
-                    if (onNodeDeselected) {
-                        onNodeDeselected(this, m_focused);
-                    }
+                    onNodeDeselected.notify(this, m_focused);
                     m_focused = nullptr;
                     update();
                 }
@@ -733,9 +727,7 @@
             void collapse(TreeNode<T> *node) {
                 if (node && node->children.size()) {
                     node->is_collapsed = true;
-                    if (onNodeCollapsed) {
-                        onNodeCollapsed(this, node);
-                    }
+                    onNodeCollapsed.notify(this, node);
                     m_virtual_size_changed = true;
                     update();
                     if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
@@ -753,9 +745,7 @@
             void expand(TreeNode<T> *node) {
                 if (node && node->children.size()) {
                     node->is_collapsed = false;
-                    if (onNodeExpanded) {
-                        onNodeExpanded(this, node);
-                    }
+                    onNodeExpanded.notify(this, node);
                     m_virtual_size_changed = true;
                     update();
                     if (m_mode == Mode::Unroll && parent) { parent->m_size_changed = true; }
