@@ -8,7 +8,7 @@
 
 class ColorPicker : public Widget {
     public:
-        std::function<void(Widget *widget, Color color)> onColorChanged = nullptr;
+        EventListener<Widget*, Color> onColorChanged = EventListener<Widget*, Color>();
 
         ColorPicker();
         ~ColorPicker();

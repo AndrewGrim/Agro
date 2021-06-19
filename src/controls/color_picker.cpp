@@ -27,13 +27,13 @@ ColorPicker::ColorPicker() {
             } else {
                 m_color = COLOR_NONE;
             }
-            if (onColorChanged) { onColorChanged(this, m_color); }
+            onColorChanged.notify(this, m_color);
         }
     });
-    onColorChanged = [&](Widget *widget, Color color) {
+    onColorChanged.addEventListener([&](Widget *widget, Color color) {
         m_color_edit->setText(color.toString());
         m_color_label->style.widget_background = color;
-    };
+    });
 }
 
 ColorPicker::~ColorPicker() {}
