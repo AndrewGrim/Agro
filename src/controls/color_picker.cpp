@@ -2,6 +2,8 @@
 #include "../application.hpp"
 
 ColorPicker::ColorPicker() {
+    glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, m_texture_data);
     m_color_edit = new LineEdit(COLOR_NONE.toString());
     append(m_color_edit, Fill::Horizontal);
     m_color_label = new Label("    ");
@@ -11,18 +13,20 @@ ColorPicker::ColorPicker() {
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
-            m_position = Point(event.x, event.y);
-            float texture_data[(int)(COLOR_PICKER_LENGTH * COLOR_PICKER_LENGTH * 4)] = {};
-            glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, texture_data);
-            Point pos = Point(m_position.x - rect.x, m_position.y - rect.y);
-            if ((pos.x >= 0 && pos.x < COLOR_PICKER_LENGTH) &&
-                (pos.y >= 0 && pos.y < COLOR_PICKER_LENGTH)) {
+            m_position = Point(round(event.x - rect.x), round(event.y - rect.y));
+            // Note that the reason we round here is because if we dont
+            // and get a Point that contains a non whole number on either x and y
+            // then our access into the texture will be incorrect.
+            // Because 124 * 260 and 124.5 * 260 are not the same!
+            // And we only convert to int at the end and not when multiplying.
+            // Took me way too long to find this issue :(
+            if ((m_position.x >= 0 && m_position.x < COLOR_PICKER_LENGTH) &&
+                (m_position.y >= 0 && m_position.y < COLOR_PICKER_LENGTH)) {
                 m_color = Color(
-                    texture_data[(int)(pos.y * COLOR_PICKER_LENGTH * 4 + pos.x * 4 + 0)],
-                    texture_data[(int)(pos.y * COLOR_PICKER_LENGTH * 4 + pos.x * 4 + 1)],
-                    texture_data[(int)(pos.y * COLOR_PICKER_LENGTH * 4 + pos.x * 4 + 2)],
-                    texture_data[(int)(pos.y * COLOR_PICKER_LENGTH * 4 + pos.x * 4 + 3)]
+                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 0)],
+                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 1)],
+                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 2)],
+                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 3)]
                 );
             } else {
                 m_color = COLOR_NONE;
@@ -36,7 +40,9 @@ ColorPicker::ColorPicker() {
     });
 }
 
-ColorPicker::~ColorPicker() {}
+ColorPicker::~ColorPicker() {
+    delete[] m_texture_data;
+}
 
 const char* ColorPicker::name() {
     return "ColorPicker";
@@ -47,7 +53,7 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
     Rect old_clip = dc.clip();
     dc.setClip(rect.clipTo(old_clip));
     dc.drawTexture(
-        Point(rect.x, rect.y),
+        Point(round(rect.x), round(rect.y)),
         Size(COLOR_PICKER_LENGTH, COLOR_PICKER_LENGTH),
         Application::get()->icons["color_picker_gradient"].get(),
         &m_coords,
@@ -55,13 +61,12 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
     );
 
     Color cur_color = COLOR_BLACK;
-    if (m_position.y >= rect.y + COLOR_PICKER_LENGTH / 2) { cur_color = COLOR_WHITE; }
-    dc.fillRect(Rect(m_position.x - m_cursor_width / 2, m_position.y - m_cursor_width / 2, m_cursor_width, 1), cur_color);
-    dc.fillRect(Rect(m_position.x - m_cursor_width / 2, m_position.y + m_cursor_width / 2, m_cursor_width, 1), cur_color);
-    dc.fillRect(Rect(m_position.x - m_cursor_width / 2, m_position.y - m_cursor_width / 2, 1, m_cursor_width), cur_color);
-    dc.fillRect(Rect(m_position.x + m_cursor_width / 2 - 1, m_position.y - m_cursor_width / 2, 1, m_cursor_width), cur_color);
+    if (m_position.y >= COLOR_PICKER_LENGTH / 2) { cur_color = COLOR_WHITE; }
+    dc.fillRect(Rect(rect.x + m_position.x - m_cursor_width / 2, rect.y + m_position.y - m_cursor_width / 2, m_cursor_width, 1), cur_color);
+    dc.fillRect(Rect(rect.x + m_position.x - m_cursor_width / 2, rect.y + m_position.y + m_cursor_width / 2, m_cursor_width, 1), cur_color);
+    dc.fillRect(Rect(rect.x + m_position.x - m_cursor_width / 2, rect.y + m_position.y - m_cursor_width / 2, 1, m_cursor_width), cur_color);
+    dc.fillRect(Rect(rect.x + m_position.x + m_cursor_width / 2 - 1, rect.y + m_position.y - m_cursor_width / 2, 1, m_cursor_width), cur_color);
 
-    // Step over color picker
     rect.y += COLOR_PICKER_LENGTH;
     rect.h -= COLOR_PICKER_LENGTH;
     rect.w -= m_color_label->sizeHint(dc).w;

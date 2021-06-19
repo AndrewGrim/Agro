@@ -18,10 +18,11 @@ class ColorPicker : public Widget {
         bool isLayout() override;
         Color color();
 
-        Color m_color = COLOR_NONE;
-        Point m_position;
         float m_cursor_width = 10;
+        Color m_color = COLOR_NONE;
+        Point m_position = Point(-m_cursor_width, -m_cursor_width);
         TextureCoordinates m_coords;
         LineEdit *m_color_edit = nullptr;
         Label *m_color_label = nullptr;
+        float *m_texture_data = new float[(int)(COLOR_PICKER_LENGTH * COLOR_PICKER_LENGTH * 4)];
 };
