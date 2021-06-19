@@ -20,19 +20,18 @@
     class Widget;
     class Window;
 
-    class EventListener {
-        public:
-            std::vector<std::function<void(Widget *widget, MouseEvent event)>> listeners;
+    template <typename... Types> struct EventListener {
+        std::vector<std::function<void(Types... types)>> listeners;
 
-            void notify(Widget *widget, MouseEvent event) {
-                for (auto callback : listeners) {
-                    callback(widget, event);
-                }
+        void notify(Types... types) {
+            for (auto callback : listeners) {
+                callback(types...);
             }
+        }
 
-            void addEventListener(std::function<void(Widget *widget, MouseEvent event)> fn) {
-                listeners.push_back(fn);
-            }
+        void addEventListener(std::function<void(Types... types)> fn) {
+            listeners.push_back(fn);
+        }
     };
 
     class Widget : public Drawable {
@@ -73,30 +72,30 @@
 
             /// `onMouseDown` gets called when the user presses
             /// down **ANY** mouse button over the target Widget.
-            EventListener onMouseDown = EventListener();
+            EventListener<Widget*, MouseEvent> onMouseDown = EventListener<Widget*, MouseEvent>();
 
             ///`onMouseUp` gets called when the user releases
             /// **ANY** mouse button over the target Widget.
-            EventListener onMouseUp = EventListener();
+            EventListener<Widget*, MouseEvent> onMouseUp = EventListener<Widget*, MouseEvent>();
 
             /// `onMouseClick` gets called whenver the user presses
             /// down on a Widget and the releases the button over
             /// the same Widget.
             // TODO this will likely trigger when the mouse events come from different buttons
             // i dont think that behaviour is very intuitive and so should be changed.
-            EventListener onMouseClick = EventListener();
+            EventListener<Widget*, MouseEvent> onMouseClick = EventListener<Widget*, MouseEvent>();
 
             /// `onMouseLeft` get called whenever the mouse leaves
             /// the area of the Widget.
-            EventListener onMouseLeft = EventListener();
+            EventListener<Widget*, MouseEvent> onMouseLeft = EventListener<Widget*, MouseEvent>();
 
             /// `onMouseEntered` get called whenever the mouse
             /// enters the area of the Widget.
-            EventListener onMouseEntered = EventListener();
+            EventListener<Widget*, MouseEvent> onMouseEntered = EventListener<Widget*, MouseEvent>();
 
             /// `onMouseMotion` get called whenever the mouse moves
             /// over the area of the Widget.
-            EventListener onMouseMotion = EventListener();
+            EventListener<Widget*, MouseEvent> onMouseMotion = EventListener<Widget*, MouseEvent>();
 
             /// The constructor is empty.
             Widget();
