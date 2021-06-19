@@ -269,6 +269,9 @@ LineEdit* LineEdit::setText(std::string text) {
     m_text = text;
     m_text_changed = true;
     update();
+    if (onTextChanged) {
+        onTextChanged();
+    }
 
     return this;
 }
