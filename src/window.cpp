@@ -117,8 +117,13 @@ void Window::run() {
         onReady(this);
     }
     m_state->hovered = m_main_widget;
+    uint32_t fps = 60;
+    uint32_t frame_time = 1000 / fps;
+    uint32_t delay_till = 0;
     SDL_StartTextInput();
     while (m_running) {
+        DELAY:;
+        uint32_t frame_start = SDL_GetTicks();
         SDL_Event event;
         if (SDL_WaitEvent(&event)) {
             switch (event.type) {
@@ -268,9 +273,22 @@ void Window::run() {
                     quit();
             }
         }
+        if (delay_till) {
+            if (SDL_GetTicks() < delay_till) {
+                goto DELAY;
+            } else {
+                delay_till = 0;
+            }
+        }
         if (m_needs_update) {
             show();
             m_needs_update = false;
+        }
+        uint32_t frame_end = SDL_GetTicks() - frame_start;
+        if (frame_time > frame_end) {
+            delay_till = SDL_GetTicks() + (frame_time - frame_end);
+        } else {
+            delay_till = 0;
         }
     }
     SDL_StopTextInput();
