@@ -199,7 +199,7 @@ int main(int argc, char **argv) {
                 }
             }
         };
-        app->resize(800, 650);
+        app->resize(800, 700);
         app->center();
         app->setTitle("Widget Gallery");
         NoteBook *notebook = new NoteBook();
