@@ -8,16 +8,17 @@
 #include "../src/controls/line_edit.hpp"
 #include "../src/controls/splitter.hpp"
 #include "../src/controls/tree_view.hpp"
+#include "../src/controls/color_picker.hpp"
 
 Widget* basic(Application &app) {
     Box *box = new Box(Align::Vertical);
         Box *labels_and_buttons = new Box(Align::Horizontal);
             GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
-                Label *lr = new Label("This text occupies one line and is right aligned.");
+                Label *lr = new Label("Right");
                     lr->setHorizontalAlignment(HorizontalAlignment::Right);
                 Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.");
                     lc->setHorizontalAlignment(HorizontalAlignment::Center);
-                labels->append(new Label("This text occupies one line and is left aligned."), Fill::Both);
+                labels->append(new Label("Left"), Fill::Both);
                 labels->append(lr, Fill::Both);
                 labels->append(lc, Fill::Both);
 
@@ -33,20 +34,26 @@ Widget* basic(Application &app) {
             labels_and_buttons->append(buttons, Fill::Both);
         box->append(labels_and_buttons, Fill::Both);
 
+        Box *images_and_color = new Box(Align::Horizontal);
+            GroupBox *images = new GroupBox(Align::Horizontal, "Images");
+                auto lena = std::make_shared<Texture>("lena.png");
+                images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff0000")));
+                images->append((new Image(lena))->setMinSize(Size(56, 56))->setForeground(Color("#00ff00")));
+                images->append((new Image(lena))->setMinSize(Size(72, 72))->setForeground(Color("#0000ff")));
+                images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true), Fill::Both);
+                images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true)->setMaintainAspectRatio(false), Fill::Both);
+            images_and_color->append(images, Fill::Both);
+
+            GroupBox *color_picker = new GroupBox(Align::Horizontal, "ColorPicker");
+                color_picker->append(new ColorPicker());
+            images_and_color->append(color_picker);
+        box->append(images_and_color, Fill::Horizontal);
+
         GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
             line_edits->append(new LineEdit("", "Placeholder text", 200));
             line_edits->append(new LineEdit("Default text", "", 300));
             line_edits->append(new LineEdit("", ""), Fill::Horizontal);
         box->append(line_edits, Fill::Horizontal);
-
-        GroupBox *images = new GroupBox(Align::Horizontal, "Images");
-            auto lena = std::make_shared<Texture>("lena.png");
-            images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff0000")));
-            images->append((new Image(lena))->setMinSize(Size(56, 56))->setForeground(Color("#00ff00")));
-            images->append((new Image(lena))->setMinSize(Size(72, 72))->setForeground(Color("#0000ff")));
-            images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true), Fill::Both);
-            images->append((new Image(lena))->setMinSize(Size(24, 24))->setExpand(true)->setMaintainAspectRatio(false), Fill::Both);
-        box->append(images, Fill::Both);
 
     return box;
 }
@@ -183,7 +190,6 @@ Widget* treeView(Application &app) {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        Color default_widget_background = app->dc->default_style.widget_background;
         delete app->mainWidget();
         app->setMainWidget(new Box(Align::Vertical));
         app->onReady = [&](Window *window) {
@@ -193,19 +199,9 @@ int main(int argc, char **argv) {
                 }
             }
         };
-        app->resize(800, 600);
+        app->resize(800, 650);
         app->center();
         app->setTitle("Widget Gallery");
-        LineEdit *change_background = new LineEdit("", "Enter color ex: #ff000055");
-            change_background->onTextChanged = [&]() {
-                if (change_background->text().length()) {
-                    app->dc->default_style.widget_background = Color(change_background->text().c_str());
-                } else {
-                    app->dc->default_style.widget_background = Color(default_widget_background);
-                }
-                app->update();
-            };
-        app->append(change_background, Fill::Horizontal);
         NoteBook *notebook = new NoteBook();
             notebook->appendTab(basic(*app), "Basic", nullptr, false);
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
