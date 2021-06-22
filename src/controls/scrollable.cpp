@@ -154,17 +154,20 @@ void* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent e
             return nullptr;
         }
     }
+
     for (Widget *child : children) {
-        if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
-            (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
-            void *last = nullptr;
-            if (child->isLayout()) {
-                last = (void*)child->propagateMouseEvent(window, state, event);
-            } else {
-                child->handleMouseEvent(window, state, event);
-                last = (void*)child;
+        if (child->isVisible()) {
+            if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                void *last = nullptr;
+                if (child->isLayout()) {
+                    last = (void*)child->propagateMouseEvent(window, state, event);
+                } else {
+                    child->handleMouseEvent(window, state, event);
+                    last = (void*)child;
+                }
+                return last;
             }
-            return last;
         }
     }
 
