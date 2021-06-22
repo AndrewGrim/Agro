@@ -2,10 +2,10 @@
     #define POINT_HPP
 
     struct Point {
-        float x;
-        float y;
+        int x;
+        int y;
 
-        Point(float x = 0.0f, float y = 0.0f) {
+        Point(int x = 0.0f, int y = 0.0f) {
             this->x = x;
             this->y = y;
         }

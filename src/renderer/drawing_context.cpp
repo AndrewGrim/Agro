@@ -74,22 +74,11 @@ void DrawingContext::render() {
 }
 
 void DrawingContext::fillText(Font *font, std::string text, Point point, Color color) {
-    // The reason for the rounding here is because in order
-    // to avoid horrible texture wrapping issues on text we need to give it a
-    // nice whole number to start from.
-    //
-    // This causes something that looks like dithering which is caused
-    // by the rounding of x and or y.
-    // This is only really noticeable when scrolling or resizing a window
-    // and doing it slowely, if you just resize the window as you would
-    // normally this isn't really perceptible.
-    Point rounded = Point(round(point.x), round(point.y));
-    renderer->fillText(font ? font : default_font, text.c_str(), text.length(), rounded, color);
+    renderer->fillText(font ? font : default_font, text.c_str(), text.length(), point, color);
 }
 
 void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, float line_spacing) {
-    Point rounded = Point(round(point.x), round(point.y));
-    renderer->fillTextMultiline(font ? font : default_font, text, rounded, color, line_spacing);
+    renderer->fillTextMultiline(font ? font : default_font, text, point, color, line_spacing);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text) {
@@ -143,13 +132,13 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
     Size text_size = measureTextMultiline(font, text, line_spacing);
     switch (v_align) {
         case VerticalAlignment::Top:
-            pos.y = round(rect.y + padding);
+            pos.y = rect.y + padding;
             break;
         case VerticalAlignment::Bottom:
-            pos.y = round((rect.y + rect.h) - (text_size.h + padding));
+            pos.y = (rect.y + rect.h) - (text_size.h + padding);
             break;
         case VerticalAlignment::Center:
-            pos.y = round(rect.y + (rect.h * 0.5) - (text_size.h * 0.5));
+            pos.y = rect.y + (rect.h * 0.5) - (text_size.h * 0.5);
             break;
     }
 
@@ -162,13 +151,13 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
         if (c == '\n') {
             switch (h_align) {
                 case HorizontalAlignment::Left:
-                    pos.x = round(rect.x + padding);
+                    pos.x = rect.x + padding;
                     break;
                 case HorizontalAlignment::Right:
-                    pos.x = round((rect.x + rect.w) - (line_width + padding));
+                    pos.x = (rect.x + rect.w) - (line_width + padding);
                     break;
                 case HorizontalAlignment::Center:
-                    pos.x = round(rect.x + (rect.w * 0.5) - (line_width * 0.5));
+                    pos.x = rect.x + (rect.w * 0.5) - (line_width * 0.5);
                     break;
             }
             renderer->fillText(font, start, count, pos, color);
@@ -181,13 +170,13 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
     }
     switch (h_align) {
         case HorizontalAlignment::Left:
-            pos.x = round(rect.x + padding);
+            pos.x = rect.x + padding;
             break;
         case HorizontalAlignment::Right:
-            pos.x = round((rect.x + rect.w) - (line_width + padding));
+            pos.x = (rect.x + rect.w) - (line_width + padding);
             break;
         case HorizontalAlignment::Center:
-            pos.x = round(rect.x + (rect.w * 0.5) - (line_width * 0.5));
+            pos.x = rect.x + (rect.w * 0.5) - (line_width * 0.5);
             break;
     }
     renderer->fillText(font, start, count, pos, color);

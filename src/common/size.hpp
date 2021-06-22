@@ -4,10 +4,10 @@
     #include <ostream>
 
     struct Size {
-        float w;
-        float h;
+        int w;
+        int h;
 
-        Size(float w = 0.0f, float h = 0.0f) {
+        Size(int w = 0.0f, int h = 0.0f) {
             this->w = w;
             this->h = h;
         }

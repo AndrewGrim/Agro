@@ -25,9 +25,9 @@ Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{al
     this->onMouseMotion.addEventListener([&](Widget *splitter, MouseEvent event) {
         if (isPressed() && m_dragging) {
             if (m_align_policy == Align::Horizontal) {
-                m_split = (event.x - rect.x) / rect.w;
+                m_split = (event.x - rect.x) / (float)rect.w;
             } else {
-                m_split = (event.y - rect.y) / rect.h;
+                m_split = (event.y - rect.y) / (float)rect.h;
             }
             m_split = m_split < 0.0f ? 0.0f : m_split > 1.0f ? 1.0f : m_split;
             update();

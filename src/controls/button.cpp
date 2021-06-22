@@ -40,8 +40,8 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
         Size image_size = m_image->sizeHint(dc);
         dc.drawTexture(
             Point(
-                round(rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2),
-                round(rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
+                rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2,
+                rect.y + (rect.h * 0.5) - (image_size.h * 0.5)
             ),
             image_size,
             m_image->_texture(),

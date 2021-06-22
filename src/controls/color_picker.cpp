@@ -13,7 +13,7 @@ ColorPicker::ColorPicker() {
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
-            m_position = Point(round(event.x - rect.x), round(event.y - rect.y));
+            m_position = Point(event.x - rect.x, event.y - rect.y);
             // Note that the reason we round here is because if we dont
             // and get a Point that contains a non whole number on either x and y
             // then our access into the texture will be incorrect.
@@ -53,7 +53,7 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
     Rect old_clip = dc.clip();
     dc.setClip(rect.clipTo(old_clip));
     dc.drawTexture(
-        Point(round(rect.x), round(rect.y)),
+        Point(rect.x, rect.y),
         Size(COLOR_PICKER_LENGTH, COLOR_PICKER_LENGTH),
         Application::get()->icons["color_picker_gradient"].get(),
         &m_coords,

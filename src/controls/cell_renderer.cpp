@@ -184,8 +184,8 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     }
     dc.drawTexture(
         Point(
-            round(x),
-            round(local_rect.y + (local_rect.h * 0.5) - (image_size.h * 0.5))
+            x,
+            local_rect.y + (local_rect.h * 0.5) - (image_size.h * 0.5)
         ),
         image_size,
         image->_texture(),

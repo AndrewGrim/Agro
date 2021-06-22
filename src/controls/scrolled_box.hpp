@@ -26,7 +26,7 @@
             void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             void setAlignPolicy(Align align_policy);
             Align alignPolicy();
-            Size calculateChildSize(Size child_hint, float expandable_length, float rect_opposite_length, Widget *child);
+            Size calculateChildSize(Size child_hint, int expandable_length, int rect_opposite_length, Widget *child);
 
             Align m_align_policy = Align::Horizontal;
             unsigned int m_vertical_non_expandable = 0;

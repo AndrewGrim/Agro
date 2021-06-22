@@ -174,7 +174,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
@@ -184,7 +184,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
@@ -194,7 +194,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
@@ -204,7 +204,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             quad_count++;
         }
@@ -248,7 +248,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
@@ -258,7 +258,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
@@ -268,7 +268,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
@@ -278,7 +278,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             quad_count++;
         }
@@ -348,42 +348,42 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     // TOP LEFT
     vertices[index++] = {
         {0.0, 1.0},
-        {coords->top_left.x, coords->top_left.y},
+        {(float)coords->top_left.x, (float)coords->top_left.y},
         {color.r, color.g, color.b, color.a},
         (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {point.x, point.y, size.w, size.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
         {0.0, 0.0},
-        {coords->bottom_left.x, coords->bottom_left.y},
+        {(float)coords->bottom_left.x, (float)coords->bottom_left.y},
         {color.r, color.g, color.b, color.a},
         (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {point.x, point.y, size.w, size.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
         {1.0, 0.0},
-        {coords->bottom_right.x, coords->bottom_right.y},
+        {(float)coords->bottom_right.x, (float)coords->bottom_right.y},
         {color.r, color.g, color.b, color.a},
         (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {point.x, point.y, size.w, size.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
         {1.0, 1.0},
-        {coords->top_right.x, coords->top_right.y},
+        {(float)coords->top_right.x, (float)coords->top_right.y},
         {color.r, color.g, color.b, color.a},
         (float)current_texture_slot,
         (float)Renderer::Sampler::Texture,
-        {point.x, point.y, size.w, size.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     quad_count++;
     current_texture_slot++;
@@ -409,8 +409,8 @@ void Renderer::fillRect(Rect rect, Color color) {
         {color.r, color.g, color.b, color.a},
         0.0,
         (float)Renderer::Sampler::Color,
-        {rect.x, rect.y, rect.w, rect.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
@@ -419,8 +419,8 @@ void Renderer::fillRect(Rect rect, Color color) {
         {color.r, color.g, color.b, color.a},
         0.0,
         (float)Renderer::Sampler::Color,
-        {rect.x, rect.y, rect.w, rect.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
@@ -429,8 +429,8 @@ void Renderer::fillRect(Rect rect, Color color) {
         {color.r, color.g, color.b, color.a},
         0.0,
         (float)Renderer::Sampler::Color,
-        {rect.x, rect.y, rect.w, rect.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
@@ -439,8 +439,8 @@ void Renderer::fillRect(Rect rect, Color color) {
         {color.r, color.g, color.b, color.a},
         0.0,
         (float)Renderer::Sampler::Color,
-        {rect.x, rect.y, rect.w, rect.h},
-        {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
     };
 
     quad_count++;
@@ -458,8 +458,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
@@ -468,8 +468,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
@@ -478,8 +478,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
@@ -488,8 +488,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             break;
         }
@@ -501,8 +501,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
@@ -511,8 +511,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
@@ -521,8 +521,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
@@ -531,8 +531,8 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
                 (float)Renderer::Sampler::Color,
-                {rect.x, rect.y, rect.w, rect.h},
-                {clip_rect.x, clip_rect.y, clip_rect.w, clip_rect.h}
+                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
             };
             break;
         }

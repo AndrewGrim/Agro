@@ -1,22 +1,22 @@
 #ifndef RECT_HPP
     #define RECT_HPP
-    
+
     #include <ostream>
 
     struct Rect {
-        float x;
-        float y;
-        float w;
-        float h;
+        int x;
+        int y;
+        int w;
+        int h;
 
-        Rect(float x = 0.0f, float y = 0.0f, float w = 0.0f, float h = 0.0f) {
+        Rect(int x = 0.0f, int y = 0.0f, int w = 0.0f, int h = 0.0f) {
             this->x = x;
             this->y = y;
             this->w = w;
             this->h = h;
         }
 
-        void shrink(float amount) {   
+        void shrink(int amount) {
             this->x += amount;
             this->y += amount;
             this->w -= amount * 2;
@@ -27,10 +27,10 @@
             Rect new_clip = *this;
 
             if (new_clip.x < parent.x) {
-                float diff = parent.x - new_clip.x;
+                int diff = parent.x - new_clip.x;
                 new_clip.x += diff;
                 if (diff < new_clip.w) {
-                    new_clip.w = new_clip.w - diff; 
+                    new_clip.w = new_clip.w - diff;
                 } else {
                     new_clip.w = 0;
                 }
@@ -47,7 +47,7 @@
             }
 
             if (new_clip.y < parent.y) {
-                float diff = parent.y - new_clip.y;
+                int diff = parent.y - new_clip.y;
                 new_clip.y += diff;
                 if (diff < new_clip.h) {
                     new_clip.h = new_clip.h - diff;
@@ -65,7 +65,7 @@
             } else {
                 new_clip.h = std::min(parent.h, new_clip.h);
             }
-            
+
             return new_clip;
         }
 
