@@ -60,6 +60,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     }
     int expandable_length = (*rect_length - generic_total_layout_length) / child_count;
     if (expandable_length < 0) { expandable_length = 0; }
+    int remainder = expandable_length % child_count;
 
     size_t scroll_offset = 0;
     if (m_align_policy == Align::Vertical) {
@@ -77,7 +78,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
         while (true) {
             if (!child) { break; } // TODO this should be removed once we fix the issue with a large number of widgets
             Size child_hint = child->sizeHint(dc);
-            size = calculateChildSize(child_hint, expandable_length, *rect_opposite_length, child);
+            size = calculateChildSize(child_hint, expandable_length, *rect_opposite_length, child, remainder);
             Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
             if (child->isVisible()) {
                 if (expandable_length > 0) {
@@ -187,22 +188,31 @@ Align ScrolledBox::alignPolicy() {
     return m_align_policy;
 }
 
-Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int rect_opposite_length, Widget *child) {
+Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int rect_opposite_length, Widget *child, int &remainder) {
     Size size;
+    int child_expandable_length = expandable_length;
     switch (m_align_policy) {
         case Align::Vertical:
             switch (child->fillPolicy()) {
                 case Fill::Both: {
+                    if (remainder) {
+                        child_expandable_length++;
+                        remainder--;
+                    }
                     size = Size {
                         rect_opposite_length > child_hint.w ? rect_opposite_length : child_hint.w,
-                        child_hint.h + (expandable_length * (int)child->proportion())
+                        child_hint.h + (child_expandable_length * (int)child->proportion())
                     };
                     break;
                 }
                 case Fill::Vertical: {
+                    if (remainder) {
+                        child_expandable_length++;
+                        remainder--;
+                    }
                     size = Size {
                         child_hint.w,
-                        child_hint.h + (expandable_length * (int)child->proportion())
+                        child_hint.h + (child_expandable_length * (int)child->proportion())
                     };
                     break;
                 }
@@ -220,8 +230,12 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
         case Align::Horizontal:
             switch (child->fillPolicy()) {
                 case Fill::Both: {
+                        if (remainder) {
+                            child_expandable_length++;
+                            remainder--;
+                        }
                         size = Size {
-                            child_hint.w + (expandable_length * (int)child->proportion()),
+                            child_hint.w + (child_expandable_length * (int)child->proportion()),
                             rect_opposite_length > child_hint.h ? rect_opposite_length : child_hint.h
                         };
                         break;
@@ -233,8 +247,12 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
                         };
                         break;
                     case Fill::Horizontal: {
+                        if (remainder) {
+                            child_expandable_length++;
+                            remainder--;
+                        }
                         size = Size {
-                            child_hint.w + (expandable_length * (int)child->proportion()),
+                            child_hint.w + (child_expandable_length * (int)child->proportion()),
                             child_hint.h
                         };
                         break;
