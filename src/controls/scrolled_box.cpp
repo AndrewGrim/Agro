@@ -23,18 +23,17 @@ void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
 }
 
 void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
-    // TODO same changes as for box, generic_max and total layout stuff
     sizeHint(dc);
     Align parent_layout = m_align_policy;
     int generic_non_expandable_widgets;
     Point pos;
     float generic_total_layout_length;
-    float *generic_position_coord; // Needs to be a ptr because the value will change.
+    float *generic_position_coord;
     float *generic_rect_coord;
     float *rect_length;
     float *rect_opposite_length;
     Size size; // Individual widget size.
-    float *generic_length; // Needs to be a ptr because the value will change.
+    float *generic_length;
     if (parent_layout == Align::Vertical) {
         generic_non_expandable_widgets = m_vertical_non_expandable;
         generic_total_layout_length = m_widgets_only.h;
@@ -61,84 +60,42 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     }
     float expandable_length = (*rect_length - generic_total_layout_length) / child_count;
     if (expandable_length < 0) { expandable_length = 0; }
-    for (Widget* child : children) {
-        Size child_hint = child->sizeHint(dc);
-        switch (parent_layout) {
-            case Align::Vertical:
-                switch (child->fillPolicy()) {
-                    case Fill::Both: {
-                        size = Size {
-                            *rect_opposite_length > child_hint.w ? *rect_opposite_length : child_hint.w,
-                            child_hint.h + (expandable_length * child->proportion())
-                        };
-                        break;
-                    }
-                    case Fill::Vertical: {
-                        size = Size {
-                            child_hint.w,
-                            child_hint.h + (expandable_length * child->proportion())
-                        };
-                        break;
-                    }
-                    case Fill::Horizontal:
-                        size = Size {
-                            *rect_opposite_length > child_hint.w ? *rect_opposite_length : child_hint.w,
-                            child_hint.h
-                        };
-                        break;
-                    case Fill::None:
-                    default:
-                        size = child_hint;
+
+    size_t scroll_offset = 0;
+    if (m_align_policy == Align::Vertical) {
+        scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0f) * (m_size.h - rect.h);
+    } else {
+        scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0f) * (m_size.w - rect.w);
+    }
+    BinarySearchResult result = binarySearch(scroll_offset);
+    if (result.value) {
+        size_t i = result.index;
+        Widget *child = children[i];
+        // Move position to the start of the first visible widget.
+        *generic_position_coord += m_children_positions[i].position;
+        size_t expandable_coord = 0;
+        while (true) {
+            if (!child) { break; } // TODO this should be removed once we fix the issue with a large number of widgets
+            Size child_hint = child->sizeHint(dc);
+            size = calculateChildSize(child_hint, expandable_length, *rect_opposite_length, child);
+            Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
+            if (child->isVisible()) {
+                if (expandable_length > 0) {
+                    m_children_positions[i] = BinarySearchData{ expandable_coord, (size_t)*generic_length };
+                    expandable_coord += *generic_length;
                 }
-                break;
-            case Align::Horizontal:
-                switch (child->fillPolicy()) {
-                    case Fill::Both: {
-                            size = Size {
-                                child_hint.w + (expandable_length * child->proportion()),
-                                *rect_opposite_length > child_hint.h ? *rect_opposite_length : child_hint.h
-                            };
-                            break;
-                        }
-                        case Fill::Vertical:
-                            size = Size {
-                                child_hint.w,
-                                *rect_opposite_length > child_hint.h ? *rect_opposite_length : child_hint.h
-                            };
-                            break;
-                        case Fill::Horizontal: {
-                            size = Size {
-                                child_hint.w + (expandable_length * child->proportion()),
-                                child_hint.h
-                            };
-                            break;
-                        }
-                        case Fill::None:
-                        default:
-                            size = child_hint;
+                child->draw(dc, widget_rect, child->state());
+                if ((*generic_position_coord + *generic_length) >= (*generic_rect_coord + *rect_length)) {
                     break;
                 }
+                *generic_position_coord += *generic_length;
+            } else { m_children_positions[i] = BinarySearchData{ expandable_coord, 0 }; }
+            i++;
+            child = children[i];
+            if (i == children.size()) { child = nullptr; } // TODO this should be removed once we fix the issue with a large number of widgets
         }
-        Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-        // TODO shouldnt we set widget rect for all widgets?
-        // especially since its calculated anyway?
-        // and would that allow use to not set rect in draw??? (i dont think so??)
-        if ((*generic_position_coord + *generic_length) < *generic_rect_coord) {
-            child->rect = widget_rect;
-        } else {
-            if (child->isVisible()) {
-                child->draw(dc, widget_rect, child->state());
-            }
-            if ((*generic_position_coord + *generic_length) > (*generic_rect_coord + *rect_length)) {
-                break;
-            }
-        }
-        if (child->isVisible()) {
-            *generic_position_coord += *generic_length;
-        }
+        drawScrollBars(dc, rect, m_size);
     }
-
-    drawScrollBars(dc, rect, m_size);
 }
 
 Size ScrolledBox::sizeHint(DrawingContext &dc) {
@@ -146,8 +103,12 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
     unsigned int vertical_non_expandable = 0;
     unsigned int horizontal_non_expandable = 0;
     if (m_size_changed) {
+        m_children_positions.clear();
+        m_children_positions.resize(children.size());
         Size size = Size();
         if (m_align_policy == Align::Horizontal) {
+            size_t scroll_offset = 0;
+            size_t i = 0;
             for (Widget* child : children) {
                 if (child->isVisible()) {
                     Size s = child->sizeHint(dc);
@@ -159,9 +120,16 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
                     if (child->fillPolicy() == Fill::Vertical || child->fillPolicy() == Fill::None) {
                         horizontal_non_expandable++;
                     }
+                    m_children_positions[i] = BinarySearchData{scroll_offset, (size_t)s.w};
+                    scroll_offset += s.w;
+                } else {
+                    m_children_positions[i] = BinarySearchData{scroll_offset, 0};
                 }
+                i++;
             }
         } else {
+            size_t scroll_offset = 0;
+            size_t i = 0;
             for (Widget* child : children) {
                 if (child->isVisible()) {
                     Size s = child->sizeHint(dc);
@@ -173,7 +141,12 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
                     if (child->fillPolicy() == Fill::Horizontal || child->fillPolicy() == Fill::None) {
                         vertical_non_expandable++;
                     }
+                    m_children_positions[i] = BinarySearchData{scroll_offset, (size_t)s.h};
+                    scroll_offset += s.h;
+                } else {
+                    m_children_positions[i] = BinarySearchData{scroll_offset, 0};
                 }
+                i++;
             }
         }
         m_vertical_non_expandable = vertical_non_expandable;
@@ -181,7 +154,7 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
         m_visible_children = visible;
         m_size = size;
         m_widgets_only = size;
-        m_size_changed = false; // TODO m_size_changed might not be really necessary, will need to reevalute
+        m_size_changed = false;
 
         return m_viewport;
     } else {
@@ -212,4 +185,148 @@ void ScrolledBox::setAlignPolicy(Align align_policy) {
 
 Align ScrolledBox::alignPolicy() {
     return m_align_policy;
+}
+
+Size ScrolledBox::calculateChildSize(Size child_hint, float expandable_length, float rect_opposite_length, Widget *child) {
+    Size size;
+    switch (m_align_policy) {
+        case Align::Vertical:
+            switch (child->fillPolicy()) {
+                case Fill::Both: {
+                    size = Size {
+                        rect_opposite_length > child_hint.w ? rect_opposite_length : child_hint.w,
+                        child_hint.h + (expandable_length * child->proportion())
+                    };
+                    break;
+                }
+                case Fill::Vertical: {
+                    size = Size {
+                        child_hint.w,
+                        child_hint.h + (expandable_length * child->proportion())
+                    };
+                    break;
+                }
+                case Fill::Horizontal:
+                    size = Size {
+                        rect_opposite_length > child_hint.w ? rect_opposite_length : child_hint.w,
+                        child_hint.h
+                    };
+                    break;
+                case Fill::None:
+                default:
+                    size = child_hint;
+            }
+            break;
+        case Align::Horizontal:
+            switch (child->fillPolicy()) {
+                case Fill::Both: {
+                        size = Size {
+                            child_hint.w + (expandable_length * child->proportion()),
+                            rect_opposite_length > child_hint.h ? rect_opposite_length : child_hint.h
+                        };
+                        break;
+                    }
+                    case Fill::Vertical:
+                        size = Size {
+                            child_hint.w,
+                            rect_opposite_length > child_hint.h ? rect_opposite_length : child_hint.h
+                        };
+                        break;
+                    case Fill::Horizontal: {
+                        size = Size {
+                            child_hint.w + (expandable_length * child->proportion()),
+                            child_hint.h
+                        };
+                        break;
+                    }
+                    case Fill::None:
+                    default:
+                        size = child_hint;
+                break;
+            }
+    }
+    return size;
+}
+
+BinarySearchResult ScrolledBox::binarySearch(size_t target) {
+    if (!children.size()) { return BinarySearchResult{ 0, Option<Widget*>() }; }
+    size_t lower = 0;
+    size_t upper = children.size() - 1;
+    size_t mid = 0;
+    BinarySearchData point = {0, 0};
+
+    while (lower <= upper) {
+        mid = (lower + upper) / 2;
+        point = m_children_positions[mid];
+        if (target < point.position) {
+            upper = mid - 1;
+        } else if (target > point.position + point.length) {
+            lower = mid + 1;
+        } else {
+            break;
+        }
+    }
+
+    if (point.position <= target && point.position + point.length >= target) {
+       return BinarySearchResult{ mid, Option<Widget*>(children[mid]) };
+    }
+
+    return BinarySearchResult{ 0, Option<Widget*>() };
+}
+
+void* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
+    if (m_vertical_scrollbar) {
+        if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
+            (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+            return (void*)m_vertical_scrollbar->propagateMouseEvent(window, state, event);
+        }
+    }
+    if (m_horizontal_scrollbar) {
+        if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+            (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
+            return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
+        }
+    }
+    if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+        if ((event.x > m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+            (event.y > m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+            if (state->hovered) {
+                ((Widget*)state->hovered)->onMouseLeft.notify(this, event);
+            }
+            state->hovered = nullptr;
+            update();
+            return nullptr;
+        }
+    }
+
+    if (m_align_policy == Align::Vertical) {
+        size_t scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0f) * (m_size.h - rect.h);
+        Option<Widget*> child = binarySearch((event.y - rect.y) + scroll_offset).value;
+        if (child &&
+            ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
+            (event.y >= child.value->rect.y && event.y <= child.value->rect.y + child.value->rect.h))) {
+            if (child.value->isLayout()) {
+                child.value->propagateMouseEvent(window, state, event);
+                return child.value;
+            }
+            child.value->handleMouseEvent(window, state, event);
+            return child.value;
+        }
+    } else {
+        size_t scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0f) * (m_size.w - rect.w);
+        Option<Widget*> child = binarySearch((event.x - rect.x) + scroll_offset).value;
+        if (child &&
+            ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
+            (event.y >= child.value->rect.y && event.y <= child.value->rect.y + child.value->rect.h))) {
+            if (child.value->isLayout()) {
+                child.value->propagateMouseEvent(window, state, event);
+                return child.value;
+            }
+            child.value->handleMouseEvent(window, state, event);
+            return child.value;
+        }
+    }
+
+    handleMouseEvent(window, state, event);
+    return this;
 }
