@@ -10,7 +10,7 @@ int main(int argc, char **argv) {
                 }
             }
         };
-        app->setTitle("One Million Labels Test");
+        app->setTitle("One Million Buttons Test");
         for (int i = 0; i < 1000000; i++) {
             app->append(new Button(std::to_string(i)), Fill::Both);
         }
