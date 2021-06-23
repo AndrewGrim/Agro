@@ -4,6 +4,7 @@
 #include "../src/common/color.hpp"
 
 int main(int argc, char **argv) {
+    assert(Color(nullptr) == Color::fromInt(0, 0, 0, 255));
     assert(Color("") == Color::fromInt(0, 0, 0, 255));
     assert(Color("!") == Color::fromInt(0, 0, 0, 255));
     assert(Color("f") == Color::fromInt(240, 0, 0, 255));

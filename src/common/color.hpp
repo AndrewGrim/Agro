@@ -34,7 +34,7 @@
         }
 
         Color(const char *string) {
-            if (*string == '\0') return;
+            if (!string || *string == '\0') return;
             else if (*string == '#') string++;
 
             float *color_attribute = &r;
