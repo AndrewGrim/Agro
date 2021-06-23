@@ -59,9 +59,7 @@ Size ScrollBarArrowButton::sizeHint(DrawingContext &dc) {
 
 ScrollBarSlider::ScrollBarSlider(Align alignment, double value) : Slider(alignment, value) {}
 
-ScrollBarSlider::~ScrollBarSlider() {
-
-}
+ScrollBarSlider::~ScrollBarSlider() {}
 
 const char* ScrollBarSlider::name() {
     return "ScrollBarSlider";
@@ -86,7 +84,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     // Draw the background.
-    dc.fillRect(rect, dc.widgetBackground(style));
+    dc.fillRect(rect, dc.windowBackground(style));
 
     // Determine and draw the location of the slider button.
     if (m_align_policy == Align::Horizontal) {
@@ -107,7 +105,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
 SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Box(alignment) {
     m_slider = new ScrollBarSlider(alignment);
     m_slider->m_slider_button->setMinSize(min_size);
-    m_slider->style.widget_background = COLOR_NONE;
+    m_slider->style.window_background = COLOR_NONE;
     append(m_slider, Fill::Both);
 }
 
