@@ -26,9 +26,9 @@ Widget* basic(Application &app) {
 
             GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
                 buttons->append(new Button("Button"));
-                buttons->append(new Button((new Image(app.icons["close_thin"]))->setForeground(app.dc->iconForeground(box->style))));
-                Button *image_and_text = new Button(new Image(app.icons["close_thin"]));
-                    image_and_text->m_image->setForeground(app.dc->iconForeground(box->style));
+                buttons->append(new Button((new Image(app.icons["up_arrow"]))->setForeground(Color("#55ff55"))));
+                Button *image_and_text = new Button(new Image(app.icons["up_arrow"]));
+                    image_and_text->m_image->setForeground(Color("#55ff55"));
                     image_and_text->setText("Button");
                 buttons->append(image_and_text, Fill::Both);
             labels_and_buttons->append(buttons, Fill::Both);
