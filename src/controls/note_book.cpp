@@ -150,7 +150,6 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     style.border.top = 4;
     style.border.left = 1;
     style.border.right = 1;
-    style.border.color_top = Application::get()->dc->accentWidgetBackground(style);
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
@@ -168,6 +167,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     style.border.type = STYLE_NONE;
     if (isActive()) {
         style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
+        style.border.color_top = Application::get()->dc->accentWidgetBackground(style);
         rect.h += BOTTOM_BORDER(this->parent);
         color = dc.windowBackground(style);
     } else if (isPressed() && isHovered()) {
