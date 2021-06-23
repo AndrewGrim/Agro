@@ -146,7 +146,7 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     style.border.top = 4;
     style.border.left = 1;
     style.border.right = 1;
-    style.border.color_top = Application::get()->dc->selectedBackground(style);
+    style.border.color_top = Application::get()->dc->accentWidgetBackground(style);
 }
 
 NoteBookTabButton::~NoteBookTabButton() {

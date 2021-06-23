@@ -211,7 +211,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
                     (end - start) + m_cursor_width,
                     text_height
                 ),
-                dc.selectedBackground(style)
+                dc.accentWidgetBackground(style)
             );
         }
         dc.fillTextAligned(

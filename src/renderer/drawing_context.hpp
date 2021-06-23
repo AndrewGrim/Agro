@@ -62,9 +62,11 @@
         // also checking the default style???? eh im not sure
         Color windowBackground(Style &style);
         Color widgetBackground(Style &style);
-        Color selectedBackground(Style &style);
+        Color accentWidgetBackground(Style &style);
         Color hoveredBackground(Style &style);
         Color pressedBackground(Style &style);
+        Color accentHoveredBackground(Style &style);
+        Color accentPressedBackground(Style &style);
         Color textForeground(Style &style);
         Color textBackground(Style &style);
         Color textDisabled(Style &style);

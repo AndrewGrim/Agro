@@ -46,13 +46,15 @@ DrawingContext::DrawingContext() {
 
         default_style.window_background = Color("#f0f0f0");
         default_style.widget_background = Color("#e1e1e1");
+        default_style.accent_widget_background = Color("#337fff");
         default_style.text_foreground = Color("#000000");
         default_style.text_background = Color("#ffffff");
         default_style.selected_text = Color("#ffffff");
         default_style.text_disabled = Color("#aaaaaa");
-        default_style.selected_background = Color("#337fff");
         default_style.hovered_background = Color("#d0d0d0");
         default_style.pressed_background = Color("#c0c0c0");
+        default_style.accent_hovered_background = Color("#669eff");
+        default_style.accent_pressed_background = Color("#005dff");
     }
 }
 
@@ -461,8 +463,8 @@ Color DrawingContext::widgetBackground(Style &style) {
     return style.widget_background ? this->default_style.widget_background : style.widget_background;
 }
 
-Color DrawingContext::selectedBackground(Style &style) {
-    return style.selected_background ? this->default_style.selected_background : style.selected_background;
+Color DrawingContext::accentWidgetBackground(Style &style) {
+    return style.accent_widget_background ? this->default_style.accent_widget_background : style.accent_widget_background;
 }
 
 Color DrawingContext::hoveredBackground(Style &style) {
@@ -471,6 +473,14 @@ Color DrawingContext::hoveredBackground(Style &style) {
 
 Color DrawingContext::pressedBackground(Style &style) {
     return style.pressed_background ? this->default_style.pressed_background : style.pressed_background;
+}
+
+Color DrawingContext::accentHoveredBackground(Style &style) {
+    return style.accent_hovered_background ? this->default_style.accent_hovered_background : style.accent_hovered_background;
+}
+
+Color DrawingContext::accentPressedBackground(Style &style) {
+    return style.accent_pressed_background ? this->default_style.accent_pressed_background : style.accent_pressed_background;
 }
 
 Color DrawingContext::textForeground(Style &style) {
