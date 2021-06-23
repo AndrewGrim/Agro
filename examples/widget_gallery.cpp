@@ -202,6 +202,18 @@ int main(int argc, char **argv) {
         app->resize(800, 700);
         app->center();
         app->setTitle("Widget Gallery");
+        Box *h_box = new Box(Align::Horizontal);
+            auto light = new Button("Light");
+                light->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
+                    app->dc->default_style = app->dc->default_light_style;
+                });
+            h_box->append(light);
+            auto dark = new Button("Dark");
+                dark->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
+                    app->dc->default_style = app->dc->default_dark_style;
+                });
+            h_box->append(dark);
+        app->append(h_box);
         NoteBook *notebook = new NoteBook();
             notebook->appendTab(basic(*app), "Basic", nullptr, false);
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
