@@ -74,10 +74,8 @@ void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
     if (m_vertical_scrollbar) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
         int slider_size = rect.h * ((rect.h - size.h / 2.0) / virtual_size.h);
-        if (slider_size < 20) {
-            slider_size = 20;
-        } else if (slider_size > (rect.h - 10)) {
-            slider_size = rect.h - 10;
+        if (slider_size < 10) {
+            slider_size = 10;
         }
         m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_vertical_scrollbar->draw(
@@ -94,10 +92,8 @@ void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
     if (m_horizontal_scrollbar) {
         Size size = m_horizontal_scrollbar->sizeHint(dc);
         int slider_size = rect.w * ((rect.w - size.w / 2.0) / virtual_size.w);
-        if (slider_size < 20) {
-            slider_size = 20;
-        } else if (slider_size > (rect.w - 10)) {
-            slider_size = rect.w - 10;
+        if (slider_size < 10) {
+            slider_size = 10;
         }
         m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_horizontal_scrollbar->draw(
