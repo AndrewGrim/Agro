@@ -20,42 +20,93 @@ DrawingContext::DrawingContext() {
 
     renderer = new Renderer(indices);
 
-    default_style = Style();
-    {
-        default_style.margin.type = STYLE_ALL;
-        default_style.margin.top = 1;
-        default_style.margin.bottom = 1;
-        default_style.margin.left = 1;
-        default_style.margin.right = 1;
+    default_light_style = {
+        Style::Margin{
+            STYLE_ALL,
+            1,
+            1,
+            1,
+            1
+        },
 
-        default_style.border.type = STYLE_ALL;
-        default_style.border.top = 1;
-        default_style.border.bottom = 1;
-        default_style.border.left = 1;
-        default_style.border.right = 1;
-        default_style.border.color_top = Color("#777777");
-        default_style.border.color_bottom = Color("#777777");
-        default_style.border.color_left = Color("#777777");
-        default_style.border.color_right = Color("#777777");
+        Style::Border{
+            STYLE_ALL,
+            1,
+            1,
+            1,
+            1,
+            Color("#777777"),
+            Color("#777777"),
+            Color("#777777"),
+            Color("#777777")
+        },
 
-        default_style.padding.type = STYLE_ALL;
-        default_style.padding.top = 5;
-        default_style.padding.bottom = 5;
-        default_style.padding.left = 5;
-        default_style.padding.right = 5;
+        Style::Padding{
+            STYLE_ALL,
+            5,
+            5,
+            5,
+            5
+        },
 
-        default_style.window_background = Color("#f0f0f0");
-        default_style.widget_background = Color("#e1e1e1");
-        default_style.accent_widget_background = Color("#337fff");
-        default_style.text_foreground = Color("#000000");
-        default_style.text_background = Color("#ffffff");
-        default_style.selected_text = Color("#ffffff");
-        default_style.text_disabled = Color("#aaaaaa");
-        default_style.hovered_background = Color("#d0d0d0");
-        default_style.pressed_background = Color("#c0c0c0");
-        default_style.accent_hovered_background = Color("#669eff");
-        default_style.accent_pressed_background = Color("#005dff");
-    }
+        Color("#f0f0f0"),
+        Color("#e1e1e1"),
+        Color("#337fff"),
+
+        Color("#000000"),
+        Color("#ffffff"),
+        Color("#ffffff"),
+        Color("#aaaaaa"),
+
+        Color("#d0d0d0"),
+        Color("#c0c0c0"),
+        Color("#669eff"),
+        Color("#005dff")
+    };
+    default_dark_style = {
+        Style::Margin{
+            STYLE_ALL,
+            1,
+            1,
+            1,
+            1
+        },
+
+        Style::Border{
+            STYLE_ALL,
+            1,
+            1,
+            1,
+            1,
+            Color("#777777"),
+            Color("#777777"),
+            Color("#777777"),
+            Color("#777777")
+        },
+
+        Style::Padding{
+            STYLE_ALL,
+            5,
+            5,
+            5,
+            5
+        },
+
+        Color("#282828"),
+        Color("#757575"),
+        Color("#fcb737"),
+
+        Color("#ffffff"),
+        Color("#555555"),
+        Color("#000000"),
+        Color("#909090"),
+
+        Color("#8e8e8e"),
+        Color("#a8a8a8"),
+        Color("#fcc96a"),
+        Color("#fca400")
+    };
+    default_style = default_light_style;
 }
 
 DrawingContext::~DrawingContext() {
