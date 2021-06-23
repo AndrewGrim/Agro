@@ -559,7 +559,7 @@
                             // Clip and draw row grid line.
                             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                                 dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                                dc.fillRect(Rect(rect.x, pos.y - m_grid_line_width, m_current_header_width, m_grid_line_width), Color(0.85f, 0.85f, 0.85f));
+                                dc.fillRect(Rect(rect.x, pos.y - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style));
                             }
                         }
 
@@ -579,7 +579,7 @@
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (int width : m_column_widths) {
-                            dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
+                            dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), dc.textDisabled(style));
                             pos.x += width;
                         }
                     }
@@ -982,8 +982,8 @@
             bool m_table = false;
             Style m_column_style;
             Style m_column_button_style;
-            Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90()->setForeground(Application::get()->dc->iconForeground(style));
-            Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically()->setForeground(Application::get()->dc->iconForeground(style));
+            Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90();
+            Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically();
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
@@ -1138,7 +1138,7 @@
                             m_expanded->coords(),
                             HorizontalAlignment::Center,
                             VerticalAlignment::Center,
-                            m_expanded->foreground()
+                            dc.iconForeground(style)
                         );
                     } else {
                         dc.drawTextureAligned(
@@ -1148,7 +1148,7 @@
                             m_collapsed->coords(),
                             HorizontalAlignment::Center,
                             VerticalAlignment::Center,
-                            m_collapsed->foreground()
+                            dc.iconForeground(style)
                         );
                     }
                 // End of the line.
@@ -1161,7 +1161,7 @@
                                 m_indent / 4,
                                 m_indent / 4
                             ),
-                            COLOR_BLACK
+                            dc.iconForeground(style)
                         );
                     }
                 }
