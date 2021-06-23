@@ -64,9 +64,9 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
 
     size_t scroll_offset = 0;
     if (m_align_policy == Align::Vertical) {
-        scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0f) * (m_size.h - rect.h);
+        scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
     } else {
-        scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0f) * (m_size.w - rect.w);
+        scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
     }
     BinarySearchResult result = binarySearch(scroll_offset);
     if (result.value) {
@@ -76,7 +76,6 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
         *generic_position_coord += m_children_positions[i].position;
         size_t expandable_coord = 0;
         while (true) {
-            if (!child) { break; } // TODO this should be removed once we fix the issue with a large number of widgets
             Size child_hint = child->sizeHint(dc);
             size = calculateChildSize(child_hint, expandable_length, *rect_opposite_length, child, remainder);
             Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
@@ -86,14 +85,13 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
                     expandable_coord += *generic_length;
                 }
                 child->draw(dc, widget_rect, child->state());
-                if ((*generic_position_coord + *generic_length) >= (*generic_rect_coord + *rect_length)) {
+                if ((*generic_position_coord + *generic_length) >= (*generic_rect_coord + *rect_length - 1)) { // - 1 accounts for rounding
                     break;
                 }
                 *generic_position_coord += *generic_length;
             } else { m_children_positions[i] = BinarySearchData{ expandable_coord, 0 }; }
             i++;
             child = children[i];
-            if (i == children.size()) { child = nullptr; } // TODO this should be removed once we fix the issue with a large number of widgets
         }
         drawScrollBars(dc, rect, m_size);
     }
@@ -318,7 +316,7 @@ void* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent 
     }
 
     if (m_align_policy == Align::Vertical) {
-        size_t scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0f) * (m_size.h - rect.h);
+        size_t scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
         Option<Widget*> child = binarySearch((event.y - rect.y) + scroll_offset).value;
         if (child &&
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
@@ -331,7 +329,7 @@ void* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent 
             return child.value;
         }
     } else {
-        size_t scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0f) * (m_size.w - rect.w);
+        size_t scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
         Option<Widget*> child = binarySearch((event.x - rect.x) + scroll_offset).value;
         if (child &&
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&

@@ -23,8 +23,8 @@ Size Scrollable::sizeHint(DrawingContext &dc) {
 }
 
 Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size) {
-    float content_x = rect.x;
-    float content_y = rect.y;
+    int content_x = rect.x;
+    int content_y = rect.y;
     bool vert = false;
     if (rect.h < virtual_size.h) {
         vert = true;

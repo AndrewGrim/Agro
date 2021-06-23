@@ -16,17 +16,17 @@
 
     class Slider : public Box {
         public:
-            float m_min = 0.0f;
-            float m_max = 1.0f;
-            float m_value = 0.0f;
-            float m_step = 0.1f;
+            double m_min = 0.0;
+            double m_max = 1.0;
+            double m_value = 0.0;
+            double m_step = 0.1;
             int m_origin = 0;
 
-            float m_slider_button_size = 0;
+            int m_slider_button_size = 0;
             SliderButton *m_slider_button = nullptr;
             EventListener<> onValueChanged = EventListener<>();
 
-            Slider(Align alignment, float value = 0.0f);
+            Slider(Align alignment, double value = 0.0);
             ~Slider();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;

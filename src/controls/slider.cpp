@@ -45,7 +45,7 @@ Size SliderButton::minSize() {
     return m_size;
 }
 
-Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
+Slider::Slider(Align alignment, double value) : Box(alignment), m_value{value} {
     m_slider_button = new SliderButton();
     append(m_slider_button, Fill::Both);
     m_slider_button->parent = this;
@@ -65,11 +65,11 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
         SliderButton *self = m_slider_button;
         if (self->isPressed()) {
             Rect rect = this->rect;
-            float size = m_slider_button_size;
+            int size = m_slider_button_size;
 
             int event_pos;
-            float position;
-            float length;
+            int position;
+            int length;
             if (m_align_policy == Align::Horizontal) {
                 event_pos = event.x;
                 position = rect.x;
@@ -81,7 +81,7 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
             }
 
             int start = size - m_origin;
-            float value = (event_pos - (position + start)) / (length - start - m_origin);
+            double value = (event_pos - (position + start)) / (double)(length - start - m_origin);
             m_value = NORMALIZE(m_min, m_max, value);
 
             onValueChanged.notify();
@@ -91,11 +91,11 @@ Slider::Slider(Align alignment, float value) : Box(alignment), m_value{value} {
 
     this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         Rect rect = this->rect;
-        float size = m_slider_button_size;
+        int size = m_slider_button_size;
         if (m_align_policy == Align::Horizontal) {
-            m_value = (event.x - (rect.x + size / 2)) / (rect.w - size);
+            m_value = (event.x - (rect.x + size / 2.0)) / (double)(rect.w - size);
         } else {
-            m_value = (event.y - (rect.y + size / 2)) / (rect.h - size);
+            m_value = (event.y - (rect.y + size / 2.0)) / (double)(rect.h - size);
         }
         m_value = NORMALIZE(m_min, m_max, m_value);
     });
@@ -114,7 +114,7 @@ void Slider::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     // Get the size of the slider button.
-    float size;
+    int size;
     Size sizehint = m_slider_button->sizeHint(dc);
     if (!m_slider_button_size) {
         // Button size was not set. Default.
