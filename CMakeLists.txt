@@ -3,6 +3,9 @@ cmake_policy(SET CMP0091 NEW)
 
 project(Agro)
 
+option(BUILD_ALL_TESTS "Build all test binaries" OFF)
+option(BUILD_ALL_EXAMPLES "Build all example binaries" OFF)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
@@ -37,6 +40,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
 	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
 )
+
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)
 
@@ -71,6 +75,6 @@ if (UNIX)
 	)
 	install(
 		DIRECTORY ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/
-		DESTINATION include/
+		DESTINATION include
 	)
 endif()
