@@ -80,10 +80,10 @@ DrawingContext::DrawingContext() {
             1,
             1,
             1,
-            Color("#777777"),
-            Color("#777777"),
-            Color("#777777"),
-            Color("#777777")
+            Color("#dddddd"),
+            Color("#dddddd"),
+            Color("#dddddd"),
+            Color("#dddddd")
         },
 
         Style::Padding{
