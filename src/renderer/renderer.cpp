@@ -169,7 +169,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
             // TOP LEFT
             vertices[index++] = {
                 {xpos, ypos + h},
-                {ch.textureX, (h / font->atlas_height)},
+                {ch.texture_x, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -179,7 +179,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
             // BOTTOM LEFT
             vertices[index++] = {
                 {xpos, ypos},
-                {ch.textureX, 0.0},
+                {ch.texture_x, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -189,7 +189,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
             // BOTTOM RIGHT
             vertices[index++] = {
                 {xpos + w, ypos},
-                {ch.textureX + (w / font->atlas_width), 0.0},
+                {ch.texture_x + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -199,7 +199,7 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
             // TOP RIGHT
             vertices[index++] = {
                 {xpos + w, ypos + h},
-                {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
+                {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -243,7 +243,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
             // TOP LEFT
             vertices[index++] = {
                 {xpos, ypos + h},
-                {ch.textureX, (h / font->atlas_height)},
+                {ch.texture_x, (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -253,7 +253,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
             // BOTTOM LEFT
             vertices[index++] = {
                 {xpos, ypos},
-                {ch.textureX, 0.0},
+                {ch.texture_x, 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -263,7 +263,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
             // BOTTOM RIGHT
             vertices[index++] = {
                 {xpos + w, ypos},
-                {ch.textureX + (w / font->atlas_width), 0.0},
+                {ch.texture_x + (w / font->atlas_width), 0.0},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
@@ -273,7 +273,7 @@ void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Colo
             // TOP RIGHT
             vertices[index++] = {
                 {xpos + w, ypos + h},
-                {ch.textureX + (w / font->atlas_width), (h / font->atlas_height)},
+                {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
                 {color.r, color.g, color.b, color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,

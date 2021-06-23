@@ -28,7 +28,7 @@
             Point bearing;
             Size size;
             long int advance;
-            float textureX;
+            float texture_x;
         };
 
         std::string file_path;
