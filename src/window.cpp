@@ -191,8 +191,9 @@ void Window::run() {
                                 SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
                                 ((Widget*)m_state->hovered)->onMouseLeft.notify(((Widget*)m_state->hovered), MouseEvent(event));
                                 m_state->hovered = nullptr;
-                                update();
                                 SDL_RemoveTimer(m_tooltip_callback);
+                                update();
+                                delay_till = 0;
                             }
                             break;
                     }
