@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
                     tv->setModel(model);
                 right->append(tv, Fill::Both);
             h_split->right(right);
-            h_split->setSplit(0.2f);
+            h_split->setSplit(0.2);
         app->append(h_split, Fill::Both);
     app->run();
 

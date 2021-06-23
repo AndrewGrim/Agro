@@ -18,7 +18,7 @@ void GroupBox::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Point point;
     Size text_size;
-    float text_size_half = 0.0f;
+    int text_size_half = 0;
     if (label.length()) {
         point = Point(rect.x + 10, rect.y); // 10 padding from the left
         text_size = dc.measureText(font(), label);

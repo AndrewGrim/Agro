@@ -77,7 +77,7 @@ void DrawingContext::fillText(Font *font, std::string text, Point point, Color c
     renderer->fillText(font ? font : default_font, text.c_str(), text.length(), point, color);
 }
 
-void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, float line_spacing) {
+void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, int line_spacing) {
     renderer->fillTextMultiline(font ? font : default_font, text, point, color, line_spacing);
 }
 
@@ -89,7 +89,7 @@ Size DrawingContext::measureText(Font *font, char c) {
     return renderer->measureText(font ? font : default_font, c);
 }
 
-Size DrawingContext::measureTextMultiline(Font *font, std::string text, float line_spacing) {
+Size DrawingContext::measureTextMultiline(Font *font, std::string text, int line_spacing) {
     return renderer->measureTextMultiline(font ? font : default_font, text, line_spacing);
 }
 
@@ -126,7 +126,7 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
     );
 }
 
-void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, float line_spacing) {
+void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int line_spacing) {
     font = font ? font : default_font;
     Point pos = Point(rect.x, rect.y);
     Size text_size = measureTextMultiline(font, text, line_spacing);
@@ -142,7 +142,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
             break;
     }
 
-    float line_width = 0.0f;
+    int line_width = 0;
     const char *start = text.data();
     size_t count = 0;
     for (char c : text) {
@@ -164,7 +164,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
             start += count;
             pos.y += font->max_height + line_spacing;
             pos.x = rect.x;
-            line_width = 0.0f;
+            line_width = 0;
             count = 0;
         }
     }

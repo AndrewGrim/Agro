@@ -57,7 +57,7 @@ Size ScrollBarArrowButton::sizeHint(DrawingContext &dc) {
     return size;
 }
 
-ScrollBarSlider::ScrollBarSlider(Align alignment, float value) : Slider(alignment, value) {}
+ScrollBarSlider::ScrollBarSlider(Align alignment, double value) : Slider(alignment, value) {}
 
 ScrollBarSlider::~ScrollBarSlider() {
 
@@ -71,7 +71,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     // Get the size of the slider button.
-    float size;
+    int size;
     Size sizehint = m_slider_button->sizeHint(dc);
     if (!m_slider_button_size) {
         // Button size was not set. Default.
@@ -90,13 +90,13 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Determine and draw the location of the slider button.
     if (m_align_policy == Align::Horizontal) {
-        float result = ((rect.w - size) * m_value);
+        int result = ((rect.w - size) * m_value);
         if (result > 0) {
             rect.x += result;
         }
         m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h), m_slider_button->state());
     } else {
-        float result = ((rect.h - size) * m_value);
+        int result = ((rect.h - size) * m_value);
         if (result > 0) {
             rect.y += result;
         }

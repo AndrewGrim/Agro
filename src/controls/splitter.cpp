@@ -25,11 +25,11 @@ Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{al
     this->onMouseMotion.addEventListener([&](Widget *splitter, MouseEvent event) {
         if (isPressed() && m_dragging) {
             if (m_align_policy == Align::Horizontal) {
-                m_split = (event.x - rect.x) / (float)rect.w;
+                m_split = (event.x - rect.x) / (double)rect.w;
             } else {
-                m_split = (event.y - rect.y) / (float)rect.h;
+                m_split = (event.y - rect.y) / (double)rect.h;
             }
-            m_split = m_split < 0.0f ? 0.0f : m_split > 1.0f ? 1.0f : m_split;
+            m_split = m_split < 0.0 ? 0.0 : m_split > 1.0 ? 1.0 : m_split;
             update();
         } else {
             if (m_align_policy == Align::Horizontal) {
@@ -79,7 +79,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         dc.setClip(local_rect);
         dc.fillRect(local_rect, Color("#000000"));
         if (m_second) {
-            local_rect = Rect(local_rect.x + m_sash_size, rect.y, (rect.w - m_sash_size) * (1.0f - m_split), rect.h);
+            local_rect = Rect(local_rect.x + m_sash_size, rect.y, (rect.w - m_sash_size) * (1.0 - m_split), rect.h);
             dc.setClip(local_rect);
             m_second->draw(dc, local_rect, m_second->state());
         }
@@ -93,7 +93,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         dc.setClip(local_rect);
         dc.fillRect(local_rect, Color("#000000"));
         if (m_second) {
-            local_rect = Rect(rect.x, local_rect.y + m_sash_size, rect.w, (rect.h - m_sash_size) * (1.0f - m_split));
+            local_rect = Rect(rect.x, local_rect.y + m_sash_size, rect.w, (rect.h - m_sash_size) * (1.0 - m_split));
             dc.setClip(local_rect);
             m_second->draw(dc, local_rect, m_second->state());
         }
@@ -183,12 +183,12 @@ void Splitter::right(Widget *widget) {
 // The split value determines the size available
 // to the left or top side with the remaining
 // ,if any, size going to the other side (right, down).
-void Splitter::setSplit(float new_split) {
+void Splitter::setSplit(double new_split) {
     m_split = new_split;
-    m_split = m_split < 0.0f ? 0.0f : m_split > 1.0f ? 1.0f : m_split;
+    m_split = m_split < 0.0 ? 0.0 : m_split > 1.0 ? 1.0 : m_split;
     update();
 }
 
-float Splitter::split() {
+double Splitter::split() {
     return m_split;
 }

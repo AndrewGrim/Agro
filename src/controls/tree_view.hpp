@@ -16,7 +16,7 @@
             TreeNode<T> *parent;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
-            float max_cell_height = 0.0;
+            int max_cell_height = 0;
             int depth = 0;
 
             TreeNode(std::vector<Drawable*> columns, T *hidden) {
@@ -299,14 +299,14 @@
                 }
             }
 
-            float width() {
+            int width() {
                 if (m_custom_size) {
                     return m_custom_width;
                 }
                 return m_size.w;
             }
 
-            void setWidth(float width) {
+            void setWidth(int width) {
                 if (width < m_min_width) {
                     return;
                 }
@@ -341,8 +341,8 @@
             Tree<T> *m_model = nullptr;
             bool m_dragging = false;
             bool m_custom_size = false;
-            float m_custom_width = 0.0;
-            float m_min_width = 16;
+            int m_custom_width = 0;
+            int m_min_width = 16;
             bool m_expand = false;
     };
 
@@ -376,7 +376,7 @@
                 });
                 this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_event_node) {
-                        float x = inner_rect.x;
+                        int x = inner_rect.x;
                         if (m_horizontal_scrollbar) {
                             x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                         }
@@ -439,8 +439,8 @@
                 this->inner_rect = rect;
                 Rect tv_clip = old_clip;
 
-                float x_start = pos.x;
-                float y_start = pos.y;
+                int x_start = pos.x;
+                int y_start = pos.y;
 
                 int child_count = 0;
                 for (Widget *child : children) {
@@ -451,10 +451,10 @@
                 if (child_count < 1) {
                     child_count = 1;
                 }
-                float expandable_length = (rect.w - m_children_size.w) / child_count;
-                float local_pos_x = pos.x;
+                int expandable_length = (rect.w - m_children_size.w) / child_count;
+                int local_pos_x = pos.x;
                 int i = 0;
-                m_current_header_width = 0.0f;
+                m_current_header_width = 0;
                 for (Widget *child : children) {
                     Size s = child->sizeHint(dc);
                     if (((Column<T>*)child)->expand()) {
@@ -475,7 +475,7 @@
                     local_pos_x += s.w;
                     i++;
                 }
-                float column_header = 0.0f;
+                int column_header = 0;
                 if (!areColumnHeadersHidden()) {
                     column_header = m_children_size.h;
                     pos.y += column_header;
@@ -488,7 +488,7 @@
                     if (parent) {
                         drawing_rect = parent->rect;
                     }
-                    column_header = 0.0f;
+                    column_header = 0;
                 }
                 m_model->forEachNode(
                     m_model->roots,
@@ -513,9 +513,9 @@
                                     }
                                 }
 
-                                float cell_start = pos.x;
+                                int cell_start = pos.x;
                                 for (size_t i = 0; i < node->columns.size(); i++) {
-                                    float col_width = m_column_widths[i];
+                                    int col_width = m_column_widths[i];
                                     Drawable *drawable = node->columns[i];
                                     Size s = drawable->sizeHint(dc);
                                     if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
@@ -531,7 +531,7 @@
                                                 );
                                         // Clip and draw the current cell.
                                         dc.setClip(cell_clip.clipTo(tv_clip));
-                                        float cell_x = cell_start;
+                                        int cell_x = cell_start;
                                         if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
                                         }
@@ -575,11 +575,11 @@
                     }
                 );
                 if (m_model->roots.size()) {
-                    float local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0.0f;
+                    int local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0;
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
-                        for (float width : m_column_widths) {
+                        for (int width : m_column_widths) {
                             dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), Color(0.85f, 0.85f, 0.85f));
                             pos.x += width;
                         }
@@ -594,7 +594,7 @@
                 Traversal _unused = Traversal::Continue;
                 for (TreeNode<T> *tree_root : tree_roots) {
                     if (tree_root->children.size()) {
-                        float tree_line_start = y_start + (!areColumnHeadersHidden() ? m_children_size.h : 0.0f);
+                        int tree_line_start = y_start + (!areColumnHeadersHidden() ? m_children_size.h : 0);
                         if (m_model->roots[0] != tree_root) {
                             for (TreeNode<T> *_root : m_model->roots) {
                                 if (tree_root == _root) {
@@ -900,8 +900,8 @@
                 {
                     // Go down the Node tree to find either a Widget to pass the event to
                     // or simply record the node and pass the event to the TreeView itself as per usual.
-                    float x = inner_rect.x;
-                    float y = inner_rect.y;
+                    int x = inner_rect.x;
+                    int y = inner_rect.y;
                     if (m_horizontal_scrollbar) {
                         x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                     }
@@ -976,9 +976,9 @@
             int m_grid_line_width = 1;
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
-            float m_current_header_width = 0.0f;
+            int m_current_header_width = 0;
             bool m_column_headers_hidden = false;
-            std::vector<float> m_column_widths;
+            std::vector<int> m_column_widths;
             bool m_auto_size_columns = false;
             bool m_table = false;
             Style m_column_style;
@@ -1073,13 +1073,13 @@
                 m_auto_size_columns = false;
             }
 
-            void drawTreeLinesToChildren(DrawingContext &dc, float x, float y, TreeNode<T> *node) {
+            void drawTreeLinesToChildren(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
                 if (node->children.size()) {
                     x += node->depth * m_indent;
                     // Begin drawing at the center of the node cell height.
                     y += node->max_cell_height / 2;
-                    float last_y = y;
-                    float last_node_height = 0;
+                    int last_y = y;
+                    int last_node_height = 0;
 
                     if (!node->is_collapsed) {
                         last_y += node->max_cell_height / 2;

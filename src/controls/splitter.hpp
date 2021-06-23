@@ -16,14 +16,14 @@ class Splitter : public Widget {
         void bottom(Widget *widget);
         void left(Widget *widget);
         void right(Widget *widget);
-        void setSplit(float new_split);
-        float split();
+        void setSplit(double new_split);
+        double split();
 
         Align m_align_policy;
         Size m_viewport;
         Widget *m_first = nullptr;
         Widget *m_second = nullptr;
-        float m_sash_size = 10;
-        float m_split = 0.5;
+        int m_sash_size = 10;
+        double m_split = 0.5;
         bool m_dragging = false;
 };

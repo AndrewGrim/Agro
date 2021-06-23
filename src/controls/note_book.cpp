@@ -15,7 +15,7 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
     dc.drawBorder(rect, style);
     rect.x += 5; // account for the 5 pixels on the left to give the first tab some breathing room
     rect.w -= 5; // account for the 5 pixels on the left to give the first tab some breathing room
-    float x = rect.x;
+    int x = rect.x;
 
     if (rect.w < m_size.w) {
         if (!m_horizontal_scrollbar) {
@@ -45,7 +45,7 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
 
     if (m_horizontal_scrollbar) {
         Size scroll_size = m_horizontal_scrollbar->sizeHint(dc);
-        float slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
+        int slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
         if (slider_size < 20) {
             slider_size = 20;
         } else if (slider_size > (rect.w - 10)) {
@@ -181,7 +181,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     Size text_size = dc.measureText(font(), text());
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
-        float width = rect.w;
+        int width = rect.w;
         if (m_close_button) {
             width -= 22; // 12 icon size + 10 padding
         }

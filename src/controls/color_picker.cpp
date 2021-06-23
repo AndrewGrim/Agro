@@ -14,19 +14,13 @@ ColorPicker::ColorPicker() {
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
             m_position = Point(event.x - rect.x, event.y - rect.y);
-            // Note that the reason we round here is because if we dont
-            // and get a Point that contains a non whole number on either x and y
-            // then our access into the texture will be incorrect.
-            // Because 124 * 260 and 124.5 * 260 are not the same!
-            // And we only convert to int at the end and not when multiplying.
-            // Took me way too long to find this issue :(
             if ((m_position.x >= 0 && m_position.x < COLOR_PICKER_LENGTH) &&
                 (m_position.y >= 0 && m_position.y < COLOR_PICKER_LENGTH)) {
                 m_color = Color(
-                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 0)],
-                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 1)],
-                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 2)],
-                    m_texture_data[(int)(((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 3)]
+                    m_texture_data[((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 0],
+                    m_texture_data[((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 1],
+                    m_texture_data[((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 2],
+                    m_texture_data[((m_position.y * COLOR_PICKER_LENGTH) * 4) + (m_position.x * 4) + 3]
                 );
             } else {
                 m_color = COLOR_NONE;
@@ -80,8 +74,8 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size ColorPicker::sizeHint(DrawingContext &dc) {
     Size s = Size(COLOR_PICKER_LENGTH, COLOR_PICKER_LENGTH);
-    float line = m_color_edit->sizeHint(dc).h;
-    float label = m_color_label->sizeHint(dc).h;
+    int line = m_color_edit->sizeHint(dc).h;
+    int label = m_color_label->sizeHint(dc).h;
     if (label > line) { s.h += label; }
     else { s.h += line; }
     return s;

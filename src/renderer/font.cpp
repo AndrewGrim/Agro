@@ -77,7 +77,7 @@ void Font::load(FT_Face face) {
             Point(g->bitmap_left, g->bitmap_top),
             Size(g->bitmap.width, g->bitmap.rows),
             g->advance.x >> 6,
-            (float)x / (float)atlas_width
+            x / (float)atlas_width
         };
         characters.insert(std::pair<char, Font::Character>(c, character));
         x += g->bitmap.width;

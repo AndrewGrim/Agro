@@ -8,8 +8,8 @@
     struct Selection {
         size_t begin = 0;
         size_t end = 0;
-        float x_begin = 0.0;
-        float x_end = 0.0;
+        int x_begin = 0;
+        int x_end = 0;
         bool mouse_selection = false;
 
         bool hasSelection() {
@@ -60,7 +60,7 @@
         public:
             EventListener<> onTextChanged = EventListener<>();
 
-            LineEdit(std::string text = "", std::string placeholder = "", float min_length = 50);
+            LineEdit(std::string text = "", std::string placeholder = "", int min_length = 50);
             ~LineEdit();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
@@ -68,8 +68,8 @@
             virtual void handleTextEvent(DrawingContext &dc, const char *text);
             LineEdit* setText(std::string text);
             std::string text();
-            float minLength();
-            LineEdit* setMinLength(float length);
+            int minLength();
+            LineEdit* setMinLength(int length);
             LineEdit* moveCursorLeft();
             LineEdit* moveCursorRight();
             LineEdit* moveCursorBegin();
@@ -92,14 +92,14 @@
 
             std::string m_text;
             std::string m_placeholder_text;
-            float m_min_length = 50;
-            float m_min_view = 0.0;
-            float m_max_view = 1.0;
-            float m_current_view = m_min_view;
+            double m_min_length = 50;
+            double m_min_view = 0.0;
+            double m_max_view = 1.0;
+            double m_current_view = m_min_view;
             Size m_virtual_size = Size();
-            float m_text_height = 0.0f;
+            int m_text_height = 0;
             bool m_text_changed = false;
-            float m_cursor_width = 1.0f;
+            int m_cursor_width = 1;
             Selection m_selection;
             History m_history;
     };

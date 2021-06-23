@@ -58,7 +58,7 @@ class CustomWidget : public Widget {
                         dc.fillTextMultilineAligned(
                             fonts[i], "This text\nspans multiple\nlines.",
                             h_align[i], v_align[i],
-                            Rect(rect.x, rect.y, rect.w, 100), 5, COLOR_BLACK, 5.0f
+                            Rect(rect.x, rect.y, rect.w, 100), 5, COLOR_BLACK, 5
                         );
                         rect.y += 100;
                     }

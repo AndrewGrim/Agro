@@ -1,7 +1,7 @@
 #include "line_edit.hpp"
 #include "../application.hpp"
 
-LineEdit::LineEdit(std::string text, std::string placeholder, float min_length) : Widget() {
+LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : Widget() {
     setText(text);
     setPlaceholderText(placeholder);
     setMinLength(min_length);
@@ -13,11 +13,11 @@ LineEdit::LineEdit(std::string text, std::string placeholder, float min_length) 
             m_selection.x_begin = 0;
         } else {
             DrawingContext &dc = *Application::get()->dc;
-            float x = 0;
+            int x = 0;
             size_t index = 0;
-            float offset_event = event.x - inner_rect.x;
+            int offset_event = event.x - inner_rect.x;
             for (char c : this->text()) {
-                float w = dc.measureText(font(), c).w;
+                int w = dc.measureText(font(), c).w;
                 if (x + w > offset_event) {
                     if (x + (w / 2) < offset_event) {
                         x += w;
@@ -42,15 +42,15 @@ LineEdit::LineEdit(std::string text, std::string placeholder, float min_length) 
             }
 
             DrawingContext &dc = *Application::get()->dc;
-            float x = m_selection.x_begin;
+            int x = m_selection.x_begin;
             size_t index = m_selection.begin;
-            float offset_event = event.x - inner_rect.x;
+            int offset_event = event.x - inner_rect.x;
 
             // Selection is to the right of the origin point.
             if (offset_event >= x) {
                 while (index < this->text().length()) {
                     char c = this->text()[index];
-                    float w = dc.measureText(font(), c).w;
+                    int w = dc.measureText(font(), c).w;
                     if (x + w > offset_event) {
                         break;
                     }
@@ -61,7 +61,7 @@ LineEdit::LineEdit(std::string text, std::string placeholder, float min_length) 
             } else {
                 while (index) {
                     char c = this->text()[--index];
-                    float w = dc.measureText(font(), c).w;
+                    int w = dc.measureText(font(), c).w;
                     x -= w;
                     if (x < offset_event) {
                         break;
@@ -195,15 +195,15 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             HorizontalAlignment::Left,
             VerticalAlignment::Center,
             inner_rect,
-            0.0f,
+            0,
             dc.textDisabled(style)
         );
     // Draw normal text;
     } else {
         if (m_selection.mouse_selection || (isFocused() && m_selection.hasSelection())) {
-            float text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
-            float start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
-            float end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
+            int text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
+            int start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
+            int end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
             dc.fillRect(
                 Rect(
                     inner_rect.x + start,
@@ -220,14 +220,14 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             HorizontalAlignment::Left,
             VerticalAlignment::Center,
             inner_rect,
-            0.0f,
+            0,
             dc.textForeground(style)
         );
     }
 
     // Draw the text insertion cursor.
     if (isFocused()) {
-        float text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
+        int text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
         dc.fillRect(
             Rect(
                 inner_rect.x + m_selection.x_end,
@@ -278,11 +278,11 @@ void LineEdit::handleTextEvent(DrawingContext &dc, const char *text) {
     insert(m_selection.end, text);
 }
 
-float LineEdit::minLength() {
+int LineEdit::minLength() {
     return m_min_length;
 }
 
-LineEdit* LineEdit::setMinLength(float length) {
+LineEdit* LineEdit::setMinLength(int length) {
     if (m_min_length != length) {
         m_min_length = length;
         layout();
@@ -307,7 +307,7 @@ LineEdit* LineEdit::moveCursorLeft() {
         }
         DrawingContext &dc = *Application::get()->dc;
         m_selection.end--;
-        float char_size = dc.measureText(font(), text()[m_selection.end]).w;
+        int char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end -= char_size;
         if (!isShiftPressed()) {
             m_selection.x_begin = m_selection.x_end;
@@ -339,7 +339,7 @@ LineEdit* LineEdit::moveCursorRight() {
             goto END;
         }
         DrawingContext &dc = *Application::get()->dc;
-        float char_size = dc.measureText(font(), text()[m_selection.end]).w;
+        int char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end += char_size;
         m_selection.end++;
         if (!isShiftPressed()) {
@@ -492,7 +492,7 @@ void LineEdit::selectAll() {
 
 void LineEdit::swapSelection() {
     if (m_selection.begin > m_selection.end) {
-        float temp_x = m_selection.x_end;
+        int temp_x = m_selection.x_end;
         size_t temp = m_selection.end;
         m_selection.x_end = m_selection.x_begin;
         m_selection.end = m_selection.begin;
@@ -541,7 +541,7 @@ void LineEdit::setCursor(size_t index) {
         DrawingContext &dc = *Application::get()->dc;
         size_t local_index = 0;
         for (char c : text()) {
-            float w = dc.measureText(font(), c).w;
+            int w = dc.measureText(font(), c).w;
             inner_rect.x += w;
             local_index++;
             if (index == local_index) {

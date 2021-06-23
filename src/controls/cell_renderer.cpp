@@ -176,7 +176,7 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Size text_size = dc.measureTextMultiline(font, text);
     Rect local_rect = rect;
     Size image_size = image->size();
-    float x = rect.x;
+    int x = rect.x;
     switch (h_align) {
         case HorizontalAlignment::Right: x = rect.x + rect.w - (image_size.w + text_size.w + (padding * 2)); break;
         case HorizontalAlignment::Center: x = rect.x + (rect.w / 2) - ((image_size.w + text_size.w + (padding * 2)) / 2); break;

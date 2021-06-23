@@ -5,7 +5,7 @@
         int x;
         int y;
 
-        Point(int x = 0.0f, int y = 0.0f) {
+        Point(int x = 0, int y = 0) {
             this->x = x;
             this->y = y;
         }

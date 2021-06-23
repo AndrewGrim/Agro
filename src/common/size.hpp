@@ -7,7 +7,7 @@
         int w;
         int h;
 
-        Size(int w = 0.0f, int h = 0.0f) {
+        Size(int w = 0, int h = 0) {
             this->w = w;
             this->h = h;
         }
