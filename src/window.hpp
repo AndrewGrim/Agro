@@ -83,6 +83,7 @@
 
             void move(int x, int y);
             void center();
+            void pulse();
 
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
@@ -99,6 +100,7 @@
 
             uint32_t m_tooltip_time = 500;
             SDL_TimerID m_tooltip_callback = -1;
+            uint32_t delay_till = 0;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from

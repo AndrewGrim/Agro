@@ -5,16 +5,7 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
     Window *win = (Window*)window;
     win->draw_tooltip = true;
     win->update();
-
-    SDL_Event event;
-    SDL_UserEvent userevent;
-    userevent.type = SDL_USEREVENT;
-    userevent.code = 0;
-    userevent.data1 = NULL;
-    userevent.data2 = NULL;
-    event.type = SDL_USEREVENT;
-    event.user = userevent;
-    SDL_PushEvent(&event);
+    win->pulse();
 
     return 0;
 }
@@ -119,7 +110,6 @@ void Window::run() {
     m_state->hovered = m_main_widget;
     uint32_t fps = 60;
     uint32_t frame_time = 1000 / fps;
-    uint32_t delay_till = 0;
     SDL_StartTextInput();
     while (m_running) {
         DELAY:;
@@ -439,4 +429,17 @@ void Window::move(int x, int y) {
 
 void Window::center() {
     SDL_SetWindowPosition(m_win, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+}
+
+void Window::pulse() {
+    SDL_Event event;
+    SDL_UserEvent userevent;
+    userevent.type = SDL_USEREVENT;
+    userevent.code = 0;
+    userevent.data1 = NULL;
+    userevent.data2 = NULL;
+    event.type = SDL_USEREVENT;
+    event.user = userevent;
+    SDL_PushEvent(&event);
+    delay_till = 0;
 }
