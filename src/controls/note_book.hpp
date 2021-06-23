@@ -4,6 +4,7 @@
     #include "widget.hpp"
     #include "scroll_bar.hpp"
     #include "image.hpp"
+    #include "icon_button.hpp"
 
     class NoteBookTabBar : public Widget {
         public:
@@ -57,6 +58,6 @@
         protected:
             bool m_is_active = false;
             bool m_close_button = false;
-            Image *m_close_image = nullptr;
+            IconButton *m_close_image = nullptr;
     };
 #endif

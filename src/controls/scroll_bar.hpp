@@ -3,18 +3,9 @@
 
     #include "widget.hpp"
     #include "box.hpp"
-    #include "button.hpp"
+    #include "icon_button.hpp"
     #include "slider.hpp"
     #include "../renderer/drawing_context.hpp"
-
-    class ScrollBarArrowButton : public Button {
-        public:
-            ScrollBarArrowButton(Image *image);
-            ~ScrollBarArrowButton();
-            virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
-            virtual Size sizeHint(DrawingContext &dc) override;
-    };
 
     class ScrollBarSlider : public Slider {
         public:
@@ -37,9 +28,9 @@
 
     class ScrollBar : public Box {
         public:
-            ScrollBarArrowButton *m_begin_button = nullptr;
+            IconButton *m_begin_button = nullptr;
             ScrollBarSlider *m_slider = nullptr;
-            ScrollBarArrowButton *m_end_button = nullptr;
+            IconButton *m_end_button = nullptr;
 
             ScrollBar(Align alignment);
             ~ScrollBar();

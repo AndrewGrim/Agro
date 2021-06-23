@@ -146,8 +146,7 @@
                     if (alignment == HorizontalAlignment::Left) {
                         this->append(new Spacer(), Fill::Both);
                     }
-                    Image *sort_icon = (new Image(Application::get()->icons["up_arrow"]))->setForeground(Application::get()->dc->iconForeground(style));
-                        sort_icon->setMinSize(Size(12, 12));
+                    IconButton *sort_icon = new IconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(12, 12)));
                         sort_icon->hide();
                     this->append(sort_icon, Fill::Vertical);
                 }
@@ -165,12 +164,12 @@
                             children[children.size() - 1]->show();
                             m_sort = Sort::Ascending;
                         } else if (m_sort == Sort::Ascending) {
-                            Image *sort_icon = (Image*)children[children.size() - 1];
-                                sort_icon->flipVertically();
+                            IconButton *sort_icon = (IconButton*)children[children.size() - 1];
+                                sort_icon->image()->flipVertically();
                             m_sort = Sort::Descending;
                         } else {
-                            Image *sort_icon = (Image*)children[children.size() - 1];
-                                sort_icon->flipVertically();
+                            IconButton *sort_icon = (IconButton*)children[children.size() - 1];
+                                sort_icon->image()->flipVertically();
                             m_sort = Sort::Ascending;
                         }
                         sort(m_sort);

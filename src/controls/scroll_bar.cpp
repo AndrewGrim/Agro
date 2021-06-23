@@ -3,60 +3,6 @@
 #include "scroll_bar.hpp"
 #include "image.hpp"
 
-ScrollBarArrowButton::ScrollBarArrowButton(Image *image) : Button(image) {
-    style.padding.type = STYLE_ALL;
-    style.padding.top = 2;
-    style.padding.bottom = 2;
-    style.padding.left = 2;
-    style.padding.right = 2;
-}
-
-ScrollBarArrowButton::~ScrollBarArrowButton() {
-
-}
-
-const char* ScrollBarArrowButton::name() {
-    return "ScrollBarArrowButton";
-}
-
-void ScrollBarArrowButton::draw(DrawingContext &dc, Rect rect, int state) {
-    this->rect = rect;
-    Color color;
-    if (isPressed() && isHovered()) {
-        color = dc.pressedBackground(style);
-    } else if (isHovered()) {
-        color = dc.hoveredBackground(style);
-    } else {
-        color = dc.widgetBackground(style);
-    }
-
-    dc.drawBorder(rect, style);
-    dc.fillRect(rect, color);
-    dc.padding(rect, style);
-
-    if (m_image) {
-        Size image_size = Size(8, 8);
-        dc.drawTexture(
-            Point(
-                (rect.x + (rect.w * 0.5) - (image_size.w * 0.5)),
-                (rect.y + (rect.h * 0.5) - (image_size.h * 0.5))
-            ),
-            image_size,
-            m_image->_texture(),
-            m_image->coords(),
-            m_image->foreground()
-        );
-    }
-}
-
-Size ScrollBarArrowButton::sizeHint(DrawingContext &dc) {
-    Size size = Size(8, 8);
-    dc.sizeHintBorder(size, style);
-    dc.sizeHintPadding(size, style);
-
-    return size;
-}
-
 ScrollBarSlider::ScrollBarSlider(Align alignment, double value) : Slider(alignment, value) {}
 
 ScrollBarSlider::~ScrollBarSlider() {}
@@ -127,7 +73,7 @@ Size SimpleScrollBar::sizeHint(DrawingContext &dc) {
 }
 
 ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
-    m_begin_button = new ScrollBarArrowButton((new Image(Application::get()->icons["up_arrow"]))->setForeground(Application::get()->dc->iconForeground(style)));
+    m_begin_button = new IconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8)));
     if (alignment == Align::Horizontal) {
         m_begin_button->image()->counterClockwise90();
     }
@@ -143,7 +89,7 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     m_slider = new ScrollBarSlider(alignment);
     append(m_slider, Fill::Both);
 
-    m_end_button = new ScrollBarArrowButton((new Image(Application::get()->icons["up_arrow"]))->setForeground(Application::get()->dc->iconForeground(style)));
+    m_end_button = new IconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8)));
     m_end_button->image()->flipVertically();
     if (alignment == Align::Horizontal) {
         m_end_button->image()->clockwise90();
@@ -156,6 +102,17 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
         update();
     });
     append(m_end_button, Fill::None);
+
+    IconButton *buttons[2] = { m_begin_button, m_end_button };
+    for (int i = 0; i < 2; i++) {
+        auto b = buttons[i];
+        b->style.padding.type = STYLE_ALL;
+        b->style.padding.top = 2;
+        b->style.padding.bottom = 2;
+        b->style.padding.left = 2;
+        b->style.padding.right = 2;
+        b->style.margin.type = STYLE_NONE;
+    }
 }
 
 ScrollBar::~ScrollBar() {

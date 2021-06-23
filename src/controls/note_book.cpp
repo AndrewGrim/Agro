@@ -130,10 +130,14 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
         setImage(image);
     }
     setCloseButton(close_button);
-    m_close_image = (new Image(Application::get()->icons["close_thin"]))->setForeground(Application::get()->dc->iconForeground(style));
+    m_close_image = new IconButton((new Image(Application::get()->icons["close_thin"]))->setMinSize(Size(12, 12)));
     m_close_image->onMouseClick.addEventListener([=](Widget *widget,MouseEvent event) {
         notebook->destroyTab(m_close_image->parent->parent_index);
     });
+    m_close_image->style.border.type = STYLE_NONE;
+    m_close_image->style.margin.type = STYLE_NONE;
+    m_close_image->style.padding.type = STYLE_NONE;
+    m_close_image->style.widget_background = COLOR_NONE;
     append(m_close_image);
     style.padding.type = STYLE_ALL;
     style.padding.top = 5;
