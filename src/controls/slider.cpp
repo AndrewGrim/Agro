@@ -20,11 +20,11 @@ void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
     if (isPressed()) {
-        color = dc.pressedBackground(style);
+        color = dc.accentPressedBackground(style);
     } else if (isHovered()) {
-        color = dc.hoveredBackground(style);
+        color = dc.accentHoveredBackground(style);
     } else {
-        color = dc.widgetBackground(style);
+        color = dc.accentWidgetBackground(style);
     }
     dc.drawBorder(rect, style);
     dc.fillRect(rect, color);
