@@ -85,13 +85,14 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
                     expandable_coord += *generic_length;
                 }
                 child->draw(dc, widget_rect, child->state());
-                if ((*generic_position_coord + *generic_length) >= (*generic_rect_coord + *rect_length - 1)) { // - 1 accounts for rounding
+                if ((*generic_position_coord + *generic_length) >= (*generic_rect_coord + *rect_length)) {
                     break;
                 }
                 *generic_position_coord += *generic_length;
             } else { m_children_positions[i] = BinarySearchData{ expandable_coord, 0 }; }
             i++;
             child = children[i];
+            if (i == children.size()) { break; }
         }
         drawScrollBars(dc, rect, m_size);
     }
