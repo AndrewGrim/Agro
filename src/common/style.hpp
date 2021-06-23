@@ -71,5 +71,7 @@
         Color pressed_background = COLOR_DEFAULT;
         Color accent_hovered_background = COLOR_DEFAULT;
         Color accent_pressed_background = COLOR_DEFAULT;
+
+        Color icon_foreground = COLOR_DEFAULT;
     };
 #endif

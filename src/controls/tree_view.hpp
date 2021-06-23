@@ -146,7 +146,7 @@
                     if (alignment == HorizontalAlignment::Left) {
                         this->append(new Spacer(), Fill::Both);
                     }
-                    Image *sort_icon = (new Image(Application::get()->icons["up_arrow"]))->setForeground(COLOR_BLACK);
+                    Image *sort_icon = (new Image(Application::get()->icons["up_arrow"]))->setForeground(Application::get()->dc->iconForeground(style));
                         sort_icon->setMinSize(Size(12, 12));
                         sort_icon->hide();
                     this->append(sort_icon, Fill::Vertical);
@@ -983,8 +983,8 @@
             bool m_table = false;
             Style m_column_style;
             Style m_column_button_style;
-            Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90()->setForeground(COLOR_BLACK);
-            Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically()->setForeground(COLOR_BLACK);
+            Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90()->setForeground(Application::get()->dc->iconForeground(style));
+            Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically()->setForeground(Application::get()->dc->iconForeground(style));
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
