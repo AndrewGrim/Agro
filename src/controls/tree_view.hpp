@@ -424,7 +424,7 @@
                 dc.margin(rect, style);
                 dc.drawBorder(rect, style);
                 this->inner_rect = rect;
-                dc.fillRect(rect, COLOR_WHITE);
+                dc.fillRect(rect, dc.textBackground(style));
 
                 Size virtual_size = m_virtual_size;
                 if (areColumnHeadersHidden()) {
@@ -1091,7 +1091,7 @@
                                 m_indent,
                                 m_treeline_size
                             ),
-                            Color(0.5f, 0.5f, 0.5f)
+                            dc.borderBackground(style)
                         );
                         if (node->children.size() > 1) {
                             last_y -= node->children[0]->max_cell_height / 2;
@@ -1117,7 +1117,7 @@
                                     m_indent,
                                     m_treeline_size
                                 ),
-                                Color(0.5f, 0.5f, 0.5f)
+                                dc.borderBackground(style)
                             );
                         }
                         last_y += last_node_height;
@@ -1129,7 +1129,7 @@
                                 m_treeline_size,
                                 last_y - y + m_treeline_size
                             ),
-                            Color(0.5f, 0.5f, 0.5f)
+                            dc.borderBackground(style)
                         );
                         dc.drawTextureAligned(
                             Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
