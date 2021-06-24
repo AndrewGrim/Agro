@@ -536,6 +536,13 @@
                                         }
                                         int state = STATE_DEFAULT;
                                         if (drawable->isWidget()) {
+                                            EmptyCell().draw(
+                                                dc,
+                                                Rect(
+                                                    cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
+                                                ),
+                                                m_focused == node ? STATE_FOCUSED : STATE_DEFAULT
+                                            );
                                             state = ((Widget*)drawable)->state();
                                         } else {
                                             if (m_focused == node) { state |= STATE_FOCUSED; }
