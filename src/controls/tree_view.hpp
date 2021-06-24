@@ -533,6 +533,13 @@
                                         int cell_x = cell_start;
                                         if (!m_table && !i) {
                                             cell_x += node->depth * m_indent;
+                                            if (m_focused == node) {
+                                                EmptyCell().draw(
+                                                    dc,
+                                                    Rect(cell_clip.x, cell_clip.y, node->depth * m_indent, cell_clip.h),
+                                                    STATE_FOCUSED
+                                                );
+                                            }
                                         }
                                         int state = STATE_DEFAULT;
                                         if (drawable->isWidget()) {
