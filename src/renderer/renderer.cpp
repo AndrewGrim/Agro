@@ -144,17 +144,16 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, const char *text, size_t text_length, Point point, Color color, int tab_width) {
+void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width) {
     Size window = Application::get()->size;
-    // TODO handle tab characters
 
     if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
     glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
-    for (size_t i = 0; i < text_length && point.x <= window.w; i++) {
-        char c = text[i];
+    for (size_t i = 0; i < text.length && point.x <= window.w; i++) {
+        char c = text.data[i];
         textCheck(font);
         Font::Character ch = font->characters[c];
         int advance = ch.advance;
@@ -216,7 +215,6 @@ void Renderer::fillText(Font *font, const char *text, size_t text_length, Point 
 void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, int line_spacing, int tab_width) {
     Size window = Application::get()->size;
     std::string::const_iterator c;
-    // TODO handle tab characters
 
     if (current_texture_slot > max_texture_slots - 1) {
         render();

@@ -1,5 +1,6 @@
 #include "drawing_context.hpp"
 #include "../application.hpp"
+#include "../slice.hpp"
 
 DrawingContext::DrawingContext() {
     glEnable(GL_BLEND);
@@ -133,7 +134,7 @@ void DrawingContext::render() {
 }
 
 void DrawingContext::fillText(Font *font, std::string text, Point point, Color color) {
-    renderer->fillText(font ? font : default_font, text.c_str(), text.length(), point, color);
+    renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color);
 }
 
 void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, int line_spacing) {
@@ -219,7 +220,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
                     pos.x = rect.x + (rect.w * 0.5) - (line_width * 0.5);
                     break;
             }
-            renderer->fillText(font, start, count, pos, color);
+            renderer->fillText(font, Slice<const char>(start, count), pos, color);
             start += count;
             pos.y += font->max_height + line_spacing;
             pos.x = rect.x;
@@ -238,7 +239,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
             pos.x = rect.x + (rect.w * 0.5) - (line_width * 0.5);
             break;
     }
-    renderer->fillText(font, start, count, pos, color);
+    renderer->fillText(font, Slice<const char>(start, count), pos, color);
 }
 
 Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color) {
