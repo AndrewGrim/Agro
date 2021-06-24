@@ -64,7 +64,7 @@
 
         Color text_foreground = COLOR_DEFAULT;
         Color text_background = COLOR_DEFAULT;
-        Color selected_text = COLOR_DEFAULT;
+        Color text_selected = COLOR_DEFAULT;
         Color text_disabled = COLOR_DEFAULT;
 
         Color hovered_background = COLOR_DEFAULT;

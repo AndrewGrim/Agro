@@ -71,6 +71,7 @@
         Color accentPressedBackground(Style &style);
         Color textForeground(Style &style);
         Color textBackground(Style &style);
+        Color textSelected(Style &style);
         Color textDisabled(Style &style);
         Color iconForeground(Style &style);
         Color borderBackground(Style &style);

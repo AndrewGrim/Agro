@@ -548,6 +548,10 @@ Color DrawingContext::textBackground(Style &style) {
     return style.text_background ? this->default_style.text_background : style.text_background;
 }
 
+Color DrawingContext::textSelected(Style &style) {
+    return style.text_selected ? this->default_style.text_selected : style.text_selected;
+}
+
 Color DrawingContext::textDisabled(Style &style) {
     return style.text_disabled ? this->default_style.text_disabled : style.text_disabled;
 }
