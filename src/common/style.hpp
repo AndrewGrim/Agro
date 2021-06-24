@@ -73,5 +73,6 @@
         Color accent_pressed_background = COLOR_DEFAULT;
 
         Color icon_foreground = COLOR_DEFAULT;
+        Color border_background = COLOR_DEFAULT;
     };
 #endif

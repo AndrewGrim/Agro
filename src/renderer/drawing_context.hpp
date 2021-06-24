@@ -73,6 +73,7 @@
         Color textBackground(Style &style);
         Color textDisabled(Style &style);
         Color iconForeground(Style &style);
+        Color borderBackground(Style &style);
 
         Color getColor(Point point);
     };

@@ -63,7 +63,8 @@ DrawingContext::DrawingContext() {
         Color("#669eff"),
         Color("#005dff"),
 
-        Color("#000000")
+        Color("#000000"),
+        Color("#777777")
     };
     default_dark_style = {
         Style::Margin{
@@ -108,7 +109,8 @@ DrawingContext::DrawingContext() {
         Color("#fcc96a"),
         Color("#fca400"),
 
-        Color("#ffffff")
+        Color("#ffffff"),
+        Color("#dddddd")
     };
     default_style = default_light_style;
 }
@@ -552,6 +554,10 @@ Color DrawingContext::textDisabled(Style &style) {
 
 Color DrawingContext::iconForeground(Style &style) {
     return style.icon_foreground ? this->default_style.icon_foreground : style.icon_foreground;
+}
+
+Color DrawingContext::borderBackground(Style &style) {
+    return style.border_background ? this->default_style.border_background : style.border_background;
 }
 
 Color DrawingContext::getColor(Point point) {
