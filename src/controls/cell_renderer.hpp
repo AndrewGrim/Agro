@@ -5,6 +5,8 @@
 
 class CellRenderer : public Drawable {
     public:
+        Style style;
+
         CellRenderer();
         virtual ~CellRenderer();
         virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
@@ -24,8 +26,6 @@ class TextCellRenderer : public CellRenderer {
     public:
         // TODO setters for text, alignment, padding, font to set m_size_changed
         std::string text;
-        Color foreground;
-        Color background;
         int padding;
         Font *font = nullptr;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
@@ -33,8 +33,6 @@ class TextCellRenderer : public CellRenderer {
 
         TextCellRenderer(
             std::string text,
-            Color foreground = COLOR_BLACK,
-            Color background = COLOR_NONE,
             int padding = 5
         );
         ~TextCellRenderer();
@@ -76,16 +74,12 @@ class ImageTextCellRenderer : public CellRenderer {
         Image *image = nullptr;
         Font *font = nullptr;
         std::string text;
-        Color foreground;
-        Color background;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
         int padding;
 
         ImageTextCellRenderer(
             Image *image,
             std::string text,
-            Color foreground = COLOR_BLACK,
-            Color background = COLOR_NONE,
             HorizontalAlignment h_align = HorizontalAlignment::Left,
             int padding = 5
         );

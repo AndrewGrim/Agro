@@ -1,6 +1,9 @@
 #include "cell_renderer.hpp"
 
-CellRenderer::CellRenderer() {}
+CellRenderer::CellRenderer() {
+    style.widget_background = COLOR_NONE;
+}
+
 CellRenderer::~CellRenderer() {}
 
 bool CellRenderer::isWidget() {
@@ -12,10 +15,7 @@ EmptyCell::~EmptyCell() {}
 
 void EmptyCell::draw(DrawingContext &dc, Rect rect, int state) {
     if (state & STATE_FOCUSED) {
-        dc.fillRect(rect, Color(0.2f, 0.5f, 1.0f));
-    }
-    if (state & STATE_HOVERED) {
-        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
+        dc.fillRect(rect, dc.accentWidgetBackground(style));
     }
 }
 
@@ -23,22 +23,16 @@ Size EmptyCell::sizeHint(DrawingContext &dc) {
     return Size();
 }
 
-TextCellRenderer::TextCellRenderer(
-    std::string text, Color foreground, Color background, int padding
-) :
-text{text}, foreground{foreground},
-background{background}, padding{padding} {}
+TextCellRenderer::TextCellRenderer(std::string text, int padding) : text{text}, padding{padding} {}
 
-TextCellRenderer::~TextCellRenderer() {
-
-}
+TextCellRenderer::~TextCellRenderer() {}
 
 void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
-    Color fg = foreground;
-    Color bg = background;
+    Color fg = dc.textForeground(style);
+    Color bg = dc.widgetBackground(style);
     if (state & STATE_FOCUSED) {
-        fg = COLOR_WHITE;
-        bg = Color(0.2f, 0.5f, 1.0f);
+        fg = dc.textSelected(style);
+        bg = dc.accentWidgetBackground(style);
     }
 
     dc.fillRect(rect, bg);
@@ -51,10 +45,6 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
         padding,
         fg
     );
-
-    if (state & STATE_HOVERED) {
-        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
-    }
 }
 
 Size TextCellRenderer::sizeHint(DrawingContext &dc) {
@@ -78,7 +68,7 @@ ImageCellRenderer::~ImageCellRenderer() {
 void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = dc.widgetBackground(image->style);
     if (state & STATE_FOCUSED) {
-        bg = Color(0.2f, 0.5f, 1.0f);
+        bg = dc.accentWidgetBackground(style);
     }
     dc.fillRect(
         rect,
@@ -93,10 +83,6 @@ void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
         VerticalAlignment::Center,
         image->foreground()
     );
-    if (state & STATE_HOVERED) {
-        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
-    }
-
 }
 
 Size ImageCellRenderer::sizeHint(DrawingContext &dc) {
@@ -107,9 +93,9 @@ MultipleImagesCellRenderer::MultipleImagesCellRenderer(std::vector<Image> &&imag
 MultipleImagesCellRenderer::~MultipleImagesCellRenderer() {}
 
 void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
-    Color bg = COLOR_NONE;
+    Color bg = dc.widgetBackground(style);
     if (state & STATE_FOCUSED) {
-        bg = Color(0.2f, 0.5f, 1.0f);
+        bg = dc.accentWidgetBackground(style);
     }
     dc.fillRect(
         rect,
@@ -130,9 +116,6 @@ void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) 
         );
         drawing_rect.x += img.size().w;
     }
-    if (state & STATE_HOVERED) {
-        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
-    }
 }
 
 Size MultipleImagesCellRenderer::sizeHint(DrawingContext &dc) {
@@ -151,25 +134,20 @@ Size MultipleImagesCellRenderer::sizeHint(DrawingContext &dc) {
 ImageTextCellRenderer::ImageTextCellRenderer(
     Image *image,
     std::string text,
-    Color foreground,
-    Color background,
     HorizontalAlignment h_align,
     int padding
-) :
-image{image}, text{text}, foreground{foreground},
-background{background}, h_align{h_align}, padding{padding} {
-}
+) : image{image}, text{text}, h_align{h_align}, padding{padding} {}
 
 ImageTextCellRenderer::~ImageTextCellRenderer() {
     delete image;
 }
 
 void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
-    Color fg = foreground;
-    Color bg = background;
+    Color fg = dc.textForeground(style);
+    Color bg = dc.widgetBackground(style);
     if (state & STATE_FOCUSED) {
-        fg = COLOR_WHITE;
-        bg = Color(0.2f, 0.5f, 1.0f);
+        fg = dc.textSelected(style);
+        bg = dc.accentWidgetBackground(style);
     }
 
     dc.fillRect(rect, bg);
@@ -204,11 +182,6 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
         padding,
         fg
     );
-
-
-    if (state & STATE_HOVERED) {
-        dc.fillRect(rect, Color(0.4f, 0.4f, 0.4f, 0.1f));
-    }
 }
 
 Size ImageTextCellRenderer::sizeHint(DrawingContext &dc) {
