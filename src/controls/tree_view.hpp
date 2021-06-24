@@ -236,10 +236,10 @@
             void sort(Sort sort) {
                 if (sort_fn) {
                     if (sort == Sort::None) {
-                        Image *sort_icon = (Image*)children[children.size() - 1];
+                        IconButton *sort_icon = (IconButton*)children[children.size() - 1];
                             sort_icon->hide();
                         if (m_sort == Sort::Descending) {
-                            sort_icon->flipVertically();
+                            sort_icon->image()->flipVertically();
                         }
                         m_sort = sort;
                     } else {
@@ -266,7 +266,7 @@
                 unsigned int horizontal_non_expandable = 0;
                 if (m_size_changed) {
                     Size size = Size();
-                    for (Widget* child : children) {
+                    for (Widget *child : children) {
                         Size s = child->sizeHint(dc);
                         size.w += s.w;
                         if (s.h > size.h) {
