@@ -180,9 +180,9 @@
                 });
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_dragging) {
-                        setExpand(false);
                         // Ignore any right side movement if the mouse is to the left of the column's right most boundary.
                         if (!((event.x < (rect.x + rect.w)) && (event.xrel > 0))) {
+                            setExpand(false);
                             setWidth(rect.w + event.xrel);
                         }
                     } else {
