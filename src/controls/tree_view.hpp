@@ -442,15 +442,8 @@
                 int x_start = pos.x;
                 int y_start = pos.y;
 
-                int child_count = 0;
-                for (Widget *child : children) {
-                    if (((Column<T>*)child)->expand()) {
-                        child_count++;
-                    }
-                }
-                if (child_count < 1) {
-                    child_count = 1;
-                }
+                int child_count = m_expandable_columns;
+                if (child_count < 1) { child_count = 1; }
                 int expandable_length = (rect.w - m_children_size.w) / child_count;
                 int remainder = (rect.w - m_children_size.w) % child_count;
                 int local_pos_x = pos.x;
@@ -808,15 +801,19 @@
 
             virtual Size sizeHint(DrawingContext &dc) override {
                 if (m_size_changed) { // TODO this will be slow for a large number of columns
-                    m_virtual_size.w = 0.0;
+                    m_virtual_size.w = 0;
                     m_column_widths.clear();
                     Size size = Size();
+                    m_expandable_columns = 0;
                     for (Widget *child : children) {
                         Size s = child->sizeHint(dc);
                         m_column_widths.push_back(s.w);
                         size.w += s.w;
                         if (s.h > size.h) {
                             size.h = s.h;
+                        }
+                        if (((Column<T>*)child)->expand()) {
+                            m_expandable_columns++;
                         }
                     }
                     m_children_size = size;
@@ -1004,6 +1001,7 @@
             Style m_column_button_style;
             Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90();
             Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically();
+            int m_expandable_columns = 0;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
