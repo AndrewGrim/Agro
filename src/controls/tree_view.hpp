@@ -311,6 +311,7 @@
                 }
                 m_custom_size = true;
                 m_custom_width = width;
+                rect.w = width;
                 layout();
             }
 
