@@ -452,13 +452,19 @@
                     child_count = 1;
                 }
                 int expandable_length = (rect.w - m_children_size.w) / child_count;
+                int remainder = (rect.w - m_children_size.w) % child_count;
                 int local_pos_x = pos.x;
                 int i = 0;
                 m_current_header_width = 0;
                 for (Widget *child : children) {
+                    int child_expandable_length = expandable_length;
+                    if (remainder) {
+                        child_expandable_length++;
+                        remainder--;
+                    }
                     Size s = child->sizeHint(dc);
                     if (((Column<T>*)child)->expand()) {
-                        s.w += expandable_length > 0 ? expandable_length : 0;
+                        s.w += child_expandable_length > 0 ? child_expandable_length : 0;
                         m_column_widths[i] = s.w;
                     }
                     m_current_header_width += s.w;
