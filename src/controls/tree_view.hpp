@@ -445,6 +445,7 @@
                 int child_count = m_expandable_columns;
                 if (child_count < 1) { child_count = 1; }
                 int expandable_length = (rect.w - m_children_size.w) / child_count;
+                if (expandable_length < 0) { expandable_length = 0; }
                 int remainder = (rect.w - m_children_size.w) % child_count;
                 int local_pos_x = pos.x;
                 int i = 0;
