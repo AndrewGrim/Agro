@@ -30,8 +30,10 @@ int main(int argc, char **argv) {
         {
             h_box->append(new Button("Left"), Fill::Vertical);
             ScrolledBox *left = new ScrolledBox(Align::Horizontal);
+            left->style.window_background = Color("#ff5555");
             {
                 ScrolledBox *inner_top = new ScrolledBox(Align::Horizontal, Size(200, 200));
+                inner_top->style.window_background = Color("#ffaa55");
                     {
                         for (int i = 0; i < 50; i++) {
                             inner_top->append(new Label(std::to_string(i)));
@@ -42,6 +44,7 @@ int main(int argc, char **argv) {
                     left->append(new Label(std::to_string(i)));
                 }
                 ScrolledBox *inner = new ScrolledBox(Align::Vertical, Size(200, 200));
+                inner->style.window_background = Color("#55ff55");
                     {
                         for (int i = 0; i < 50; i++) {
                             inner->append(new Label(std::to_string(i)));
@@ -55,8 +58,10 @@ int main(int argc, char **argv) {
             h_box->append(left, Fill::Both);
 
             ScrolledBox *right = new ScrolledBox(Align::Vertical);
+            right->style.window_background = Color("#5555ff");
             {
                 ScrolledBox *inner_top = new ScrolledBox(Align::Vertical, Size(200, 200));
+                inner_top->style.window_background = Color("#55ffaa");
                     {
                         for (int i = 0; i < 50; i++) {
                             inner_top->append(new Label(std::to_string(i)));
@@ -67,6 +72,7 @@ int main(int argc, char **argv) {
                     right->append(new Label(std::to_string(i)));
                 }
                 ScrolledBox *inner = new ScrolledBox(Align::Horizontal, Size(200, 200));
+                inner->style.window_background = Color("#55aaff");
                     {
                         for (int i = 0; i < 50; i++) {
                             inner->append(new Label(std::to_string(i)));
