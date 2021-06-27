@@ -60,7 +60,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     }
     int expandable_length = (*rect_length - generic_total_layout_length) / child_count;
     if (expandable_length < 0) { expandable_length = 0; }
-    int remainder = expandable_length % child_count;
+    int remainder = (*rect_length - generic_total_layout_length) % child_count;
 
     size_t scroll_offset = 0;
     if (m_align_policy == Align::Vertical) {

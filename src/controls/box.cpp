@@ -42,7 +42,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
     if (!child_count) child_count = 1; // Protects from division by zero
     int expandable_length = (rect_length - generic_total_layout_length) / child_count;
     if (expandable_length < 0) { expandable_length = 0; }
-    int remainder = expandable_length % child_count;
+    int remainder = (rect_length - generic_total_layout_length) % child_count;
     for (Widget* child : children) {
         Size child_hint = child->sizeHint(dc);
         int child_expandable_length = expandable_length;
