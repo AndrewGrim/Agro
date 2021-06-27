@@ -976,7 +976,6 @@
                 return m_model;
             }
 
-        protected:
             Tree<T> *m_model = nullptr;
             Size m_virtual_size;
             bool m_virtual_size_changed = false;
