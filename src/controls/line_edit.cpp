@@ -1,4 +1,5 @@
 #include "line_edit.hpp"
+#include "../renderer/renderer.hpp"
 #include "../application.hpp"
 
 LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : Widget() {
@@ -221,7 +222,10 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             VerticalAlignment::Center,
             inner_rect,
             0,
-            dc.textForeground(style)
+            dc.textForeground(style),
+            m_tab_width,
+            Renderer::Selection(m_selection.begin, m_selection.end),
+            dc.textSelected(style)
         );
     }
 

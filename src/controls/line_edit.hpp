@@ -100,6 +100,7 @@
             int m_text_height = 0;
             bool m_text_changed = false;
             int m_cursor_width = 1;
+            int m_tab_width = 4;
             Selection m_selection;
             History m_history;
     };
