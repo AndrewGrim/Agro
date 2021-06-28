@@ -6,11 +6,9 @@ FreeType2 is used for making bitmaps for drawing text.
 
 **Note that the library is very work in progress!**
 
-![screenshot](images/screenshot_widget_gallery_light.png)
+![screenshot](images/screenshot_widget_gallery.webp)
 
-![screenshot](images/screenshot_widget_gallery_dark.png)
-
-![screenshot](images/screenshot_mhwi_db.png)
+![screenshot](images/screenshot_mhwi_db.webp)
 
 ## Build
 The library is tested and working on Windows 10 and Linux (Mint 20.1).
