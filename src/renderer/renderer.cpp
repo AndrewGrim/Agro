@@ -145,6 +145,8 @@ void Renderer::textCheck(Font *font) {
 }
 
 void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing) {
+    Size window = Application::get()->size;
+
     if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
@@ -157,11 +159,13 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
         Font::Character ch = font->characters[c];
         int advance = ch.advance;
         if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
-        if (x + advance >= 0) {
-            if (is_multiline && c == '\n') {
-                point.y += font->max_height + line_spacing;
-                x = point.x;
-            }
+        if (is_multiline && c == '\n') {
+            point.y += font->max_height + line_spacing;
+            if (point.y >= window.h) { break; }
+            x = point.x;
+        }
+        if (!is_multiline && x > window.w) { break; }
+        if (x + advance >= 0 && x <= window.w) {
             float xpos = x + ch.bearing.x;
             float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
 
