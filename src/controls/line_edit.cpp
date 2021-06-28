@@ -224,7 +224,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             0,
             dc.textForeground(style),
             m_tab_width,
-            Renderer::Selection(m_selection.begin, m_selection.end),
+            isFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
             dc.textSelected(style)
         );
     }
