@@ -159,7 +159,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
         Font::Character ch = font->characters[c];
         int advance = ch.advance;
         if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
-        if (is_multiline && c == '\n') {
+        if (c == '\n' && is_multiline) {
             point.y += font->max_height + line_spacing;
             if (point.y >= window.h) { break; }
             x = point.x;
@@ -219,48 +219,21 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     current_texture_slot++;
 }
 
-Size Renderer::measureText(Font *font, std::string text, int tab_width) {
-    Size size = Size(0, font->max_height);
-    for (char c : text) {
-        Font::Character ch = font->characters[c];
-        if (c == '\t') {
-            size.w += font->characters[' '].advance * tab_width;
-        } else {
-            size.w += ch.advance;
-        }
-    }
-
-    return size;
-}
-
-Size Renderer::measureText(Font *font, char c, int tab_width) {
-    Size size = Size(0, font->max_height);
-    Font::Character ch = font->characters[c];
-    if (c == '\t') {
-        size.w = font->characters[' '].advance * tab_width;
-    } else {
-        size.w = ch.advance;
-    }
-
-    return size;
-}
-
-Size Renderer::measureTextMultiline(Font *font, std::string text, int line_spacing, int tab_width) {
+Size Renderer::measureText(Font *font, std::string text, int tab_width, bool is_multiline, int line_spacing) {
     Size size = Size(0, font->max_height);
     int line_width = 0;
     for (char c : text) {
         Font::Character ch = font->characters[c];
         if (c == '\t') {
             line_width += font->characters[' '].advance * tab_width;
-        } else {
-            line_width += ch.advance;
-        }
-        if (c == '\n') {
+        } else if (c == '\n' && is_multiline) {
             size.h += font->max_height + line_spacing;
             if (line_width > size.w) {
                 size.w = line_width;
                 line_width = 0;
             }
+        } else {
+            line_width += ch.advance;
         }
     }
     if (line_width > size.w) { size.w = line_width; }

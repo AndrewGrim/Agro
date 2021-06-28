@@ -143,7 +143,7 @@ void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point
 
 void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width) {
     Point pos = Point();
-    Size text_size = measureText(font, text);
+    Size text_size = measureText(font, text, tab_width);
     switch (h_align) {
         case HorizontalAlignment::Left:
             pos.x = rect.x + padding;
@@ -177,7 +177,7 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
 void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width, int line_spacing) {
     font = font ? font : default_font;
     Point pos = Point(rect.x, rect.y);
-    Size text_size = measureTextMultiline(font, text, line_spacing);
+    Size text_size = measureTextMultiline(font, text, tab_width, line_spacing);
     switch (v_align) {
         case VerticalAlignment::Top:
             pos.y = rect.y + padding;
@@ -194,7 +194,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
     const char *start = text.data();
     size_t count = 0;
     for (char c : text) {
-        line_width += measureText(font, c).w;
+        line_width += measureText(font, c, tab_width).w;
         count++;
         if (c == '\n') {
             switch (h_align) {
@@ -230,16 +230,16 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
     renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false);
 }
 
-Size DrawingContext::measureText(Font *font, std::string text) {
-    return renderer->measureText(font ? font : default_font, text);
+Size DrawingContext::measureText(Font *font, std::string text, int tab_width) {
+    return renderer->measureText(font ? font : default_font, text, tab_width);
 }
 
-Size DrawingContext::measureText(Font *font, char c) {
-    return renderer->measureText(font ? font : default_font, c);
+Size DrawingContext::measureText(Font *font, char c, int tab_width) {
+    return renderer->measureText(font ? font : default_font, std::string(1, c), tab_width);
 }
 
-Size DrawingContext::measureTextMultiline(Font *font, std::string text, int line_spacing) {
-    return renderer->measureTextMultiline(font ? font : default_font, text, line_spacing);
+Size DrawingContext::measureTextMultiline(Font *font, std::string text, int tab_width, int line_spacing) {
+    return renderer->measureText(font ? font : default_font, text, tab_width, true, line_spacing);
 }
 
 Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color) {
