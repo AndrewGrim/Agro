@@ -144,91 +144,21 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width) {
-    Size window = Application::get()->size;
-
-    if (current_texture_slot > max_texture_slots - 1) {
-        render();
-    }
-    glActiveTexture(gl_texture_begin + current_texture_slot);
-    glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
-    for (size_t i = 0; i < text.length && point.x <= window.w; i++) {
-        char c = text.data[i];
-        textCheck(font);
-        Font::Character ch = font->characters[c];
-        int advance = ch.advance;
-        if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
-        if (point.x + advance >= 0) {
-            float xpos = point.x + ch.bearing.x;
-            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
-
-            float w = ch.size.w;
-            float h = ch.size.h;
-
-            // TOP LEFT
-            vertices[index++] = {
-                {xpos, ypos + h},
-                {ch.texture_x, (h / font->atlas_height)},
-                {color.r, color.g, color.b, color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            // BOTTOM LEFT
-            vertices[index++] = {
-                {xpos, ypos},
-                {ch.texture_x, 0.0},
-                {color.r, color.g, color.b, color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            // BOTTOM RIGHT
-            vertices[index++] = {
-                {xpos + w, ypos},
-                {ch.texture_x + (w / font->atlas_width), 0.0},
-                {color.r, color.g, color.b, color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            // TOP RIGHT
-            vertices[index++] = {
-                {xpos + w, ypos + h},
-                {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
-                {color.r, color.g, color.b, color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            quad_count++;
-        }
-        point.x += advance;
-    }
-    current_texture_slot++;
-}
-
-void Renderer::fillTextMultiline(Font *font, std::string text, Point point, Color color, int line_spacing, int tab_width) {
-    Size window = Application::get()->size;
-    std::string::const_iterator c;
-
+void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing) {
     if (current_texture_slot > max_texture_slots - 1) {
         render();
     }
     glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     int x = point.x;
-    for (c = text.begin(); c != text.end() && point.x <= window.w; c++) {
+    for (size_t i = 0; i < text.length; i++) {
+        char c = text.data[i];
         textCheck(font);
-        Font::Character ch = font->characters[*c];
+        Font::Character ch = font->characters[c];
         int advance = ch.advance;
-        if (*c == '\t') { advance = font->characters[' '].advance * tab_width; }
+        if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
         if (x + advance >= 0) {
-            if (*c == '\n') {
+            if (is_multiline && c == '\n') {
                 point.y += font->max_height + line_spacing;
                 x = point.x;
             }

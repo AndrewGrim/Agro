@@ -51,8 +51,7 @@
 
         Renderer(unsigned int *indices);
         ~Renderer();
-        void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, int tab_width = 4);
-        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, int line_spacing = 5, int tab_width = 4);
+        void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, int tab_width = 4, bool is_multiline = false, int line_spacing = 5);
         Size measureText(Font *font, std::string text, int tab_width = 4);
         Size measureText(Font *font, char c, int tab_width = 4);
         Size measureTextMultiline(Font *font, std::string text, int line_spacing = 5, int tab_width = 4);
