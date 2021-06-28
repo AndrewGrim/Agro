@@ -1,11 +1,12 @@
 #include "../src/application.hpp"
+#include "resources.hpp"
 
 class CustomWidget : public Widget {
     public:
-        Font *small = new Font("fonts/DejaVu/DejaVuSans.ttf", 12, Font::Type::Sans);
-        Font *big = new Font("fonts/DejaVu/DejaVuSans-Bold.ttf", 22, Font::Type::Sans);
-        Font *mono = new Font("fonts/DejaVu/DejaVuSansMono.ttf", 16, Font::Type::Mono);
-        std::shared_ptr<Texture> lena = std::make_shared<Texture>("lena.png");
+        Font *small = new Font(Karla_Regular_ttf, Karla_Regular_ttf_length, 12, Font::Type::Sans);
+        Font *big = new Font(Karla_Bold_ttf, Karla_Bold_ttf_length, 22, Font::Type::Sans);
+        Font *italic = new Font(Karla_Italic_ttf, Karla_Italic_ttf_length, 16, Font::Type::Sans);
+        std::shared_ptr<Texture> lena = std::make_shared<Texture>(lena_png, lena_png_length);
         Image *normal = new Image(lena);
         Image *flipped_h = (new Image(lena))->flipHorizontally();
         Image *flipped_v = (new Image(lena))->flipVertically();
@@ -17,7 +18,7 @@ class CustomWidget : public Widget {
         ~CustomWidget() {
             delete small;
             delete big;
-            delete mono;
+            delete italic;
             delete normal;
             delete flipped_h;
             delete flipped_v;
@@ -38,7 +39,7 @@ class CustomWidget : public Widget {
                 VerticalAlignment::Top, VerticalAlignment::Bottom, VerticalAlignment::Center
             };
             { // Text
-                Font *fonts[3] = { small, big, mono };
+                Font *fonts[3] = { small, big, italic };
                 {
                     Color colors[3] = { Color("#ffaaaa"), Color("#aaffaa"), Color("#aaaaff") };
                     for (int i = 0; i < 3; i++) {
@@ -127,7 +128,7 @@ class CustomWidget : public Widget {
                 // then you can change the white pixels on it to any color you want.
                 // This can be great for icons.
 
-                // In this classe's constructor we override the minimum size of the `normal`
+                // In this class's constructor we override the minimum size of the `normal`
                 // Image to be 24 by 24 pixels.
                 // Below you can see that the Image expands into its given rectangle
                 // and can even stretch when you disable maintaining the aspect ratio.

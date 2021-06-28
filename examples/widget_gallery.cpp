@@ -9,6 +9,7 @@
 #include "../src/controls/splitter.hpp"
 #include "../src/controls/tree_view.hpp"
 #include "../src/controls/color_picker.hpp"
+#include "resources.hpp"
 
 Widget* basic(Application &app) {
     Box *box = new Box(Align::Vertical);
@@ -26,9 +27,8 @@ Widget* basic(Application &app) {
 
             GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
                 buttons->append(new Button("Button"));
-                buttons->append(new Button((new Image(app.icons["up_arrow"]))->setForeground(Color("#55ff55"))));
-                Button *image_and_text = new Button(new Image(app.icons["up_arrow"]));
-                    image_and_text->m_image->setForeground(Color("#55ff55"));
+                buttons->append(new Button(new Image(notes_png, notes_png_length)));
+                Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
                     image_and_text->setText("Button");
                 buttons->append(image_and_text, Fill::Both);
             labels_and_buttons->append(buttons, Fill::Both);
@@ -36,7 +36,7 @@ Widget* basic(Application &app) {
 
         Box *images_and_color = new Box(Align::Horizontal);
             GroupBox *images = new GroupBox(Align::Horizontal, "Images");
-                auto lena = std::make_shared<Texture>("lena.png");
+                auto lena = std::make_shared<Texture>(lena_png, lena_png_length);
                 images->append((new Image(lena))->setMinSize(Size(24, 24))->setForeground(Color("#ff0000")));
                 images->append((new Image(lena))->setMinSize(Size(56, 56))->setForeground(Color("#00ff00")));
                 images->append((new Image(lena))->setMinSize(Size(72, 72))->setForeground(Color("#0000ff")));

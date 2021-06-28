@@ -2,6 +2,7 @@
 #include "../src/application.hpp"
 #include "../src/controls/button.hpp"
 #include "../src/controls/note_book.hpp"
+#include "resources.hpp"
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
@@ -21,9 +22,9 @@ int main(int argc, char **argv) {
                         _b->append(new Button(std::to_string(i)), Fill::Both);
                     }
                 if (t % 3 == 0) {
-                    nb->appendTab(_b, "Tab " + std::to_string(t), new Image("notes.png"), true);
+                    nb->appendTab(_b, "Tab " + std::to_string(t), new Image(notes_png, notes_png_length), true);
                 } else if (t % 2 == 0) {
-                    nb->appendTab(_b, "Tab " + std::to_string(t), new Image("notes.png"), false);
+                    nb->appendTab(_b, "Tab " + std::to_string(t), new Image(notes_png, notes_png_length), false);
                 } else {
                     nb->appendTab(_b, "Tab " + std::to_string(t), nullptr, false);
                 }

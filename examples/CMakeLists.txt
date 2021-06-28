@@ -55,7 +55,7 @@ endif()
 
 foreach(example ${examples})
 	get_filename_component(example_name ${example} NAME_WE)
-	add_executable("example_${example_name}" ${example})
+	add_executable("example_${example_name}" ${example} resources.cpp)
 	set_target_properties("example_${example_name}" PROPERTIES
 		RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin"
 		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin"
