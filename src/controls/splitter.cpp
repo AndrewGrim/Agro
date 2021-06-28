@@ -77,7 +77,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         }
         local_rect = Rect(local_rect.x + local_rect.w, rect.y, m_sash_size, rect.h);
         dc.setClip(local_rect);
-        dc.fillRect(local_rect, Color("#000000"));
+        dc.fillRect(local_rect, dc.textForeground(style));
         if (m_second) {
             local_rect = Rect(local_rect.x + m_sash_size, rect.y, (rect.w - m_sash_size) * (1.0 - m_split), rect.h);
             dc.setClip(local_rect);
@@ -91,7 +91,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         }
         local_rect = Rect(rect.x, local_rect.y + local_rect.h, rect.w, m_sash_size);
         dc.setClip(local_rect);
-        dc.fillRect(local_rect, Color("#000000"));
+        dc.fillRect(local_rect, dc.textForeground(style));
         if (m_second) {
             local_rect = Rect(rect.x, local_rect.y + m_sash_size, rect.w, (rect.h - m_sash_size) * (1.0 - m_split));
             dc.setClip(local_rect);
