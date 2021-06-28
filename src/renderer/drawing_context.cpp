@@ -133,15 +133,15 @@ void DrawingContext::render() {
     renderer->render();
 }
 
-void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, int tab_width) {
-    renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width);
+void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, int tab_width, Renderer::Selection selection, Color selection_color) {
+    renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, false, 0, selection, selection_color);
 }
 
-void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, int tab_width, int line_spacing) {
-    renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, true, line_spacing);
+void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, int tab_width, int line_spacing, Renderer::Selection selection, Color selection_color) {
+    renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, true, line_spacing, selection, selection_color);
 }
 
-void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width) {
+void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width, Renderer::Selection selection, Color selection_color) {
     Point pos = Point();
     Size text_size = measureText(font, text, tab_width);
     switch (h_align) {
@@ -170,11 +170,14 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
         font,
         text,
         pos,
-        color
+        color,
+        tab_width,
+        selection,
+        selection_color
     );
 }
 
-void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width, int line_spacing) {
+void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width, int line_spacing, Renderer::Selection selection, Color selection_color) {
     font = font ? font : default_font;
     Point pos = Point(rect.x, rect.y);
     Size text_size = measureTextMultiline(font, text, tab_width, line_spacing);
@@ -208,7 +211,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
                     pos.x = rect.x + (rect.w * 0.5) - (line_width * 0.5);
                     break;
             }
-            renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false);
+            renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false, 0, selection, selection_color);
             start += count;
             pos.y += font->max_height + line_spacing;
             pos.x = rect.x;
@@ -227,7 +230,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
             pos.x = rect.x + (rect.w * 0.5) - (line_width * 0.5);
             break;
     }
-    renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false);
+    renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false, 0, selection, selection_color);
 }
 
 Size DrawingContext::measureText(Font *font, std::string text, int tab_width) {

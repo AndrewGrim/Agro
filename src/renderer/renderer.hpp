@@ -39,6 +39,13 @@
             float clip_rect[4];
         };
 
+        struct Selection {
+            size_t begin = 0;
+            size_t end = 0;
+
+            Selection(size_t begin = 0, size_t end = 0) : begin{begin}, end{end} {}
+        };
+
         int max_texture_slots;
         int current_texture_slot = 2;
         unsigned int gl_texture_begin = GL_TEXTURE0;
@@ -51,7 +58,7 @@
 
         Renderer(unsigned int *indices);
         ~Renderer();
-        void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, int tab_width = 4, bool is_multiline = false, int line_spacing = 5);
+        void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, int tab_width = 4, bool is_multiline = false, int line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
         Size measureText(Font *font, std::string text, int tab_width = 4, bool is_multiline = false, int line_spacing = 5);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);

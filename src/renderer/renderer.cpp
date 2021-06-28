@@ -144,8 +144,13 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing) {
+void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing, Selection selection, Color selection_color) {
     Size window = Application::get()->size;
+    if (selection.begin > selection.end) {
+        auto temp = selection.end;
+        selection.end = selection.begin;
+        selection.begin = temp;
+    }
 
     if (current_texture_slot > max_texture_slots - 1) {
         render();
@@ -165,6 +170,8 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             x = point.x;
         }
         if (!is_multiline && x > window.w) { break; }
+        auto _color = color;
+        if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
         if (x + advance >= 0 && x <= window.w) {
             float xpos = x + ch.bearing.x;
             float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
@@ -176,7 +183,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             vertices[index++] = {
                 {xpos, ypos + h},
                 {ch.texture_x, (h / font->atlas_height)},
-                {color.r, color.g, color.b, color.a},
+                {_color.r, _color.g, _color.b, _color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
@@ -186,7 +193,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             vertices[index++] = {
                 {xpos, ypos},
                 {ch.texture_x, 0.0},
-                {color.r, color.g, color.b, color.a},
+                {_color.r, _color.g, _color.b, _color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
@@ -196,7 +203,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             vertices[index++] = {
                 {xpos + w, ypos},
                 {ch.texture_x + (w / font->atlas_width), 0.0},
-                {color.r, color.g, color.b, color.a},
+                {_color.r, _color.g, _color.b, _color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
@@ -206,7 +213,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             vertices[index++] = {
                 {xpos + w, ypos + h},
                 {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
-                {color.r, color.g, color.b, color.a},
+                {_color.r, _color.g, _color.b, _color.a},
                 (float)current_texture_slot,
                 (float)Renderer::Sampler::Text,
                 {1.0, 1.0, 1.0, 1.0},
