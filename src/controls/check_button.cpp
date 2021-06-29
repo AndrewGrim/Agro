@@ -23,8 +23,8 @@ const char* CheckButton::name() {
 
 void CheckButton::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
-    this->rect = rect;
     dc.padding(rect, style);
+    this->rect = rect;
 
     Image *image = m_is_checked ? m_checked_image : m_unchecked_image;
     Color bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.textBackground(style);
