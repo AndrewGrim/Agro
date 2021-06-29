@@ -10,6 +10,7 @@
 #include "../src/controls/tree_view.hpp"
 #include "../src/controls/color_picker.hpp"
 #include "../src/controls/check_button.hpp"
+#include "../src/controls/radio_button.hpp"
 #include "resources.hpp"
 
 Widget* basic1(Application &app) {
@@ -40,6 +41,13 @@ Widget* basic1(Application &app) {
                 checks->append(new CheckButton("Checked", true));
                 checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
             check_and_radio->append(checks, Fill::Both);
+
+            GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
+                std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
+                radios->append(new RadioButton(radio_group, "Radio 1"));
+                radios->append(new RadioButton(radio_group, "Radio 2"));
+                radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
+            check_and_radio->append(radios, Fill::Both);
         box->append(check_and_radio, Fill::Both);
 
         GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
