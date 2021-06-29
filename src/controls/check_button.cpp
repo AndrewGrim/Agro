@@ -29,6 +29,10 @@ void CheckButton::draw(DrawingContext &dc, Rect rect, int state) {
     Image *image = m_is_checked ? m_checked_image : m_unchecked_image;
     Color bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.textBackground(style);
     Color check_image_bg = m_is_checked ? dc.textSelected(style) : dc.borderBackground(style);
+    if (isHovered()) {
+        bg = m_is_checked ? dc.textBackground(style) : bg;
+        check_image_bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.accentHoveredBackground(style);
+    }
     dc.fillRect(Rect(rect.x, rect.y + (rect.h / 2) - (m_size.h / 2), m_size.h, m_size.h), bg);
     dc.drawTextureAligned(
         Rect(rect.x, rect.y, m_size.h, rect.h),
