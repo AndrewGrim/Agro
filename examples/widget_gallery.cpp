@@ -9,9 +9,10 @@
 #include "../src/controls/splitter.hpp"
 #include "../src/controls/tree_view.hpp"
 #include "../src/controls/color_picker.hpp"
+#include "../src/controls/check_button.hpp"
 #include "resources.hpp"
 
-Widget* basic(Application &app) {
+Widget* basic1(Application &app) {
     Box *box = new Box(Align::Vertical);
         Box *labels_and_buttons = new Box(Align::Horizontal);
             GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
@@ -22,7 +23,6 @@ Widget* basic(Application &app) {
                 labels->append(new Label("Left"), Fill::Both);
                 labels->append(lr, Fill::Both);
                 labels->append(lc, Fill::Both);
-
             labels_and_buttons->append(labels, Fill::Both);
 
             GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
@@ -34,6 +34,25 @@ Widget* basic(Application &app) {
             labels_and_buttons->append(buttons, Fill::Both);
         box->append(labels_and_buttons, Fill::Both);
 
+        Box *check_and_radio = new Box(Align::Horizontal);
+            GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
+                checks->append(new CheckButton("Unchecked", false));
+                checks->append(new CheckButton("Checked", true));
+                checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
+            check_and_radio->append(checks, Fill::Both);
+        box->append(check_and_radio, Fill::Both);
+
+        GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
+            line_edits->append(new LineEdit("", "Placeholder text", 200));
+            line_edits->append(new LineEdit("Default text", "", 300));
+            line_edits->append(new LineEdit("", ""), Fill::Horizontal);
+        box->append(line_edits, Fill::Horizontal);
+
+    return box;
+}
+
+Widget* basic2(Application &app) {
+    Box *box = new Box(Align::Vertical);
         Box *images_and_color = new Box(Align::Horizontal);
             GroupBox *images = new GroupBox(Align::Horizontal, "Images");
                 auto lena = std::make_shared<Texture>(lena_png, lena_png_length);
@@ -48,12 +67,6 @@ Widget* basic(Application &app) {
                 color_picker->append(new ColorPicker());
             images_and_color->append(color_picker);
         box->append(images_and_color, Fill::Horizontal);
-
-        GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
-            line_edits->append(new LineEdit("", "Placeholder text", 200));
-            line_edits->append(new LineEdit("Default text", "", 300));
-            line_edits->append(new LineEdit("", ""), Fill::Horizontal);
-        box->append(line_edits, Fill::Horizontal);
 
     return box;
 }
@@ -215,7 +228,8 @@ int main(int argc, char **argv) {
             h_box->append(dark);
         app->append(h_box);
         NoteBook *notebook = new NoteBook();
-            notebook->appendTab(basic(*app), "Basic", nullptr, false);
+            notebook->appendTab(basic1(*app), "Basic 1", nullptr, false);
+            notebook->appendTab(basic2(*app), "Basic 2", nullptr, false);
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
             notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
