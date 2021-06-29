@@ -53,6 +53,8 @@
                 {"table_layout", std::make_shared<Texture>(table_layout_png, table_layout_png_length)},
                 {"check_button_unchecked", std::make_shared<Texture>(check_button_unchecked_png, check_button_unchecked_png_length)},
                 {"check_button_checked", std::make_shared<Texture>(check_button_checked_png, check_button_checked_png_length)},
+                {"radio_button_unchecked", std::make_shared<Texture>(radio_button_unchecked_png, radio_button_unchecked_png_length)},
+                {"radio_button_checked", std::make_shared<Texture>(radio_button_checked_png, radio_button_checked_png_length)},
                 {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
             };
 
