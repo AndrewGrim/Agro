@@ -51,6 +51,8 @@
                 {"up_arrow", std::make_shared<Texture>(up_arrow_png, up_arrow_png_length)},
                 {"tree_layout", std::make_shared<Texture>(tree_layout_png, tree_layout_png_length)},
                 {"table_layout", std::make_shared<Texture>(table_layout_png, table_layout_png_length)},
+                {"check_button_unchecked", std::make_shared<Texture>(check_button_unchecked_png, check_button_unchecked_png_length)},
+                {"check_button_checked", std::make_shared<Texture>(check_button_checked_png, check_button_checked_png_length)},
                 {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
             };
 
