@@ -45,6 +45,7 @@ Widget* basic1(Application &app) {
             GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
                 std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
                 radios->append(new RadioButton(radio_group, "Radio 1"));
+                radio_group->buttons[0]->m_is_checked = true;
                 radios->append(new RadioButton(radio_group, "Radio 2"));
                 radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
             check_and_radio->append(radios, Fill::Both);
