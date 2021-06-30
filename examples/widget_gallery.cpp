@@ -11,6 +11,7 @@
 #include "../src/controls/color_picker.hpp"
 #include "../src/controls/check_button.hpp"
 #include "../src/controls/radio_button.hpp"
+#include "../src/controls/progress_bar.hpp"
 #include "resources.hpp"
 
 Widget* basic1(Application &app) {
@@ -56,6 +57,14 @@ Widget* basic1(Application &app) {
             line_edits->append(new LineEdit("Default text", "", 300));
             line_edits->append(new LineEdit("", ""), Fill::Horizontal);
         box->append(line_edits, Fill::Horizontal);
+
+        GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
+            progress->append(new ProgressBar(200));
+            progress->append(new ProgressBar(300));
+            ((ProgressBar*)progress->children[1])->m_value = 0.50;
+            progress->append(new ProgressBar(), Fill::Horizontal);
+            ((ProgressBar*)progress->children[2])->m_value = 1.0;
+        box->append(progress, Fill::Horizontal);
 
     return box;
 }
