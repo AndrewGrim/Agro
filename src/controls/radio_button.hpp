@@ -21,5 +21,6 @@
             void draw(DrawingContext &dc, Rect rect, int state) override;
 
             std::shared_ptr<RadioGroup> m_group;
+            Image *m_background_image = nullptr;
     };
 #endif

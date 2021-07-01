@@ -11,6 +11,7 @@ RadioButton::RadioButton(std::shared_ptr<RadioGroup> group, std::string text) : 
 
     m_checked_image = new Image(Application::get()->icons["radio_button_checked"]);
     m_unchecked_image = new Image(Application::get()->icons["radio_button_unchecked"]);
+    m_background_image = new Image(Application::get()->icons["radio_button_background"]);
 
     onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
         for (auto child : m_group->buttons) {
@@ -21,7 +22,9 @@ RadioButton::RadioButton(std::shared_ptr<RadioGroup> group, std::string text) : 
     });
 }
 
-RadioButton::~RadioButton() {}
+RadioButton::~RadioButton() {
+    delete m_background_image;
+}
 
 const char* RadioButton::name() {
     return "RadioButton";
@@ -38,6 +41,15 @@ void RadioButton::draw(DrawingContext &dc, Rect rect, int state) {
     if (isHovered()) {
         check_image_bg = m_is_checked ? check_image_bg : dc.accentHoveredBackground(style);
     }
+    dc.drawTextureAligned(
+        Rect(rect.x, rect.y, m_size.h, rect.h),
+        Size(m_size.h, m_size.h),
+        m_background_image->_texture(),
+        m_background_image->coords(),
+        HorizontalAlignment::Left,
+        VerticalAlignment::Center,
+        dc.textBackground(style)
+    );
     dc.drawTextureAligned(
         Rect(rect.x, rect.y, m_size.h, rect.h),
         Size(m_size.h, m_size.h),
