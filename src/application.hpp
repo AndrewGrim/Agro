@@ -55,6 +55,7 @@
                 {"check_button_checked", std::make_shared<Texture>(check_button_checked_png, check_button_checked_png_length)},
                 {"radio_button_unchecked", std::make_shared<Texture>(radio_button_unchecked_png, radio_button_unchecked_png_length)},
                 {"radio_button_checked", std::make_shared<Texture>(radio_button_checked_png, radio_button_checked_png_length)},
+                {"radio_button_background", std::make_shared<Texture>(radio_button_background_png, radio_button_background_png_length)},
                 {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
             };
 

@@ -18,6 +18,9 @@ extern const unsigned int check_button_unchecked_png_length;
 extern const unsigned char table_layout_png[];
 extern const unsigned int table_layout_png_length;
 
+extern const unsigned char radio_button_background_png[];
+extern const unsigned int radio_button_background_png_length;
+
 extern const unsigned char color_picker_gradient_png[];
 extern const unsigned int color_picker_gradient_png_length;
 
