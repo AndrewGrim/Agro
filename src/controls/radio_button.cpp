@@ -30,7 +30,8 @@ const char* RadioButton::name() {
 void RadioButton::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     dc.padding(rect, style);
-    this->rect = rect;
+    // Set rect only to the area where we actually draw the widget.
+    this->rect = Rect(rect.x, rect.y + (rect.h / 2) - (m_size.h / 2), m_size.w, m_size.h);
 
     Image *image = m_is_checked ? m_checked_image : m_unchecked_image;
     Color check_image_bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.borderBackground(style);
