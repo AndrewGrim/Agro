@@ -3,6 +3,17 @@
 
     #include "widget.hpp"
     #include "scroll_bar.hpp"
+    #include "../option.hpp"
+
+    struct BinarySearchData {
+        size_t position;
+        size_t length;
+    };
+
+    template <typename T> struct BinarySearchResult {
+        size_t index;
+        Option<T> value;
+    };
 
     class Scrollable : public Widget {
         public:

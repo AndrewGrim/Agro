@@ -68,7 +68,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     } else {
         scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
     }
-    BinarySearchResult result = binarySearch(scroll_offset);
+    BinarySearchResult<Widget*> result = binarySearch(scroll_offset);
     if (result.value) {
         size_t i = result.index;
         Widget *child = children[i];
@@ -265,8 +265,8 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
     return size;
 }
 
-BinarySearchResult ScrolledBox::binarySearch(size_t target) {
-    if (!children.size()) { return BinarySearchResult{ 0, Option<Widget*>() }; }
+BinarySearchResult<Widget*> ScrolledBox::binarySearch(size_t target) {
+    if (!children.size()) { return BinarySearchResult<Widget*>{ 0, Option<Widget*>() }; }
     size_t lower = 0;
     size_t upper = children.size() - 1;
     size_t mid = 0;
@@ -285,10 +285,10 @@ BinarySearchResult ScrolledBox::binarySearch(size_t target) {
     }
 
     if (point.position <= target && point.position + point.length >= target) {
-       return BinarySearchResult{ mid, Option<Widget*>(children[mid]) };
+       return BinarySearchResult<Widget*>{ mid, Option<Widget*>(children[mid]) };
     }
 
-    return BinarySearchResult{ 0, Option<Widget*>() };
+    return BinarySearchResult<Widget*>{ 0, Option<Widget*>() };
 }
 
 void* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent event) {

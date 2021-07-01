@@ -4,16 +4,6 @@
     #include "scrollable.hpp"
     #include "../option.hpp"
 
-    struct BinarySearchData {
-        size_t position;
-        size_t length;
-    };
-
-    struct BinarySearchResult {
-        size_t index;
-        Option<Widget*> value;
-    };
-
     class ScrolledBox : public Scrollable {
         public:
             ScrolledBox(Align align_policy, Size min_size = Size(100, 100));
@@ -35,6 +25,6 @@
 
             Size m_widgets_only; // The layout's size without padding, border, margin etc.
             std::vector<BinarySearchData> m_children_positions;
-            BinarySearchResult binarySearch(size_t position);
+            BinarySearchResult<Widget*> binarySearch(size_t position);
     };
 #endif
