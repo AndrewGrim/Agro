@@ -14,6 +14,21 @@
 #include "../src/controls/progress_bar.hpp"
 #include "resources.hpp"
 
+uint32_t timerCallback(uint32_t interval, void *data) {
+    Application *app = (Application*)data;
+    ProgressBar *bar = (ProgressBar*)(app->mainWidget()->children[1]->children[0]->children[3]->children[0]);
+    double value = bar->m_value;
+    if (value < 1.0) {
+        bar->m_value += 0.01;
+    } else {
+        bar->m_value = 0.0;
+    }
+    app->update();
+    app->pulse();
+
+    return 50;
+}
+
 Widget* basic1(Application &app) {
     Box *box = new Box(Align::Vertical);
         Box *labels_and_buttons = new Box(Align::Horizontal);
@@ -59,6 +74,7 @@ Widget* basic1(Application &app) {
         box->append(line_edits, Fill::Horizontal);
 
         GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
+            // TODO look at off and use a thread to continously update one the progressbars
             progress->append(new ProgressBar(200));
             progress->append(new ProgressBar(300));
             ((ProgressBar*)progress->children[1])->m_value = 0.50;
@@ -252,6 +268,7 @@ int main(int argc, char **argv) {
             notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
         app->append(notebook, Fill::Both);
+        SDL_AddTimer(100, timerCallback, app);
     app->run();
 
     return 0;
