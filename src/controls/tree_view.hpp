@@ -18,6 +18,7 @@
             bool is_collapsed = false;
             int max_cell_height = 0;
             int depth = 0;
+            BinarySearchData bs_data;
 
             TreeNode(std::vector<Drawable*> columns, T *hidden) {
                 this->columns = columns;
@@ -1038,6 +1039,7 @@
                 m_virtual_size = m_children_size;
                 bool collapsed = false;
                 int collapsed_depth = -1;
+                size_t scroll_offset = 0;
 
                 m_model->forEachNode(
                     m_model->roots,
@@ -1075,7 +1077,11 @@
                                 }
                                 index++;
                             }
+                            node->bs_data = BinarySearchData{scroll_offset, (size_t)node->max_cell_height};
+                            scroll_offset += (size_t)node->max_cell_height;
                             m_virtual_size.h += node->max_cell_height;
+                        } else {
+                            node->bs_data = BinarySearchData{scroll_offset, 0};
                         }
 
                         if (node->is_collapsed && !collapsed) {
