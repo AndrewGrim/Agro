@@ -924,50 +924,38 @@
                     if (m_horizontal_scrollbar) {
                         x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                     }
-                    if (m_vertical_scrollbar) {
-                        y -= m_vertical_scrollbar->m_slider->m_value * ((m_virtual_size.h) - inner_rect.h);
-                    }
-                    if (!areColumnHeadersHidden()) {
-                        y += m_children_size.h;
-                    }
-                    Widget *widget = nullptr;
                     if (event.x <= x + m_current_header_width) {
-                        m_model->forEachNode(
-                            m_model->roots,
-                            [&](TreeNode<T> *node) -> Traversal {
-                                if (event.y >= y && event.y <= y + node->max_cell_height) {
-                                    for (size_t i = 0; i < children.size(); i++) {
-                                        Column<T> *col = (Column<T>*)children[i];
-                                        if ((event.x >= col->rect.x) && (event.x <= (col->rect.x + col->rect.w))) {
-                                            if (node->columns[i]->isWidget()) {
-                                                auto _widget = (Widget*)node->columns[i];
-                                                _widget->parent = this;
-                                                if ((event.x >= _widget->rect.x && event.x <= _widget->rect.x + _widget->rect.w) &&
-                                                    (event.y >= _widget->rect.y && event.y <= _widget->rect.y + _widget->rect.h)
-                                                ) {
-                                                    Application *app = Application::get();
-                                                    ((Widget*)node->columns[i])->handleMouseEvent(app, app->m_state, event);
-                                                    widget = _widget;
-                                                } else {
-                                                    m_event_node = node;
-                                                }
-                                            } else {
-                                                m_event_node = node;
-                                            }
-                                            return Traversal::Break;
+                        size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_virtual_size.h) - inner_rect.h);
+                        // size_t x_scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((m_virtual_size.w) - inner_rect.w);
+                        if (!areColumnHeadersHidden()) {
+                            y += m_children_size.h;
+                        }
+                        Option<TreeNode<T>*> result = binarySearch(m_model->roots, (event.y - y) + y_scroll_offset).value;
+                        if (result) {
+                            TreeNode<T> *node = result.value;
+                            for (size_t i = 0; i < children.size(); i++) {
+                                Column<T> *col = (Column<T>*)children[i];
+                                if ((event.x >= col->rect.x) && (event.x <= (col->rect.x + col->rect.w))) {
+                                    if (node->columns[i]->isWidget()) {
+                                        auto widget = (Widget*)node->columns[i];
+                                        widget->parent = this;
+                                        if ((event.x >= widget->rect.x && event.x <= widget->rect.x + widget->rect.w) &&
+                                            (event.y >= widget->rect.y && event.y <= widget->rect.y + widget->rect.h)
+                                        ) {
+                                            Application *app = Application::get();
+                                            widget->handleMouseEvent(app, app->m_state, event);
+                                            return widget;
+                                        } else {
+                                            m_event_node = node;
                                         }
+                                    } else {
+                                        m_event_node = node;
                                     }
                                 }
-                                y += node->max_cell_height;
-                                if (node->is_collapsed) {
-                                    return Traversal::Next;
-                                } else if (y > event.y) {
-                                    return Traversal::Break;
-                                }
-                                return Traversal::Continue;
                             }
-                        );
-                        if (widget) { return widget; }
+                        } else {
+                            m_event_node = nullptr;
+                        }
                     } else {
                         m_event_node = nullptr;
                     }
