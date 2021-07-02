@@ -1185,5 +1185,33 @@
                     }
                 }
             }
+
+        BinarySearchResult<TreeNode<T>*> binarySearch(std::vector<TreeNode<T>*> &roots, size_t target) {
+            if (!roots.size()) { return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() }; }
+            size_t lower = 0;
+            size_t upper = roots.size() - 1;
+            size_t mid = 0;
+            BinarySearchData point = {0, 0};
+
+            while (lower <= upper) {
+                mid = (lower + upper) / 2;
+                point = roots[mid]->bs_data;
+                if (target < point.position) {
+                    upper = mid - 1;
+                } else if (target > (roots.size() - 1 > mid ? roots[mid + 1]->bs_data.position : point.position + point.length)) {
+                    lower = mid + 1;
+                } else {
+                    break;
+                }
+            }
+
+            if (point.position <= target && point.position + point.length >= target) {
+               return BinarySearchResult<TreeNode<T>*>{ mid, Option<TreeNode<T>*>(roots[mid]) };
+            } else if (roots[mid]->children.size()) {
+                return binarySearch(roots[mid]->children, target);
+            }
+
+            return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() };
+        }
     };
 #endif
