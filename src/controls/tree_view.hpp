@@ -1213,5 +1213,21 @@
 
             return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() };
         }
+
+        TreeNode<T>* findNextNode(TreeNode<T> *node) {
+            while (node->parent) {
+                if (node->parent->children.size() - 1 > node->parent_index) {
+                    return node->parent->children[node->parent_index + 1];
+                }
+                node = node->parent;
+            }
+            if (node->depth == 1) {
+                if (m_model->roots.size() - 1 > node->parent_index) {
+                    return m_model->roots[node->parent_index + 1];
+                }
+            }
+
+            return nullptr;
+        }
     };
 #endif
