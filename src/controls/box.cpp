@@ -41,8 +41,11 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
     int child_count = m_visible_children - generic_non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
     int expandable_length = (rect_length - generic_total_layout_length) / child_count;
-    if (expandable_length < 0) { expandable_length = 0; }
     int remainder = (rect_length - generic_total_layout_length) % child_count;
+    if (expandable_length < 0) {
+        expandable_length = 0;
+        remainder = 0;
+    }
     for (Widget* child : children) {
         Size child_hint = child->sizeHint(dc);
         int child_expandable_length = expandable_length;
@@ -127,6 +130,10 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
             if (child->isVisible()) {
                 child->draw(dc, widget_rect, child->state());
             }
+            // TODO this seems dumb, use window dimensions instead
+            // right it would never finish drawing early because the widget in a box
+            // always get their ask in terms of size so the rect dimensions would be
+            // at least as big as all the widget
             if (m_align_policy == Align::Horizontal) {
                 if ((*generic_position_coord + *generic_length) > rect.x + rect.w) {
                     break;

@@ -16,6 +16,8 @@ const char* ScrolledBox::name() {
 void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Rect previous_clip = dc.clip();
+    // TODO clips before scrollbars which means that
+    // some scrolled content can get drawn underneath when horizontall scrolling for example
     clip();
     dc.fillRect(rect, dc.windowBackground(style));
     layoutChildren(dc, rect);
@@ -59,8 +61,11 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
         child_count = 1; // Protects from division by zero
     }
     int expandable_length = (*rect_length - generic_total_layout_length) / child_count;
-    if (expandable_length < 0) { expandable_length = 0; }
     int remainder = (*rect_length - generic_total_layout_length) % child_count;
+    if (expandable_length < 0) {
+        expandable_length = 0;
+        remainder = 0;
+    }
 
     size_t scroll_offset = 0;
     if (m_align_policy == Align::Vertical) {
