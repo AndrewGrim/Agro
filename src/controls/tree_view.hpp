@@ -12,8 +12,9 @@
     template <typename T> class TreeNode {
         public:
             std::vector<Drawable*> columns;
-            T *hidden;
-            TreeNode<T> *parent;
+            T *hidden = nullptr;
+            TreeNode<T> *parent = nullptr;
+            size_t parent_index = 0;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
             int max_cell_height = 0;
@@ -64,10 +65,12 @@
                     node->parent = nullptr;
                     node->depth = 1;
                     roots.push_back(node);
+                    node->parent_index = roots.size() - 1;
 
                     return node;
                 } else {
                     parent_node->children.push_back(node);
+                    node->parent_index = parent_node->children.size() - 1;
                     node->parent = parent_node;
                     node->depth = node->parent->depth + 1;
 
