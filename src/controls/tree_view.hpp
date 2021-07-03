@@ -443,8 +443,9 @@
                 this->inner_rect = rect;
                 Rect tv_clip = old_clip;
 
-                int x_start = pos.x;
-                int y_start = pos.y;
+                // TODO treelines
+                // int x_start = pos.x;
+                // int y_start = pos.y;
 
                 int child_count = m_expandable_columns;
                 if (child_count < 1) { child_count = 1; }
@@ -487,114 +488,62 @@
                     column_header = m_children_size.h;
                     pos.y += column_header;
                 }
+                Rect drawing_rect = rect;
+                if (m_mode == Mode::Unroll) {
+                    drawing_rect = Rect(0, 0, Application::get()->size.w, Application::get()->size.h);
+                    column_header = 0;
+                }
+
                 std::vector<TreeNode<T>*> tree_roots;
                 bool collapsed = false;
                 int collapsed_depth = -1;
-                Rect drawing_rect = Rect(rect);
-                if (m_mode == Mode::Unroll) {
-                    if (parent) {
-                        drawing_rect = parent->rect;
-                    }
-                    column_header = 0;
+                size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
+                if (m_mode == Mode::Unroll && rect.y + m_children_size.h < 0) {
+                    y_scroll_offset = (rect.y + m_children_size.h) * -1;
                 }
-                m_model->forEachNode(
-                    m_model->roots,
-                    [&](TreeNode<T> *node) -> Traversal {
+                Option<TreeNode<T>*> result = binarySearch(m_model->roots, y_scroll_offset).value;
+                if (result) {
+                    pos.y += result.value->bs_data.position;
+                    TreeNode<T> *node = result.value;
+
+                    bool finished = false;
+                    while (node) {
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
                         }
                         if (!collapsed) {
-                            if (pos.y + node->max_cell_height > drawing_rect.y + column_header && pos.y < drawing_rect.y + drawing_rect.h) {
-                                if (!m_table) {
-                                    TreeNode<T> *tree_root = node;
-                                    while (tree_root) {
-                                        if (!tree_root->parent) {
-                                            break;
-                                        }
-                                        tree_root = tree_root->parent;
-                                    }
-                                    auto result = std::find(tree_roots.begin(), tree_roots.end(), tree_root);
-                                    if (result == tree_roots.end()) {
-                                        tree_roots.push_back(tree_root);
+                            drawNode(dc, pos, node, rect, drawing_rect, tv_clip, column_header);
+                            if (pos.y > drawing_rect.y + drawing_rect.h) { break; }
+                            if (node->is_collapsed && !collapsed) {
+                                collapsed = true;
+                                collapsed_depth = node->depth;
+                            }
+
+                            m_model->forEachNode(node->children, [&](TreeNode<T> *node) -> Traversal {
+                                if (node->depth <= collapsed_depth) {
+                                    collapsed = false;
+                                    collapsed_depth = -1;
+                                }
+                                if (!collapsed) {
+                                    drawNode(dc, pos, node, rect, drawing_rect, tv_clip, column_header);
+                                    if (pos.y > drawing_rect.y + drawing_rect.h) {
+                                        finished = true;
+                                        return Traversal::Break;
                                     }
                                 }
-
-                                int cell_start = pos.x;
-                                for (size_t i = 0; i < node->columns.size(); i++) {
-                                    int col_width = m_column_widths[i];
-                                    Drawable *drawable = node->columns[i];
-                                    Size s = drawable->sizeHint(dc);
-                                    if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
-                                        Rect cell_clip =
-                                            Rect(cell_start, pos.y, col_width, node->max_cell_height)
-                                                .clipTo(
-                                                    Rect(
-                                                        rect.x,
-                                                        rect.y + column_header,
-                                                        rect.w,
-                                                        rect.h - column_header
-                                                    )
-                                                );
-                                        // Clip and draw the current cell.
-                                        dc.setClip(cell_clip.clipTo(tv_clip));
-                                        int cell_x = cell_start;
-                                        if (!m_table && !i) {
-                                            cell_x += node->depth * m_indent;
-                                            if (m_focused == node) {
-                                                EmptyCell().draw(
-                                                    dc,
-                                                    Rect(cell_clip.x, cell_clip.y, node->depth * m_indent, cell_clip.h),
-                                                    STATE_FOCUSED
-                                                );
-                                            }
-                                        }
-                                        int state = STATE_DEFAULT;
-                                        if (drawable->isWidget()) {
-                                            EmptyCell().draw(
-                                                dc,
-                                                Rect(
-                                                    cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
-                                                ),
-                                                m_focused == node ? STATE_FOCUSED : STATE_DEFAULT
-                                            );
-                                            state = ((Widget*)drawable)->state();
-                                        } else {
-                                            if (m_focused == node) { state |= STATE_FOCUSED; }
-                                            if (m_hovered == node) { state |= STATE_HOVERED; }
-                                        }
-                                        drawable->draw(
-                                            dc,
-                                            Rect(
-                                                cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
-                                            ),
-                                            state
-                                        );
-                                    }
-                                    cell_start += col_width;
-                                    if (cell_start > drawing_rect.x + drawing_rect.w) {
-                                        break;
-                                    }
+                                if (node->is_collapsed && !collapsed) {
+                                    collapsed = true;
+                                    collapsed_depth = node->depth;
                                 }
-                            }
-                            pos.y += node->max_cell_height;
-                            // Clip and draw row grid line.
-                            if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
-                                dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                                dc.fillRect(Rect(rect.x, pos.y - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style));
-                            }
+                                return Traversal::Continue;
+                            });
                         }
-
-                        if (node->is_collapsed && !collapsed) {
-                            collapsed = true;
-                            collapsed_depth = node->depth;
-                        }
-                        if (pos.y > drawing_rect.y + drawing_rect.h) {
-                            return Traversal::Break;
-                        }
-                        return Traversal::Continue;
+                        if (finished) { break; }
+                        node = findNextNode(node);
                     }
-                );
+                }
+
                 if (m_model->roots.size()) {
                     int local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0;
                     // Clip and draw column grid lines.
@@ -607,42 +556,43 @@
                     }
                 }
 
-                // Draw the tree lines
-                dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
-                // TODO we could optimse here by keeping track of where
-                // we left off between the tree_roots so we could just
-                // continue from there rather than from the beginning
-                Traversal _unused = Traversal::Continue;
-                for (TreeNode<T> *tree_root : tree_roots) {
-                    if (tree_root->children.size()) {
-                        int tree_line_start = y_start + (!areColumnHeadersHidden() ? m_children_size.h : 0);
-                        if (m_model->roots[0] != tree_root) {
-                            for (TreeNode<T> *_root : m_model->roots) {
-                                if (tree_root == _root) {
-                                    break;
-                                }
-                                m_model->descend(_unused, _root, [&](TreeNode<T> *node) {
-                                    if (!node->is_collapsed) {
-                                        tree_line_start += node->max_cell_height;
-                                    } else {
-                                        tree_line_start += node->max_cell_height;
-                                        return Traversal::Next;
-                                    }
-                                    return Traversal::Continue;
-                                });
-                            }
-                        }
+                // TODO treelines
+                // // Draw the tree lines
+                // dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
+                // // TODO we could optimse here by keeping track of where
+                // // we left off between the tree_roots so we could just
+                // // continue from there rather than from the beginning
+                // Traversal _unused = Traversal::Continue;
+                // for (TreeNode<T> *tree_root : tree_roots) {
+                //     if (tree_root->children.size()) {
+                //         int tree_line_start = y_start + (!areColumnHeadersHidden() ? m_children_size.h : 0);
+                //         if (m_model->roots[0] != tree_root) {
+                //             for (TreeNode<T> *_root : m_model->roots) {
+                //                 if (tree_root == _root) {
+                //                     break;
+                //                 }
+                //                 m_model->descend(_unused, _root, [&](TreeNode<T> *node) {
+                //                     if (!node->is_collapsed) {
+                //                         tree_line_start += node->max_cell_height;
+                //                     } else {
+                //                         tree_line_start += node->max_cell_height;
+                //                         return Traversal::Next;
+                //                     }
+                //                     return Traversal::Continue;
+                //                 });
+                //             }
+                //         }
 
-                        m_model->descend(_unused, tree_root, [&](TreeNode<T> *node) {
-                            drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
-                            tree_line_start += node->max_cell_height;
-                            if (node->is_collapsed) {
-                                return Traversal::Next;
-                            }
-                            return Traversal::Continue;
-                        });
-                    }
-                }
+                //         m_model->descend(_unused, tree_root, [&](TreeNode<T> *node) {
+                //             drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
+                //             tree_line_start += node->max_cell_height;
+                //             if (node->is_collapsed) {
+                //                 return Traversal::Next;
+                //             }
+                //             return Traversal::Continue;
+                //         });
+                //     }
+                // }
 
                 dc.setClip(old_clip);
                 if (m_mode == Mode::Scroll) {
@@ -1067,6 +1017,7 @@
                                     m_size_changed = false;
                                 }
                                 if (s.h > node->max_cell_height) {
+                                    // TODO doesnt this mean that if all the columns have the same height then we dont account for grid line?
                                     node->max_cell_height = s.h + m_grid_line_width;
                                 }
                                 index++;
@@ -1212,6 +1163,71 @@
             }
 
             return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() };
+        }
+
+        void drawNode(DrawingContext &dc, Point &pos, TreeNode<T> *node, Rect rect, Rect drawing_rect, Rect tv_clip, int column_header) {
+            int cell_start = pos.x;
+            for (size_t i = 0; i < node->columns.size(); i++) {
+                int col_width = m_column_widths[i];
+                Drawable *drawable = node->columns[i];
+                Size s = drawable->sizeHint(dc);
+                if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
+                    Rect cell_clip =
+                        Rect(cell_start, pos.y, col_width, node->max_cell_height)
+                            .clipTo(
+                                Rect(
+                                    rect.x,
+                                    rect.y + column_header,
+                                    rect.w,
+                                    rect.h - column_header
+                                )
+                            );
+                    // Clip and draw the current cell.
+                    dc.setClip(cell_clip.clipTo(tv_clip));
+                    int cell_x = cell_start;
+                    if (!m_table && !i) {
+                        cell_x += node->depth * m_indent;
+                        if (m_focused == node) {
+                            EmptyCell().draw(
+                                dc,
+                                Rect(cell_clip.x, cell_clip.y, node->depth * m_indent, cell_clip.h),
+                                STATE_FOCUSED
+                            );
+                        }
+                    }
+                    int state = STATE_DEFAULT;
+                    if (drawable->isWidget()) {
+                        EmptyCell().draw(
+                            dc,
+                            Rect(
+                                cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
+                            ),
+                            m_focused == node ? STATE_FOCUSED : STATE_DEFAULT
+                        );
+                        state = ((Widget*)drawable)->state();
+                    } else {
+                        if (m_focused == node) { state |= STATE_FOCUSED; }
+                        if (m_hovered == node) { state |= STATE_HOVERED; }
+                    }
+                    drawable->draw(
+                        dc,
+                        Rect(
+                            cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
+                        ),
+                        state
+                    );
+                }
+                cell_start += col_width;
+                if (cell_start > drawing_rect.x + drawing_rect.w) {
+                    break;
+                }
+            }
+            pos.y += node->max_cell_height;
+            // Clip and draw row grid line.
+            if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
+                dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
+                dc.fillRect(Rect(rect.x, pos.y - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style));
+            }
         }
 
         TreeNode<T>* findNextNode(TreeNode<T> *node) {
