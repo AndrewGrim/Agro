@@ -1149,10 +1149,17 @@
                                     dc.borderBackground(style)
                                 );
                             }
-                        // Higher sibling
-                        } else if (node->parent->children.size() > 1 && node->parent_index > 0) {
-                            auto sibling = node->parent->children[node->parent_index - 1];
-                            size_t distance = node->bs_data.position - sibling->bs_data.position;
+                        // Higher sibling or no sibling
+                        } else {
+                            TreeNode<T> *sibling = nullptr;
+                            size_t distance = 0;
+                            if (node->parent->children.size() > 1 && node->parent_index > 0) {
+                                sibling = node->parent->children[node->parent_index - 1];
+                                distance = node->bs_data.position - sibling->bs_data.position;
+                            } else if (node->parent_index == 0) {
+                                sibling = node->parent;
+                                distance = node->bs_data.position - sibling->bs_data.position;
+                            }
 
                             // Sibling off screen
                             if (pos.y - (int)distance < rect.y + column_header) {
