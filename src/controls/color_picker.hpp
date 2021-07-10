@@ -4,7 +4,8 @@
 #include "label.hpp"
 #include "line_edit.hpp"
 
-#define COLOR_PICKER_LENGTH 260
+#define COLOR_PICKER_WIDTH 300
+#define COLOR_PICKER_HEIGHT 200
 
 class ColorPicker : public Widget {
     public:
@@ -24,5 +25,5 @@ class ColorPicker : public Widget {
         TextureCoordinates m_coords;
         LineEdit *m_color_edit = nullptr;
         Label *m_color_label = nullptr;
-        float *m_texture_data = new float[COLOR_PICKER_LENGTH * COLOR_PICKER_LENGTH * 4];
+        float *m_texture_data = new float[COLOR_PICKER_HEIGHT * COLOR_PICKER_WIDTH * 4];
 };
