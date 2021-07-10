@@ -443,10 +443,6 @@
                 this->inner_rect = rect;
                 Rect tv_clip = old_clip;
 
-                // TODO treelines
-                // int x_start = pos.x;
-                // int y_start = pos.y;
-
                 int child_count = m_expandable_columns;
                 if (child_count < 1) { child_count = 1; }
                 int expandable_length = (rect.w - m_children_size.w) / child_count;
@@ -555,44 +551,6 @@
                         }
                     }
                 }
-
-                // TODO treelines
-                // // Draw the tree lines
-                // dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
-                // // TODO we could optimse here by keeping track of where
-                // // we left off between the tree_roots so we could just
-                // // continue from there rather than from the beginning
-                // Traversal _unused = Traversal::Continue;
-                // for (TreeNode<T> *tree_root : tree_roots) {
-                //     if (tree_root->children.size()) {
-                //         int tree_line_start = y_start + (!areColumnHeadersHidden() ? m_children_size.h : 0);
-                //         if (m_model->roots[0] != tree_root) {
-                //             for (TreeNode<T> *_root : m_model->roots) {
-                //                 if (tree_root == _root) {
-                //                     break;
-                //                 }
-                //                 m_model->descend(_unused, _root, [&](TreeNode<T> *node) {
-                //                     if (!node->is_collapsed) {
-                //                         tree_line_start += node->max_cell_height;
-                //                     } else {
-                //                         tree_line_start += node->max_cell_height;
-                //                         return Traversal::Next;
-                //                     }
-                //                     return Traversal::Continue;
-                //                 });
-                //             }
-                //         }
-
-                //         m_model->descend(_unused, tree_root, [&](TreeNode<T> *node) {
-                //             drawTreeLinesToChildren(dc, x_start, tree_line_start, node);
-                //             tree_line_start += node->max_cell_height;
-                //             if (node->is_collapsed) {
-                //                 return Traversal::Next;
-                //             }
-                //             return Traversal::Continue;
-                //         });
-                //     }
-                // }
 
                 dc.setClip(old_clip);
                 if (m_mode == Mode::Scroll) {
@@ -1042,100 +1000,6 @@
                 m_auto_size_columns = false;
             }
 
-            void drawTreeLinesToChildren(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
-                if (node->children.size()) {
-                    x += node->depth * m_indent;
-                    // Begin drawing at the center of the node cell height.
-                    y += node->max_cell_height / 2;
-                    int last_y = y;
-                    int last_node_height = 0;
-
-                    if (!node->is_collapsed) {
-                        last_y += node->max_cell_height / 2;
-                        // Draw the horizontal line going to the icon.
-                        last_y += node->children[0]->max_cell_height / 2;
-                        dc.fillRect(
-                            Rect(
-                                x - (m_indent / 2),
-                                last_y,
-                                m_indent,
-                                m_treeline_size
-                            ),
-                            dc.borderBackground(style)
-                        );
-                        if (node->children.size() > 1) {
-                            last_y -= node->children[0]->max_cell_height / 2;
-                        }
-                        Traversal _unused = Traversal::Continue;
-                        for (size_t i = 0; i < node->children.size() - 1; i++) {
-                            TreeNode<T> *child = node->children[i];
-                            m_model->descend(_unused, child, [&](TreeNode<T>* _node) {
-                                if (!_node->is_collapsed) {
-                                    last_y += _node->max_cell_height;
-                                } else {
-                                    last_y += _node->max_cell_height;
-                                    return Traversal::Next;
-                                }
-                                return Traversal::Continue;
-                            });
-                            last_node_height = node->children[i + 1]->max_cell_height / 2;
-                            // Draw the horizontal line going to the icon.
-                            dc.fillRect(
-                                Rect(
-                                    x - (m_indent / 2),
-                                    last_y + last_node_height,
-                                    m_indent,
-                                    m_treeline_size
-                                ),
-                                dc.borderBackground(style)
-                            );
-                        }
-                        last_y += last_node_height;
-                        // Draw the line going down to the last child node.
-                        dc.fillRect(
-                            Rect(
-                                x - (m_indent / 2) - 1,
-                                y,
-                                m_treeline_size,
-                                last_y - y + m_treeline_size
-                            ),
-                            dc.borderBackground(style)
-                        );
-                        dc.drawTextureAligned(
-                            Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
-                            Size(m_indent / 2, m_indent / 2),
-                            m_expanded->_texture(),
-                            m_expanded->coords(),
-                            HorizontalAlignment::Center,
-                            VerticalAlignment::Center,
-                            dc.iconForeground(style)
-                        );
-                    } else {
-                        dc.drawTextureAligned(
-                            Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
-                            Size(m_indent / 2, m_indent / 2),
-                            m_collapsed->_texture(),
-                            m_collapsed->coords(),
-                            HorizontalAlignment::Center,
-                            VerticalAlignment::Center,
-                            dc.iconForeground(style)
-                        );
-                    }
-                // End of the line.
-                } else {
-                    if (node->parent) {
-                        dc.fillRect(
-                            Rect(
-                                x + ((node->depth - 1) * m_indent) + (m_indent / 3),
-                                y + (node->max_cell_height / 2) - (m_indent / 8) + (m_treeline_size / 2),
-                                m_indent / 4,
-                                m_indent / 4
-                            ),
-                            dc.iconForeground(style)
-                        );
-                    }
-                }
-            }
 
         BinarySearchResult<TreeNode<T>*> binarySearch(std::vector<TreeNode<T>*> &roots, size_t target) {
             if (!roots.size()) { return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() }; }
@@ -1222,12 +1086,12 @@
                     break;
                 }
             }
-            pos.y += node->max_cell_height;
-            // Clip and draw row grid line.
             if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                 dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                dc.fillRect(Rect(rect.x, pos.y - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style));
+                dc.fillRect(Rect(rect.x, pos.y + node->max_cell_height - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style));
             }
+            drawTreeLine(dc, pos, rect, tv_clip, column_header, node);
+            pos.y += node->max_cell_height;
         }
 
         TreeNode<T>* findNextNode(TreeNode<T> *node) {
@@ -1244,6 +1108,135 @@
             }
 
             return nullptr;
+        }
+
+        void drawTreeLine(DrawingContext &dc, Point pos, Rect rect, Rect tv_clip, int column_header, TreeNode<T> *node) {
+            dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
+            int x = rect.x + (node->depth * m_indent);
+            int y = pos.y + (node->max_cell_height / 2);
+
+            if (node->children.size()) {
+                // Draw a little line connecting the parent to its children.
+                // We do this so that the node status icon doesn't get drawn over.
+                if (!node->is_collapsed) {
+                    dc.fillRect(
+                        Rect(
+                            x - (m_indent / 2) - (m_treeline_size / 2),
+                            y,
+                            m_treeline_size,
+                            node->max_cell_height / 2
+                        ),
+                        dc.borderBackground(style)
+                    );
+                }
+
+                if (node->parent) {
+                    drawTreeLineConnector(dc, x, y);
+
+                    // Lower sibling
+                    if (node->parent_index < node->parent->children.size() - 1) {
+                        auto sibling = node->parent->children[node->parent_index + 1];
+                        size_t distance = sibling->bs_data.position - node->bs_data.position;
+                        // Sibling off screen
+                        if (pos.y + (int)distance > rect.y + rect.h) {
+                            dc.fillRect(
+                                Rect(
+                                    x - (m_indent * 1.5) - (m_treeline_size / 2),
+                                    y,
+                                    m_treeline_size,
+                                    (rect.y + rect.h) - pos.y
+                                ),
+                                dc.borderBackground(style)
+                            );
+                        }
+                    // Higher sibling
+                    } else if (node->parent->children.size() > 1 && node->parent_index > 0) {
+                        auto sibling = node->parent->children[node->parent_index - 1];
+                        size_t distance = node->bs_data.position - sibling->bs_data.position;
+
+                        // Sibling off screen
+                        if (pos.y - (int)distance < rect.y + column_header) {
+                            // When the higher sibling is off screen
+                            // recursively go up the tree to root and draw a line
+                            // between the parent and its last child.
+                            // This is needed when not a single node directly related to the line
+                            // is visible on screen but the line spans more than the screen.
+                            auto _parent = node->parent;
+                            while (_parent->parent) {
+                                _parent = _parent->parent;
+                                auto _node = _parent->children[_parent->children.size() - 1];
+                                dc.fillRect(
+                                Rect(
+                                        rect.x + (_node->depth * m_indent) - (m_indent * 1.5) - (m_treeline_size / 2),
+                                        pos.y - (node->bs_data.position - _parent->bs_data.position),
+                                        m_treeline_size,
+                                        _node->bs_data.position - _parent->bs_data.position
+                                    ),
+                                    dc.borderBackground(style)
+                                );
+                            }
+                        }
+                    }
+
+                    // Draw regular line to parent
+                    drawTreeLineToParent(dc, x, y, node);
+                }
+
+                Image *img = !node->is_collapsed ? m_expanded : m_collapsed;
+                dc.drawTextureAligned(
+                    Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
+                    Size(m_indent / 2, m_indent / 2),
+                    img->_texture(),
+                    img->coords(),
+                    HorizontalAlignment::Center,
+                    VerticalAlignment::Center,
+                    dc.iconForeground(style)
+                );
+            // End of the line.
+            } else {
+                if (node->parent) {
+                    drawTreeLineConnector(dc, x, y);
+                    drawTreeLineToParent(dc, x, y, node);
+                    drawTreeLineNoChildrenIndicator(dc, rect.x, y, node);
+                }
+            }
+        }
+
+        void drawTreeLineConnector(DrawingContext &dc, int x, int y) {
+            dc.fillRect(
+                Rect(
+                    x - (m_indent * 1.5) - (m_treeline_size / 2),
+                    y,
+                    m_indent,
+                    m_treeline_size
+                ),
+                dc.borderBackground(style)
+            );
+        }
+
+        void drawTreeLineToParent(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
+            size_t distance = node->bs_data.position - (node->parent->bs_data.position + (node->parent->bs_data.length / 2));
+            dc.fillRect(
+                Rect(
+                    x - (m_indent * 1.5) - (m_treeline_size / 2),
+                    y - distance,
+                    m_treeline_size,
+                    (int)distance
+                ),
+                dc.borderBackground(style)
+            );
+        }
+
+        void drawTreeLineNoChildrenIndicator(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
+            dc.fillRect(
+                Rect(
+                    x + ((node->depth - 1) * m_indent) + (m_indent / 3),
+                    y - (m_indent / 8) + (m_treeline_size / 2),
+                    m_indent / 4,
+                    m_indent / 4
+                ),
+                dc.iconForeground(style)
+            );
         }
     };
 #endif
