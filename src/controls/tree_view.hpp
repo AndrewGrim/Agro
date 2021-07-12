@@ -121,6 +121,8 @@
             // TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
     };
 
+    template <typename T> class TreeView;
+
     enum class Sort {
         None,
         Ascending,
@@ -253,6 +255,9 @@
                         } else {
                             std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
                         }
+                        ((TreeView<T>*)parent)->m_virtual_size_changed = true;
+                        ((TreeView<T>*)parent)->sizeHint(*Application::get()->dc);
+                        update();
                     }
                 }
             }
@@ -940,11 +945,15 @@
                 m_virtual_size = m_children_size;
                 bool collapsed = false;
                 int collapsed_depth = -1;
+                int parent_index = 0;
                 size_t scroll_offset = 0;
 
                 m_model->forEachNode(
                     m_model->roots,
                     [&](TreeNode<T> *node) {
+                        if (node->depth == 1) {
+                            node->parent_index = parent_index++;
+                        }
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
