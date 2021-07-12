@@ -490,7 +490,6 @@
                     column_header = 0;
                 }
 
-                std::vector<TreeNode<T>*> tree_roots;
                 bool collapsed = false;
                 int collapsed_depth = -1;
                 size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
