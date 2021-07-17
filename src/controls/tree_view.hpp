@@ -1194,7 +1194,7 @@
                         }
 
                         // Draw regular line to parent
-                        drawTreeLineToParent(dc, x, y, node);
+                        drawTreeLineToParent(dc, x, pos.y, node);
                     }
 
                     Image *img = !node->is_collapsed ? m_expanded : m_collapsed;
@@ -1211,7 +1211,7 @@
                 } else {
                     if (node->parent) {
                         drawTreeLineConnector(dc, x, y);
-                        drawTreeLineToParent(dc, x, y, node);
+                        drawTreeLineToParent(dc, x, pos.y, node);
                         drawTreeLineNoChildrenIndicator(dc, rect.x, y, node);
                     }
                 }
@@ -1230,13 +1230,13 @@
             }
 
             void drawTreeLineToParent(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
-                size_t distance = node->bs_data.position - (node->parent->bs_data.position + (node->parent->bs_data.length / 2));
+                size_t distance = node->bs_data.position - node->parent->bs_data.position;
                 dc.fillRect(
                     Rect(
                         x - (m_indent * 1.5) - (m_treeline_size / 2),
-                        y - distance,
+                        y - (distance - node->parent->bs_data.length),
                         m_treeline_size,
-                        (int)distance
+                        (int)distance - node->parent->bs_data.length + (node->bs_data.length / 2)
                     ),
                     dc.borderBackground(style)
                 );
