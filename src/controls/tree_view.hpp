@@ -1170,7 +1170,7 @@
                             }
 
                             // Sibling off screen
-                            if (pos.y - (int)distance < rect.y + column_header) {
+                            if (pos.y - (int)(distance + node->bs_data.length) <= rect.y + column_header) {
                                 // When the higher sibling is off screen
                                 // recursively go up the tree to root and draw a line
                                 // between the parent and its last child.
