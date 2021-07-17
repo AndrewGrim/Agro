@@ -196,32 +196,20 @@ Widget* treeView(Application &app) {
                     for (int i = 1; i < 6; i++) {
                         TreeNode<Hidden> *parent = nullptr;
                         for (int j = 1; j < 21; j++) {
+                            auto n = model->append(parent, new TreeNode<Hidden>(
+                                {
+                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
+                                    new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
+                                    new MultipleImagesCellRenderer({
+                                        *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                        *(Image(app.icons["up_arrow"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                        *(Image(app.icons["close_thin"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                    }),
+                                },
+                                new Hidden(count)
+                            ));
                             if (j == 1) {
-                                parent = model->append(parent, new TreeNode<Hidden>(
-                                    {
-                                        new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
-                                        new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
-                                        new MultipleImagesCellRenderer({
-                                            *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                            *(Image(app.icons["up_arrow"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                            *(Image(app.icons["close_thin"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                        }),
-                                    },
-                                    new Hidden(count)
-                                ));
-                            } else {
-                                model->append(parent, new TreeNode<Hidden>(
-                                    {
-                                        new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
-                                        new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
-                                        new MultipleImagesCellRenderer({
-                                            *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                            *(Image(app.icons["up_arrow"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                            *(Image(app.icons["close_thin"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                        }),
-                                    },
-                                    new Hidden(count)
-                                ));
+                                parent = n;
                             }
                             count++;
                             ic += 0.01f;
