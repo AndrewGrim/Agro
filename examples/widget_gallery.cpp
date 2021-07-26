@@ -6,6 +6,7 @@
 #include "../src/controls/label.hpp"
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
+#include "../src/controls/spin_box.hpp"
 #include "../src/controls/splitter.hpp"
 #include "../src/controls/tree_view.hpp"
 #include "../src/controls/color_picker.hpp"
@@ -101,6 +102,12 @@ Widget* basic2(Application &app) {
                 color_picker->append(new ColorPicker());
             images_and_color->append(color_picker);
         box->append(images_and_color, Fill::Horizontal);
+
+        GroupBox *spin_boxes = new GroupBox(Align::Vertical, "SpinBoxes");
+            spin_boxes->append(new SpinBox(0, 150));
+            spin_boxes->append(new SpinBox(-100, 250));
+            spin_boxes->append(new SpinBox(100, 150), Fill::Horizontal);
+        box->append(spin_boxes, Fill::Both);
 
     return box;
 }
