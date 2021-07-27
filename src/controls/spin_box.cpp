@@ -1,5 +1,37 @@
 #include "spin_box.hpp"
 
+SpinBoxIconButton::SpinBoxIconButton(Image *image) : IconButton(image) {}
+
+SpinBoxIconButton::~SpinBoxIconButton() {}
+
+const char* SpinBoxIconButton::name() {
+    return "SpinBoxIconButton";
+}
+
+void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, int state) {
+    Color color;
+    if (isPressed() && isHovered()) {
+        color = dc.accentPressedBackground(style);
+    } else if (isHovered()) {
+        color = dc.accentHoveredBackground(style);
+    } else {
+        color = dc.accentWidgetBackground(style);
+    }
+
+    dc.margin(rect, style);
+    this->rect = rect;
+    dc.drawBorder(rect, style);
+    dc.fillRect(rect, color);
+    dc.padding(rect, style);
+
+    dc.drawTextureAligned(
+        rect, m_image->size(),
+        m_image->_texture(), m_image->coords(),
+        HorizontalAlignment::Center, VerticalAlignment::Center,
+        dc.textSelected(style)
+    );
+}
+
 SpinBox::SpinBox(int value, int min_length) : LineEdit(std::to_string(value), "", min_length) {
     append(m_up_arrow);
     append(m_down_arrow);
@@ -19,10 +51,10 @@ SpinBox::SpinBox(int value, int min_length) : LineEdit(std::to_string(value), ""
             this->setText(std::to_string(0 - 1));
         }
     });
-    // m_up_arrow->style.widget_background = Application::get()->dc->accentWidgetBackground(style);
-    // m_down_arrow->style.widget_background = Application::get()->dc->accentWidgetBackground(style);
     m_up_arrow->style.margin.type = STYLE_NONE;
+    m_up_arrow->style.border.type = STYLE_TOP|STYLE_RIGHT;
     m_down_arrow->style.margin.type = STYLE_NONE;
+    m_down_arrow->style.border.type = STYLE_BOTTOM|STYLE_RIGHT;
     style.margin.type = STYLE_NONE;
 }
 
@@ -79,6 +111,7 @@ bool isNumber(char c) {
 }
 
 void SpinBox::handleTextEvent(DrawingContext &dc, const char *text) {
+    // TODO cant type in negative number because we only allow digits to be entered
     if (text && isNumber(text[0])) {
         insert(m_selection.end, text);
     }

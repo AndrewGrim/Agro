@@ -6,9 +6,15 @@
     #include "../application.hpp"
 
 
-    // TODO we will want to use a custom icon button like
-    // widget for the buttons
-    // because we want to style it a particular way
+    class SpinBoxIconButton : public IconButton {
+        public:
+            SpinBoxIconButton(Image *image);
+            ~SpinBoxIconButton();
+            void draw(DrawingContext &dc, Rect rect, int state) override;
+            const char* name() override;
+
+    };
+
     class SpinBox : public LineEdit {
         public:
             SpinBox(int value = 0, int min_length = 50);
@@ -19,7 +25,7 @@
             void handleTextEvent(DrawingContext &dc, const char *text) override;
             bool isLayout() override;
 
-            IconButton *m_up_arrow = new IconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8)));
-            IconButton *m_down_arrow = new IconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8))->flipVertically());
+            SpinBoxIconButton *m_up_arrow = new SpinBoxIconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8)));
+            SpinBoxIconButton *m_down_arrow = new SpinBoxIconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8))->flipVertically());
     };
 #endif
