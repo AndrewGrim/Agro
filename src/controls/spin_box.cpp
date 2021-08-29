@@ -32,23 +32,26 @@ void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, int state) {
     );
 }
 
-SpinBox::SpinBox(int value, int min_length) : LineEdit(std::to_string(value), "", min_length) {
+SpinBox::SpinBox(double value, int min_length) : LineEdit(std::to_string(value), "", min_length) {
     append(m_up_arrow);
     append(m_down_arrow);
-    // TODO we will want to guard against overflowing the storage number type
     m_up_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
-        if (this->text().size()) {
-            this->setText(std::to_string(std::stoi(this->text()) + 1));
-        } else {
-            this->setText(std::to_string(0 + 1));
+        try {
+            this->setText(std::to_string(std::stod(text()) + 1));
+        } catch (std::invalid_argument &e) {
+            onParsingError.notify(this, SpinBox::Error::InvalidArgument);
+        } catch (std::out_of_range &e) {
+            onParsingError.notify(this, SpinBox::Error::OutOfRange);
         }
+
     });
-    // TODO we will want to guard against overflowing the storage number type
     m_down_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
-        if (this->text().size()) {
-            this->setText(std::to_string(std::stoi(this->text()) - 1));
-        } else {
-            this->setText(std::to_string(0 - 1));
+        try {
+            this->setText(std::to_string(std::stod(text()) - 1));
+        } catch (std::invalid_argument &e) {
+            onParsingError.notify(this, SpinBox::Error::InvalidArgument);
+        } catch (std::out_of_range &e) {
+            onParsingError.notify(this, SpinBox::Error::OutOfRange);
         }
     });
     m_up_arrow->style.margin.type = STYLE_NONE;
@@ -110,13 +113,16 @@ bool isNumber(char c) {
     return false;
 }
 
-void SpinBox::handleTextEvent(DrawingContext &dc, const char *text) {
-    // TODO cant type in negative number because we only allow digits to be entered
-    if (text && isNumber(text[0])) {
-        insert(m_selection.end, text);
-    }
-}
-
 bool SpinBox::isLayout() {
     return true;
+}
+
+Result<SpinBox::Error, double> SpinBox::value() {
+    try {
+       return Result<SpinBox::Error, double>(std::stod(text()));
+    } catch (std::invalid_argument &e) {
+        return Result<SpinBox::Error, double>(SpinBox::Error::InvalidArgument);
+    } catch (std::out_of_range &e) {
+        return Result<SpinBox::Error, double>(SpinBox::Error::OutOfRange);
+    }
 }
