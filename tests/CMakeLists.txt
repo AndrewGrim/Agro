@@ -41,43 +41,5 @@ foreach(test ${tests})
 		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin"
 		RUNTIME_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/bin"
 	)
-	if (APPLE)
-		target_link_libraries("test_${test_name}"
-			${PROJECT_NAME}
-			"-framework OpenGL"
-			"-lm"
-			"-liconv"
-			"-framework CoreAudio"
-			"-framework AudioToolbox"
-			"-weak_framework CoreHaptics"
-			"-weak_framework GameController"
-			"-framework ForceFeedback"
-			"-lobjc"
-			"-framework CoreVideo"
-			"-framework Cocoa"
-			"-framework Carbon"
-			"-framework IOKit"
-			"-weak_framework QuartzCore"
-			"-weak_framework Metal"
-		)
-	elseif (MSVC)
-		target_link_libraries("test_${test_name}"
-			${PROJECT_NAME}
-			opengl32
-			winmm
-			imm32
-			version
-			setupapi
-		)
-	else ()
-		target_link_libraries("test_${test_name}"
-			${PROJECT_NAME}
-			GL
-			X11
-			pthread
-			Xrandr
-			Xi
-			dl
-		)
-	endif()
+	target_link_libraries("test_${test_name}" ${PROJECT_NAME})
 endforeach()
