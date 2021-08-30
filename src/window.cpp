@@ -10,9 +10,8 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
     return 0;
 }
 
-// This is needed on Windows and supposedly on MacOS (not tested) to
+// This is needed on Windows and on MacOS to
 // redraw the window while the user is resizing it.
-// I guess alternatively we could paint in a different thread??
 int forcePaintWhileResizing(void *data, SDL_Event *event) {
     switch (event->type) {
         case SDL_WINDOWEVENT:
