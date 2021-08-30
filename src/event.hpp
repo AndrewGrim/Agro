@@ -1,7 +1,7 @@
 #ifndef EVENT_HPP
     #define EVENT_HPP
 
-    #include <SDL2/SDL.h>
+    #include <SDL.h>
 
     // TODO rework event
     // base event class?? im not sure what the benefits would be yet

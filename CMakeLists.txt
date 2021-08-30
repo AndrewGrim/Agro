@@ -32,14 +32,30 @@ file(GLOB sources
 )
 add_library(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
-	include
-	include/freetype2
+	SDL2-2.0.16/include
+	freetype-2.11.0/include
 )
+target_link_libraries(${PROJECT_NAME} freetype SDL2main SDL2)
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
 	ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
 	ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
 )
+
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory(${PROJECT_SOURCE_DIR}/SDL2-2.0.16)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/freetype-2.11.0)
+set(FT_WITH_ZLIB ON)
+set(FT_WITH_BZIP2 ON)
+set(FT_WITH_PNG ON)
+set(FT_WITH_HARFBUZZ ON)
+set(FT_WITH_BROTLI ON)
+set(CMAKE_DISABLE_FIND_PACKAGE_ZLIB TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_BZip2 TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_PNG TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz TRUE)
+set(CMAKE_DISABLE_FIND_PACKAGE_BrotliDec TRUE)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)

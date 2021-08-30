@@ -7,7 +7,7 @@
     #include <functional>
     #include <unordered_map>
 
-    #include <SDL2/SDL.h>
+    #include <SDL.h>
 
     #include "event.hpp"
     #include "state.hpp"

@@ -3,7 +3,7 @@
 
     #include <cmath>
 
-    #include <SDL2/SDL.h>
+    #include <SDL.h>
 
     #include "../common/enums.hpp"
     #include "../common/color.hpp"

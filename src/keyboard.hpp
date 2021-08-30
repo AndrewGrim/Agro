@@ -2,8 +2,8 @@
     #define KEYBOARD_HPP
 
     #include <functional>
-    
-    #include <SDL2/SDL.h>
+
+    #include <SDL.h>
 
     // TODO add enum class for keys
 
