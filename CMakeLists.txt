@@ -35,6 +35,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	SDL2-2.0.16/include
 	freetype-2.11.0/include
 )
+target_link_directories(${PROJECT_NAME} PUBLIC
+	build/SDL2-2.0.16
+	build/freetype-2.11.0
+)
 target_link_libraries(${PROJECT_NAME} freetype SDL2main SDL2)
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/lib"
