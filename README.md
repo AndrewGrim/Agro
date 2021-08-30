@@ -11,29 +11,24 @@ FreeType2 is used for making bitmaps for drawing text.
 ![screenshot](images/screenshot_mhwi_db.webp)
 
 ## Build
-The library is tested and working on Windows 10 and Linux (Mint 20.1).
+The library is tested and working on Windows 10, Linux (Mint 20.2) and MacOS Big Sur.
 You will need:
 * C++14 compatible compiler
 * CMake at least `3.16.3`
-* SDL2
-* FreeType2
-* Graphics card that supports OpenGL Core 3.3 at least (Tested on RX 5700XT and Intel HD 4000)
+* SDL2 (Only on Linux. It's used for installing X11 and GL dependencies but I would like to change that in the future)
+* Graphics card that supports OpenGL Core 3.3 at least (Tested on RX 5700XT, Intel HD 3000/4000, Apple M1 and AMD Ryzen R4 4500U)
 
 On debian based system you should be able to install the dependencies like so:
 ```
-sudo apt install g++
-sudo apt install cmake
-sudo apt install libfreetype6-dev
-sudo apt install libsdl2-dev
+sudo apt install g++ cmake libsdl2-dev
 ```
 
 ### Instructions
-**Note that the project builds in release mode and as a static lib by default!**
 1. First make sure you are in the root directory of the project.
 2. Run `cmake -S . -B build  -DCMAKE_BUILD_TYPE=RELEASE` in the terminal to build the required CMake files.
-3. Building is slightly different using MSVC vs GCC
-    * When using GCC use `cmake --build build` in the terminal to build the actual project.
-    * When using MSVC use `cmake --build build --config Release` in the terminal to build the actual project.
+3. Building is slightly different using a multi-configuration setup like MSVC or XCode vs G++.
+    * When using single-configuration use `cmake --build build` in the terminal to build the actual project.
+    * When using multi-configuration use `cmake --build build --config Release` in the terminal to build the actual project.
 
 You can verify that the library has built correctly by running one of the example files in the `Agro/bin` folder.
 
