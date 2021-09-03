@@ -1,5 +1,5 @@
 * linguist-vendored
-*.py linguist-vendored=false
+src/*.py linguist-vendored=false
 src/*.cpp linguist-vendored=false
 src/common/*.cpp linguist-vendored=false
 src/controls/*.cpp linguist-vendored=false
