@@ -1,5 +1,6 @@
 * linguist-vendored
-src/*.py linguist-vendored=false
+embed_resource.py linguist-vendored=false
+run_tests.py linguist-vendored=false
 src/*.cpp linguist-vendored=false
 src/common/*.cpp linguist-vendored=false
 src/controls/*.cpp linguist-vendored=false
