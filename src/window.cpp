@@ -67,10 +67,10 @@ Window::~Window() {
 void Window::draw() {
     dc->renderer->shader.use();
     float projection[16] = {
-        2.0f / size.w, 0.0f, 0.0f, 0.0f,
-        0.0f, -2.0f / size.h, 0.0f, 0.0f,
-        0.0f, 0.0f, -1.0f, 0.0f,
-        -1.0f, 1.0f, -0.0f, 1.0f
+         2.0f / size.w,  0.0f         ,  0.0f, 0.0f,
+         0.0f         , -2.0f / size.h,  0.0f, 0.0f,
+         0.0f         ,  0.0f         , -1.0f, 0.0f,
+        -1.0f         ,  1.0f         , -0.0f, 1.0f
     };
     dc->renderer->shader.setMatrix4("u_projection", projection);
     dc->clear();
