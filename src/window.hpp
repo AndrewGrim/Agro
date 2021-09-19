@@ -28,6 +28,7 @@
             DrawingContext *dc = nullptr;
 
             bool draw_tooltip = false;
+            bool tooltip_did_draw = false;
 
             /// `onReady` gets called when the Application has finished its first draw()
             /// but before entering the event loop.

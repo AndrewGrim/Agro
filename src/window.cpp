@@ -78,7 +78,7 @@ void Window::draw() {
     m_main_widget->draw(*dc, Rect(0, 0, size.w, size.h), m_main_widget->state());
     if (m_state->tooltip && draw_tooltip) {
         drawTooltip();
-        draw_tooltip = false;
+        tooltip_did_draw = true;
     }
     dc->render();
 }
@@ -150,6 +150,10 @@ void Window::run() {
                     }
                     break;
                 case SDL_MOUSEMOTION:
+                    if (tooltip_did_draw) {
+                        tooltip_did_draw = false;
+                        draw_tooltip = false;
+                    }
                     m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
                     break;
                 case SDL_MOUSEWHEEL:

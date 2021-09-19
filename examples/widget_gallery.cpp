@@ -48,6 +48,7 @@ Widget* basic1(Application &app) {
                 buttons->append(new Button(new Image(notes_png, notes_png_length)));
                 Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
                     image_and_text->setText("Button");
+                    image_and_text->tooltip = "Tooltip";
                 buttons->append(image_and_text, Fill::Both);
             labels_and_buttons->append(buttons, Fill::Both);
         box->append(labels_and_buttons, Fill::Both);
