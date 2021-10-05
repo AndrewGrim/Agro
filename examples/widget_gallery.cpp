@@ -38,6 +38,9 @@ Widget* basic1(Application &app) {
                     lr->setHorizontalAlignment(HorizontalAlignment::Right);
                 Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.");
                     lc->setHorizontalAlignment(HorizontalAlignment::Center);
+                    GroupBox *l_menu = new GroupBox(Align::Vertical, "");
+                        l_menu->append(new LineEdit("", "Context Menu", 100), Fill::Horizontal);
+                    lc->context_menu = l_menu;
                 labels->append(new Label("Left"), Fill::Both);
                 labels->append(lr, Fill::Both);
                 labels->append(lc, Fill::Both);
@@ -49,6 +52,15 @@ Widget* basic1(Application &app) {
                 Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
                     image_and_text->setText("Button");
                     image_and_text->tooltip = "Tooltip";
+                    GroupBox *b_menu = new GroupBox(Align::Vertical, "");
+                        Button *mb = new Button("Menu Button");
+                            mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
+                                println("context menu event");
+                            });
+                            mb->tooltip = "context menu tooltip";
+                        b_menu->append(mb, Fill::Horizontal);
+                        b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
+                    image_and_text->context_menu = b_menu;
                 buttons->append(image_and_text, Fill::Both);
             labels_and_buttons->append(buttons, Fill::Both);
         box->append(labels_and_buttons, Fill::Both);
