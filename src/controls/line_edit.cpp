@@ -247,7 +247,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size LineEdit::sizeHint(DrawingContext &dc) {
     if (m_text_changed) {
-        m_virtual_size = dc.measureText(font(), text());
+        m_virtual_size = dc.measureText(font(), text(), m_tab_width);
         m_text_height = m_virtual_size.h;
     }
     if (m_size_changed) {
