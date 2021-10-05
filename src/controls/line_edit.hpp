@@ -1,5 +1,5 @@
-#ifndef LINEEDIT_HPP
-    #define LINEEDIT_HPP
+#ifndef LINE_EDIT_HPP
+    #define LINE_EDIT_HPP
 
     #include <string>
 
