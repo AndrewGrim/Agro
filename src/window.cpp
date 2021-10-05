@@ -76,6 +76,10 @@ void Window::draw() {
     dc->clear();
     dc->setClip(Rect(0, 0, size.w, size.h));
     m_main_widget->draw(*dc, Rect(0, 0, size.w, size.h), m_main_widget->state());
+    if (active_context_menu) {
+        Size size = active_context_menu->sizeHint(*dc);
+        active_context_menu->draw(*dc, Rect(context_menu_position_start.x, context_menu_position_start.y, size.w, size.h), active_context_menu->state());
+    }
     if (m_state->tooltip && draw_tooltip) {
         drawTooltip();
         tooltip_did_draw = true;
@@ -88,7 +92,7 @@ Widget* Window::mainWidget() {
 }
 
 // TODO need to free the previous main widget but perhaps
-// leave that to the user??
+// leave that to the user?? perhaps return the previous mainWidget here
 void Window::setMainWidget(Widget *widget) {
     m_main_widget = widget;
     widget->update();
@@ -107,7 +111,7 @@ void Window::run() {
         onReady(this);
     }
     m_state->hovered = m_main_widget;
-    uint32_t fps = 60;
+    uint32_t fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
     uint32_t frame_time = 1000 / fps;
     SDL_StartTextInput();
     while (m_running) {
@@ -119,7 +123,14 @@ void Window::run() {
                 case SDL_MOUSEBUTTONDOWN:
                     m_is_mouse_captured = true;
                     SDL_CaptureMouse(SDL_TRUE);
-                    m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
+                    if (propagateMouseEvent(MouseEvent(event.button)) == Window::ContextEvent::False) {
+                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && ((Widget*)m_state->focused)->context_menu) {
+                            active_context_menu = ((Widget*)m_state->focused)->context_menu;
+                            context_menu_position_start = Point(event.button.x, event.button.y);
+                        } else {
+                            active_context_menu = nullptr;
+                        }
+                    }
                     break;
                 case SDL_MOUSEBUTTONUP:
                     if (m_mouse_inside) {
@@ -141,7 +152,7 @@ void Window::run() {
                                 break;
                             }
                         }
-                        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.button));
+                        propagateMouseEvent(MouseEvent(event.button));
                     } else {
                         if (m_state->pressed) {
                             m_state->pressed = nullptr;
@@ -154,7 +165,7 @@ void Window::run() {
                         tooltip_did_draw = false;
                         draw_tooltip = false;
                     }
-                    m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event.motion));
+                    propagateMouseEvent(MouseEvent(event.motion));
                     break;
                 case SDL_MOUSEWHEEL:
                     if (m_state->hovered) {
@@ -362,6 +373,7 @@ void Window::quit() {
 }
 
 void Window::handleResizeEvent(int width, int height) {
+    active_context_menu = nullptr;
     size = Size(width, height);
     int w, h;
     SDL_GL_GetDrawableSize(m_win, &w, &h);
@@ -445,4 +457,25 @@ void Window::pulse() {
     event.user = userevent;
     SDL_PushEvent(&event);
     delay_till = 0;
+}
+
+Window::ContextEvent Window::propagateMouseEvent(MouseEvent event) {
+    if (active_context_menu) {
+        Widget *widget = active_context_menu;
+        if (widget->isVisible()) {
+            if ((event.x >= widget->rect.x && event.x <= widget->rect.x + widget->rect.w) &&
+                (event.y >= widget->rect.y && event.y <= widget->rect.y + widget->rect.h)) {
+                if (widget->isLayout()) {
+                    widget->propagateMouseEvent(this, m_state, event);
+                } else {
+                    widget->handleMouseEvent(this, m_state, event);
+                }
+                return ContextEvent::True;
+            }
+        }
+        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
+    } else {
+        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
+    }
+    return ContextEvent::False;
 }

@@ -17,6 +17,11 @@
 
     class Window {
         public:
+            enum class ContextEvent {
+                True,
+                False
+            };
+
             Size size;
             Point position;
 
@@ -29,6 +34,9 @@
 
             bool draw_tooltip = false;
             bool tooltip_did_draw = false;
+
+            Widget *active_context_menu = nullptr;
+            Point context_menu_position_start;
 
             /// `onReady` gets called when the Application has finished its first draw()
             /// but before entering the event loop.
@@ -85,6 +93,7 @@
             void move(int x, int y);
             void center();
             void pulse();
+            ContextEvent propagateMouseEvent(MouseEvent event);
 
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;

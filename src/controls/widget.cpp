@@ -10,6 +10,7 @@ Widget::~Widget() {
     for (Widget *child : this->children) {
         delete child;
     }
+    delete this->context_menu;
 }
 
 Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
