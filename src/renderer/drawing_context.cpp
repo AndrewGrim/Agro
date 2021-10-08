@@ -517,55 +517,55 @@ Rect DrawingContext::clip() {
 }
 
 Color DrawingContext::windowBackground(Style &style) {
-    return style.window_background ? this->default_style.window_background : style.window_background;
+    return !style.window_background ? this->default_style.window_background : style.window_background;
 }
 
 Color DrawingContext::widgetBackground(Style &style) {
-    return style.widget_background ? this->default_style.widget_background : style.widget_background;
+    return !style.widget_background ? this->default_style.widget_background : style.widget_background;
 }
 
 Color DrawingContext::accentWidgetBackground(Style &style) {
-    return style.accent_widget_background ? this->default_style.accent_widget_background : style.accent_widget_background;
+    return !style.accent_widget_background ? this->default_style.accent_widget_background : style.accent_widget_background;
 }
 
 Color DrawingContext::hoveredBackground(Style &style) {
-    return style.hovered_background ? this->default_style.hovered_background : style.hovered_background;
+    return !style.hovered_background ? this->default_style.hovered_background : style.hovered_background;
 }
 
 Color DrawingContext::pressedBackground(Style &style) {
-    return style.pressed_background ? this->default_style.pressed_background : style.pressed_background;
+    return !style.pressed_background ? this->default_style.pressed_background : style.pressed_background;
 }
 
 Color DrawingContext::accentHoveredBackground(Style &style) {
-    return style.accent_hovered_background ? this->default_style.accent_hovered_background : style.accent_hovered_background;
+    return !style.accent_hovered_background ? this->default_style.accent_hovered_background : style.accent_hovered_background;
 }
 
 Color DrawingContext::accentPressedBackground(Style &style) {
-    return style.accent_pressed_background ? this->default_style.accent_pressed_background : style.accent_pressed_background;
+    return !style.accent_pressed_background ? this->default_style.accent_pressed_background : style.accent_pressed_background;
 }
 
 Color DrawingContext::textForeground(Style &style) {
-    return style.text_foreground ? this->default_style.text_foreground : style.text_foreground;
+    return !style.text_foreground ? this->default_style.text_foreground : style.text_foreground;
 }
 
 Color DrawingContext::textBackground(Style &style) {
-    return style.text_background ? this->default_style.text_background : style.text_background;
+    return !style.text_background ? this->default_style.text_background : style.text_background;
 }
 
 Color DrawingContext::textSelected(Style &style) {
-    return style.text_selected ? this->default_style.text_selected : style.text_selected;
+    return !style.text_selected ? this->default_style.text_selected : style.text_selected;
 }
 
 Color DrawingContext::textDisabled(Style &style) {
-    return style.text_disabled ? this->default_style.text_disabled : style.text_disabled;
+    return !style.text_disabled ? this->default_style.text_disabled : style.text_disabled;
 }
 
 Color DrawingContext::iconForeground(Style &style) {
-    return style.icon_foreground ? this->default_style.icon_foreground : style.icon_foreground;
+    return !style.icon_foreground ? this->default_style.icon_foreground : style.icon_foreground;
 }
 
 Color DrawingContext::borderBackground(Style &style) {
-    return style.border_background ? this->default_style.border_background : style.border_background;
+    return !style.border_background ? this->default_style.border_background : style.border_background;
 }
 
 Color DrawingContext::getColor(Point point) {

@@ -11,7 +11,6 @@
 	#define COLOR_WHITE Color(1.0f, 1.0f, 1.0f, 1.0f)
 
     struct Color {
-        // TODO why not bool? use_default true|false
         enum class IsDefault {
             Yes, No
         };
@@ -83,9 +82,9 @@
 
         operator bool() {
             if (is_default == IsDefault::Yes) {
-                return true;
+                return false;
             }
-            return false;
+            return true;
         }
 
         bool operator==(Color &&rhs) {
