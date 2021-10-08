@@ -331,7 +331,7 @@
                 }
             }
 
-            Column* setTooltip(std::string tooltip) {
+            Column* setTooltip(Widget *tooltip) {
                 this->tooltip = tooltip;
                 return this;
             }
