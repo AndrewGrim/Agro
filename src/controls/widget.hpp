@@ -55,7 +55,7 @@
 
             Style style;
 
-            std::string tooltip;
+            Widget *tooltip = nullptr;
             Widget *context_menu = nullptr;
 
             /// The following functions pointers are responsible

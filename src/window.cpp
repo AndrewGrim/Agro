@@ -396,7 +396,7 @@ void Window::setTitle(std::string title) {
 
 void Window::setTooltip(Widget *widget) {
     SDL_RemoveTimer(m_tooltip_callback);
-    if (!widget->tooltip.size()) {
+    if (!widget->tooltip) {
         return;
     }
     m_state->tooltip = widget;
@@ -406,17 +406,15 @@ void Window::setTooltip(Widget *widget) {
 
 void Window::drawTooltip() {
     Widget *w = (Widget*)m_state->tooltip;
-    if (!w->tooltip.size()) {
+    if (!w->tooltip) {
         return;
     }
     dc->setClip(Rect(0, 0, size.w, size.h));
-    Size s = dc->measureText(nullptr, w->tooltip);
-        // Padding, Border
-        s.w += (5 * 2) + (1 * 2);
-        s.h += (5 * 2) + (1 * 2);
+    Size s = w->tooltip->sizeHint(*dc);
     int x, y;
     SDL_GetMouseState(&x, &y);
 
+    // From what i remember the 12 and 16 were based on the mouse size
     Rect r = Rect(x + 12, y + 16, s.w, s.h);
     if (r.x + s.w > size.w) {
         r.x -= 12 + r.w;
@@ -424,18 +422,7 @@ void Window::drawTooltip() {
     if (r.y + s.h > size.h) {
         r.y -= 16 + r.h;
     }
-    dc->fillRect(r, COLOR_BLACK);
-    r.shrink(1); // Shrink by border
-    dc->fillRect(r, Color(1.0f, 1.0f, 0.55f));
-    dc->fillTextAligned(
-        nullptr,
-        w->tooltip,
-        HorizontalAlignment::Center,
-        VerticalAlignment::Center,
-        r,
-        5,
-        COLOR_BLACK
-    );
+    w->tooltip->draw(*dc, r, w->tooltip->state());
 }
 
 void Window::move(int x, int y) {

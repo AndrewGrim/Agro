@@ -11,6 +11,7 @@ Widget::~Widget() {
         delete child;
     }
     delete this->context_menu;
+    delete this->tooltip;
 }
 
 Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
