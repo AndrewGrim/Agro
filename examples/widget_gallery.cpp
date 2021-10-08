@@ -4,6 +4,7 @@
 #include "../src/controls/group_box.hpp"
 #include "../src/controls/note_book.hpp"
 #include "../src/controls/label.hpp"
+#include "../src/controls/tooltip.hpp"
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
 #include "../src/controls/spin_box.hpp"
@@ -51,13 +52,13 @@ Widget* basic1(Application &app) {
                 buttons->append(new Button(new Image(notes_png, notes_png_length)));
                 Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
                     image_and_text->setText("Button");
-                    image_and_text->tooltip = "Tooltip";
+                    image_and_text->tooltip = new Tooltip("Tooltip");
                     GroupBox *b_menu = new GroupBox(Align::Vertical, "");
                         Button *mb = new Button("Menu Button");
                             mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
                                 println("context menu event");
                             });
-                            mb->tooltip = "context menu tooltip";
+                            mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
                         b_menu->append(mb, Fill::Horizontal);
                         b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
                     image_and_text->context_menu = b_menu;
