@@ -1,0 +1,12 @@
+#ifndef TOOLTIP_HPP
+    #define TOOLTIP_HPP
+
+    #include "label.hpp"
+
+    class Tooltip : public Label {
+        public:
+            Tooltip(std::string text);
+            ~Tooltip();
+            virtual const char* name() override;
+    };
+#endif
