@@ -1086,29 +1086,28 @@
                         // Clip and draw the current cell.
                         dc.setClip(cell_clip.clipTo(tv_clip));
                         int cell_x = cell_start;
-                        if (!m_table && !i) {
-                            cell_x += node->depth * m_indent;
-                            if (m_focused == node) {
-                                EmptyCell().draw(
-                                    dc,
-                                    Rect(cell_clip.x, cell_clip.y, node->depth * m_indent, cell_clip.h),
-                                    STATE_FOCUSED
-                                );
-                            }
-                        }
                         int state = STATE_DEFAULT;
+                        if (m_focused == node) { state |= STATE_FOCUSED; }
+                        if (m_hovered == node) { state |= STATE_HOVERED; }
+                        if (!m_table && !i) {
+                            // Draw the cell background using appropriate state in treeline gutter when drawing treelines.
+                            cell_x += node->depth * m_indent;
+                            EmptyCell().draw(
+                                dc,
+                                Rect(cell_clip.x, cell_clip.y, node->depth * m_indent, cell_clip.h),
+                                state
+                            );
+                        }
                         if (drawable->isWidget()) {
+                            // Draw the cell background using appropriate state for cells with widgets in them.
                             EmptyCell().draw(
                                 dc,
                                 Rect(
                                     cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
                                 ),
-                                m_focused == node ? STATE_FOCUSED : STATE_DEFAULT
+                                state
                             );
                             state = ((Widget*)drawable)->state();
-                        } else {
-                            if (m_focused == node) { state |= STATE_FOCUSED; }
-                            if (m_hovered == node) { state |= STATE_HOVERED; }
                         }
                         drawable->draw(
                             dc,

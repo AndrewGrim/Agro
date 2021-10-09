@@ -14,8 +14,12 @@ EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}
 
 void EmptyCell::draw(DrawingContext &dc, Rect rect, int state) {
+    Color bg = dc.accentWidgetBackground(style);
     if (state & STATE_FOCUSED) {
-        dc.fillRect(rect, dc.accentWidgetBackground(style));
+        dc.fillRect(rect, bg);
+    }
+    if (state & STATE_HOVERED) {
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
 }
 
@@ -36,6 +40,10 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     dc.fillRect(rect, bg);
+    if (state & STATE_HOVERED) {
+        bg = dc.accentWidgetBackground(style);
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+    }
     dc.fillTextMultilineAligned(
         font,
         text,
@@ -70,10 +78,11 @@ void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     if (state & STATE_FOCUSED) {
         bg = dc.accentWidgetBackground(style);
     }
-    dc.fillRect(
-        rect,
-        bg
-    );
+    dc.fillRect(rect, bg);
+    if (state & STATE_HOVERED) {
+        bg = dc.accentWidgetBackground(style);
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+    }
     dc.drawTextureAligned(
         rect,
         image->size(),
@@ -97,10 +106,11 @@ void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) 
     if (state & STATE_FOCUSED) {
         bg = dc.accentWidgetBackground(style);
     }
-    dc.fillRect(
-        rect,
-        bg
-    );
+    dc.fillRect(rect, bg);
+    if (state & STATE_HOVERED) {
+        bg = dc.accentWidgetBackground(style);
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+    }
     Rect drawing_rect = rect;
     Size size = sizeHint(dc);
     drawing_rect.x = drawing_rect.x + (drawing_rect.w / 2) - (size.w / 2);
@@ -151,6 +161,10 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     dc.fillRect(rect, bg);
+    if (state & STATE_HOVERED) {
+        bg = dc.accentWidgetBackground(style);
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+    }
     Size text_size = dc.measureTextMultiline(font, text);
     Rect local_rect = rect;
     Size image_size = image->size();
