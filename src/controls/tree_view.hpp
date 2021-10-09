@@ -15,19 +15,19 @@
     template <typename T> class TreeNode {
         public:
             std::vector<Drawable*> columns;
-            
+
             /// This is a pointer to backend data.
             /// This can be used to display one value but perform
             /// the sorting process on something completely different.
             T *hidden = nullptr;
-            
+
             TreeNode<T> *parent = nullptr;
             size_t parent_index = 0;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
             int max_cell_height = 0;
             int depth = 0;
-            
+
             /// Internal data that stores the vertical position and height of the TreeNode.
             BinarySearchData bs_data;
 
@@ -49,16 +49,16 @@
 
     enum class Traversal {
         /// Continue going down as normal by traversing all nodes.
-        Continue, 
-        
+        Continue,
+
         /// Ends the traversal of the current node and its children early and goes to the next one on the same level.
-        Next, 
-        
+        Next,
+
         /// Ends the traversal of the entire tree immediately.
         /// Note: When manually descending (NOT using forEachNode) it is your
         /// responsibility to check `early_exit` for Traversal::Break
         /// after calling descend().
-        Break 
+        Break
     };
 
     /// The model for TreeNodes.
@@ -1199,7 +1199,7 @@
                             }
 
                             // Sibling off screen
-                            if (pos.y - (int)(distance + node->bs_data.length) <= rect.y + column_header) {
+                            if (pos.y - (int)(distance + node->bs_data.length) <= rect.y) {
                                 // When the higher sibling is off screen
                                 // recursively go up the tree to root and draw a line
                                 // between the parent and its last child.
