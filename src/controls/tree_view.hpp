@@ -1263,9 +1263,9 @@
                 dc.fillRect(
                     Rect(
                         x - (m_indent * 1.5) - (m_treeline_size / 2),
-                        y - (distance - node->parent->bs_data.length),
+                        y - (distance - node->parent->bs_data.length) - m_grid_line_width,
                         m_treeline_size,
-                        (int)distance - node->parent->bs_data.length + (node->bs_data.length / 2)
+                        (int)distance - node->parent->bs_data.length + (node->bs_data.length / 2) + m_grid_line_width
                     ),
                     dc.borderBackground(style)
                 );
