@@ -39,7 +39,6 @@ void GroupBox::draw(DrawingContext &dc, Rect rect, int state) {
 }
 
 Size GroupBox::sizeHint(DrawingContext &dc) {
-    // TODO groupbox has extra vertical space for label even when text is empty
     unsigned int visible = 0;
     unsigned int vertical_non_expandable = 0;
     unsigned int horizontal_non_expandable = 0;
@@ -83,7 +82,7 @@ Size GroupBox::sizeHint(DrawingContext &dc) {
         Size text_size = dc.measureText(font(), label);
         text_size.w += 12; // 10 padding on the left, 2 padding on the right
         if (size.w < text_size.w) { size.w = text_size.w; }
-        size.h += text_size.h;
+        if (label.length()) { size.h += text_size.h; }
 
         m_vertical_non_expandable = vertical_non_expandable;
         m_horizontal_non_expandable = horizontal_non_expandable;
