@@ -23,6 +23,9 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
     int rect_opposite_length;
     Size size; // Widget size after optional expansion.
     int *generic_length; // Needs to be a ptr because the value will change.
+    Rect parent_rect = parent ? parent->rect : Rect(0, 0, Application::get()->size.w, Application::get()->size.h);
+    int generic_parent_coord;
+    int generic_parent_length;
     if (parent_layout == Align::Vertical) {
         generic_non_expandable_widgets = m_vertical_non_expandable;
         generic_total_layout_length = m_widgets_only.h;
@@ -30,6 +33,8 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
         rect_length = rect.h;
         rect_opposite_length = rect.w;
         generic_length = &size.h;
+        generic_parent_coord = parent_rect.y;
+        generic_parent_length = parent_rect.h;
     } else {
         generic_non_expandable_widgets = m_horizontal_non_expandable;
         generic_total_layout_length = m_widgets_only.w;
@@ -37,6 +42,8 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
         rect_length = rect.w;
         rect_opposite_length = rect.h;
         generic_length = &size.w;
+        generic_parent_coord = parent_rect.x;
+        generic_parent_length = parent_rect.w;
     }
     int child_count = m_visible_children - generic_non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
@@ -46,7 +53,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
         expandable_length = 0;
         remainder = 0;
     }
-    for (Widget* child : children) {
+    for (Widget *child : children) {
         Size child_hint = child->sizeHint(dc);
         int child_expandable_length = expandable_length;
         switch (parent_layout) {
@@ -122,26 +129,14 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
                 }
         }
         Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
-        // TODO find a solution to optimize the drawing further
-        // since this is suboptimal
-        if ((*generic_position_coord + *generic_length) < 0) {
+        if ((*generic_position_coord + *generic_length) < generic_parent_coord) {
             child->rect = widget_rect;
         } else {
             if (child->isVisible()) {
                 child->draw(dc, widget_rect, child->state());
             }
-            // TODO this seems dumb, use window dimensions instead
-            // right it would never finish drawing early because the widget in a box
-            // always get their ask in terms of size so the rect dimensions would be
-            // at least as big as all the widget
-            if (m_align_policy == Align::Horizontal) {
-                if ((*generic_position_coord + *generic_length) > rect.x + rect.w) {
-                    break;
-                }
-            } else {
-                if ((*generic_position_coord + *generic_length) > rect.y + rect.h) {
-                    break;
-                }
+            if ((*generic_position_coord + *generic_length) > generic_parent_coord + generic_parent_length) {
+                break;
             }
         }
         if (child->isVisible()) {
