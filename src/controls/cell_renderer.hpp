@@ -25,6 +25,8 @@ class EmptyCell : public CellRenderer {
 class TextCellRenderer : public CellRenderer {
     public:
         // TODO setters for text, alignment, padding, font to set m_size_changed
+        // ^ i could see this being a problem because we dont recalculate
+        // the virtual_size for treeview? but maybe im missing something
         std::string text;
         int padding;
         Font *font = nullptr;

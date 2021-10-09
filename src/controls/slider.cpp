@@ -130,9 +130,9 @@ void Slider::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Draw the "rail" for the slider button.
     if (m_align_policy == Align::Horizontal) {
-        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), dc.textForeground(style)); // TODO probably use the same color as default border
+        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), dc.textForeground(style));
     } else {
-        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), dc.textForeground(style)); // TODO probably use the same color as default border
+        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), dc.textForeground(style));
     }
 
     // Determine and draw the location of the slider button.

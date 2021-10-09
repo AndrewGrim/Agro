@@ -166,9 +166,12 @@
             /// A layout widget should return the total size of the layout.
             /// In the Box layout this would take the form of total children size
             /// on the alignment axis and max children size for the other axis.
-            // TODO add example from box layout
-            // TODO note about performance and avoiding recomputing the sizeHint
-            // unless something has changed
+            ///
+            /// To avoid needlessly recalculating the sizeHint all the time
+            /// especially when nothing has changed and when it can be very
+            /// expensive like for layout Widgets.
+            /// You should utilize the built in m_size_changed memeber.
+            /// If it hasnt changed simply return the last result from m_size.
             virtual Size sizeHint(DrawingContext &dc) = 0;
 
             /// This method sets the Fill policy of the Widget.
@@ -210,7 +213,8 @@
             /// Tells the Application that it needs to redraw.
             Widget* update();
 
-            /// Tells the Application that it needs to recalculate its layout. // TODO outdated
+            /// Recursively tells the parent that m_size_changed so only
+            /// the affected Widgets recalculate their sizeHints.
             Widget* layout();
 
             /// Passes the event further down the Widget tree until

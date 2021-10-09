@@ -53,9 +53,10 @@ Widget* Widget::setFillPolicy(Fill fill_policy) {
     if (this->m_fill_policy != fill_policy) {
         this->m_fill_policy = fill_policy;
         this->layout();
-        // TODO maybe instead of layout manually change
-        // expandable and non expandable widgets for parent?
-        // it would probably be good to have an abstract layout then
+        // TODO maybe we could manually change only the exapndable/non-expandable widgets
+        // so we dont have to redo the whole sizehint calculation
+        // but this would probably require a base class for all layouts
+        // which wouldnt necessarily be bad
     }
 
     return this;
@@ -156,7 +157,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
         case MouseEvent::Type::Down:
             state->pressed = this;
             state->focused = this;
-            // TODO maybe add an on_focus callback?
+            // TODO maybe add an on_focus callback? yes, once we have keyboard navigation, also onFocusLost
             onMouseDown.notify(this, event);
             break;
         case MouseEvent::Type::Up:
