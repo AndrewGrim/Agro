@@ -29,6 +29,7 @@ sudo apt install g++ cmake libsdl2-dev
 3. Building is slightly different using a multi-configuration setup like MSVC or XCode vs G++.
     * When using single-configuration use `cmake --build build` in the terminal to build the actual project.
     * When using multi-configuration use `cmake --build build --config Release` in the terminal to build the actual project.
+4. You can also build all test and example programs by passing these flags `-DBUILD_ALL_TESTS=ON -DBUILD_ALL_EXAMPLES=ON` to the build command.
 
 You can verify that the library has built correctly by running one of the example files in the `Agro/bin` folder.
 
