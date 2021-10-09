@@ -9,16 +9,26 @@
     #include "../application.hpp"
     #include "cell_renderer.hpp"
 
+    /// Meant to represent a single row within the TreeView Widget.
+    /// Note that a TreeNode can have children and so its not exactly
+    /// equivalent to a single row.
     template <typename T> class TreeNode {
         public:
             std::vector<Drawable*> columns;
+            
+            /// This is a pointer to backend data.
+            /// This can be used to display one value but perform
+            /// the sorting process on something completely different.
             T *hidden = nullptr;
+            
             TreeNode<T> *parent = nullptr;
             size_t parent_index = 0;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
             int max_cell_height = 0;
             int depth = 0;
+            
+            /// Internal data that stores the vertical position and height of the TreeNode.
             BinarySearchData bs_data;
 
             TreeNode(std::vector<Drawable*> columns, T *hidden) {
@@ -38,14 +48,22 @@
     };
 
     enum class Traversal {
-        Continue, // Continue going down as normal by traversing all nodes.
-        Next, // Ends the traversal of the current node and its children early and goes to the next one on the same level.
-        Break // Ends the traversal of the entire tree immediately.
-        // Note: When manually descending (NOT using forEachNode) it is your
-        // responsibility to check `early_exit` for Traversal::Break
-        // after calling descend().
+        /// Continue going down as normal by traversing all nodes.
+        Continue, 
+        
+        /// Ends the traversal of the current node and its children early and goes to the next one on the same level.
+        Next, 
+        
+        /// Ends the traversal of the entire tree immediately.
+        /// Note: When manually descending (NOT using forEachNode) it is your
+        /// responsibility to check `early_exit` for Traversal::Break
+        /// after calling descend().
+        Break 
     };
 
+    /// The model for TreeNodes.
+    /// Contains utility methods for traversing the model
+    /// adding nodes and emptying the model.
     template <typename T> class Tree {
         public:
             std::vector<TreeNode<T>*> roots;
@@ -355,6 +373,7 @@
             bool m_expand = false;
     };
 
+    /// Describes which of the grid lines get drawn.
     enum class GridLines {
         None,
         Horizontal,
@@ -362,6 +381,16 @@
         Both,
     };
 
+    /// Describes the scrolling mode of the TreeView.
+    /// Scroll means that the TreeView uses its own ScrollBars.
+    /// Unroll means the TreeView contents are factored into the
+    /// physical size of the Widget and stretch the height of it.
+    /// Unroll also always leaves the Column heading at the top of the Widget
+    /// it does not scroll them with the contents.
+    /// in this mode it is the responsibility of the parent Widget to take
+    /// care of any scrolling operations.
+    /// This mode can be desirable when you want to have multiple TreeViews
+    /// within a Scrollable without everyone of the stealing the scroll events.
     enum class Mode {
         Scroll,
         Unroll,

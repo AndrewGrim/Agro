@@ -20,24 +20,47 @@
     class Widget;
     class Window;
 
+    /// Generic implementation for EventListener which provides
+    /// a simple API for a Widget callback to have multiple event listeners.
+    /// Because underneath these simply use std::vector and Widgets use EventListeners
+    /// for their own event handling, in order to remove built-in behaviour of a Widget,
+    /// especially when inheriting from one, you can simply remove a listener from the
+    /// listeners std::vector.
     template <typename... Types> struct EventListener {
         std::vector<std::function<void(Types... types)>> listeners;
 
+        /// Calls each callback function stored in the EventListener
+        /// in the order they were added unless dealing with the listeners
+        /// std::vector directly.
+        /// This method can be safely called on EventListeners which are empty
+        /// as it uses the iterators to go over the listeners.
         void notify(Types... types) {
             for (auto callback : listeners) {
                 callback(types...);
             }
         }
 
+        /// Simple wrapper for adding a new callback function.
+        // TDOD we should probably think about overriding operator+
+        // for more succint syntax.
         void addEventListener(std::function<void(Types... types)> fn) {
             listeners.push_back(fn);
         }
     };
 
+    /// A generic class meant to represent most interactable 
+    /// graphical elements within the library.
+    /// To a big extent.. everything is a Widget. Layouts are also Widgets
+    /// the only distinction between them and a non-layout Widget is that
+    /// it communicates that its responsible for layout and other Widgets
+    /// need to account for that.
     class Widget : public Drawable {
         public:
             /// A rectangle representing the Widget position and size.
             Rect rect = Rect(0, 0, 0, 0);
+            
+            /// A rectangle representing the Widget position and size
+            /// but without the margins, border and padding.
             Rect inner_rect = Rect(0, 0, 0, 0);
 
             /// The parent* is mostly used by compound Widgets.
@@ -46,13 +69,18 @@
             size_t parent_index = 0; // TODO this would not be representative
             // when there is a parent but the widget its not part of the children
             // like in Splitter
-            // also means remove is gonna totally break for splitter
+            // also means remove is gonna totally break for splitter and any other
+            // Widget that doesnt use the children vector to store the child Widgets.
 
-            /// Stores all the child Widgets of this Widget.
+            /// Stores all the children Widgets of this Widget.
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
             std::vector<Widget*> children;
 
+            /// Describes the style according to which the Widget should be
+            /// drawn. Note that for most Widget this will contain default
+            /// values that specify that the drawee should use the default
+            /// style from DrawingContext.
             Style style;
 
             Widget *tooltip = nullptr;
@@ -104,8 +132,9 @@
             /// The destructor is empty.
             virtual ~Widget();
 
-            /// This method should return the name of the widget
+            /// This method should return the name of the Widget class
             /// in `CamelCase`.
+            /// This is needed for the user to perform run-time casting.
             virtual const char* name() = 0;
 
             /// This method is responsible for drawing the widget
@@ -122,9 +151,11 @@
             virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
 
             /// This method is used to remove a Widget from parent's children based on the given index.
+            // TODO the index should be passed in internally rather than requiring the user to pass it in.
             virtual Widget* remove(size_t parent_index);
 
             /// This method is used to free the Widget. It will also remove it from its parent's children when applicable.
+            /// DO NOT manually delete defualt Widgets.
             virtual void destroy();
 
             /// This method is responsible for returning the minimum size
@@ -148,16 +179,23 @@
             /// This method retrieves the Fill policy of the Widget.
             Fill fillPolicy();
 
+            /// Changes the Widget's visibility.
             Widget* show();
 
+            /// Changes the Widget's visibility.
             Widget* hide();
 
             bool isVisible();
 
             /// Used to check if the Widget implements a Layout interface.
+            /// This affects how the events pass through the Widget.
+            /// A non-layout Widget matching an event will be called
+            /// with handleMouseWidget().
+            /// Meanwhile, a layout Widget will get called with propagateMouseEvent().
             virtual bool isLayout();
 
             /// Used to check if the Widget implements a Scrollable interface.
+            // TODO double check what this is about??? i think it just indicates whether a Widget utilizes ScrollBar?
             virtual bool isScrollable();
 
             /// Returns whether the Widget is currently hovered or not.
@@ -190,10 +228,14 @@
 
             Widget* setProportion(unsigned int proportion);
 
+            // TODO font should probably be moved to style
             Font* font();
-
+            
+            // TODO font should probably be moved to style
             Widget* setFont(Font *font);
 
+            /// Returns the Widget state bit flag consisting of:
+            /// focus, hover and pressed states.
             int state();
 
             int bind(int key, int modifiers, std::function<void()> callback);
@@ -225,8 +267,10 @@
             /// needs to be recomputed.
             bool m_size_changed = true;
 
+            // TODO font should probably be moved to style
             Font *m_font = nullptr;
 
+            // TODO wtf is this for?
             int m_binding_id = 0;
             std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
     };
