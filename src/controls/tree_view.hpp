@@ -1149,7 +1149,7 @@
 
             void drawTreeLine(DrawingContext &dc, Point pos, Rect rect, Rect tv_clip, int column_header, TreeNode<T> *node) {
                 dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
-                int x = rect.x + (node->depth * m_indent);
+                int x = pos.x + (node->depth * m_indent);
                 int y = pos.y + (node->max_cell_height / 2);
 
                 if (node->children.size()) {
@@ -1211,7 +1211,7 @@
                                     auto _node = _parent->children[_parent->children.size() - 1];
                                     dc.fillRect(
                                     Rect(
-                                            rect.x + (_node->depth * m_indent) - (m_indent * 1.5) - (m_treeline_size / 2),
+                                            pos.x + (_node->depth * m_indent) - (m_indent * 1.5) - (m_treeline_size / 2),
                                             pos.y - (node->bs_data.position - _parent->bs_data.position),
                                             m_treeline_size,
                                             _node->bs_data.position - _parent->bs_data.position
@@ -1241,7 +1241,7 @@
                     if (node->parent) {
                         drawTreeLineConnector(dc, x, y);
                         drawTreeLineToParent(dc, x, pos.y, node);
-                        drawTreeLineNoChildrenIndicator(dc, rect.x, y, node);
+                        drawTreeLineNoChildrenIndicator(dc, pos.x, y, node);
                     }
                 }
             }
