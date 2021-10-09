@@ -87,7 +87,7 @@
         ScrollEvent(SDL_MouseWheelEvent event) {
             this->timestamp = event.timestamp;
             this->x = event.x;
-            this->y = event.y;
+            this->y = event.y * -1;
             if (event.direction) {
                 this->x *= -1;
                 this->y *= -1;

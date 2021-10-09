@@ -166,10 +166,7 @@ Size Slider::sizeHint(DrawingContext &dc) {
 }
 
 bool Slider::handleScrollEvent(ScrollEvent event) {
-    // TODO should we do this automatically in ScrollEvent() ctor?
-    event.y *= -1;
     m_value = NORMALIZE(m_min, m_max, m_value + m_step * event.y);
-
     onValueChanged.notify();
     update();
     return true;
