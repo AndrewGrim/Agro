@@ -75,6 +75,10 @@
         Color textDisabled(Style &style);
         Color iconForeground(Style &style);
         Color borderBackground(Style &style);
+        Color borderTopBackground(Style &style);
+        Color borderBottomBackground(Style &style);
+        Color borderLeftBackground(Style &style);
+        Color borderRightBackground(Style &style);
 
         Color getColor(Point point);
     };

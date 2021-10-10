@@ -244,6 +244,51 @@ Widget* treeView(Application &app) {
     return box;
 }
 
+Widget* styling(Application &app) {
+    ScrolledBox *box = new ScrolledBox(Align::Vertical);
+
+        // TODO
+        // Margin margin;
+        // Border border;
+        // Padding padding;
+
+        Style &s = app.dc->default_style;
+        Color *options[17] = {
+            &s.window_background, &s.widget_background, &s.accent_widget_background,
+            &s.text_foreground, &s.text_background, &s.text_selected, &s.text_disabled,
+            &s.hovered_background, &s.pressed_background, &s.accent_hovered_background,
+            &s.accent_pressed_background, &s.icon_foreground, &s.border_background,
+            &s.border.color_top, &s.border.color_bottom, &s.border.color_left, &s.border.color_right
+        };
+        std::string option_names[17] = {
+            "window_background", "widget_background", "accent_widget_background",
+            "text_foreground", "text_background", "text_selected", "text_disabled",
+            "hovered_background", "pressed_background", "accent_hovered_background",
+            "accent_pressed_background", "icon_foreground", "border_background",
+            "border.color_top", "border.color_bottom", "border.color_left", "border.color_right"
+        };
+
+        for (int i = 0; i < 17; i++) {
+            Label *l = new Label(option_names[i]);
+            box->append(l);
+
+            LineEdit *e = new LineEdit("", options[i]->toString(), 150);
+                e->onTextChanged.addEventListener([=]() {
+                    *options[i] = Color(e->text().c_str());
+                });
+            box->append(e, Fill::Horizontal);
+        }
+
+        Button *reset = new Button("Reset");
+            reset->style.widget_background = Color("#ff5555");
+            reset->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
+                app.dc->default_style = app.dc->default_light_style;
+            });
+        box->append(reset);
+
+    return box;
+}
+
 int main(int argc, char **argv) {
     Application *app = Application::get();
         delete app->mainWidget();
@@ -276,6 +321,7 @@ int main(int argc, char **argv) {
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
             notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
+            notebook->appendTab(styling(*app), "Styling", nullptr, false);
         app->append(notebook, Fill::Both);
         SDL_AddTimer(100, timerCallback, app);
     app->run();
