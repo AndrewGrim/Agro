@@ -406,9 +406,21 @@
 
             TreeView(Size min_size = Size(100, 100)) : Scrollable(min_size) {
                 this->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-                    if (m_event_node && m_hovered != m_event_node) {
-                        m_hovered = m_event_node;
-                        onNodeHovered.notify(this, m_event_node);
+                    if (m_event_node) {
+                        if (m_hovered != m_event_node) {
+                            m_hovered = m_event_node;
+                            onNodeHovered.notify(this, m_event_node);
+                        }
+                        int x = inner_rect.x;
+                        if (m_horizontal_scrollbar) {
+                            x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
+                        }
+                        if ((m_event_node->children.size() && !m_table) &&
+                            (event.x >= x + (m_event_node->depth - 1) * m_indent && event.x <= x + m_event_node->depth * m_indent)) {
+                            m_tree_collapser = m_event_node;
+                        } else {
+                            m_tree_collapser = nullptr;
+                        }
                         update();
                     }
                 });
@@ -902,9 +914,11 @@
                             }
                         } else {
                             m_event_node = nullptr;
+                            m_tree_collapser = nullptr;
                         }
                     } else {
                         m_event_node = nullptr;
+                        m_tree_collapser = nullptr;
                     }
                 }
 
@@ -924,6 +938,7 @@
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_focused = nullptr;
             TreeNode<T> *m_event_node = nullptr;
+            TreeNode<T> *m_tree_collapser = nullptr;
             GridLines m_grid_lines = GridLines::Both;
             int m_treeline_size = 2;
             int m_grid_line_width = 1;
@@ -1226,6 +1241,10 @@
                     }
 
                     Image *img = !node->is_collapsed ? m_expanded : m_collapsed;
+                    Color fg = dc.iconForeground(style);
+                    if (m_tree_collapser && m_tree_collapser == node) {
+                        fg = dc.textSelected(style);
+                    }
                     dc.drawTextureAligned(
                         Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
                         Size(m_indent / 2, m_indent / 2),
@@ -1233,7 +1252,7 @@
                         img->coords(),
                         HorizontalAlignment::Center,
                         VerticalAlignment::Center,
-                        dc.iconForeground(style)
+                        fg
                     );
                 // End of the line.
                 } else {
