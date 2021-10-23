@@ -48,7 +48,7 @@
         }
     };
 
-    /// A generic class meant to represent most interactable 
+    /// A generic class meant to represent most interactable
     /// graphical elements within the library.
     /// To a big extent.. everything is a Widget. Layouts are also Widgets
     /// the only distinction between them and a non-layout Widget is that
@@ -58,7 +58,7 @@
         public:
             /// A rectangle representing the Widget position and size.
             Rect rect = Rect(0, 0, 0, 0);
-            
+
             /// A rectangle representing the Widget position and size
             /// but without the margins, border and padding.
             Rect inner_rect = Rect(0, 0, 0, 0);
@@ -234,7 +234,7 @@
 
             // TODO font should probably be moved to style
             Font* font();
-            
+
             // TODO font should probably be moved to style
             Widget* setFont(Font *font);
 
@@ -250,6 +250,8 @@
             void setStyle(Style style);
 
             bool isWidget();
+
+            void forEachWidget(std::function<void(Widget *widget)> action);
 
             bool m_is_visible = true;
             Fill m_fill_policy = Fill::None;

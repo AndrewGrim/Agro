@@ -294,3 +294,10 @@ void Widget::setStyle(Style style) {
 bool Widget::isWidget() {
     return true;
 }
+
+void Widget::forEachWidget(std::function<void(Widget *widget)> action) {
+    action(this);
+    for (Widget *child : children) {
+        child->forEachWidget(action);
+    }
+}
