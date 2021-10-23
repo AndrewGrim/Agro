@@ -1,3 +1,4 @@
+#include "application.hpp"
 #include "window.hpp"
 #include "resources.hpp"
 
@@ -465,4 +466,11 @@ Window::ContextEvent Window::propagateMouseEvent(MouseEvent event) {
         m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
     }
     return ContextEvent::False;
+}
+
+void Window::layout() {
+    m_main_widget->forEachWidget([](Widget *widget) {
+        widget->m_size_changed = true;
+    });
+    m_main_widget->sizeHint(*Application::get()->dc);
 }

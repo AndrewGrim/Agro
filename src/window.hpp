@@ -95,6 +95,8 @@
             void pulse();
             ContextEvent propagateMouseEvent(MouseEvent event);
 
+            void layout();
+
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
             Widget *m_main_widget = new ScrolledBox(Align::Vertical);
