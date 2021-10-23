@@ -6,6 +6,7 @@ option(BUILD_TEST_SCROLLED_BOX_BOTH "Build test_scrolled_box_both.cpp" ${BUILD_A
 option(BUILD_TEST_SCROLLED_BOX_INCEPTION_CLIPPING "Build test_scrolled_box_inception_clipping.cpp" ${BUILD_ALL_TESTS})
 option(BUILD_TEST_SCROLLED_BOX_INNER "Build test_scrolled_box_inner.cpp" ${BUILD_ALL_TESTS})
 option(BUILD_TEST_SCROLLED_BOX_OUTER "Build test_scrolled_box_outer.cpp" ${BUILD_ALL_TESTS})
+option(BUILD_TEST_TREE_TRAVERSAL "Build test_tree_traversal.cpp" ${BUILD_ALL_TESTS})
 
 set(tests "")
 if(BUILD_TEST_CLIP)
@@ -31,6 +32,9 @@ if(BUILD_TEST_SCROLLED_BOX_INNER)
 endif()
 if(BUILD_TEST_SCROLLED_BOX_OUTER)
 	list(APPEND tests "scrolled_box_outer.cpp")
+endif()
+if(BUILD_TEST_TREE_TRAVERSAL)
+	list(APPEND tests "tree_traversal.cpp")
 endif()
 
 foreach(test ${tests})
