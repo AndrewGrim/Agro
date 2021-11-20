@@ -220,31 +220,9 @@ void Window::run() {
                             mods[3] = Mod::Gui;
                         }
                         bool matched = false;
-                        for (auto hotkey : m_keyboard_shortcuts) {
-                            if (hotkey.second.key == key) {
-                                bool mods_matched = true;
-                                if (hotkey.second.ctrl != mods[0]) {
-                                    mods_matched = false;
-                                }
-                                if (hotkey.second.shift != mods[1]) {
-                                    mods_matched = false;
-                                }
-                                if (hotkey.second.alt != mods[2]) {
-                                    mods_matched = false;
-                                }
-                                if (hotkey.second.gui != mods[3]) {
-                                    mods_matched = false;
-                                }
-                                if (mods_matched) {
-                                    hotkey.second.callback();
-                                    SDL_FlushEvent(SDL_TEXTINPUT);
-                                    matched = true;
-                                    break;
-                                }
-                            }
-                        }
+                        matchKeybind(matched, mods, key, m_keyboard_shortcuts);
                         if (!matched && m_state->focused) {
-                            for (auto hotkey : ((Widget*)(m_state->focused))->keyboardShortcuts()) {
+                            matchKeybind(matched, mods, key, ((Widget*)(m_state->focused))->keyboardShortcuts());
                                 if (hotkey.second.key == key) {
                                     bool mods_matched = true;
                                     if (hotkey.second.ctrl != mods[0]) {
