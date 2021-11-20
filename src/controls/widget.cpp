@@ -156,6 +156,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
     switch (event.type) {
         case MouseEvent::Type::Down:
             state->pressed = this;
+            // TODO only do this if the widget is focusable... eh maybe always do it?
             state->focused = this;
             // TODO maybe add an on_focus callback? yes, once we have keyboard navigation, also onFocusLost
             onMouseDown.notify(this, event);

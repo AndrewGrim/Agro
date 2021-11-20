@@ -94,6 +94,7 @@ Widget* Window::mainWidget() {
 
 // TODO need to free the previous main widget but perhaps
 // leave that to the user?? perhaps return the previous mainWidget here
+// TODO preferrably return old main widget from method
 void Window::setMainWidget(Widget *widget) {
     m_main_widget = widget;
     widget->update();
@@ -439,6 +440,7 @@ Window::ContextEvent Window::propagateMouseEvent(MouseEvent event) {
 }
 
 void Window::layout() {
+    // TODO this doesnt update widgets like scrollbars which are part of scrollable
     m_main_widget->forEachWidget([](Widget *widget) {
         widget->m_size_changed = true;
     });

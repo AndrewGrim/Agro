@@ -73,6 +73,9 @@
             // also means remove is gonna totally break for splitter and any other
             // Widget that doesnt use the children vector to store the child Widgets.
 
+            // TODO multiple windows
+            // int window_index;
+
             /// Stores all the children Widgets of this Widget.
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
