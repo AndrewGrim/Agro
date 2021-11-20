@@ -1,9 +1,11 @@
 .PHONY: debug release install clean test resources
 debug:
-	cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_EXAMPLE_WIDGET_GALLERY=ON
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_EXAMPLE_WIDGET_GALLERY=ON
+	cp build/compile_commands.json .
 	cmake --build build
 release:
-	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_ALL_TESTS=ON -DBUILD_ALL_EXAMPLES=ON
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_ALL_TESTS=ON -DBUILD_ALL_EXAMPLES=ON
+	cp build/compile_commands.json .
 	cmake --build build
 install:
 	sudo cmake --install build
