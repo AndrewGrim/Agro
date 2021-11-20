@@ -206,6 +206,56 @@ bool Widget::handleScrollEvent(ScrollEvent event) {
     return false;
 }
 
+Widget* Widget::propagateFocusEvent(FocusEvent event, State *state, Option<int> child_index) {
+    if (event == FocusEvent::Forward) {
+        int child_index_unwrapped = child_index ? child_index.unwrap() + 1 : 0;
+        for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
+            Widget *child = children[child_index_unwrapped];
+            if (child->isFocusable() && child->isVisible()) {
+                if (state->focused) {
+                    ((Widget*)state->focused)->onFocusLost.notify((Widget*)state->focused);
+                }
+                state->focused = child;
+                child->onFocusGained.notify(child); // TODO maybe focus type, forward/reverse, keyboard/mouse
+                return nullptr;
+            }
+            if (!child->propagateFocusEvent(event, state, Option<int>())) {
+                return nullptr;
+            }
+        }
+        if (parent) {
+            return parent->propagateFocusEvent(event, state, Option<int>(parent_index));
+        }
+
+        return this;
+    } else {
+        int child_index_unwrapped = child_index ? child_index.unwrap() - 1 : (int)children.size() - 1;
+        for (; child_index_unwrapped > -1; child_index_unwrapped--) {
+            Widget *child = children[child_index_unwrapped];
+            if (child->isFocusable() && child->isVisible()) {
+                if (state->focused) {
+                    ((Widget*)state->focused)->onFocusLost.notify((Widget*)state->focused);
+                }
+                state->focused = child;
+                child->onFocusGained.notify(child);
+                return nullptr;
+            }
+            if (!child->propagateFocusEvent(event, state, Option<int>())) {
+                return nullptr;
+            }
+        }
+        if (parent) {
+            return parent->propagateFocusEvent(event, state, Option<int>(parent_index));
+        }
+
+        return this;
+    }
+}
+
+bool Widget::isFocusable() {
+    return false;
+}
+
 bool Widget::isLayout() {
     return false;
 }

@@ -16,6 +16,7 @@
     #include "../common/point.hpp"
     #include "../common/style.hpp"
     #include "../renderer/drawing_context.hpp"
+    #include "../option.hpp"
 
     class Widget;
     class Window;
@@ -66,7 +67,7 @@
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
 
-            size_t parent_index = 0; // TODO this would not be representative
+            int parent_index = 0; // TODO this would not be representative
             // when there is a parent but the widget its not part of the children
             // like in Splitter
             // also means remove is gonna totally break for splitter and any other
@@ -125,6 +126,9 @@
             /// `onMouseMotion` get called whenever the mouse moves
             /// over the area of the Widget.
             EventListener<Widget*, MouseEvent> onMouseMotion = EventListener<Widget*, MouseEvent>();
+
+            EventListener<Widget*> onFocusLost = EventListener<Widget*>();
+            EventListener<Widget*> onFocusGained = EventListener<Widget*>();
 
             /// The constructor is empty.
             Widget();
@@ -201,6 +205,8 @@
             // TODO double check what this is about??? i think it just indicates whether a Widget utilizes ScrollBar?
             virtual bool isScrollable();
 
+            virtual bool isFocusable();
+
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
 
@@ -227,6 +233,8 @@
             virtual void handleTextEvent(DrawingContext &dc, const char *text);
 
             virtual bool handleScrollEvent(ScrollEvent event);
+
+            virtual Widget* propagateFocusEvent(FocusEvent event, State *state, Option<int> child_index);
 
             unsigned int proportion();
 

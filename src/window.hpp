@@ -94,6 +94,7 @@
             void center();
             void pulse();
             ContextEvent propagateMouseEvent(MouseEvent event);
+            void propagateFocusEvent(FocusEvent event, Widget *widget);
 
             void layout();
 

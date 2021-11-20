@@ -223,26 +223,13 @@ void Window::run() {
                         matchKeybind(matched, mods, key, m_keyboard_shortcuts);
                         if (!matched && m_state->focused) {
                             matchKeybind(matched, mods, key, ((Widget*)(m_state->focused))->keyboardShortcuts());
-                                if (hotkey.second.key == key) {
-                                    bool mods_matched = true;
-                                    if (hotkey.second.ctrl != mods[0]) {
-                                        mods_matched = false;
-                                    }
-                                    if (hotkey.second.shift != mods[1]) {
-                                        mods_matched = false;
-                                    }
-                                    if (hotkey.second.alt != mods[2]) {
-                                        mods_matched = false;
-                                    }
-                                    if (hotkey.second.gui != mods[3]) {
-                                        mods_matched = false;
-                                    }
-                                    if (mods_matched) {
-                                        hotkey.second.callback();
-                                        SDL_FlushEvent(SDL_TEXTINPUT);
-                                        matched = true;
-                                        break;
-                                    }
+                            if (!matched) {
+                                // TODO note that this doesnt handle the case if nothing is focused
+                                // TODO combo that will force the focus to the next widget to bypass capturing on tab, keybind + CTRL
+                                if (!matched && key == SDLK_TAB && mods[1] == Mod::Shift) {
+                                    propagateFocusEvent(FocusEvent::Reverse, (Widget*)m_state->focused);
+                                } else if (!matched && key == SDLK_TAB) {
+                                    propagateFocusEvent(FocusEvent::Forward, (Widget*)m_state->focused);
                                 }
                             }
                         }
@@ -456,6 +443,56 @@ void Window::layout() {
         widget->m_size_changed = true;
     });
     m_main_widget->sizeHint(*Application::get()->dc);
+}
+
+void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
+    // TODO remove
+    if (event == FocusEvent::Forward) {
+        focused->style.text_background = Color("#00ff0055");
+        focused->style.widget_background = Color("#00ff0055");
+        focused->style.window_background = Color("#00ff0055");
+        // focused->style.accent_widget_background = Color("#00ff0055");
+    } else {
+        focused->style.text_background = Color("#ff00ff55");
+        focused->style.widget_background = Color("#ff00ff55");
+        focused->style.window_background = Color("#ff00ff55");
+        // focused->style.accent_widget_background = Color("#ff00ff55");
+    }
+
+    Widget *root = focused->propagateFocusEvent(event, m_state, Option<int>());
+    if (root) {
+        // also i think for layouts and capturing widgets like lineedit
+        // or for compund widgets we could implement soft focus
+        // which would allow the user to select where the focus will go next?
+        // should we always soft focus by default??
+        // and when we press space or something it activates the widget giving it hardfocus
+        // this would be akin to clicking on the widget with your mouse
+        // soft focus and hard focus would be independant
+        // also this could be quite important because the notebook widget
+        // you have to click it to activate it (atm anyway) and that always steals focus
+        // same with interacting with a scrollbar using a mouse
+        if (!root->propagateFocusEvent(event, m_state, Option<int>())) {
+            return;
+        }
+        warn("focus not handled!");
+        warn(root->name());
+        root->style.text_background = Color("#ff00ff");
+        root->style.widget_background = Color("#ff00ff");
+        root->style.window_background = Color("#ff00ff");
+        root->style.accent_widget_background = Color("#ff00ff");
+        // if we hit this point do we just try to propagate focus
+        // from mainWidget ?? that doesnt sound too bad
+        // in fact when we get to this point we are hitting mainWidget
+        // barring some exceptions
+        // perhaps we check whether root is mainWidget and if not then
+        // we propagate through mainWidget as well
+        // but maybe do that at then end because we want to catch all widgets
+        // that cannot propagate correctly
+        if (root != m_main_widget) {
+            m_main_widget->propagateFocusEvent(event, m_state, Option<int>());
+        }
+    }
+    update();
 }
 
 void Window::matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<int, KeyboardShortcut> keybinds) {

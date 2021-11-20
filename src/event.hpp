@@ -94,4 +94,9 @@
             }
         }
     };
+
+    enum class FocusEvent {
+        Forward, // Tab
+        Reverse // Shift+Tab
+    };
 #endif
