@@ -322,6 +322,11 @@ void Window::removeFromState(void *widget) {
         if (m_state->pressed == widget) {
             m_state->pressed = nullptr;
         }
+        if (m_state->tooltip == widget) {
+            m_state->tooltip = nullptr;
+            draw_tooltip = false;
+            tooltip_did_draw = false;
+        }
         update();
     }
 }
