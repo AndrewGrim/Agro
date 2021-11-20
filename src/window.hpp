@@ -120,5 +120,6 @@
             /// Used internally by show().
             void draw();
             void drawTooltip();
+            void matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<int, KeyboardShortcut> keybinds);
     };
 #endif

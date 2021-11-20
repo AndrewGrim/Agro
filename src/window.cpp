@@ -474,3 +474,29 @@ void Window::layout() {
     });
     m_main_widget->sizeHint(*Application::get()->dc);
 }
+
+void Window::matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<int, KeyboardShortcut> keybinds) {
+    for (auto hotkey : keybinds) {
+        if (hotkey.second.key == key) {
+            bool mods_matched = true;
+            if (hotkey.second.ctrl != mods[0]) {
+                mods_matched = false;
+            }
+            if (hotkey.second.shift != mods[1]) {
+                mods_matched = false;
+            }
+            if (hotkey.second.alt != mods[2]) {
+                mods_matched = false;
+            }
+            if (hotkey.second.gui != mods[3]) {
+                mods_matched = false;
+            }
+            if (mods_matched) {
+                hotkey.second.callback();
+                SDL_FlushEvent(SDL_TEXTINPUT);
+                matched = true;
+                break;
+            }
+        }
+    }
+}
