@@ -65,7 +65,7 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
-            virtual void handleTextEvent(DrawingContext &dc, const char *text);
+            virtual void handleTextEvent(DrawingContext &dc, const char *text) override;
             LineEdit* setText(std::string text);
             std::string text();
             int minLength();
@@ -89,7 +89,7 @@
             void setCursor(size_t index);
             void undo();
             void redo();
-            bool isFocusable() override { return true; }
+            bool isFocusable() override;
 
             std::string m_text;
             std::string m_placeholder_text;

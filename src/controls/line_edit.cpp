@@ -613,3 +613,7 @@ void LineEdit::redo() {
         }
     }
 }
+
+bool LineEdit::isFocusable() {
+    return true;
+}
