@@ -221,16 +221,20 @@ void Window::run() {
                             mods[3] = Mod::Gui;
                         }
                         bool matched = false;
-                        matchKeybind(matched, mods, key, m_keyboard_shortcuts);
-                        if (!matched && m_state->focused) {
-                            matchKeybind(matched, mods, key, ((Widget*)(m_state->focused))->keyboardShortcuts());
-                            if (!matched) {
-                                // TODO note that this doesnt handle the case if nothing is focused
-                                // TODO combo that will force the focus to the next widget to bypass capturing on tab, keybind + CTRL
-                                if (!matched && key == SDLK_TAB && mods[1] == Mod::Shift) {
-                                    propagateFocusEvent(FocusEvent::Reverse, (Widget*)m_state->focused);
-                                } else if (!matched && key == SDLK_TAB) {
-                                    propagateFocusEvent(FocusEvent::Forward, (Widget*)m_state->focused);
+                        if (m_state->focused && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
+                            propagateFocusEvent(FocusEvent::Reverse, (Widget*)m_state->focused);
+                        } else if (m_state->focused && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
+                            propagateFocusEvent(FocusEvent::Forward, (Widget*)m_state->focused);
+                        } else {
+                            matchKeybind(matched, mods, key, m_keyboard_shortcuts);
+                            if (!matched && m_state->focused) {
+                                matchKeybind(matched, mods, key, ((Widget*)(m_state->focused))->keyboardShortcuts());
+                                if (!matched) {
+                                    if (!matched && key == SDLK_TAB && mods[1] == Mod::Shift) {
+                                        propagateFocusEvent(FocusEvent::Reverse, (Widget*)m_state->focused);
+                                    } else if (!matched && key == SDLK_TAB) {
+                                        propagateFocusEvent(FocusEvent::Forward, (Widget*)m_state->focused);
+                                    }
                                 }
                             }
                         }
@@ -491,6 +495,7 @@ void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
         // but maybe do that at then end because we want to catch all widgets
         // that cannot propagate correctly
         if (root != m_main_widget) {
+            warn("not main widget");
             m_main_widget->propagateFocusEvent(event, m_state, Option<int>());
         }
     }
