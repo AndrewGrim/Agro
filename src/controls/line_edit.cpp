@@ -164,6 +164,10 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
     bind(SDLK_y, Mod::Ctrl, [&]{
         redo();
     });
+    bind(SDLK_TAB, Mod::None, [&]() {
+        const char *tab = "\t";
+        insert(m_selection.end, tab);
+    });
 }
 
 LineEdit::~LineEdit() {
