@@ -118,9 +118,11 @@ void Window::run() {
     SDL_StartTextInput();
     while (m_running) {
         DELAY:;
-        uint32_t frame_start = SDL_GetTicks();
+        uint32_t frame_start;
         SDL_Event event;
-        if (SDL_WaitEvent(&event)) {
+        int status;
+        if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
+            frame_start = SDL_GetTicks();
             switch (event.type) {
                 case SDL_MOUSEBUTTONDOWN:
                     m_is_mouse_captured = true;
@@ -199,7 +201,6 @@ void Window::run() {
                                 m_state->hovered = nullptr;
                                 SDL_RemoveTimer(m_tooltip_callback);
                                 update();
-                                delay_till = 0;
                             }
                             break;
                     }
@@ -249,6 +250,7 @@ void Window::run() {
                     quit();
             }
         }
+        if (!status) { frame_start = SDL_GetTicks(); }
         if (delay_till) {
             if (SDL_GetTicks() < delay_till) {
                 goto DELAY;
@@ -419,7 +421,6 @@ void Window::pulse() {
     event.type = SDL_USEREVENT;
     event.user = userevent;
     SDL_PushEvent(&event);
-    delay_till = 0;
 }
 
 Window::ContextEvent Window::propagateMouseEvent(MouseEvent event) {
