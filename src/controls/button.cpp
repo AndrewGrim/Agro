@@ -70,9 +70,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
             dc.textForeground(style)
         );
     }
-    if (state & STATE_SOFT_FOCUSED) {
-        dc.drawDashedRect(focus_rect, dc.textForeground(style));
-    }
+    dc.drawKeyboardFocus(focus_rect, style, state);
 }
 
 Size Button::sizeHint(DrawingContext &dc) {

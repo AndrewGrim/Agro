@@ -359,6 +359,12 @@ void DrawingContext::drawBorder(Rect &rect, Style &style, int state) {
     }
 }
 
+void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, int state) {
+    if (state & Drawable::DrawableState::STATE_SOFT_FOCUSED && !(state & Drawable::DrawableState::STATE_HARD_FOCUSED)) {
+        drawDashedRect(rect, borderBackground(style));
+    }
+}
+
 void DrawingContext::margin(Rect &rect, Style &style) {
     if (style.margin.type != STYLE_NONE) {
         const int margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;

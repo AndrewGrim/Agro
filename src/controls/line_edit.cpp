@@ -182,6 +182,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style, state);
+    Rect focus_rect = rect;
     dc.fillRect(rect, dc.textBackground(style));
     dc.padding(rect, style);
     inner_rect = rect;
@@ -246,6 +247,8 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             dc.textForeground(style) // TODO should be a separate color setting
         );
     }
+    dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
+    dc.drawKeyboardFocus(focus_rect, style, state);
     dc.setClip(old_clip);
 }
 
