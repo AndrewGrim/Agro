@@ -9,7 +9,7 @@ class Splitter : public Widget {
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, int state) override;
         virtual Size sizeHint(DrawingContext &dc);
-        virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event);
+        virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event);
         virtual  bool isLayout() override;
         void append();
         void top(Widget *widget);

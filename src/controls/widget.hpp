@@ -228,7 +228,7 @@
 
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
-            virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event);
+            virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event);
 
             /// Handles the MouseEvent sent by the Application.
             virtual void handleMouseEvent(Window *window, State *state, MouseEvent event);

@@ -74,7 +74,7 @@
             /// Redraws the Application and swaps the front buffer.
             void show();
 
-            void removeFromState(void *widget);
+            void removeFromState(Widget *widget);
 
             int bind(int key, int modifiers, std::function<void()> callback);
             int bind(int key, Mod modifier, std::function<void()> callback);

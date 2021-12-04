@@ -296,24 +296,24 @@ BinarySearchResult<Widget*> ScrolledBox::binarySearch(size_t target) {
     return BinarySearchResult<Widget*>{ 0, Option<Widget*>() };
 }
 
-void* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
+Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (m_vertical_scrollbar) {
         if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
             (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
-            return (void*)m_vertical_scrollbar->propagateMouseEvent(window, state, event);
+            return m_vertical_scrollbar->propagateMouseEvent(window, state, event);
         }
     }
     if (m_horizontal_scrollbar) {
         if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
             (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
-            return (void*)m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
+            return m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
         }
     }
     if (m_vertical_scrollbar && m_horizontal_scrollbar) {
         if ((event.x > m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
             (event.y > m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
             if (state->hovered) {
-                ((Widget*)state->hovered)->onMouseLeft.notify(this, event);
+                state->hovered->onMouseLeft.notify(this, event);
             }
             state->hovered = nullptr;
             update();

@@ -27,7 +27,7 @@
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual bool isScrollable() override;
-            virtual void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
+            virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
             Point automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size);
             void drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size);

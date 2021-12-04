@@ -113,17 +113,17 @@ Size Splitter::sizeHint(DrawingContext &dc) {
     return s;
 }
 
-void* Splitter::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
+Widget* Splitter::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (m_first) {
         if (m_first->isVisible()) {
             if ((event.x >= m_first->rect.x && event.x <= m_first->rect.x + m_first->rect.w) &&
                 (event.y >= m_first->rect.y && event.y <= m_first->rect.y + m_first->rect.h)) {
-                void *last = nullptr;
+                Widget *last = nullptr;
                 if (m_first->isLayout()) {
-                    last = (void*)m_first->propagateMouseEvent(window, state, event);
+                    last = m_first->propagateMouseEvent(window, state, event);
                 } else {
                     m_first->handleMouseEvent(window, state, event);
-                    last = (void*)m_first;
+                    last = m_first;
                 }
                 return last;
             }
@@ -133,12 +133,12 @@ void* Splitter::propagateMouseEvent(Window *window, State *state, MouseEvent eve
         if (m_second->isVisible()) {
             if ((event.x >= m_second->rect.x && event.x <= m_second->rect.x + m_second->rect.w) &&
                 (event.y >= m_second->rect.y && event.y <= m_second->rect.y + m_second->rect.h)) {
-                void *last = nullptr;
+                Widget *last = nullptr;
                 if (m_second->isLayout()) {
-                    last = (void*)m_second->propagateMouseEvent(window, state, event);
+                    last = m_second->propagateMouseEvent(window, state, event);
                 } else {
                     m_second->handleMouseEvent(window, state, event);
-                    last = (void*)m_second;
+                    last = m_second;
                 }
                 return last;
             }

@@ -128,8 +128,8 @@ void Window::run() {
                     m_is_mouse_captured = true;
                     SDL_CaptureMouse(SDL_TRUE);
                     if (propagateMouseEvent(MouseEvent(event.button)) == Window::ContextEvent::False) {
-                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && ((Widget*)m_state->focused)->context_menu) {
-                            active_context_menu = ((Widget*)m_state->focused)->context_menu;
+                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && m_state->focused->context_menu) {
+                            active_context_menu = m_state->focused->context_menu;
                             context_menu_position_start = Point(event.button.x, event.button.y);
                         } else {
                             active_context_menu = nullptr;
@@ -145,7 +145,7 @@ void Window::run() {
                                 (event.button.y < 0 || event.button.y > size.h)) {
                                 if (m_state->pressed) {
                                     SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
-                                    ((Widget*)m_state->pressed)->onMouseLeft.notify(((Widget*)m_state->pressed), MouseEvent(event));
+                                    m_state->pressed->onMouseLeft.notify(m_state->pressed, MouseEvent(event));
                                     m_state->pressed = nullptr;
                                     update();
                                 }
@@ -173,7 +173,7 @@ void Window::run() {
                     break;
                 case SDL_MOUSEWHEEL:
                     if (m_state->hovered) {
-                        Widget *widget = (Widget*)m_state->hovered;
+                        Widget *widget = m_state->hovered;
                         bool handled = false;
                         while (widget->parent) {
                             if (!widget->handleScrollEvent(ScrollEvent(event.wheel))) {
@@ -197,7 +197,7 @@ void Window::run() {
                             m_mouse_inside = false;
                             if (m_state->hovered && !m_state->pressed) {
                                 SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
-                                ((Widget*)m_state->hovered)->onMouseLeft.notify(((Widget*)m_state->hovered), MouseEvent(event));
+                                m_state->hovered->onMouseLeft.notify(m_state->hovered, MouseEvent(event));
                                 m_state->hovered = nullptr;
                                 SDL_RemoveTimer(m_tooltip_callback);
                                 update();
@@ -223,18 +223,18 @@ void Window::run() {
                         }
                         bool matched = false;
                         if (m_state->focused && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
-                            propagateFocusEvent(FocusEvent::Reverse, (Widget*)m_state->focused);
+                            propagateFocusEvent(FocusEvent::Reverse, m_state->focused);
                         } else if (m_state->focused && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
-                            propagateFocusEvent(FocusEvent::Forward, (Widget*)m_state->focused);
+                            propagateFocusEvent(FocusEvent::Forward, m_state->focused);
                         } else {
                             matchKeybind(matched, mods, key, m_keyboard_shortcuts);
                             if (!matched && m_state->focused) {
-                                matchKeybind(matched, mods, key, ((Widget*)(m_state->focused))->keyboardShortcuts());
+                                matchKeybind(matched, mods, key, m_state->focused->keyboardShortcuts());
                                 if (!matched) {
                                     if (!matched && key == SDLK_TAB && mods[1] == Mod::Shift) {
-                                        propagateFocusEvent(FocusEvent::Reverse, (Widget*)m_state->focused);
+                                        propagateFocusEvent(FocusEvent::Reverse, m_state->focused);
                                     } else if (!matched && key == SDLK_TAB) {
-                                        propagateFocusEvent(FocusEvent::Forward, (Widget*)m_state->focused);
+                                        propagateFocusEvent(FocusEvent::Forward, m_state->focused);
                                     }
                                 }
                             }
@@ -243,7 +243,7 @@ void Window::run() {
                     break;
                 case SDL_TEXTINPUT:
                     if (m_state->focused) {
-                        ((Widget*)m_state->focused)->handleTextEvent(*dc, event.text.text);
+                        m_state->focused->handleTextEvent(*dc, event.text.text);
                     }
                     break;
                 case SDL_QUIT:
@@ -283,8 +283,14 @@ void Window::update() {
     m_needs_update = true;
 }
 
-void Window::removeFromState(void *widget) {
+void Window::removeFromState(Widget *widget) {
     if (widget) {
+        if (m_state->soft_focused == widget) {
+            m_state->soft_focused = nullptr;
+        }
+        if (m_state->hard_focused == widget) {
+            m_state->hard_focused = nullptr;
+        }
         if (m_state->focused == widget) {
             m_state->focused = nullptr;
         }
@@ -383,12 +389,11 @@ void Window::setTooltip(Widget *widget) {
 }
 
 void Window::drawTooltip() {
-    Widget *w = (Widget*)m_state->tooltip;
-    if (!w->tooltip) {
+    if (!m_state->tooltip) {
         return;
     }
     dc->setClip(Rect(0, 0, size.w, size.h));
-    Size s = w->tooltip->sizeHint(*dc);
+    Size s = m_state->tooltip->sizeHint(*dc);
     int x, y;
     SDL_GetMouseState(&x, &y);
 
@@ -400,7 +405,7 @@ void Window::drawTooltip() {
     if (r.y + s.h > size.h) {
         r.y -= 16 + r.h;
     }
-    w->tooltip->draw(*dc, r, w->tooltip->state());
+    m_state->tooltip->draw(*dc, r, m_state->tooltip->state());
 }
 
 void Window::move(int x, int y) {

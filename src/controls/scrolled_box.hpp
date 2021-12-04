@@ -13,7 +13,7 @@
             virtual Size sizeHint(DrawingContext &dc) override;
             void layoutChildren(DrawingContext &dc, Rect rect);
             virtual bool handleScrollEvent(ScrollEvent event) override;
-            void* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
+            Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             void setAlignPolicy(Align align_policy);
             Align alignPolicy();
             Size calculateChildSize(Size child_hint, int expandable_length, int rect_opposite_length, Widget *child, int &remainder);
