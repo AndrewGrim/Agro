@@ -393,11 +393,12 @@ void Window::drawTooltip() {
         return;
     }
     dc->setClip(Rect(0, 0, size.w, size.h));
-    Size s = m_state->tooltip->sizeHint(*dc);
+    Size s = m_state->tooltip->tooltip->sizeHint(*dc);
     int x, y;
     SDL_GetMouseState(&x, &y);
 
-    // From what i remember the 12 and 16 were based on the mouse size
+    // From what i remember the 12 and 16 were based on the mouse cursor size
+    // TODO ideally this wouldnt be hardcoded
     Rect r = Rect(x + 12, y + 16, s.w, s.h);
     if (r.x + s.w > size.w) {
         r.x -= 12 + r.w;
@@ -405,7 +406,7 @@ void Window::drawTooltip() {
     if (r.y + s.h > size.h) {
         r.y -= 16 + r.h;
     }
-    m_state->tooltip->draw(*dc, r, m_state->tooltip->state());
+    m_state->tooltip->tooltip->draw(*dc, r, m_state->tooltip->tooltip->state());
 }
 
 void Window::move(int x, int y) {
