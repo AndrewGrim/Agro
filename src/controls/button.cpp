@@ -71,7 +71,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
         );
     }
     if (state & STATE_FOCUSED) {
-        dc.drawDottedRect(focus_rect, dc.textForeground(style));
+        dc.drawDashedRect(focus_rect, dc.textForeground(style));
     }
 }
 
