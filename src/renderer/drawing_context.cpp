@@ -129,6 +129,10 @@ void DrawingContext::fillRectWithGradient(Rect rect, Color fromColor, Color toCo
     renderer->fillRectWithGradient(rect, fromColor, toColor, orientation);
 }
 
+void DrawingContext::drawDashedRect(Rect rect, Color color) {
+    renderer->drawDashedRect(rect, color);
+}
+
 void DrawingContext::render() {
     renderer->render();
 }

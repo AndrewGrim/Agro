@@ -26,7 +26,8 @@
         enum class Sampler {
             Color,
             Texture,
-            Text
+            Text,
+            Dashed
         };
 
         struct Vertex {
@@ -63,6 +64,7 @@
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
+        void drawDashedRect(Rect rect, Color color);
         void check();
         void textCheck(Font *font);
         void render();

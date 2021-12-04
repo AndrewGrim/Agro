@@ -31,6 +31,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style);
+    Rect focus_rect = rect;
     dc.fillRect(rect, color);
     dc.padding(rect, style);
 
@@ -68,6 +69,9 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
             0,
             dc.textForeground(style)
         );
+    }
+    if (state & STATE_FOCUSED) {
+        dc.drawDottedRect(focus_rect, dc.textForeground(style));
     }
 }
 

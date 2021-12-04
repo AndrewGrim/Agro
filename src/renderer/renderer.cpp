@@ -41,6 +41,7 @@ Renderer::Renderer(unsigned int *indices) {
         fragment_shader += "in vec4 v_color;\n";
         fragment_shader += "in float v_texture_slot_index;\n";
         fragment_shader += "in float v_sampler_type;\n";
+        fragment_shader += "in vec4 v_rect;\n";
         fragment_shader += "in vec4 v_clip_rect;\n";
         fragment_shader += "\n";
         fragment_shader += "out vec4 f_color;\n";
@@ -57,18 +58,27 @@ Renderer::Renderer(unsigned int *indices) {
         fragment_shader += "switch (int(v_texture_slot_index)) {\n";
         for (int i = 0; i < max_texture_slots; i++) {
             fragment_shader += "case " + std::to_string(i) + ":\n";
-            fragment_shader += "switch (int(v_sampler_type)) {\n";
-            fragment_shader += "case 0: ";
-            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
-            fragment_shader += "break;\n";
-            fragment_shader += "case 1: ";
-            fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], v_texture_uv));\n";
-            fragment_shader += "break;\n";
-            fragment_shader += "case 2: ";
-            fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], v_texture_uv).r);\n";
-            fragment_shader += "break;\n";
-            fragment_shader += "}\n";
-            fragment_shader += "break;\n";
+                fragment_shader += "switch (int(v_sampler_type)) {\n";
+                    fragment_shader += "case 0: ";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "case 1: ";
+                        fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], v_texture_uv));\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "case 2: ";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], v_texture_uv).r);\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "case 3: ";
+                        // TODO this is acutally pretty good, however i feel like we might want it to be a bit thicker, and it would be nice if it could scale with border width
+                        fragment_shader += "if (((int(gl_FragCoord.x) == int(v_rect.x)) || (int(gl_FragCoord.x) == int(v_rect.x + v_rect.z) - 1)) ||\n";
+                        fragment_shader += "    ((int(gl_FragCoord.y) == int(v_rect.y)) || (int(gl_FragCoord.y) == int(v_rect.y + v_rect.w) - 1))) {\n";
+                        fragment_shader += "    if ((int(gl_FragCoord.y) == int(v_rect.y) || int(gl_FragCoord.y) == int(v_rect.y) + int(v_rect.w) - 1) && int(gl_FragCoord.x) % 10 < 5) { discard; }\n";
+                        fragment_shader += "    else if ((int(gl_FragCoord.x) == int(v_rect.x) || int(gl_FragCoord.x) == int(v_rect.x) + int(v_rect.z) - 1) && int(gl_FragCoord.y) % 10 < 5) { discard; }\n";
+                        fragment_shader += "} else { discard; }\n";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "}\n";
+                fragment_shader += "break;\n";
         }
         fragment_shader += "}\n";
         fragment_shader += "f_color = v_color * sampled;\n";
@@ -88,6 +98,7 @@ Renderer::Renderer(unsigned int *indices) {
         "out vec4 v_color;\n"
         "out float v_texture_slot_index;\n"
         "out float v_sampler_type;\n"
+        "out vec4 v_rect;\n"
         "out vec4 v_clip_rect;\n"
         "\n"
         "uniform mat4 u_projection;\n"
@@ -105,6 +116,7 @@ Renderer::Renderer(unsigned int *indices) {
             "v_color = a_color;\n"
             "v_texture_slot_index = a_texture_slot_index;\n"
             "v_sampler_type = a_sampler_type;\n"
+            "v_rect = a_rect;\n"
             "v_clip_rect = a_clip_rect;\n"
         "}",
         fragment_shader.c_str()
@@ -449,6 +461,53 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             break;
         }
     }
+
+    quad_count++;
+}
+
+void Renderer::drawDashedRect(Rect rect, Color color) {
+    check();
+
+    // TOP LEFT
+    vertices[index++] = {
+        {0.0, 1.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        (float)Renderer::Sampler::Dashed,
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+    };
+    // BOTTOM LEFT
+    vertices[index++] = {
+        {0.0, 0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        (float)Renderer::Sampler::Dashed,
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+    };
+    // BOTTOM RIGHT
+    vertices[index++] = {
+        {1.0, 0.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        (float)Renderer::Sampler::Dashed,
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+    };
+    // TOP RIGHT
+    vertices[index++] = {
+        {1.0, 1.0},
+        {0.0, 0.0},
+        {color.r, color.g, color.b, color.a},
+        0.0,
+        (float)Renderer::Sampler::Dashed,
+        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
+        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+    };
 
     quad_count++;
 }
