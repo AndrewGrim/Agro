@@ -15,7 +15,7 @@ EmptyCell::~EmptyCell() {}
 
 void EmptyCell::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = dc.accentWidgetBackground(style);
-    if (state & STATE_FOCUSED) {
+    if (state & STATE_HARD_FOCUSED) {
         dc.fillRect(rect, bg);
     }
     if (state & STATE_HOVERED) {
@@ -34,7 +34,7 @@ TextCellRenderer::~TextCellRenderer() {}
 void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = dc.textForeground(style);
     Color bg = dc.widgetBackground(style); // TODO should be text_background most likely
-    if (state & STATE_FOCUSED) {
+    if (state & STATE_HARD_FOCUSED) {
         fg = dc.textSelected(style);
         bg = dc.accentWidgetBackground(style);
     }
@@ -75,7 +75,7 @@ ImageCellRenderer::~ImageCellRenderer() {
 
 void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = dc.widgetBackground(image->style);
-    if (state & STATE_FOCUSED) {
+    if (state & STATE_HARD_FOCUSED) {
         bg = dc.accentWidgetBackground(style);
     }
     dc.fillRect(rect, bg);
@@ -103,7 +103,7 @@ MultipleImagesCellRenderer::~MultipleImagesCellRenderer() {}
 
 void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color bg = dc.widgetBackground(style);
-    if (state & STATE_FOCUSED) {
+    if (state & STATE_HARD_FOCUSED) {
         bg = dc.accentWidgetBackground(style);
     }
     dc.fillRect(rect, bg);
@@ -155,7 +155,7 @@ ImageTextCellRenderer::~ImageTextCellRenderer() {
 void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = dc.textForeground(style);
     Color bg = dc.widgetBackground(style);
-    if (state & STATE_FOCUSED) {
+    if (state & STATE_HARD_FOCUSED) {
         fg = dc.textSelected(style);
         bg = dc.accentWidgetBackground(style);
     }

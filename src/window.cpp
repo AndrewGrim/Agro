@@ -128,8 +128,8 @@ void Window::run() {
                     m_is_mouse_captured = true;
                     SDL_CaptureMouse(SDL_TRUE);
                     if (propagateMouseEvent(MouseEvent(event.button)) == Window::ContextEvent::False) {
-                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && m_state->focused->context_menu) {
-                            active_context_menu = m_state->focused->context_menu;
+                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && m_state->hard_focused->context_menu) {
+                            active_context_menu = m_state->hard_focused->context_menu;
                             context_menu_position_start = Point(event.button.x, event.button.y);
                         } else {
                             active_context_menu = nullptr;
@@ -222,19 +222,19 @@ void Window::run() {
                             mods[3] = Mod::Gui;
                         }
                         bool matched = false;
-                        if (m_state->focused && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
-                            propagateFocusEvent(FocusEvent::Reverse, m_state->focused);
-                        } else if (m_state->focused && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
-                            propagateFocusEvent(FocusEvent::Forward, m_state->focused);
+                        if (m_state->hard_focused && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
+                            propagateFocusEvent(FocusEvent::Reverse, m_state->hard_focused);
+                        } else if (m_state->hard_focused && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
+                            propagateFocusEvent(FocusEvent::Forward, m_state->hard_focused);
                         } else {
                             matchKeybind(matched, mods, key, m_keyboard_shortcuts);
-                            if (!matched && m_state->focused) {
-                                matchKeybind(matched, mods, key, m_state->focused->keyboardShortcuts());
+                            if (!matched && m_state->hard_focused) {
+                                matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
                                 if (!matched) {
                                     if (!matched && key == SDLK_TAB && mods[1] == Mod::Shift) {
-                                        propagateFocusEvent(FocusEvent::Reverse, m_state->focused);
+                                        propagateFocusEvent(FocusEvent::Reverse, m_state->hard_focused);
                                     } else if (!matched && key == SDLK_TAB) {
-                                        propagateFocusEvent(FocusEvent::Forward, m_state->focused);
+                                        propagateFocusEvent(FocusEvent::Forward, m_state->hard_focused);
                                     }
                                 }
                             }
@@ -242,8 +242,8 @@ void Window::run() {
                     }
                     break;
                 case SDL_TEXTINPUT:
-                    if (m_state->focused) {
-                        m_state->focused->handleTextEvent(*dc, event.text.text);
+                    if (m_state->hard_focused) {
+                        m_state->hard_focused->handleTextEvent(*dc, event.text.text);
                     }
                     break;
                 case SDL_QUIT:
@@ -291,8 +291,8 @@ void Window::removeFromState(Widget *widget) {
         if (m_state->hard_focused == widget) {
             m_state->hard_focused = nullptr;
         }
-        if (m_state->focused == widget) {
-            m_state->focused = nullptr;
+        if (m_state->hard_focused == widget) {
+            m_state->hard_focused = nullptr;
         }
         if (m_state->hovered == widget) {
             m_state->hovered = nullptr;

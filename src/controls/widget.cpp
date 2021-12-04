@@ -96,18 +96,23 @@ bool Widget::isPressed() {
     return Application::get()->m_state->pressed == this;
 }
 
-bool Widget::isFocused() {
-    return Application::get()->m_state->focused == this;
+bool Widget::isSoftFocused() {
+    return Application::get()->m_state->soft_focused == this;
+}
+
+bool Widget::isHardFocused() {
+    return Application::get()->m_state->hard_focused == this;
 }
 
 int Widget::state() {
-    int _state = STATE_DEFAULT;
-    auto app = Application::get();
-    if (app->m_state->hovered == this) { _state |= STATE_HOVERED; }
-    if (app->m_state->pressed == this) { _state |= STATE_PRESSED; }
-    if (app->m_state->focused == this) { _state |= STATE_FOCUSED; }
+    int widget_state = STATE_DEFAULT;
+    State *app_state = Application::get()->m_state;
+    if (app_state->hovered == this) { widget_state |= STATE_HOVERED; }
+    if (app_state->pressed == this) { widget_state |= STATE_PRESSED; }
+    if (app_state->soft_focused == this) { widget_state |= STATE_SOFT_FOCUSED; }
+    if (app_state->hard_focused == this) { widget_state |= STATE_HARD_FOCUSED; }
 
-    return _state;
+    return widget_state;
 }
 
 Widget* Widget::update() {
@@ -131,17 +136,17 @@ Widget* Widget::layout() {
     return this;
 }
 
-void* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
+Widget* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     for (Widget *child : children) {
         if (child->isVisible()) {
             if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
                 (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
-                void *last = nullptr;
+                Widget *last = nullptr;
                 if (child->isLayout()) {
-                    last = (void*)child->propagateMouseEvent(window, state, event);
+                    last = child->propagateMouseEvent(window, state, event);
                 } else {
                     child->handleMouseEvent(window, state, event);
-                    last = (void*)child;
+                    last = child;
                 }
                 return last;
             }
@@ -157,7 +162,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
         case MouseEvent::Type::Down:
             state->pressed = this;
             // TODO only do this if the widget is focusable... eh maybe always do it?
-            state->focused = this;
+            state->hard_focused = this;
             // TODO maybe add an on_focus callback? yes, once we have keyboard navigation, also onFocusLost
             onMouseDown.notify(this, event);
             break;
@@ -168,7 +173,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
                 onMouseClick.notify(this, event);
             } else {
                 if (state->pressed) {
-                    ((Widget*)state->pressed)->onMouseLeft.notify(this, event);
+                    state->pressed->onMouseLeft.notify(this, event);
                 }
                 onMouseEntered.notify(this, event);
             }
@@ -179,7 +184,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
             if (!state->pressed) {
                 if (state->hovered) {
                     if (this != state->hovered) {
-                        ((Widget*)state->hovered)->onMouseLeft.notify(this, event);
+                        state->hovered->onMouseLeft.notify(this, event);
                     }
                 }
                 state->hovered = this;
@@ -188,7 +193,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
             } else {
                 if (state->pressed == this) { state->hovered = this; }
                 else { state->hovered = nullptr; }
-                ((Widget*)state->pressed)->onMouseMotion.notify(this, event);
+                state->pressed->onMouseMotion.notify(this, event);
             }
             break;
     }
@@ -213,10 +218,10 @@ Widget* Widget::propagateFocusEvent(FocusEvent event, State *state, Option<int> 
         for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {
-                if (state->focused) {
-                    ((Widget*)state->focused)->onFocusLost.notify((Widget*)state->focused);
+                if (state->hard_focused) {
+                    state->hard_focused->onFocusLost.notify(state->hard_focused);
                 }
-                state->focused = child;
+                state->hard_focused = child;
                 child->onFocusGained.notify(child); // TODO maybe focus type, forward/reverse, keyboard/mouse
                 return nullptr;
             }
@@ -234,10 +239,10 @@ Widget* Widget::propagateFocusEvent(FocusEvent event, State *state, Option<int> 
         for (; child_index_unwrapped > -1; child_index_unwrapped--) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {
-                if (state->focused) {
-                    ((Widget*)state->focused)->onFocusLost.notify((Widget*)state->focused);
+                if (state->hard_focused) {
+                    state->hard_focused->onFocusLost.notify(state->hard_focused);
                 }
-                state->focused = child;
+                state->hard_focused = child;
                 child->onFocusGained.notify(child);
                 return nullptr;
             }

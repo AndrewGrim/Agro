@@ -217,7 +217,8 @@
             bool isPressed();
 
             /// Returns whether the Widget is currently focused or not.
-            bool isFocused();
+            bool isSoftFocused();
+            bool isHardFocused();
 
             /// Tells the Application that it needs to redraw.
             Widget* update();

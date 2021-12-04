@@ -1102,7 +1102,7 @@
                         dc.setClip(cell_clip.clipTo(tv_clip));
                         int cell_x = cell_start;
                         int state = STATE_DEFAULT;
-                        if (m_focused == node) { state |= STATE_FOCUSED; }
+                        if (m_focused == node) { state |= STATE_HARD_FOCUSED; }
                         if (m_hovered == node) { state |= STATE_HOVERED; }
                         if (!m_table && !i) {
                             // Draw the cell background using appropriate state in treeline gutter when drawing treelines.

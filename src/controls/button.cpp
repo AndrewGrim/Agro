@@ -70,7 +70,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
             dc.textForeground(style)
         );
     }
-    if (state & STATE_FOCUSED) {
+    if (state & STATE_SOFT_FOCUSED) {
         dc.drawDashedRect(focus_rect, dc.textForeground(style));
     }
 }

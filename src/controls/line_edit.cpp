@@ -205,7 +205,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
         );
     // Draw normal text;
     } else {
-        if (m_selection.mouse_selection || (isFocused() && m_selection.hasSelection())) {
+        if (m_selection.mouse_selection || (isHardFocused() && m_selection.hasSelection())) {
             int text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
             int start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
             int end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
@@ -228,13 +228,13 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
             0,
             dc.textForeground(style),
             m_tab_width,
-            isFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
+            isHardFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
             dc.textSelected(style)
         );
     }
 
     // Draw the text insertion cursor.
-    if (isFocused()) {
+    if (isHardFocused()) {
         int text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
         dc.fillRect(
             Rect(
