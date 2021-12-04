@@ -17,7 +17,7 @@ void Label::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
     dc.margin(rect, style);
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     dc.fillRect(rect, dc.widgetBackground(style));
     dc.padding(rect, style);
     dc.fillTextMultilineAligned(

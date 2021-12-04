@@ -30,7 +30,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
 
     dc.margin(rect, style);
     this->rect = rect;
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     Rect focus_rect = rect;
     dc.fillRect(rect, color);
     dc.padding(rect, style);

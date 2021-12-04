@@ -247,7 +247,7 @@
                 } else {
                     color = dc.widgetBackground(style);
                 }
-                dc.drawBorder(rect, style);
+                dc.drawBorder(rect, style, state);
 
                 dc.fillRect(rect, color);
                 layoutChildren(dc, rect);
@@ -473,7 +473,7 @@
                 sizeHint(dc);
 
                 dc.margin(rect, style);
-                dc.drawBorder(rect, style);
+                dc.drawBorder(rect, style, state);
                 this->inner_rect = rect;
                 dc.fillRect(rect, dc.textBackground(style));
 

@@ -46,7 +46,7 @@ class CustomStyle : public Widget {
 
             dc.fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
             dc.margin(rect, style);
-            dc.drawBorder(rect, style);
+            dc.drawBorder(rect, style, state);
             dc.fillRect(rect, Color(0.0f, 1.0f, 0.0f, 0.5f));
             dc.padding(rect, style);
             this->inner_rect = rect;

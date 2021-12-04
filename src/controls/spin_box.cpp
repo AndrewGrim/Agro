@@ -20,7 +20,7 @@ void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, int state) {
 
     dc.margin(rect, style);
     this->rect = rect;
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     dc.fillRect(rect, color);
     dc.padding(rect, style);
 

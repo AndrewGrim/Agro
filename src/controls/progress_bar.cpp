@@ -11,7 +11,7 @@ const char* ProgressBar::name() {
 void ProgressBar::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     int fill_end = rect.w * m_value;
     dc.fillRect(Rect(rect.x, rect.y, fill_end, rect.h), dc.accentWidgetBackground(style));
     dc.padding(rect, style);

@@ -26,7 +26,7 @@ void GroupBox::draw(DrawingContext &dc, Rect rect, int state) {
         rect.y += text_size_half;
         rect.h -= text_size_half;
     }
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     rect.y += text_size_half;
     rect.h -= text_size_half;
     dc.fillRect(rect, dc.windowBackground(style));

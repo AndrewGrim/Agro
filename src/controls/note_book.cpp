@@ -12,7 +12,7 @@ NoteBookTabBar::~NoteBookTabBar() {
 void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
 
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     rect.x += 5; // account for the 5 pixels on the left to give the first tab some breathing room
     rect.w -= 5; // account for the 5 pixels on the left to give the first tab some breathing room
     int x = rect.x;
@@ -178,7 +178,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
         color = dc.windowBackground(style);
     }
 
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     dc.fillRect(rect, color);
     dc.padding(rect, style);
 

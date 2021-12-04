@@ -328,7 +328,7 @@ Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color)
     return rect;
 }
 
-void DrawingContext::drawBorder(Rect &rect, Style &style) {
+void DrawingContext::drawBorder(Rect &rect, Style &style, int state) {
     // TODO if the widget is focused draw the border using the accent color
     // we will probably pass the whole state and check for focus
     // which means all the call sites will need to change
@@ -336,25 +336,25 @@ void DrawingContext::drawBorder(Rect &rect, Style &style) {
         const int border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
             const int size = style.border.top < 0 ? default_style.border.top : style.border.top;
-            fillRect(Rect(rect.x, rect.y, rect.w, size), borderTopBackground(style));
+            fillRect(Rect(rect.x, rect.y, rect.w, size), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderTopBackground(style));
             rect.y += size;
             rect.h -= size;
         }
         if (border & STYLE_BOTTOM) {
             const int size = style.border.bottom < 0 ? default_style.border.bottom : style.border.bottom;
             rect.h -= size;
-            fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), borderBottomBackground(style));
+            fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderBottomBackground(style));
         }
         if (border & STYLE_LEFT) {
             const int size = style.border.left < 0 ? default_style.border.left : style.border.left;
-            fillRect(Rect(rect.x, rect.y, size, rect.h), borderLeftBackground(style));
+            fillRect(Rect(rect.x, rect.y, size, rect.h), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderLeftBackground(style));
             rect.x += size;
             rect.w -= size;
         }
         if (border & STYLE_RIGHT) {
             const int size = style.border.right < 0 ? default_style.border.right : style.border.right;
             rect.w -= size;
-            fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), borderRightBackground(style));
+            fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderRightBackground(style));
         }
     }
 }

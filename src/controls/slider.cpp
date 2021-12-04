@@ -26,7 +26,7 @@ void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
     } else {
         color = dc.accentWidgetBackground(style);
     }
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     dc.fillRect(rect, color);
 }
 

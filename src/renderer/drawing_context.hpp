@@ -45,7 +45,7 @@
         Size measureTextMultiline(Font *font, std::string text, int tab_width = 4, int line_spacing = 5);
         void render();
         Rect drawBorder3D(Rect rect, int border_width, Color rect_color);
-        void drawBorder(Rect &rect, Style &style);
+        void drawBorder(Rect &rect, Style &style, int state);
         void margin(Rect &rect, Style &style);
         void padding(Rect &rect, Style &style);
         void sizeHintMargin(Size &size, Style &style);

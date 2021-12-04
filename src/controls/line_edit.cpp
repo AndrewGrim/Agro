@@ -181,7 +181,7 @@ const char* LineEdit::name() {
 void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
-    dc.drawBorder(rect, style);
+    dc.drawBorder(rect, style, state);
     dc.fillRect(rect, dc.textBackground(style));
     dc.padding(rect, style);
     inner_rect = rect;
