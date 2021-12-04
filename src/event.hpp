@@ -96,7 +96,8 @@
     };
 
     enum class FocusEvent {
-        Forward, // Tab
-        Reverse // Shift+Tab
+        Activate, // Active = STATE_HARD_FOCUSED
+        Forward, // Tab, Forward = STATE_SOFT_FOCUSED
+        Reverse // Shift+Tab, Reverse = STATE_SOFT_FOCUSED
     };
 #endif

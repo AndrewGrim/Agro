@@ -161,9 +161,16 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
     switch (event.type) {
         case MouseEvent::Type::Down:
             state->pressed = this;
-            // TODO only do this if the widget is focusable... eh maybe always do it?
-            state->hard_focused = this;
-            // TODO maybe add an on_focus callback? yes, once we have keyboard navigation, also onFocusLost
+            if (isFocusable()) {
+                // We only want to send one event in the case
+                // that soft and hard focus are currently the same widget.
+                if (state->soft_focused && state->soft_focused != state->hard_focused) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
+                if (state->hard_focused && state->soft_focused != state->hard_focused) { state->hard_focused->onFocusLost.notify(state->hard_focused, FocusEvent::Activate); }
+                if ((state->soft_focused && state->hard_focused) && (state->soft_focused == state->hard_focused)) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
+                state->soft_focused = this;
+                state->hard_focused = this;
+                onFocusGained.notify(this, FocusEvent::Activate);
+            }
             onMouseDown.notify(this, event);
             break;
         case MouseEvent::Type::Up:
@@ -213,16 +220,17 @@ bool Widget::handleScrollEvent(ScrollEvent event) {
 }
 
 Widget* Widget::propagateFocusEvent(FocusEvent event, State *state, Option<int> child_index) {
+    assert(event != FocusEvent::Activate && "propagateFocusEvent should only be called with Forward and Reverse focus events!");
     if (event == FocusEvent::Forward) {
         int child_index_unwrapped = child_index ? child_index.unwrap() + 1 : 0;
         for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {
-                if (state->hard_focused) {
-                    state->hard_focused->onFocusLost.notify(state->hard_focused);
+                if (state->soft_focused) {
+                    state->soft_focused->onFocusLost.notify(state->soft_focused, event);
                 }
-                state->hard_focused = child;
-                child->onFocusGained.notify(child); // TODO maybe focus type, forward/reverse, keyboard/mouse
+                state->soft_focused = child;
+                child->onFocusGained.notify(child, event);
                 return nullptr;
             }
             if (!child->propagateFocusEvent(event, state, Option<int>())) {
@@ -239,11 +247,11 @@ Widget* Widget::propagateFocusEvent(FocusEvent event, State *state, Option<int> 
         for (; child_index_unwrapped > -1; child_index_unwrapped--) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {
-                if (state->hard_focused) {
-                    state->hard_focused->onFocusLost.notify(state->hard_focused);
+                if (state->soft_focused) {
+                    state->soft_focused->onFocusLost.notify(state->soft_focused, event);
                 }
-                state->hard_focused = child;
-                child->onFocusGained.notify(child);
+                state->soft_focused = child;
+                child->onFocusGained.notify(child, event);
                 return nullptr;
             }
             if (!child->propagateFocusEvent(event, state, Option<int>())) {
@@ -356,4 +364,13 @@ void Widget::forEachWidget(std::function<void(Widget *widget)> action) {
     for (Widget *child : children) {
         child->forEachWidget(action);
     }
+}
+
+void Widget::activate() {
+    SDL_MouseButtonEvent event = { SDL_MOUSEBUTTONDOWN, SDL_GetTicks(), 0, 0, SDL_BUTTON_LEFT, SDL_PRESSED, 1, 0, -1, -1 };
+    handleMouseEvent(Application::get(), Application::get()->m_state, event);
+    event = { SDL_MOUSEBUTTONUP, SDL_GetTicks(), 0, 0, SDL_BUTTON_LEFT, SDL_RELEASED, 1, 0, -1, -1 };
+    handleMouseEvent(Application::get(), Application::get()->m_state, event);
+    Application::get()->m_state->hovered = nullptr;
+    update();
 }

@@ -130,8 +130,8 @@
             /// over the area of the Widget.
             EventListener<Widget*, MouseEvent> onMouseMotion = EventListener<Widget*, MouseEvent>();
 
-            EventListener<Widget*> onFocusLost = EventListener<Widget*>();
-            EventListener<Widget*> onFocusGained = EventListener<Widget*>();
+            EventListener<Widget*, FocusEvent> onFocusLost = EventListener<Widget*, FocusEvent>();
+            EventListener<Widget*, FocusEvent> onFocusGained = EventListener<Widget*, FocusEvent>();
 
             /// The constructor is empty.
             Widget();
@@ -264,6 +264,21 @@
             bool isWidget();
 
             void forEachWidget(std::function<void(Widget *widget)> action);
+
+            /// Occurs when a widget is clicked on or when the user presses space on it (only when soft?)
+            /// but unlike callbacks it is a dedicated method on widget which also changes window state to reflect the press
+            /// whereas you would have to use handleMouseEvent or use direct state manipulation otherwise
+            /// does activate notify? onMouseClicked or does it have its own dedicated callback?
+
+            /// Mimicks a click event on a given Widget.
+            /// It does this by calling handleMouseEvent with both
+            /// a MouseEvent::Type::Down event and a MouseEvent::Type::Up event.
+            /// Do note that explicitly changes the hovered state to nullptr since
+            /// otherwise the widget will look like it has the mouse over it
+            /// even when it doesn't.
+            /// Used within the event loop to focus a Widget using the keyboard.
+            /// Can be used to programatically click a widget and focus it.
+            void activate();
 
             bool m_is_visible = true;
             Fill m_fill_policy = Fill::None;

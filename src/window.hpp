@@ -22,6 +22,11 @@
                 False
             };
 
+            struct ContextEventResult {
+                ContextEvent event;
+                Widget *widget;
+            };
+
             Size size;
             Point position;
 
@@ -93,7 +98,7 @@
             void move(int x, int y);
             void center();
             void pulse();
-            ContextEvent propagateMouseEvent(MouseEvent event);
+            ContextEventResult propagateMouseEvent(MouseEvent event);
             void propagateFocusEvent(FocusEvent event, Widget *widget);
 
             void layout();

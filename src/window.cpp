@@ -124,18 +124,21 @@ void Window::run() {
         if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
             frame_start = SDL_GetTicks();
             switch (event.type) {
-                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONDOWN: {
                     m_is_mouse_captured = true;
                     SDL_CaptureMouse(SDL_TRUE);
-                    if (propagateMouseEvent(MouseEvent(event.button)) == Window::ContextEvent::False) {
-                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && m_state->hard_focused->context_menu) {
-                            active_context_menu = m_state->hard_focused->context_menu;
+                    ContextEventResult result = propagateMouseEvent(MouseEvent(event.button));
+                    assert(result.widget && "result.widget should never be null because the mouse event should come from within the window and we should have at least the m_main_widget!");
+                    if (result.event == Window::ContextEvent::False) {
+                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && result.widget->context_menu) {
+                            active_context_menu = result.widget->context_menu;
                             context_menu_position_start = Point(event.button.x, event.button.y);
                         } else {
                             active_context_menu = nullptr;
                         }
                     }
                     break;
+                }
                 case SDL_MOUSEBUTTONUP:
                     if (m_mouse_inside) {
                         if (m_is_mouse_captured) {
@@ -222,19 +225,23 @@ void Window::run() {
                             mods[3] = Mod::Gui;
                         }
                         bool matched = false;
-                        if (m_state->hard_focused && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
-                            propagateFocusEvent(FocusEvent::Reverse, m_state->hard_focused);
-                        } else if (m_state->hard_focused && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
-                            propagateFocusEvent(FocusEvent::Forward, m_state->hard_focused);
+                        Widget *focus_widget = m_state->soft_focused ? m_state->soft_focused : m_state->hard_focused;
+                        if (focus_widget && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
+                            propagateFocusEvent(FocusEvent::Reverse, focus_widget);
+                        } else if (focus_widget && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
+                            propagateFocusEvent(FocusEvent::Forward, focus_widget);
+                        } else if (m_state->soft_focused && m_state->soft_focused != m_state->hard_focused && key == SDLK_SPACE) {
+                            m_state->soft_focused->activate();
+                            SDL_FlushEvent(SDL_TEXTINPUT);
                         } else {
                             matchKeybind(matched, mods, key, m_keyboard_shortcuts);
                             if (!matched && m_state->hard_focused) {
                                 matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
-                                if (!matched) {
-                                    if (!matched && key == SDLK_TAB && mods[1] == Mod::Shift) {
-                                        propagateFocusEvent(FocusEvent::Reverse, m_state->hard_focused);
-                                    } else if (!matched && key == SDLK_TAB) {
-                                        propagateFocusEvent(FocusEvent::Forward, m_state->hard_focused);
+                                if (!matched && focus_widget) {
+                                    if (key == SDLK_TAB && mods[1] == Mod::Shift) {
+                                        propagateFocusEvent(FocusEvent::Reverse, focus_widget);
+                                    } else if (key == SDLK_TAB) {
+                                        propagateFocusEvent(FocusEvent::Forward, focus_widget);
                                     }
                                 }
                             }
@@ -429,25 +436,27 @@ void Window::pulse() {
     SDL_PushEvent(&event);
 }
 
-Window::ContextEvent Window::propagateMouseEvent(MouseEvent event) {
+Window::ContextEventResult Window::propagateMouseEvent(MouseEvent event) {
+    Widget *last = nullptr;
     if (active_context_menu) {
         Widget *widget = active_context_menu;
         if (widget->isVisible()) {
             if ((event.x >= widget->rect.x && event.x <= widget->rect.x + widget->rect.w) &&
                 (event.y >= widget->rect.y && event.y <= widget->rect.y + widget->rect.h)) {
                 if (widget->isLayout()) {
-                    widget->propagateMouseEvent(this, m_state, event);
+                    last = widget->propagateMouseEvent(this, m_state, event);
                 } else {
                     widget->handleMouseEvent(this, m_state, event);
+                    last = widget;
                 }
-                return ContextEvent::True;
+                return ContextEventResult{ ContextEvent::True, last };
             }
         }
-        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
+        last = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
     } else {
-        m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
+        last = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
     }
-    return ContextEvent::False;
+    return ContextEventResult{ ContextEvent::False, last };
 }
 
 void Window::layout() {
@@ -459,52 +468,8 @@ void Window::layout() {
 }
 
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
-    // TODO remove
-    if (event == FocusEvent::Forward) {
-        focused->style.text_background = Color("#00ff0055");
-        focused->style.widget_background = Color("#00ff0055");
-        focused->style.window_background = Color("#00ff0055");
-        // focused->style.accent_widget_background = Color("#00ff0055");
-    } else {
-        focused->style.text_background = Color("#ff00ff55");
-        focused->style.widget_background = Color("#ff00ff55");
-        focused->style.window_background = Color("#ff00ff55");
-        // focused->style.accent_widget_background = Color("#ff00ff55");
-    }
-
-    Widget *root = focused->propagateFocusEvent(event, m_state, Option<int>());
-    if (root) {
-        // also i think for layouts and capturing widgets like lineedit
-        // or for compund widgets we could implement soft focus
-        // which would allow the user to select where the focus will go next?
-        // should we always soft focus by default??
-        // and when we press space or something it activates the widget giving it hardfocus
-        // this would be akin to clicking on the widget with your mouse
-        // soft focus and hard focus would be independant
-        // also this could be quite important because the notebook widget
-        // you have to click it to activate it (atm anyway) and that always steals focus
-        // same with interacting with a scrollbar using a mouse
-        if (!root->propagateFocusEvent(event, m_state, Option<int>())) {
-            return;
-        }
-        warn("focus not handled!");
-        warn(root->name());
-        root->style.text_background = Color("#ff00ff");
-        root->style.widget_background = Color("#ff00ff");
-        root->style.window_background = Color("#ff00ff");
-        root->style.accent_widget_background = Color("#ff00ff");
-        // if we hit this point do we just try to propagate focus
-        // from mainWidget ?? that doesnt sound too bad
-        // in fact when we get to this point we are hitting mainWidget
-        // barring some exceptions
-        // perhaps we check whether root is mainWidget and if not then
-        // we propagate through mainWidget as well
-        // but maybe do that at then end because we want to catch all widgets
-        // that cannot propagate correctly
-        if (root != m_main_widget) {
-            warn("not main widget");
-            m_main_widget->propagateFocusEvent(event, m_state, Option<int>());
-        }
+    if ((focused = focused->propagateFocusEvent(event, m_state, Option<int>()))) {
+        focused->propagateFocusEvent(event, m_state, Option<int>());
     }
     update();
 }
