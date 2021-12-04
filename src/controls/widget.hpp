@@ -27,24 +27,24 @@
     /// for their own event handling, in order to remove built-in behaviour of a Widget,
     /// especially when inheriting from one, you can simply remove a listener from the
     /// listeners std::vector.
-    template <typename... Types> struct EventListener {
-        std::vector<std::function<void(Types... types)>> listeners;
+    template <typename... Args> struct EventListener {
+        std::vector<std::function<void(Args... args)>> listeners;
 
         /// Calls each callback function stored in the EventListener
         /// in the order they were added unless dealing with the listeners
         /// std::vector directly.
         /// This method can be safely called on EventListeners which are empty
         /// as it uses the iterators to go over the listeners.
-        void notify(Types... types) {
+        void notify(Args... args) {
             for (auto callback : listeners) {
-                callback(types...);
+                callback(args...);
             }
         }
 
         /// Simple wrapper for adding a new callback function.
         // TDOD we should probably think about overriding operator+
         // for more succint syntax.
-        void addEventListener(std::function<void(Types... types)> fn) {
+        void addEventListener(std::function<void(Args... args)> fn) {
             listeners.push_back(fn);
         }
     };
