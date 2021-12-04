@@ -33,7 +33,7 @@ TextCellRenderer::~TextCellRenderer() {}
 
 void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Color fg = dc.textForeground(style);
-    Color bg = dc.widgetBackground(style);
+    Color bg = dc.widgetBackground(style); // TODO should be text_background most likely
     if (state & STATE_FOCUSED) {
         fg = dc.textSelected(style);
         bg = dc.accentWidgetBackground(style);

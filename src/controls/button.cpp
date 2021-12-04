@@ -44,7 +44,7 @@ void Button::draw(DrawingContext &dc, Rect rect, int state) {
                 rect.x + (rect.w / 2 - text_size.w / 2) - image_size.w / 2,
                 rect.y + (rect.h * 0.5) - (image_size.h * 0.5)
             ),
-            image_size,
+            image_size, // TODO we dont support expandable images here
             m_image->_texture(),
             m_image->coords(),
             m_image->foreground()
