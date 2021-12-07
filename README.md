@@ -23,15 +23,15 @@ On debian based system you should be able to install the dependencies like so:
 sudo apt install g++ cmake libsdl2-dev
 ```
 
+On Windows getting a recent version of Visual Studio Community with C++ build tools and CMake should be enough to build the project.
+
 ### Instructions
 1. First make sure you are in the root directory of the project.
-2. Run `cmake -S . -B build  -DCMAKE_BUILD_TYPE=RELEASE` in the terminal to build the required CMake files.
+2. Run `cmake -S . -B build  -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_ALL_TESTS=ON -DBUILD_ALL_EXAMPLES=ON` in the terminal to build the required CMake files.
 3. Building is slightly different using a multi-configuration setup like MSVC or XCode vs G++.
     * When using single-configuration use `cmake --build build` in the terminal to build the actual project.
     * When using multi-configuration use `cmake --build build --config Release` in the terminal to build the actual project.
-4. You can also build all test and example programs by passing these flags `-DBUILD_ALL_TESTS=ON -DBUILD_ALL_EXAMPLES=ON` to the build command.
-
-You can verify that the library has built correctly by running one of the example files in the `Agro/bin` folder.
+4. You can verify that the library has built correctly by running one of the example files in the `Agro/bin` folder.
 
 ### Installing
 On Unix platforms you can run `cmake --install build` to install the library.
