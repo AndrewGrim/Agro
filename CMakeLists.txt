@@ -37,7 +37,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 target_link_directories(${PROJECT_NAME} PUBLIC
 	build/SDL2-2.0.16
+	build/Debug/SDL2-2.0.16
+	build/Release/SDL2-2.0.16
 	build/freetype-2.11.0
+	build/Debug/freetype-2.11.0
+	build/Release/freetype-2.11.0
 )
 if (APPLE)
 	target_link_libraries(${PROJECT_NAME}
@@ -91,6 +95,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 set(BUILD_SHARED_LIBS OFF)
+set(HAVE_LIBC ON)
 add_subdirectory(${PROJECT_SOURCE_DIR}/SDL2-2.0.16)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/freetype-2.11.0)
