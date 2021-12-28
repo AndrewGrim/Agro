@@ -360,7 +360,7 @@ void DrawingContext::drawBorder(Rect &rect, Style &style, int state) {
 }
 
 void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, int state) {
-    if (state & Drawable::DrawableState::STATE_SOFT_FOCUSED && !(state & Drawable::DrawableState::STATE_HARD_FOCUSED)) {
+    if (state & Drawable::DrawableState::STATE_SOFT_FOCUSED) {
         drawDashedRect(rect, borderBackground(style));
     }
 }
