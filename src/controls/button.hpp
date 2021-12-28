@@ -23,7 +23,7 @@
             Button* setHorizontalAlignment(HorizontalAlignment text_align);
             VerticalAlignment verticalAlignment();
             Button* setVerticalAlignment(VerticalAlignment text_align);
-            bool isFocusable() override { return true; }
+            bool isFocusable() override;
 
             std::string m_text = "";
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;

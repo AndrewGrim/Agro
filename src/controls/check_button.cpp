@@ -56,6 +56,7 @@ void CheckButton::draw(DrawingContext &dc, Rect rect, int state) {
         dc.textForeground(style),
         m_tab_width
     );
+    dc.drawKeyboardFocus(this->rect, style, state);
 }
 
 Size CheckButton::sizeHint(DrawingContext &dc) {
@@ -73,4 +74,8 @@ Size CheckButton::sizeHint(DrawingContext &dc) {
         return s;
     }
     return m_size;
+}
+
+bool CheckButton::isFocusable() {
+    return true;
 }

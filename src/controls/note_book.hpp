@@ -10,14 +10,18 @@
         public:
             SimpleScrollBar *m_horizontal_scrollbar = nullptr;
 
-            NoteBookTabBar();
+            NoteBookTabBar(Widget *notebook_parent);
             ~NoteBookTabBar();
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual const char* name() override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
+            virtual bool isFocusable() override;
+            Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
+
+            Widget *m_notebook_parent = nullptr;
     };
 
     class NoteBook : public Widget {
@@ -28,6 +32,8 @@
             virtual const char* name() override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
+            virtual bool isFocusable() override;
+            Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
             // NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
@@ -38,7 +44,7 @@
 
         protected:
             size_t m_tab_index = 0;
-            NoteBookTabBar *m_tabs = new NoteBookTabBar();
+            NoteBookTabBar *m_tabs = new NoteBookTabBar(this);
     };
 
     class NoteBookTabButton : public Button {
@@ -49,6 +55,8 @@
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
+            virtual bool isFocusable() override;
+            Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             bool isActive();
             void setActive(bool is_active);

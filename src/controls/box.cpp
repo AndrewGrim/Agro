@@ -197,6 +197,10 @@ bool Box::isLayout() {
     return true;
 }
 
+bool Box::isFocusable() {
+    return true;
+}
+
 const char* Box::name() {
     return "Box";
 }
@@ -210,4 +214,33 @@ void Box::setAlignPolicy(Align align_policy) {
 
 Align Box::alignPolicy() {
     return m_align_policy;
+}
+
+Widget* Box::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    assert(event != FocusEvent::Activate && "handleFocusEvent should only be called with Forward and Reverse focus events!");
+    if (event == FocusEvent::Forward) {
+        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() + 1 : 0;
+        for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
+            Widget *child = children[child_index_unwrapped];
+            if (child->isFocusable() && child->isVisible()) {
+                return child->handleFocusEvent(event, state, FocusPropagationData());
+            }
+        }
+        if (parent) {
+            return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+        }
+        return nullptr;
+    } else {
+        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() - 1 : (int)children.size() - 1;
+        for (; child_index_unwrapped > -1; child_index_unwrapped--) {
+            Widget *child = children[child_index_unwrapped];
+            if (child->isFocusable() && child->isVisible()) {
+                return child->handleFocusEvent(event, state, FocusPropagationData());
+            }
+        }
+        if (parent) {
+            return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+        }
+        return nullptr;
+    }
 }

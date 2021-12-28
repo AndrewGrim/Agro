@@ -71,4 +71,5 @@ void RadioButton::draw(DrawingContext &dc, Rect rect, int state) {
         dc.textForeground(style),
         m_tab_width
     );
+    dc.drawKeyboardFocus(this->rect, style, state);
 }

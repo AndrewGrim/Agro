@@ -1,7 +1,8 @@
 #include "note_book.hpp"
 #include "../application.hpp"
+#include "widget.hpp"
 
-NoteBookTabBar::NoteBookTabBar() : Widget() {
+NoteBookTabBar::NoteBookTabBar(Widget *notebook_parent) : Widget(), m_notebook_parent{notebook_parent} {
     style.border.type = STYLE_BOTTOM;
 }
 
@@ -93,6 +94,20 @@ bool NoteBookTabBar::isLayout() {
     return true;
 }
 
+bool NoteBookTabBar::isFocusable() {
+    return true;
+}
+
+Widget* NoteBookTabBar::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    if (data.origin == children[((NoteBook*)m_notebook_parent)->currentTab()]) {
+        assert(event == FocusEvent::Reverse && "Got invalid focus event for this scenario!");
+        return m_notebook_parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+    } else {
+        return children[((NoteBook*)m_notebook_parent)->currentTab()]->handleFocusEvent(event, state, data);
+    }
+    return nullptr;
+}
+
 Widget* NoteBookTabBar::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (m_horizontal_scrollbar) {
         if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
@@ -126,6 +141,7 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
 }
 
 NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image *image,  bool close_button) : Button(text) {
+    // TODO holy shit this is some bad and brittle code!
     if (image) {
         setImage(image);
     }
@@ -235,6 +251,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Reset the border after drawing for correct sizeHint.
     style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
+    dc.drawKeyboardFocus(this->rect, style, state);
 }
 
 Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
@@ -270,6 +287,24 @@ Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
 
 bool NoteBookTabButton::isLayout() {
     return true;
+}
+
+bool NoteBookTabButton::isFocusable() {
+    return true;
+}
+
+Widget* NoteBookTabButton::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    if (data.origin == this) {
+        assert(parent && "NoteBookTabButton should always have a parent!");
+        if (event == FocusEvent::Forward) {
+            return ((NoteBookTabBar*)parent)->m_notebook_parent->children[parent_index]->handleFocusEvent(event, state, FocusPropagationData());
+        } else {
+            return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+        }
+    } else {
+        return setSoftFocus(event, state);
+    }
+    return nullptr;
 }
 
 Widget* NoteBookTabButton::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
@@ -310,7 +345,7 @@ NoteBook::NoteBook() {
 }
 
 NoteBook::~NoteBook() {
-
+    // TODO surely we should delete the notebooktabbar m_tabs?
 }
 
 void NoteBook::draw(DrawingContext &dc, Rect rect, int state) {
@@ -417,6 +452,26 @@ NoteBook* NoteBook::setCurrentTab(size_t index) {
 
 bool NoteBook::isLayout() {
     return true;
+}
+
+bool NoteBook::isFocusable() {
+    return true;
+}
+
+Widget* NoteBook::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    if (data.origin == m_tabs) {
+        assert(event == FocusEvent::Reverse && "Got invalid focus event for this scenario!");
+    } else if (data.origin == children[currentTab()]) {
+        if (event == FocusEvent::Reverse) {
+            return m_tabs->children[currentTab()]->handleFocusEvent(event, state, FocusPropagationData());
+        }
+    } else {
+        return m_tabs->handleFocusEvent(event, state, data);
+    }
+    if (parent) {
+        return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+    }
+    return nullptr;
 }
 
 Widget* NoteBook::propagateMouseEvent(Window *window, State *state, MouseEvent event) {

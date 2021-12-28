@@ -148,3 +148,7 @@ Button* Button::setImage(Image *image) {
 
     return this;
 }
+
+bool Button::isFocusable() {
+    return true;
+}

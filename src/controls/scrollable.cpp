@@ -126,6 +126,10 @@ bool Scrollable::isScrollable() {
     return true;
 }
 
+bool Scrollable::isFocusable() {
+    return true;
+}
+
 Widget* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
     if (m_vertical_scrollbar) {
         if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
@@ -210,4 +214,33 @@ Rect Scrollable::clip() {
     }
 
     return dc.clip();
+}
+
+Widget* Scrollable::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    assert(event != FocusEvent::Activate && "handleFocusEvent should only be called with Forward and Reverse focus events!");
+    if (event == FocusEvent::Forward) {
+        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() + 1 : 0;
+        for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
+            Widget *child = children[child_index_unwrapped];
+            if (child->isFocusable() && child->isVisible()) {
+                return child->handleFocusEvent(event, state, FocusPropagationData());
+            }
+        }
+        if (parent) {
+            return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+        }
+        return nullptr;
+    } else {
+        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() - 1 : (int)children.size() - 1;
+        for (; child_index_unwrapped > -1; child_index_unwrapped--) {
+            Widget *child = children[child_index_unwrapped];
+            if (child->isFocusable() && child->isVisible()) {
+                return child->handleFocusEvent(event, state, FocusPropagationData());
+            }
+        }
+        if (parent) {
+            return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+        }
+        return nullptr;
+    }
 }
