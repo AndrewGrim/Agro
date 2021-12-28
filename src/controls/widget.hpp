@@ -67,7 +67,7 @@
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
 
-            int parent_index = 0; // TODO this would not be representative
+            int parent_index = -1; // TODO Have another look at parent and parent_index for some widgets
             // when there is a parent but the widget its not part of the children
             // like in Splitter
             // also means remove is gonna totally break for splitter and any other
