@@ -1,6 +1,6 @@
 #ifndef UTIL_HPP
     #define UTIL_HPP
-    
+
         #include <iostream>
         #include <ostream>
 
@@ -22,6 +22,7 @@
             std::cout << message << std::endl;
         }
 
+        void info(std::string message, std::string text = "");
         void warn(std::string message, std::string text = "");
         void error(std::string message, std::string text = "");
 #endif

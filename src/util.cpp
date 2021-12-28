@@ -13,6 +13,10 @@ static void printLog(std::string message_type, std::string message, std::string 
     );
 }
 
+void info(std::string message, std::string text) {
+    printLog("INFO", message, text, Color("#ff00ff"));
+}
+
 void warn(std::string message, std::string text) {
     printLog("WARNING", message, text, Color("#ffff00"));
 }
