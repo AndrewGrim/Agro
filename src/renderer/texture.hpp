@@ -127,7 +127,7 @@
                 glGenerateMipmap(GL_TEXTURE_2D);
                 stbi_image_free(data);
             } else {
-                error("FAILED_TO_LOAD_TEXTURE", file_path);
+                fail("FAILED_TO_LOAD_TEXTURE", file_path);
             }
         }
     };

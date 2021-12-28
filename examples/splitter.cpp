@@ -17,7 +17,7 @@ struct SplitBox : Box {
                 } else if (this == ((Splitter*)this->parent)->m_second) {
                     ((Splitter*)this->parent)->right(split);
                 } else {
-                    error("somethings wrong");
+                    fail("somethings wrong");
                 }
             }
             split->left(this);
@@ -34,7 +34,7 @@ struct SplitBox : Box {
                 } else if (this == ((Splitter*)this->parent)->m_second) {
                     ((Splitter*)this->parent)->right(split);
                 } else {
-                    error("somethings wrong");
+                    fail("somethings wrong");
                 }
             }
             split->left(this);
