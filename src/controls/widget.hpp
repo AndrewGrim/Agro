@@ -49,6 +49,14 @@
         }
     };
 
+    struct FocusPropagationData {
+        Widget *origin = nullptr;
+        Option<int> origin_index = Option<int>();
+
+        FocusPropagationData() {}
+        FocusPropagationData(Widget *origin, Option<int> origin_index) : origin{origin}, origin_index{origin_index} {}
+    };
+
     /// A generic class meant to represent most interactable
     /// graphical elements within the library.
     /// To a big extent.. everything is a Widget. Layouts are also Widgets
@@ -238,7 +246,8 @@
 
             virtual bool handleScrollEvent(ScrollEvent event);
 
-            virtual Widget* propagateFocusEvent(FocusEvent event, State *state, Option<int> child_index);
+            Widget* setSoftFocus(FocusEvent event, State *state);
+            virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data);
 
             unsigned int proportion();
 

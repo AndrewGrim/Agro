@@ -468,8 +468,22 @@ void Window::layout() {
 }
 
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
-    if ((focused = focused->propagateFocusEvent(event, m_state, Option<int>()))) {
-        focused->propagateFocusEvent(event, m_state, Option<int>());
+    if (focused->isFocusable() && focused->isVisible()) {
+        if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, focused->parent_index))) {
+            if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
+                info("Unhandled focus event, starting again from m_main_widget");
+                m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, m_main_widget->parent_index));
+            }
+        }
+    } else {
+        // TODO we might want to either put this behind debug options or remove it
+        // once we go over all widgets and make sure they are keyboard navigable
+        warn("propagateFocusEvent encountered a non-focusable widget");
+        warn(std::string("focused->name(): ") + focused->name());
+        if (focused->parent) { warn(std::string("focused->parent->name(): ") + focused->parent->name()); }
+        if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
+            m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, m_main_widget->parent_index));
+        }
     }
     update();
 }

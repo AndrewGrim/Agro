@@ -219,51 +219,23 @@ bool Widget::handleScrollEvent(ScrollEvent event) {
     return false;
 }
 
-Widget* Widget::propagateFocusEvent(FocusEvent event, State *state, Option<int> child_index) {
-    assert(event != FocusEvent::Activate && "propagateFocusEvent should only be called with Forward and Reverse focus events!");
-    if (event == FocusEvent::Forward) {
-        int child_index_unwrapped = child_index ? child_index.unwrap() + 1 : 0;
-        for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
-            Widget *child = children[child_index_unwrapped];
-            if (child->isFocusable() && child->isVisible()) {
-                if (state->soft_focused) {
-                    state->soft_focused->onFocusLost.notify(state->soft_focused, event);
-                }
-                state->soft_focused = child;
-                child->onFocusGained.notify(child, event);
-                return nullptr;
-            }
-            if (!child->propagateFocusEvent(event, state, Option<int>())) {
-                return nullptr;
-            }
-        }
-        if (parent) {
-            return parent->propagateFocusEvent(event, state, Option<int>(parent_index));
-        }
-
-        return this;
-    } else {
-        int child_index_unwrapped = child_index ? child_index.unwrap() - 1 : (int)children.size() - 1;
-        for (; child_index_unwrapped > -1; child_index_unwrapped--) {
-            Widget *child = children[child_index_unwrapped];
-            if (child->isFocusable() && child->isVisible()) {
-                if (state->soft_focused) {
-                    state->soft_focused->onFocusLost.notify(state->soft_focused, event);
-                }
-                state->soft_focused = child;
-                child->onFocusGained.notify(child, event);
-                return nullptr;
-            }
-            if (!child->propagateFocusEvent(event, state, Option<int>())) {
-                return nullptr;
-            }
-        }
-        if (parent) {
-            return parent->propagateFocusEvent(event, state, Option<int>(parent_index));
-        }
-
-        return this;
+Widget* Widget::setSoftFocus(FocusEvent event, State *state) {
+    if (state->soft_focused) {
+        state->soft_focused->onFocusLost.notify(state->soft_focused, event);
     }
+    state->soft_focused = this;
+    this->onFocusGained.notify(this, event);
+    return this;
+}
+
+Widget* Widget::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    if (data.origin != this) {
+        return setSoftFocus(event, state);
+    }
+    if (parent) {
+        return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+    }
+    return nullptr;
 }
 
 bool Widget::isFocusable() {
