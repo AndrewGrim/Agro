@@ -24,5 +24,5 @@
 
         void info(std::string message, std::string text = "");
         void warn(std::string message, std::string text = "");
-        void error(std::string message, std::string text = "");
+        void fail(std::string message, std::string text = "");
 #endif

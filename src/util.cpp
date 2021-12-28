@@ -18,10 +18,10 @@ void info(std::string message, std::string text) {
 }
 
 void warn(std::string message, std::string text) {
-    printLog("WARNING", message, text, Color("#ffff00"));
+    printLog("WARN", message, text, Color("#ffff00"));
 }
 
-void error(std::string message, std::string text) {
-    printLog("ERROR", message, text, Color("#ff0000"));
+void fail(std::string message, std::string text) {
+    printLog("FAIL", message, text, Color("#ff0000"));
     exit(1);
 }
