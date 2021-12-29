@@ -166,6 +166,25 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     style.border.top = 4;
     style.border.left = 1;
     style.border.right = 1;
+
+    bind(SDLK_LEFT, Mod::None, [&]{
+        if (parent->children.size()) {
+            if (parent_index) {
+                parent->children[parent_index - 1]->activate();
+            } else if (parent_index == 0) {
+                parent->children[parent->children.size() - 1]->activate();
+            }
+        }
+    });
+    bind(SDLK_RIGHT, Mod::None, [&]{
+        if (parent->children.size()) {
+            if (parent_index < (int)parent->children.size() - 1) {
+                parent->children[parent_index + 1]->activate();
+            } else if (parent_index == (int)parent->children.size() - 1) {
+                parent->children[0]->activate();
+            }
+        }
+    });
 }
 
 NoteBookTabButton::~NoteBookTabButton() {
