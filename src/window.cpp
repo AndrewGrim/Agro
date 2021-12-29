@@ -226,22 +226,25 @@ void Window::run() {
                         }
                         bool matched = false;
                         Widget *focus_widget = m_state->soft_focused ? m_state->soft_focused : m_state->hard_focused;
-                        if (focus_widget && key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
-                            propagateFocusEvent(FocusEvent::Reverse, focus_widget);
-                        } else if (focus_widget && key == SDLK_TAB && mods[0] == Mod::Ctrl) {
-                            propagateFocusEvent(FocusEvent::Forward, focus_widget);
+                        assert(m_main_widget && "The main widget should never be null!");
+                        if (key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
+                            propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
+                        } else if (key == SDLK_TAB && mods[0] == Mod::Ctrl) {
+                            propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
                         } else if (m_state->soft_focused && m_state->soft_focused != m_state->hard_focused && key == SDLK_SPACE) {
                             m_state->soft_focused->activate();
                             SDL_FlushEvent(SDL_TEXTINPUT);
                         } else {
                             matchKeybind(matched, mods, key, m_keyboard_shortcuts);
-                            if (!matched && m_state->hard_focused) {
-                                matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
-                                if (!matched && focus_widget) {
+                            if (!matched) {
+                                if (m_state->hard_focused) {
+                                    matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
+                                }
+                                if (!matched) {
                                     if (key == SDLK_TAB && mods[1] == Mod::Shift) {
-                                        propagateFocusEvent(FocusEvent::Reverse, focus_widget);
+                                        propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
                                     } else if (key == SDLK_TAB) {
-                                        propagateFocusEvent(FocusEvent::Forward, focus_widget);
+                                        propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
                                     }
                                 }
                             }
@@ -468,6 +471,7 @@ void Window::layout() {
 }
 
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
+    assert(focused && "The passed in focused widget should never be null!");
     if (focused->isFocusable() && focused->isVisible()) {
         if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, focused->parent_index))) {
             if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
