@@ -10,6 +10,9 @@ CheckButton::CheckButton(std::string text, bool is_checked) : Widget(), m_text{t
         else { m_is_checked = true; }
         onValueChanged.notify(m_is_checked);
     });
+    bind(SDLK_SPACE, Mod::None, [&](){
+        activate();
+    });
 }
 
 CheckButton::~CheckButton() {

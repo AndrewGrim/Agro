@@ -2,6 +2,9 @@
 
 Button::Button(std::string text) {
     setText(text);
+    bind(SDLK_SPACE, Mod::None, [&](){
+        activate();
+    });
 }
 
 Button::Button(Image *image) {
