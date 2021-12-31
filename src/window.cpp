@@ -476,7 +476,7 @@ void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
         if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, focused->parent_index))) {
             if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
                 info("Unhandled focus event, starting again from m_main_widget");
-                m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, m_main_widget->parent_index));
+                m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<int>()));
             }
         }
     } else {
@@ -486,7 +486,7 @@ void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
         warn(std::string("focused->name(): ") + focused->name());
         if (focused->parent) { warn(std::string("focused->parent->name(): ") + focused->parent->name()); }
         if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
-            m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, m_main_widget->parent_index));
+            m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<int>()));
         }
     }
     update();
