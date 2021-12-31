@@ -79,6 +79,6 @@ Size CheckButton::sizeHint(DrawingContext &dc) {
     return m_size;
 }
 
-bool CheckButton::isFocusable() {
-    return true;
+int CheckButton::isFocusable() {
+    return (int)FocusType::Focusable;
 }

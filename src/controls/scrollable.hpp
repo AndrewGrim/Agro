@@ -27,7 +27,7 @@
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual bool isScrollable() override;
-            virtual bool isFocusable() override;
+            virtual int isFocusable() override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
             virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;

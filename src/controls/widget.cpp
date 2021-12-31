@@ -161,7 +161,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
     switch (event.type) {
         case MouseEvent::Type::Down:
             state->pressed = this;
-            if (isFocusable()) {
+            if ((FocusType)isFocusable() == FocusType::Focusable) {
                 // We only want to send one event in the case
                 // that soft and hard focus are currently the same widget.
                 if (state->soft_focused && state->soft_focused != state->hard_focused) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
@@ -238,8 +238,8 @@ Widget* Widget::handleFocusEvent(FocusEvent event, State *state, FocusPropagatio
     return nullptr;
 }
 
-bool Widget::isFocusable() {
-    return false;
+int Widget::isFocusable() {
+    return (int)FocusType::None;
 }
 
 bool Widget::isLayout() {

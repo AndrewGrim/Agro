@@ -621,6 +621,6 @@ void LineEdit::redo() {
     }
 }
 
-bool LineEdit::isFocusable() {
-    return true;
+int LineEdit::isFocusable() {
+    return (int)FocusType::Focusable;
 }

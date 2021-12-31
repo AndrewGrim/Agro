@@ -16,7 +16,7 @@
             virtual const char* name() override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
-            virtual bool isFocusable() override;
+            virtual int isFocusable() override;
             Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
@@ -32,7 +32,7 @@
             virtual const char* name() override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
-            virtual bool isFocusable() override;
+            virtual int isFocusable() override;
             Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
@@ -55,7 +55,7 @@
             virtual void draw(DrawingContext &dc, Rect rect, int state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
-            virtual bool isFocusable() override;
+            virtual int isFocusable() override;
             Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             bool isActive();

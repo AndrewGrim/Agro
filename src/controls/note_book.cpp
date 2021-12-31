@@ -94,14 +94,14 @@ bool NoteBookTabBar::isLayout() {
     return true;
 }
 
-bool NoteBookTabBar::isFocusable() {
-    return true;
+int NoteBookTabBar::isFocusable() {
+    return (int)FocusType::Passthrough;
 }
 
 Widget* NoteBookTabBar::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
     if (data.origin == children[((NoteBook*)m_notebook_parent)->currentTab()]) {
         assert(event == FocusEvent::Reverse && "Got invalid focus event for this scenario!");
-        return m_notebook_parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+        return m_notebook_parent->handleFocusEvent(event, state, FocusPropagationData(this, Option<int>()));
     } else {
         return children[((NoteBook*)m_notebook_parent)->currentTab()]->handleFocusEvent(event, state, data);
     }
@@ -308,8 +308,8 @@ bool NoteBookTabButton::isLayout() {
     return true;
 }
 
-bool NoteBookTabButton::isFocusable() {
-    return true;
+int NoteBookTabButton::isFocusable() {
+    return (int)FocusType::Focusable;
 }
 
 Widget* NoteBookTabButton::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
@@ -473,8 +473,8 @@ bool NoteBook::isLayout() {
     return true;
 }
 
-bool NoteBook::isFocusable() {
-    return true;
+int NoteBook::isFocusable() {
+    return (int)FocusType::Passthrough;
 }
 
 Widget* NoteBook::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {

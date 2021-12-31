@@ -126,8 +126,8 @@ bool Scrollable::isScrollable() {
     return true;
 }
 
-bool Scrollable::isFocusable() {
-    return true;
+int Scrollable::isFocusable() {
+    return (int)FocusType::Passthrough;
 }
 
 Widget* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent event) {

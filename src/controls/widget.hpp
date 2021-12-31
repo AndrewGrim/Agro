@@ -57,6 +57,12 @@
         FocusPropagationData(Widget *origin, Option<int> origin_index) : origin{origin}, origin_index{origin_index} {}
     };
 
+    enum class FocusType {
+        None = 0,
+        Passthrough = 1,
+        Focusable = 2,
+    };
+
     /// A generic class meant to represent most interactable
     /// graphical elements within the library.
     /// To a big extent.. everything is a Widget. Layouts are also Widgets
@@ -216,7 +222,7 @@
             // TODO double check what this is about??? i think it just indicates whether a Widget utilizes ScrollBar?
             virtual bool isScrollable();
 
-            virtual bool isFocusable();
+            virtual int isFocusable();
 
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();

@@ -197,8 +197,8 @@ bool Box::isLayout() {
     return true;
 }
 
-bool Box::isFocusable() {
-    return true;
+int Box::isFocusable() {
+    return (int)FocusType::Passthrough;
 }
 
 const char* Box::name() {

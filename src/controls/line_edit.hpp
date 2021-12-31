@@ -89,7 +89,7 @@
             void setCursor(size_t index);
             void undo();
             void redo();
-            bool isFocusable() override;
+            int isFocusable() override;
 
             std::string m_text;
             std::string m_placeholder_text;

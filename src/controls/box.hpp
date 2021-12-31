@@ -14,7 +14,7 @@
             void setAlignPolicy(Align align_policy);
             Align alignPolicy();
             virtual bool isLayout() override;
-            virtual bool isFocusable() override;
+            virtual int isFocusable() override;
             virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
 
             /// Align policy dictates in on which axis
