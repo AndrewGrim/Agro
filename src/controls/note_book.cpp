@@ -412,7 +412,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
 
     m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
-        tab_button->setActive(true);
+        setCurrentTab(0);
         layout();
     } else {
         update();
@@ -462,6 +462,7 @@ NoteBook* NoteBook::setCurrentTab(size_t index) {
     }
     if (index < children.size()) {
         ((NoteBookTabButton*)m_tabs->children[index])->setActive(true);
+        m_tabs->children[index]->setHardFocus(Application::get()->m_state);
     }
     m_tab_index = index;
     layout();
