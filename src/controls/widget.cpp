@@ -161,16 +161,7 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
     switch (event.type) {
         case MouseEvent::Type::Down:
             state->pressed = this;
-            if ((FocusType)isFocusable() == FocusType::Focusable) {
-                // We only want to send one event in the case
-                // that soft and hard focus are currently the same widget.
-                if (state->soft_focused && state->soft_focused != state->hard_focused) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
-                if (state->hard_focused && state->soft_focused != state->hard_focused) { state->hard_focused->onFocusLost.notify(state->hard_focused, FocusEvent::Activate); }
-                if ((state->soft_focused && state->hard_focused) && (state->soft_focused == state->hard_focused)) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
-                state->soft_focused = this;
-                state->hard_focused = this;
-                onFocusGained.notify(this, FocusEvent::Activate);
-            }
+            setHardFocus(state);
             onMouseDown.notify(this, event);
             break;
         case MouseEvent::Type::Up:
@@ -226,6 +217,20 @@ Widget* Widget::setSoftFocus(FocusEvent event, State *state) {
     state->soft_focused = this;
     this->onFocusGained.notify(this, event);
     return this;
+}
+
+void Widget::setHardFocus(State *state) {
+    if ((FocusType)isFocusable() == FocusType::Focusable) {
+        // We only want to send one event in the case
+        // that soft and hard focus are currently the same widget.
+        if (state->soft_focused && state->soft_focused != state->hard_focused) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
+        if (state->hard_focused && state->soft_focused != state->hard_focused) { state->hard_focused->onFocusLost.notify(state->hard_focused, FocusEvent::Activate); }
+        if ((state->soft_focused && state->hard_focused) && (state->soft_focused == state->hard_focused)) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
+        state->soft_focused = this;
+        state->hard_focused = this;
+        onFocusGained.notify(this, FocusEvent::Activate);
+    }
+    update();
 }
 
 Widget* Widget::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {

@@ -253,6 +253,7 @@
             virtual bool handleScrollEvent(ScrollEvent event);
 
             Widget* setSoftFocus(FocusEvent event, State *state);
+            void setHardFocus(State *state);
             virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data);
 
             unsigned int proportion();
