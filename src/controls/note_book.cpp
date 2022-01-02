@@ -202,7 +202,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     style.border.type = STYLE_NONE;
     if (isActive()) {
         style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-        style.border.color_top = Application::get()->dc->accentWidgetBackground(style);
+        style.border.color_top = Application::get()->getCurrentWindow()->dc->accentWidgetBackground(style);
         rect.h += BOTTOM_BORDER(this->parent);
         color = dc.windowBackground(style);
     } else if (isPressed() && isHovered()) {
@@ -462,7 +462,7 @@ NoteBook* NoteBook::setCurrentTab(size_t index) {
     }
     if (index < children.size()) {
         ((NoteBookTabButton*)m_tabs->children[index])->setActive(true);
-        m_tabs->children[index]->setHardFocus(Application::get()->m_state);
+        m_tabs->children[index]->setHardFocus(Application::get()->getCurrentWindow()->m_state);
     }
     m_tab_index = index;
     layout();

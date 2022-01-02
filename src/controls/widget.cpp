@@ -6,7 +6,7 @@ Widget::Widget() {
 }
 
 Widget::~Widget() {
-    Application::get()->removeFromState(this);
+    Application::get()->getCurrentWindow()->removeFromState(this);
     for (Widget *child : this->children) {
         delete child;
     }
@@ -30,7 +30,7 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion
 
 Widget* Widget::remove(size_t parent_index) {
     Widget *child = this->children[parent_index];
-    Application::get()->removeFromState(child);
+    Application::get()->getCurrentWindow()->removeFromState(child);
     this->children.erase(this->children.begin() + parent_index);
     size_t i = 0;
     for (Widget *child : this->children) {
@@ -89,24 +89,24 @@ bool Widget::isVisible() {
 }
 
 bool Widget::isHovered() {
-    return Application::get()->m_state->hovered == this;
+    return Application::get()->getCurrentWindow()->m_state->hovered == this;
 }
 
 bool Widget::isPressed() {
-    return Application::get()->m_state->pressed == this;
+    return Application::get()->getCurrentWindow()->m_state->pressed == this;
 }
 
 bool Widget::isSoftFocused() {
-    return Application::get()->m_state->soft_focused == this;
+    return Application::get()->getCurrentWindow()->m_state->soft_focused == this;
 }
 
 bool Widget::isHardFocused() {
-    return Application::get()->m_state->hard_focused == this;
+    return Application::get()->getCurrentWindow()->m_state->hard_focused == this;
 }
 
 int Widget::state() {
     int widget_state = STATE_DEFAULT;
-    State *app_state = Application::get()->m_state;
+    State *app_state = Application::get()->getCurrentWindow()->m_state;
     if (app_state->hovered == this) { widget_state |= STATE_HOVERED; }
     if (app_state->pressed == this) { widget_state |= STATE_PRESSED; }
     if (app_state->soft_focused == this) { widget_state |= STATE_SOFT_FOCUSED; }
@@ -116,6 +116,7 @@ int Widget::state() {
 }
 
 Widget* Widget::update() {
+    // TODO this probably should be window specific at some point
     Application::get()->update();
 
     return this;
@@ -345,9 +346,9 @@ void Widget::forEachWidget(std::function<void(Widget *widget)> action) {
 
 void Widget::activate() {
     SDL_MouseButtonEvent event = { SDL_MOUSEBUTTONDOWN, SDL_GetTicks(), 0, 0, SDL_BUTTON_LEFT, SDL_PRESSED, 1, 0, -1, -1 };
-    handleMouseEvent(Application::get(), Application::get()->m_state, event);
+    handleMouseEvent(Application::get()->getCurrentWindow(), Application::get()->getCurrentWindow()->m_state, event);
     event = { SDL_MOUSEBUTTONUP, SDL_GetTicks(), 0, 0, SDL_BUTTON_LEFT, SDL_RELEASED, 1, 0, -1, -1 };
-    handleMouseEvent(Application::get(), Application::get()->m_state, event);
-    Application::get()->m_state->hovered = nullptr;
+    handleMouseEvent(Application::get()->getCurrentWindow(), Application::get()->getCurrentWindow()->m_state, event);
+    Application::get()->getCurrentWindow()->m_state->hovered = nullptr;
     update();
 }

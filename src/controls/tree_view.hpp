@@ -274,7 +274,7 @@
                             std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
                         }
                         ((TreeView<T>*)parent)->m_virtual_size_changed = true;
-                        ((TreeView<T>*)parent)->sizeHint(*Application::get()->dc);
+                        ((TreeView<T>*)parent)->sizeHint(*Application::get()->getCurrentWindow()->dc);
                         update();
                     }
                 }
@@ -532,7 +532,7 @@
                 }
                 Rect drawing_rect = rect;
                 if (m_mode == Mode::Unroll) {
-                    drawing_rect = Rect(0, 0, Application::get()->size.w, Application::get()->size.h);
+                    drawing_rect = Rect(0, 0, Application::get()->getCurrentWindow()->size.w, Application::get()->getCurrentWindow()->size.h);
                     column_header = 0;
                 }
 

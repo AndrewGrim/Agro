@@ -2,11 +2,7 @@
 #include "../application.hpp"
 #include "../slice.hpp"
 
-DrawingContext::DrawingContext() {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
+DrawingContext::DrawingContext(Window *window) : window{window} {
     unsigned int offset = 0;
     unsigned int indexCount = MAX_BATCH_SIZE * QUAD_INDEX_COUNT;
     for (unsigned int i = 0; i < indexCount; i += QUAD_INDEX_COUNT) {
@@ -19,7 +15,7 @@ DrawingContext::DrawingContext() {
         offset += 4;
     }
 
-    renderer = new Renderer(indices);
+    renderer = new Renderer(window, indices);
 
     default_light_style = {
         Style::Margin{
@@ -595,8 +591,8 @@ Color DrawingContext::borderRightBackground(Style &style) {
 
 Color DrawingContext::getColor(Point point) {
     float data[4] = { 0, 0, 0, 0 };
-    Size win = Application::get()->size;
-    if (point.x >= win.w || point.y >= win.h) { return COLOR_NONE; }
-    glReadPixels(point.x, win.h - point.y, 1, 1, GL_RGBA, GL_FLOAT, data);
+    Size window_size = window->size;
+    if (point.x >= window_size.w || point.y >= window_size.h) { return COLOR_NONE; }
+    glReadPixels(point.x, window_size.h - point.y, 1, 1, GL_RGBA, GL_FLOAT, data);
     return Color(data[0], data[1], data[2], data[3]);
 }

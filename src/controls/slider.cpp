@@ -36,7 +36,7 @@ Size SliderButton::sizeHint(DrawingContext &dc) {
 
 SliderButton* SliderButton::setMinSize(Size size) {
     m_size = size;
-    Application::get()->dc->sizeHintBorder(m_size, style);
+    Application::get()->getCurrentWindow()->dc->sizeHintBorder(m_size, style);
     layout();
     return this;
 }

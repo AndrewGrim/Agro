@@ -73,8 +73,9 @@
             /// Tells the Application to update which causes a redraw.
             void update();
 
-            /// Starts the Application, calls `onReady` and enters the event loop.
             void run();
+
+            void handleSDLEvent(SDL_Event &event);
 
             /// Redraws the Application and swaps the front buffer.
             void show();

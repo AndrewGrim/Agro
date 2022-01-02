@@ -22,6 +22,8 @@
     #include "texture.hpp"
     #include "font.hpp"
 
+    class Window;
+
     struct Renderer {
         enum class Sampler {
             Color,
@@ -56,8 +58,9 @@
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         unsigned int VAO, VBO, EBO;
         Rect clip_rect; // Gets set before each draw() in Application.
+        Window *window = nullptr;
 
-        Renderer(unsigned int *indices);
+        Renderer(Window *window, unsigned int *indices);
         ~Renderer();
         void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, int tab_width = 4, bool is_multiline = false, int line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
         Size measureText(Font *font, std::string text, int tab_width = 4, bool is_multiline = false, int line_spacing = 5);

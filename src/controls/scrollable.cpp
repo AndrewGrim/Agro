@@ -199,7 +199,7 @@ void Scrollable::setMinSize(Size min_size) {
 }
 
 Rect Scrollable::clip() {
-    DrawingContext &dc = *Application::get()->dc;
+    DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
 
     if (parent) {
         if (parent->isScrollable()) {

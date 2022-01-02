@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 #include "../application.hpp"
 
-Renderer::Renderer(unsigned int *indices) {
+Renderer::Renderer(Window *window, unsigned int *indices) : window{window} {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -157,7 +157,8 @@ void Renderer::textCheck(Font *font) {
 }
 
 void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing, Selection selection, Color selection_color) {
-    Size window = Application::get()->size;
+    // TODO this needs to be window specific
+    Size window_size = window->size;
     if (selection.begin > selection.end) {
         auto temp = selection.end;
         selection.end = selection.begin;
@@ -178,13 +179,13 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
         if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
         if (c == '\n' && is_multiline) {
             point.y += font->max_height + line_spacing;
-            if (point.y >= window.h) { break; }
+            if (point.y >= window_size.h) { break; }
             x = point.x;
         }
-        if (!is_multiline && x > window.w) { break; }
+        if (!is_multiline && x > window_size.w) { break; }
         auto _color = color;
         if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
-        if (x + advance >= 0 && x <= window.w) {
+        if (x + advance >= 0 && x <= window_size.w) {
             float xpos = x + ch.bearing.x;
             float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
 

@@ -40,29 +40,35 @@
         ~Cursors();
     };
 
-    class Application : public Window {
-        public:
-            int scroll_amount = 50;
-            void setMouseCursor(Cursor cursor);
-            static Application* get();
-            std::unordered_map<std::string, std::shared_ptr<Texture>> icons = {
-                {"close", std::make_shared<Texture>(close_png, close_png_length)},
-                {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
-                {"up_arrow", std::make_shared<Texture>(up_arrow_png, up_arrow_png_length)},
-                {"tree_layout", std::make_shared<Texture>(tree_layout_png, tree_layout_png_length)},
-                {"table_layout", std::make_shared<Texture>(table_layout_png, table_layout_png_length)},
-                {"check_button_unchecked", std::make_shared<Texture>(check_button_unchecked_png, check_button_unchecked_png_length)},
-                {"check_button_checked", std::make_shared<Texture>(check_button_checked_png, check_button_checked_png_length)},
-                {"radio_button_unchecked", std::make_shared<Texture>(radio_button_unchecked_png, radio_button_unchecked_png_length)},
-                {"radio_button_checked", std::make_shared<Texture>(radio_button_checked_png, radio_button_checked_png_length)},
-                {"radio_button_background", std::make_shared<Texture>(radio_button_background_png, radio_button_background_png_length)},
-                {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
-            };
+    struct Application : public Window {
+        int scroll_amount = 50;
+        void setMouseCursor(Cursor cursor);
+        static Application* get();
+        std::unordered_map<std::string, std::shared_ptr<Texture>> icons = {
+            {"close", std::make_shared<Texture>(close_png, close_png_length)},
+            {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
+            {"up_arrow", std::make_shared<Texture>(up_arrow_png, up_arrow_png_length)},
+            {"tree_layout", std::make_shared<Texture>(tree_layout_png, tree_layout_png_length)},
+            {"table_layout", std::make_shared<Texture>(table_layout_png, table_layout_png_length)},
+            {"check_button_unchecked", std::make_shared<Texture>(check_button_unchecked_png, check_button_unchecked_png_length)},
+            {"check_button_checked", std::make_shared<Texture>(check_button_checked_png, check_button_checked_png_length)},
+            {"radio_button_unchecked", std::make_shared<Texture>(radio_button_unchecked_png, radio_button_unchecked_png_length)},
+            {"radio_button_checked", std::make_shared<Texture>(radio_button_checked_png, radio_button_checked_png_length)},
+            {"radio_button_background", std::make_shared<Texture>(radio_button_background_png, radio_button_background_png_length)},
+            {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
+        };
 
-        private:
-            Application(const char *title, Size size);
-            ~Application();
-            std::vector<SDL_Window*> m_windows;
-            Cursors m_cursors;
+        /// Starts the Application, calls `onReady` and enters the event loop.
+        void run();
+
+        void setCurrentWindow(Window *window);
+        Window* getCurrentWindow();
+
+        Application(const char *title, Size size);
+        ~Application();
+
+        Window *current_window = nullptr;
+        std::vector<Window*> m_windows;
+        Cursors m_cursors;
     };
 #endif

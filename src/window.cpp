@@ -11,26 +11,6 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
     return 0;
 }
 
-// This is needed on Windows and on MacOS to
-// redraw the window while the user is resizing it.
-int forcePaintWhileResizing(void *data, SDL_Event *event) {
-    switch (event->type) {
-        case SDL_WINDOWEVENT:
-            // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
-            // supposedly also triggers when the system changes the window size.
-            if (event->window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-                Window *win = (Window*)data;
-                win->handleResizeEvent(event->window.data1, event->window.data2);
-                if (win->onResize) {
-                    win->onResize(win);
-                }
-                return 0;
-            }
-            break;
-    }
-    return 1;
-}
-
 Window::Window(const char* title, Size size) {
     this->m_title = title;
     this->size = size;
@@ -39,25 +19,37 @@ Window::Window(const char* title, Size size) {
         title,
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
-        static_cast<int>(size.w), static_cast<int>(size.h),
+        size.w, size.h,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
-    SDL_SetEventFilter(forcePaintWhileResizing, this);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     m_sdl_context = SDL_GL_CreateContext(m_win);
-    SDL_GL_MakeCurrent(m_win, m_sdl_context); // TODO this will need to be called when switching between windows
+    SDL_GL_MakeCurrent(m_win, m_sdl_context);
     SDL_GL_SetSwapInterval(0);
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
         fail("FAILED_TO_INITIALIZE_GLAD");
     }
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    dc = new DrawingContext();
+    dc = new DrawingContext(this);
 }
 
 Window::~Window() {
+    Application &app = *Application::get();
+    int index = 0;
+    for (Window *window : app.m_windows) {
+        if (window == this) {
+            app.m_windows.erase(app.m_windows.begin() + index);
+            if (app.current_window == this) { app.current_window = &app; }
+            break;
+        }
+        index++;
+    }
     delete m_main_widget;
     delete m_state;
     delete dc;
@@ -65,7 +57,168 @@ Window::~Window() {
     SDL_DestroyWindow(m_win);
 }
 
+void Window::run() {
+    // TODO there must be a better place to put this
+    // TODO maybe dont treat the application as a window?
+    println("runs");
+    Application::get()->m_windows.push_back(this);
+    // assert(false && "gets here");
+    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
+    setMainWidget(m_main_widget);
+    show();
+    if (onReady) {
+        onReady(this);
+    }
+    m_state->hovered = m_main_widget;
+}
+
+void Window::handleSDLEvent(SDL_Event &event) {
+    Application::get()->setCurrentWindow(this);
+    switch (event.type) {
+        case SDL_MOUSEBUTTONDOWN: {
+            m_is_mouse_captured = true;
+            SDL_CaptureMouse(SDL_TRUE);
+            ContextEventResult result = propagateMouseEvent(MouseEvent(event.button));
+            assert(result.widget && "result.widget should never be null because the mouse event should come from within the window and we should have at least the m_main_widget!");
+            if (result.event == Window::ContextEvent::False) {
+                if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && result.widget->context_menu) {
+                    active_context_menu = result.widget->context_menu;
+                    context_menu_position_start = Point(event.button.x, event.button.y);
+                } else {
+                    active_context_menu = nullptr;
+                }
+            }
+            break;
+        }
+        case SDL_MOUSEBUTTONUP:
+            if (m_mouse_inside) {
+                if (m_is_mouse_captured) {
+                    m_is_mouse_captured = false;
+                    SDL_CaptureMouse(SDL_FALSE);
+                    if ((event.button.x < 0 || event.button.x > size.w) ||
+                        (event.button.y < 0 || event.button.y > size.h)) {
+                        if (m_state->pressed) {
+                            SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
+                            m_state->pressed->onMouseLeft.notify(m_state->pressed, MouseEvent(event));
+                            m_state->pressed = nullptr;
+                            update();
+                        }
+                        if (m_state->hovered) {
+                            m_state->hovered = nullptr;
+                            update();
+                        }
+                        break;
+                    }
+                }
+                propagateMouseEvent(MouseEvent(event.button));
+            } else {
+                if (m_state->pressed) {
+                    m_state->pressed = nullptr;
+                    update();
+                }
+            }
+            break;
+        case SDL_MOUSEMOTION:
+            if (tooltip_did_draw) {
+                tooltip_did_draw = false;
+                draw_tooltip = false;
+            }
+            propagateMouseEvent(MouseEvent(event.motion));
+            break;
+        case SDL_MOUSEWHEEL:
+            if (m_state->hovered) {
+                Widget *widget = m_state->hovered;
+                bool handled = false;
+                while (widget->parent) {
+                    if (!widget->handleScrollEvent(ScrollEvent(event.wheel))) {
+                        widget = widget->parent;
+                    } else {
+                        handled = true;
+                        break;
+                    }
+                }
+                if (!handled) {
+                    widget->handleScrollEvent(ScrollEvent(event.wheel));
+                }
+            }
+            break;
+        case SDL_WINDOWEVENT:
+            switch (event.window.event) {
+                case SDL_WINDOWEVENT_ENTER:
+                    m_mouse_inside = true;
+                    break;
+                case SDL_WINDOWEVENT_LEAVE:
+                    m_mouse_inside = false;
+                    if (m_state->hovered && !m_state->pressed) {
+                        SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
+                        m_state->hovered->onMouseLeft.notify(m_state->hovered, MouseEvent(event));
+                        m_state->hovered = nullptr;
+                        SDL_RemoveTimer(m_tooltip_callback);
+                        update();
+                    }
+                    break;
+                case SDL_WINDOWEVENT_CLOSE:
+                    // TODO not done yet
+                    // we need to be able to destroy the window
+                    // Application::get()->quit();
+                    delete this; return;
+                    // break;
+            }
+            break;
+        case SDL_KEYDOWN: {
+                SDL_Keycode key = event.key.keysym.sym;
+                Uint16 mod = event.key.keysym.mod;
+                Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
+                if (mod & KMOD_CTRL) {
+                    mods[0] = Mod::Ctrl;
+                }
+                if (mod & KMOD_SHIFT) {
+                    mods[1] = Mod::Shift;
+                }
+                if (mod & KMOD_ALT) {
+                    mods[2] = Mod::Alt;
+                }
+                if (mod & KMOD_GUI) {
+                    mods[3] = Mod::Gui;
+                }
+                bool matched = false;
+                Widget *focus_widget = m_state->soft_focused ? m_state->soft_focused : m_state->hard_focused;
+                assert(m_main_widget && "The main widget should never be null!");
+                if (key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
+                    propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
+                } else if (key == SDLK_TAB && mods[0] == Mod::Ctrl) {
+                    propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
+                } else if (m_state->soft_focused && m_state->soft_focused != m_state->hard_focused && key == SDLK_SPACE) {
+                    m_state->soft_focused->activate();
+                    SDL_FlushEvent(SDL_TEXTINPUT);
+                } else {
+                    matchKeybind(matched, mods, key, m_keyboard_shortcuts);
+                    if (!matched) {
+                        if (m_state->hard_focused) {
+                            matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
+                        }
+                        if (!matched) {
+                            if (key == SDLK_TAB && mods[1] == Mod::Shift) {
+                                propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
+                            } else if (key == SDLK_TAB) {
+                                propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
+                            }
+                        }
+                    }
+                }
+            }
+            break;
+        case SDL_TEXTINPUT:
+            if (m_state->hard_focused) {
+                m_state->hard_focused->handleTextEvent(*dc, event.text.text);
+            }
+            break;
+    }
+}
+
 void Window::draw() {
+    // TODO we may want to check here if the window is already current or not (on the opengl side)
+    Application::get()->setCurrentWindow(this);
     dc->renderer->shader.use();
     float projection[16] = {
          2.0f / size.w,  0.0f         ,  0.0f, 0.0f,
@@ -103,185 +256,6 @@ void Window::setMainWidget(Widget *widget) {
 void Window::show() {
     draw();
     dc->swap_buffer(m_win);
-}
-
-void Window::run() {
-    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
-    setMainWidget(m_main_widget);
-    show();
-    if (onReady) {
-        onReady(this);
-    }
-    m_state->hovered = m_main_widget;
-    uint32_t fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
-    uint32_t frame_time = 1000 / fps;
-    SDL_StartTextInput();
-    while (m_running) {
-        DELAY:;
-        uint32_t frame_start;
-        SDL_Event event;
-        int status;
-        if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
-            frame_start = SDL_GetTicks();
-            switch (event.type) {
-                case SDL_MOUSEBUTTONDOWN: {
-                    m_is_mouse_captured = true;
-                    SDL_CaptureMouse(SDL_TRUE);
-                    ContextEventResult result = propagateMouseEvent(MouseEvent(event.button));
-                    assert(result.widget && "result.widget should never be null because the mouse event should come from within the window and we should have at least the m_main_widget!");
-                    if (result.event == Window::ContextEvent::False) {
-                        if (MouseEvent(event.button).button == MouseEvent::Button::Right && !active_context_menu && result.widget->context_menu) {
-                            active_context_menu = result.widget->context_menu;
-                            context_menu_position_start = Point(event.button.x, event.button.y);
-                        } else {
-                            active_context_menu = nullptr;
-                        }
-                    }
-                    break;
-                }
-                case SDL_MOUSEBUTTONUP:
-                    if (m_mouse_inside) {
-                        if (m_is_mouse_captured) {
-                            m_is_mouse_captured = false;
-                            SDL_CaptureMouse(SDL_FALSE);
-                            if ((event.button.x < 0 || event.button.x > size.w) ||
-                                (event.button.y < 0 || event.button.y > size.h)) {
-                                if (m_state->pressed) {
-                                    SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
-                                    m_state->pressed->onMouseLeft.notify(m_state->pressed, MouseEvent(event));
-                                    m_state->pressed = nullptr;
-                                    update();
-                                }
-                                if (m_state->hovered) {
-                                    m_state->hovered = nullptr;
-                                    update();
-                                }
-                                break;
-                            }
-                        }
-                        propagateMouseEvent(MouseEvent(event.button));
-                    } else {
-                        if (m_state->pressed) {
-                            m_state->pressed = nullptr;
-                            update();
-                        }
-                    }
-                    break;
-                case SDL_MOUSEMOTION:
-                    if (tooltip_did_draw) {
-                        tooltip_did_draw = false;
-                        draw_tooltip = false;
-                    }
-                    propagateMouseEvent(MouseEvent(event.motion));
-                    break;
-                case SDL_MOUSEWHEEL:
-                    if (m_state->hovered) {
-                        Widget *widget = m_state->hovered;
-                        bool handled = false;
-                        while (widget->parent) {
-                            if (!widget->handleScrollEvent(ScrollEvent(event.wheel))) {
-                                widget = widget->parent;
-                            } else {
-                                handled = true;
-                                break;
-                            }
-                        }
-                        if (!handled) {
-                            widget->handleScrollEvent(ScrollEvent(event.wheel));
-                        }
-                    }
-                    break;
-                case SDL_WINDOWEVENT:
-                    switch (event.window.event) {
-                        case SDL_WINDOWEVENT_ENTER:
-                            m_mouse_inside = true;
-                            break;
-                        case SDL_WINDOWEVENT_LEAVE:
-                            m_mouse_inside = false;
-                            if (m_state->hovered && !m_state->pressed) {
-                                SDL_MouseMotionEvent event = { SDL_MOUSEMOTION, SDL_GetTicks(), 0, 0, SDL_RELEASED, -1, -1, 0, 0 };
-                                m_state->hovered->onMouseLeft.notify(m_state->hovered, MouseEvent(event));
-                                m_state->hovered = nullptr;
-                                SDL_RemoveTimer(m_tooltip_callback);
-                                update();
-                            }
-                            break;
-                    }
-                    break;
-                case SDL_KEYDOWN: {
-                        SDL_Keycode key = event.key.keysym.sym;
-                        Uint16 mod = event.key.keysym.mod;
-                        Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
-                        if (mod & KMOD_CTRL) {
-                            mods[0] = Mod::Ctrl;
-                        }
-                        if (mod & KMOD_SHIFT) {
-                            mods[1] = Mod::Shift;
-                        }
-                        if (mod & KMOD_ALT) {
-                            mods[2] = Mod::Alt;
-                        }
-                        if (mod & KMOD_GUI) {
-                            mods[3] = Mod::Gui;
-                        }
-                        bool matched = false;
-                        Widget *focus_widget = m_state->soft_focused ? m_state->soft_focused : m_state->hard_focused;
-                        assert(m_main_widget && "The main widget should never be null!");
-                        if (key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
-                            propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
-                        } else if (key == SDLK_TAB && mods[0] == Mod::Ctrl) {
-                            propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
-                        } else if (m_state->soft_focused && m_state->soft_focused != m_state->hard_focused && key == SDLK_SPACE) {
-                            m_state->soft_focused->activate();
-                            SDL_FlushEvent(SDL_TEXTINPUT);
-                        } else {
-                            matchKeybind(matched, mods, key, m_keyboard_shortcuts);
-                            if (!matched) {
-                                if (m_state->hard_focused) {
-                                    matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
-                                }
-                                if (!matched) {
-                                    if (key == SDLK_TAB && mods[1] == Mod::Shift) {
-                                        propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
-                                    } else if (key == SDLK_TAB) {
-                                        propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case SDL_TEXTINPUT:
-                    if (m_state->hard_focused) {
-                        m_state->hard_focused->handleTextEvent(*dc, event.text.text);
-                    }
-                    break;
-                case SDL_QUIT:
-                    quit();
-            }
-        }
-        if (!status) { frame_start = SDL_GetTicks(); }
-        if (delay_till) {
-            if (SDL_GetTicks() < delay_till) {
-                goto DELAY;
-            } else {
-                delay_till = 0;
-            }
-        }
-        if (m_needs_update) {
-            show();
-            m_needs_update = false;
-        }
-        uint32_t frame_end = SDL_GetTicks() - frame_start;
-        if (frame_time > frame_end) {
-            delay_till = SDL_GetTicks() + (frame_time - frame_end);
-        } else {
-            delay_till = 0;
-        }
-    }
-    SDL_StopTextInput();
-
-    delete this;
 }
 
 Widget* Window::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
@@ -357,6 +331,8 @@ void Window::unbind(int key) {
     m_keyboard_shortcuts.erase(key);
 }
 
+// TODO we will need to change this a bit once
+// we support multiple windows
 void Window::quit() {
     if (onQuit) {
         if (!onQuit(this)) {
@@ -367,6 +343,7 @@ void Window::quit() {
 }
 
 void Window::handleResizeEvent(int width, int height) {
+    Application::get()->setCurrentWindow(this);
     active_context_menu = nullptr;
     size = Size(width, height);
     int w, h;
@@ -467,7 +444,7 @@ void Window::layout() {
     m_main_widget->forEachWidget([](Widget *widget) {
         widget->m_size_changed = true;
     });
-    m_main_widget->sizeHint(*Application::get()->dc);
+    m_main_widget->sizeHint(*dc);
 }
 
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {

@@ -23,7 +23,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
     int rect_opposite_length;
     Size size; // Widget size after optional expansion.
     int *generic_length; // Needs to be a ptr because the value will change.
-    Rect parent_rect = parent ? parent->rect : Rect(0, 0, Application::get()->size.w, Application::get()->size.h);
+    Rect parent_rect = parent ? parent->rect : Rect(0, 0, Application::get()->getCurrentWindow()->size.w, Application::get()->getCurrentWindow()->size.h);
     int generic_parent_coord;
     int generic_parent_length;
     if (parent_layout == Align::Vertical) {

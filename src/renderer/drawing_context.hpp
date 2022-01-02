@@ -18,6 +18,8 @@
     #include "renderer.hpp"
     #include "font.hpp"
 
+    class Window;
+
     struct DrawingContext {
         // TODO dc will need to be modified so that
         // dc is window agnostic and only switches between the
@@ -30,8 +32,9 @@
         Style default_light_style;
         Style default_dark_style;
         Style default_style;
+        Window *window = nullptr;
 
-        DrawingContext();
+        DrawingContext(Window *window);
         ~DrawingContext();
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
