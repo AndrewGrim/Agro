@@ -216,8 +216,7 @@ void Window::handleSDLEvent(SDL_Event &event) {
 }
 
 void Window::draw() {
-    // TODO we may want to check here if the window is already current or not (on the opengl side)
-    Application::get()->setCurrentWindow(this);
+    if (SDL_GL_GetCurrentWindow() != m_win) { Application::get()->setCurrentWindow(this); }
     dc->renderer->shader.use();
     float projection[16] = {
          2.0f / size.w,  0.0f         ,  0.0f, 0.0f,
