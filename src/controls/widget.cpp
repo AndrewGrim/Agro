@@ -116,8 +116,7 @@ int Widget::state() {
 }
 
 Widget* Widget::update() {
-    // TODO this probably should be window specific at some point
-    Application::get()->update();
+    Application::get()->getCurrentWindow()->update();
 
     return this;
 }

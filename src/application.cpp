@@ -166,12 +166,12 @@ void Application::run() {
             }
         }
         if (m_needs_update) {
-            // TODO temporary to be removed
             for (Window *window : m_windows) {
-                window->show();
+                if (window->m_needs_update) {
+                    window->show();
+                    window->m_needs_update = false;
+                }
             }
-            // show();
-            m_needs_update = false;
         }
         uint32_t frame_end = SDL_GetTicks() - frame_start;
         if (frame_time > frame_end) {
