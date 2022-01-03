@@ -164,12 +164,10 @@ void Application::run() {
                 delay_till = 0;
             }
         }
-        if (m_needs_update) {
-            for (Window *window : m_windows) {
-                if (window->m_needs_update) {
-                    window->show();
-                    window->m_needs_update = false;
-                }
+        for (Window *window : m_windows) {
+            if (window->m_needs_update) {
+                window->show();
+                window->m_needs_update = false;
             }
         }
         uint32_t frame_end = SDL_GetTicks() - frame_start;
