@@ -39,10 +39,6 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
                 Application *app = (Application*)data;
                 Window *win = findEventWindow(app->m_windows, event->window.windowID);
                 win->handleResizeEvent(event->window.data1, event->window.data2);
-                // TODO this should go into handleResizeEvent most likely
-                if (win->onResize) {
-                    win->onResize(win);
-                }
                 return 0;
             }
             break;

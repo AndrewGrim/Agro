@@ -342,6 +342,9 @@ void Window::handleResizeEvent(int width, int height) {
     SDL_GL_GetDrawableSize(m_win, &w, &h);
     glViewport(0, 0, w, h);
     show();
+    if (onResize) {
+        onResize(this);
+    }
 }
 
 void Window::resize(int width, int height) {
