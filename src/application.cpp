@@ -25,9 +25,7 @@ Window* findEventWindow(std::vector<Window*> &windows, Uint32 id) {
             return window;
         }
     }
-    // TODO if we delete a window a mouseup event will still get sent
-    // and we will hit the assert here
-    assert(false && "Couldnt find the window for which the event was meant for, unreachable!");
+    return nullptr;
 }
 
 // This is needed on Windows and on MacOS to
@@ -112,15 +110,51 @@ void Application::run() {
         if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
             frame_start = SDL_GetTicks();
             switch (event.type) {
-                case SDL_MOUSEBUTTONDOWN: findEventWindow(m_windows, event.button.windowID)->handleSDLEvent(event); break;
-                case SDL_MOUSEBUTTONUP: findEventWindow(m_windows, event.button.windowID)->handleSDLEvent(event); break;
-                case SDL_MOUSEMOTION: findEventWindow(m_windows, event.motion.windowID)->handleSDLEvent(event); break;
-                case SDL_MOUSEWHEEL: findEventWindow(m_windows, event.wheel.windowID)->handleSDLEvent(event); break;
-                case SDL_WINDOWEVENT: findEventWindow(m_windows, event.window.windowID)->handleSDLEvent(event); break;
-                case SDL_KEYDOWN: findEventWindow(m_windows, event.key.windowID)->handleSDLEvent(event); break;
-                case SDL_TEXTINPUT: findEventWindow(m_windows, event.text.windowID)->handleSDLEvent(event); break;
+                case SDL_MOUSEBUTTONDOWN: {
+                    Window *event_window = findEventWindow(m_windows, event.button.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
+                case SDL_MOUSEBUTTONUP: {
+                    Window *event_window = findEventWindow(m_windows, event.button.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
+                case SDL_MOUSEMOTION: {
+                    Window *event_window = findEventWindow(m_windows, event.motion.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
+                case SDL_MOUSEWHEEL: {
+                    Window *event_window = findEventWindow(m_windows, event.wheel.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
+                case SDL_WINDOWEVENT: {
+                    Window *event_window = findEventWindow(m_windows, event.window.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
+                case SDL_KEYDOWN: {
+                    Window *event_window = findEventWindow(m_windows, event.key.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
+                case SDL_TEXTINPUT: {
+                    Window *event_window = findEventWindow(m_windows, event.text.windowID);
+                    if (event_window) { event_window->handleSDLEvent(event); }
+                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    break;
+                }
                 case SDL_QUIT:
                     quit();
+                    break;
             }
         }
         if (!status) { frame_start = SDL_GetTicks(); }
