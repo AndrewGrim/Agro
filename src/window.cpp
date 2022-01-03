@@ -59,8 +59,6 @@ Window::~Window() {
 }
 
 void Window::run() {
-    // TODO there must be a better place to put this
-    // we could just virtual it
     Application::get()->m_windows.push_back(this);
     dc->default_font = Application::get()->dc->default_font;
     setMainWidget(m_main_widget);

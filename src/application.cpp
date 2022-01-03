@@ -53,6 +53,7 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
 Application::Application(const char *title, Size size) : Window(title, size) {
     assert(init == 0 && "Failed initializing SDL video!");
     current_window = this;
+    m_windows.push_back(this);
     SDL_SetEventFilter(forcePaintWhileResizing, this);
 }
 
@@ -98,6 +99,8 @@ void Application::run() {
     if (onReady) {
         onReady(this);
     }
+    // TODO not sure why we have this here, if anything we should handle the nullptr
+    // since its not guaranteed that the main widget will be hovered
     m_state->hovered = m_main_widget;
     uint32_t fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
     uint32_t frame_time = 1000 / fps;

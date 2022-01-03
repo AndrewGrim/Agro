@@ -46,7 +46,7 @@
         static Application* get();
 
         /// Starts the Application, calls `onReady` and enters the event loop.
-        void run();
+        void run() override;
 
         void setCurrentWindow(Window *window);
         Window* getCurrentWindow();
