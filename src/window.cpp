@@ -61,7 +61,6 @@ Window::~Window() {
 void Window::run() {
     Application::get()->m_windows.push_back(this);
     dc->default_font = Application::get()->dc->default_font;
-    setMainWidget(m_main_widget);
     show();
     if (onReady) {
         onReady(this);
@@ -251,7 +250,7 @@ void Window::show() {
     dc->swap_buffer(m_win);
 }
 
-Widget* Window::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
+Widget* Window::append(Widget *widget, Fill fill_policy, unsigned int proportion) {
     m_main_widget->append(widget, fill_policy, proportion);
     return m_main_widget;
 }

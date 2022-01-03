@@ -48,9 +48,10 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
 
 Application::Application(const char *title, Size size) : Window(title, size) {
     assert(init == 0 && "Failed initializing SDL video!");
+    SDL_SetEventFilter(forcePaintWhileResizing, this);
     current_window = this;
     m_windows.push_back(this);
-    SDL_SetEventFilter(forcePaintWhileResizing, this);
+    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
 }
 
 Application::~Application() {
@@ -89,8 +90,6 @@ Application* Application::get() {
 }
 
 void Application::run() {
-    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
-    setMainWidget(m_main_widget);
     show();
     if (onReady) {
         onReady(this);
