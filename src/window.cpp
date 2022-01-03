@@ -26,6 +26,7 @@ Window::Window(const char* title, Size size) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
     m_sdl_context = SDL_GL_CreateContext(m_win);
     SDL_GL_MakeCurrent(m_win, m_sdl_context);
     SDL_GL_SetSwapInterval(0);
@@ -59,11 +60,9 @@ Window::~Window() {
 
 void Window::run() {
     // TODO there must be a better place to put this
-    // TODO maybe dont treat the application as a window?
-    println("runs");
+    // we could just virtual it
     Application::get()->m_windows.push_back(this);
-    // assert(false && "gets here");
-    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
+    dc->default_font = Application::get()->dc->default_font;
     setMainWidget(m_main_widget);
     show();
     if (onReady) {

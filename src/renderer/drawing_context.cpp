@@ -114,7 +114,7 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
 
 DrawingContext::~DrawingContext() {
     delete renderer;
-    delete default_font;
+    if (default_font != Application::get()->dc->default_font) { delete default_font; }
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {

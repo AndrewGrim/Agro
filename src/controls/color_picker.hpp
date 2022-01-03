@@ -15,7 +15,7 @@ class ColorPicker : public Widget {
         ~ColorPicker();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, int state) override;
-        virtual Size sizeHint(DrawingContext &dc);
+        virtual Size sizeHint(DrawingContext &dc) override;
         bool isLayout() override;
         Color color();
 
