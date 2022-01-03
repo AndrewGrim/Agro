@@ -59,8 +59,13 @@ Application::Application(const char *title, Size size) : Window(title, size) {
 }
 
 Application::~Application() {
-    for (Window *window : m_windows) {
-        delete window;
+    for (size_t i = 0; i < m_windows.size(); i++) {
+        // This condition is to prevent the Application from deleting
+        // itself again since it is also a Window.
+        if (i) {
+            Window *window = m_windows[i];
+            delete window;
+        }
     }
     SDL_Quit();
 }

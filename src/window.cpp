@@ -157,11 +157,8 @@ void Window::handleSDLEvent(SDL_Event &event) {
                     }
                     break;
                 case SDL_WINDOWEVENT_CLOSE:
-                    // TODO not done yet
-                    // we need to be able to destroy the window
-                    // Application::get()->quit();
-                    delete this; return;
-                    // break;
+                    quit();
+                    break;
             }
             break;
         case SDL_KEYDOWN: {
@@ -329,8 +326,6 @@ void Window::unbind(int key) {
     m_keyboard_shortcuts.erase(key);
 }
 
-// TODO we will need to change this a bit once
-// we support multiple windows
 void Window::quit() {
     if (onQuit) {
         if (!onQuit(this)) {
@@ -338,6 +333,7 @@ void Window::quit() {
         }
     }
     m_running = false;
+    if (this != Application::get()) { delete this; }
 }
 
 void Window::handleResizeEvent(int width, int height) {
