@@ -13,6 +13,7 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
 
 Window::Window(const char* title, Size size) {
     this->m_title = title;
+    size.w = size.w < 120 ? 120 : size.w;
     this->size = size;
 
     m_win = SDL_CreateWindow(
@@ -22,6 +23,7 @@ Window::Window(const char* title, Size size) {
         size.w, size.h,
         SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
     );
+    if (!m_win) { fail("Failed to create SDL_Window"); }
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
