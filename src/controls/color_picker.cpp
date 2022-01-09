@@ -38,6 +38,23 @@ ColorPicker::ColorPicker() {
         m_color_edit->setText(color.toString());
         m_color_label->style.widget_background = color;
     });
+    // TODO ATM these are mutally exclusive because of how keybindings work which is not ideal
+    bind(SDLK_LEFT, Mod::None, [&]() {
+        updatePosition(m_position, m_position.x - 1, m_position.y);
+        updateColor(this);
+    });
+    bind(SDLK_RIGHT, Mod::None, [&]() {
+        updatePosition(m_position, m_position.x + 1, m_position.y);
+        updateColor(this);
+    });
+    bind(SDLK_UP, Mod::None, [&]() {
+        updatePosition(m_position, m_position.x, m_position.y - 1);
+        updateColor(this);
+    });
+    bind(SDLK_DOWN, Mod::None, [&]() {
+        updatePosition(m_position, m_position.x, m_position.y + 1);
+        updateColor(this);
+    });
 }
 
 ColorPicker::~ColorPicker() {
