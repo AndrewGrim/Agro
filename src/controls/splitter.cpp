@@ -1,8 +1,10 @@
 #include "splitter.hpp"
 #include "../application.hpp"
 
+#define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
+
 Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{alignment}, m_viewport{min_size} {
-    this->onMouseDown.addEventListener([&](Widget *splitter, MouseEvent event) {
+    onMouseDown.addEventListener([&](Widget *splitter, MouseEvent event) {
         if (m_align_policy == Align::Horizontal) {
             Rect sash = Rect(rect.x + ((rect.w - m_sash_size) * m_split), rect.y, m_sash_size, rect.h);
             if (event.x >= sash.x && event.x <= sash.x + sash.w) {
@@ -18,18 +20,18 @@ Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{al
         }
     });
 
-    this->onMouseUp.addEventListener([&](Widget *splitter, MouseEvent event) {
+    onMouseUp.addEventListener([&](Widget *splitter, MouseEvent event) {
         m_dragging = false;
     });
 
-    this->onMouseMotion.addEventListener([&](Widget *splitter, MouseEvent event) {
+    onMouseMotion.addEventListener([&](Widget *splitter, MouseEvent event) {
         if (isPressed() && m_dragging) {
             if (m_align_policy == Align::Horizontal) {
                 m_split = (event.x - rect.x) / (double)rect.w;
             } else {
                 m_split = (event.y - rect.y) / (double)rect.h;
             }
-            m_split = m_split < 0.0 ? 0.0 : m_split > 1.0 ? 1.0 : m_split;
+            m_split = NORMALIZE(0.0, 1.0, m_split);
             update();
         } else {
             if (m_align_policy == Align::Horizontal) {
@@ -50,9 +52,22 @@ Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{al
         }
     });
 
-    this->onMouseLeft.addEventListener([&](Widget *splitter, MouseEvent event) {
+    onMouseLeft.addEventListener([&](Widget *splitter, MouseEvent event) {
         m_dragging = false;
         Application::get()->setMouseCursor(Cursor::Default);
+    });
+
+    bind(SDLK_LEFT, Mod::None, [&]() {
+        setSplit(m_split - 0.01);
+    });
+    bind(SDLK_UP, Mod::None, [&]() {
+        setSplit(m_split - 0.01);
+    });
+    bind(SDLK_RIGHT, Mod::None, [&]() {
+        setSplit(m_split + 0.01);
+    });
+    bind(SDLK_DOWN, Mod::None, [&]() {
+        setSplit(m_split + 0.01);
     });
 }
 
@@ -99,6 +114,7 @@ void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
         }
     }
     dc.setClip(old_clip);
+    dc.drawKeyboardFocus(this->rect, style, state);
 }
 
 Size Splitter::sizeHint(DrawingContext &dc) {
@@ -186,7 +202,7 @@ void Splitter::right(Widget *widget) {
 // ,if any, size going to the other side (right, down).
 void Splitter::setSplit(double new_split) {
     m_split = new_split;
-    m_split = m_split < 0.0 ? 0.0 : m_split > 1.0 ? 1.0 : m_split;
+    m_split = NORMALIZE(0.0, 1.0, m_split);
     update();
 }
 
