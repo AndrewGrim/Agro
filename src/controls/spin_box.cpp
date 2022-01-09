@@ -108,11 +108,6 @@ Size SpinBox::sizeHint(DrawingContext &dc) {
     }
 }
 
-bool isNumber(char c) {
-    if (c >= 48 && c <= 57) { return true; }
-    return false;
-}
-
 bool SpinBox::isLayout() {
     return true;
 }
