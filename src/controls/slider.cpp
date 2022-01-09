@@ -27,7 +27,9 @@ void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
         color = dc.accentWidgetBackground(style);
     }
     dc.drawBorder(rect, style, state);
+    Rect focus_rect = rect;
     dc.fillRect(rect, color);
+    dc.drawKeyboardFocus(focus_rect, style, state);
 }
 
 Size SliderButton::sizeHint(DrawingContext &dc) {
@@ -43,6 +45,10 @@ SliderButton* SliderButton::setMinSize(Size size) {
 
 Size SliderButton::minSize() {
     return m_size;
+}
+
+int SliderButton::isFocusable() {
+    return (int)FocusType::Focusable;
 }
 
 Slider::Slider(Align alignment, double value) : Box(alignment), m_value{value} {

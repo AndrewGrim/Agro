@@ -12,6 +12,7 @@
             virtual Size sizeHint(DrawingContext &dc) override;
             SliderButton* setMinSize(Size size);
             Size minSize();
+            int isFocusable() override;
     };
 
     class Slider : public Box {
