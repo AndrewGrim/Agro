@@ -407,7 +407,7 @@ Size NoteBook::sizeHint(DrawingContext &dc) {
 NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool close_button) {
     this->append(root, Fill::Both);
     NoteBookTabButton *tab_button = new NoteBookTabButton(this, text, icon, close_button);
-    tab_button->onMouseClick.addEventListener([=](Widget *widget, MouseEvent event) {
+    tab_button->onMouseDown.addEventListener([=](Widget *widget, MouseEvent event) {
         this->setCurrentTab(tab_button->parent_index);
     });
 
