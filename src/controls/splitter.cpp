@@ -193,3 +193,44 @@ void Splitter::setSplit(double new_split) {
 double Splitter::split() {
     return m_split;
 }
+
+int Splitter::isFocusable() {
+    return (int)FocusType::Focusable;
+}
+
+Widget* Splitter::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    if (data.origin == m_first) {
+        if (event == FocusEvent::Forward && m_second) {
+            return m_second->handleFocusEvent(event, state, data);
+        } else {
+            return setSoftFocus(event, state);
+        }
+    } else if (data.origin == m_second) {
+        if (event == FocusEvent::Reverse && m_first) {
+            return m_first->handleFocusEvent(event, state, data);
+        }
+    } else if (data.origin == this) {
+        if (event == FocusEvent::Forward) {
+            if (m_first) {
+                return m_first->handleFocusEvent(event, state, data);
+            }
+            if (m_second) {
+                return m_second->handleFocusEvent(event, state, data);
+            }
+        }
+    } else {
+        if (event == FocusEvent::Reverse) {
+            if (m_second) {
+                return m_second->handleFocusEvent(event, state, data);
+            }
+            if (m_first) {
+                return m_first->handleFocusEvent(event, state, data);
+            }
+        }
+        return setSoftFocus(event, state);
+    }
+    if (parent) {
+        return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+    }
+    return nullptr;
+}

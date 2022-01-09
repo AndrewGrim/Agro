@@ -8,10 +8,12 @@ class Splitter : public Widget {
         ~Splitter();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, int state) override;
-        virtual Size sizeHint(DrawingContext &dc);
-        virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event);
-        virtual  bool isLayout() override;
-        void append();
+        virtual Size sizeHint(DrawingContext &dc) override;
+        virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
+        virtual bool isLayout() override;
+        virtual int isFocusable() override;
+        virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
+
         Widget* append(Widget *widget, Fill fill_policy, unsigned int proportion) override;
         void top(Widget *widget);
         void bottom(Widget *widget);
