@@ -1,8 +1,24 @@
 #include "color_picker.hpp"
 #include "../application.hpp"
 
+void updatePosition(Point &m_position, int update_x, int update_y) {
+    if (m_position.x < 0 || m_position.x >= COLOR_PICKER_WIDTH) { m_position.x = 0; }
+    if (m_position.y < 0 || m_position.y >= COLOR_PICKER_HEIGHT) { m_position.y = 0; }
+    if (update_x >= 0 && update_x < COLOR_PICKER_WIDTH) { m_position.x = update_x; }
+    if (update_y >= 0 && update_y < COLOR_PICKER_HEIGHT) { m_position.y = update_y; }
+}
+
+void updateColor(ColorPicker *color_picker) {
+    color_picker->m_color = Color(
+        color_picker->m_texture_data[((color_picker->m_position.y * COLOR_PICKER_WIDTH) * 4) + (color_picker->m_position.x * 4) + 0],
+        color_picker->m_texture_data[((color_picker->m_position.y * COLOR_PICKER_WIDTH) * 4) + (color_picker->m_position.x * 4) + 1],
+        color_picker->m_texture_data[((color_picker->m_position.y * COLOR_PICKER_WIDTH) * 4) + (color_picker->m_position.x * 4) + 2],
+        color_picker->m_texture_data[((color_picker->m_position.y * COLOR_PICKER_WIDTH) * 4) + (color_picker->m_position.x * 4) + 3]
+    );
+    color_picker->onColorChanged.notify(color_picker, color_picker->m_color);
+}
+
 ColorPicker::ColorPicker() {
-    // TODO add keybindings for moving the cursor
     glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, m_texture_data);
     m_color_edit = new LineEdit(COLOR_NONE.toString());
@@ -14,19 +30,8 @@ ColorPicker::ColorPicker() {
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
-            m_position = Point(event.x - rect.x, event.y - rect.y);
-            if ((m_position.x >= 0 && m_position.x < COLOR_PICKER_WIDTH) &&
-                (m_position.y >= 0 && m_position.y < COLOR_PICKER_HEIGHT)) {
-                m_color = Color(
-                    m_texture_data[((m_position.y * COLOR_PICKER_WIDTH) * 4) + (m_position.x * 4) + 0],
-                    m_texture_data[((m_position.y * COLOR_PICKER_WIDTH) * 4) + (m_position.x * 4) + 1],
-                    m_texture_data[((m_position.y * COLOR_PICKER_WIDTH) * 4) + (m_position.x * 4) + 2],
-                    m_texture_data[((m_position.y * COLOR_PICKER_WIDTH) * 4) + (m_position.x * 4) + 3]
-                );
-            } else {
-                m_color = COLOR_NONE;
-            }
-            onColorChanged.notify(this, m_color);
+            updatePosition(m_position, event.x - rect.x, event.y - rect.y);
+            updateColor(this);
         }
     });
     onColorChanged.addEventListener([&](Widget *widget, Color color) {

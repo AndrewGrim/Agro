@@ -23,7 +23,7 @@ class ColorPicker : public Widget {
 
         int m_cursor_width = 10;
         Color m_color = COLOR_NONE;
-        Point m_position = Point(-m_cursor_width, -m_cursor_width);
+        Point m_position = Point(0, 0);
         TextureCoordinates m_coords;
         LineEdit *m_color_edit = nullptr;
         Label *m_color_label = nullptr;
