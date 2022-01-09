@@ -357,7 +357,11 @@ void DrawingContext::drawBorder(Rect &rect, Style &style, int state) {
 
 void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, int state) {
     if (state & Drawable::DrawableState::STATE_SOFT_FOCUSED) {
-        drawDashedRect(rect, borderBackground(style));
+        if (state & Drawable::DrawableState::STATE_HARD_FOCUSED) {
+            drawDashedRect(rect, accentWidgetBackground(style));
+        } else {
+            drawDashedRect(rect, borderBackground(style));
+        }
     }
 }
 
