@@ -483,9 +483,12 @@ Widget* NoteBook::handleFocusEvent(FocusEvent event, State *state, FocusPropagat
         assert(event == FocusEvent::Reverse && "Got invalid focus event for this scenario!");
     } else if (data.origin == children[currentTab()]) {
         if (event == FocusEvent::Reverse) {
-            return m_tabs->children[currentTab()]->handleFocusEvent(event, state, FocusPropagationData());
+            return m_tabs->children[currentTab()]->handleFocusEvent(event, state, data);
         }
     } else {
+        if (event == FocusEvent::Reverse) {
+            return children[currentTab()]->handleFocusEvent(event, state, data);
+        }
         return m_tabs->handleFocusEvent(event, state, data);
     }
     if (parent) {
