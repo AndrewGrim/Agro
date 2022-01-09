@@ -344,6 +344,8 @@ void Widget::forEachWidget(std::function<void(Widget *widget)> action) {
 }
 
 void Widget::activate() {
+    // TODO maybe we should add an onActivate callback that could be invoked in a more ergonomic way
+    // mouse clicks could automatically notify onActivate?
     SDL_MouseButtonEvent event = { SDL_MOUSEBUTTONDOWN, SDL_GetTicks(), 0, 0, SDL_BUTTON_LEFT, SDL_PRESSED, 1, 0, -1, -1 };
     handleMouseEvent(Application::get()->getCurrentWindow(), Application::get()->getCurrentWindow()->m_state, event);
     event = { SDL_MOUSEBUTTONUP, SDL_GetTicks(), 0, 0, SDL_BUTTON_LEFT, SDL_RELEASED, 1, 0, -1, -1 };
