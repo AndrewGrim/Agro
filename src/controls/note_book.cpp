@@ -214,6 +214,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     dc.drawBorder(rect, style, state);
+    Rect focus_rect = rect;
     dc.fillRect(rect, color);
     dc.padding(rect, style);
 
@@ -270,7 +271,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Reset the border after drawing for correct sizeHint.
     style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-    dc.drawKeyboardFocus(this->rect, style, state);
+    dc.drawKeyboardFocus(focus_rect, style, state);
 }
 
 Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
