@@ -21,6 +21,7 @@ void IconButton::draw(DrawingContext &dc, Rect rect, int state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style, state);
+    Rect focus_rect = rect;
     dc.fillRect(rect, color);
     dc.padding(rect, style);
 
@@ -30,6 +31,7 @@ void IconButton::draw(DrawingContext &dc, Rect rect, int state) {
         HorizontalAlignment::Center, VerticalAlignment::Center,
         dc.iconForeground(style)
     );
+    dc.drawKeyboardFocus(focus_rect, style, state);
 }
 
 Size IconButton::sizeHint(DrawingContext &dc) {
