@@ -17,6 +17,8 @@ class ColorPicker : public Widget {
         virtual void draw(DrawingContext &dc, Rect rect, int state) override;
         virtual Size sizeHint(DrawingContext &dc) override;
         bool isLayout() override;
+        int isFocusable() override;
+        Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
         Color color();
 
         int m_cursor_width = 10;

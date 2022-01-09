@@ -48,6 +48,9 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
     Rect old_clip = dc.clip();
     dc.setClip(rect.clipTo(old_clip));
 
+    dc.drawBorder(rect, style, state);
+    Rect focus_rect = rect;
+
     dc.drawTexture(
         Point(rect.x, rect.y),
         Size(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT),
@@ -71,11 +74,14 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
     rect.x += rect.w;
     rect.w = m_color_label->sizeHint(dc).w;
     m_color_label->draw(dc, rect, m_color_label->state());
+
+    dc.drawKeyboardFocus(focus_rect, style, state);
     dc.setClip(old_clip);
 }
 
 Size ColorPicker::sizeHint(DrawingContext &dc) {
     Size s = Size(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT);
+    dc.sizeHintBorder(s, style);
     int line = m_color_edit->sizeHint(dc).h;
     int label = m_color_label->sizeHint(dc).h;
     if (label > line) { s.h += label; }
@@ -89,4 +95,30 @@ Color ColorPicker::color() {
 
 bool ColorPicker::isLayout() {
     return true;
+}
+
+int ColorPicker::isFocusable() {
+    return (int)FocusType::Focusable;
+}
+
+Widget* ColorPicker::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    if (data.origin == m_color_edit) {
+        if (event == FocusEvent::Reverse) {
+            return setSoftFocus(event, state);
+        }
+    } else if (data.origin == this) {
+        if (event == FocusEvent::Forward) {
+            return m_color_edit->handleFocusEvent(event, state, data);
+        }
+    } else {
+        if (event == FocusEvent::Reverse) {
+            return m_color_edit->handleFocusEvent(event, state, data);
+        }
+        return setSoftFocus(event, state);
+    }
+    if (parent) {
+        return parent->handleFocusEvent(event, state, FocusPropagationData(this, parent_index));
+    }
+
+    return nullptr;
 }
