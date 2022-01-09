@@ -47,7 +47,7 @@ struct SplitBox : Box {
     }
 };
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         delete app->mainWidget();
         app->setMainWidget(new SplitBox());
@@ -61,5 +61,5 @@ int main(int argc, char **argv) {
         app->setTitle("Splitter");
     app->run();
 
-    return 0; 
+    return 0;
 }
