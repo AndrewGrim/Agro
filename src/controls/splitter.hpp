@@ -12,6 +12,7 @@ class Splitter : public Widget {
         virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event);
         virtual  bool isLayout() override;
         void append();
+        Widget* append(Widget *widget, Fill fill_policy, unsigned int proportion) override;
         void top(Widget *widget);
         void bottom(Widget *widget);
         void left(Widget *widget);

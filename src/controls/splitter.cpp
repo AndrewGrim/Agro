@@ -153,12 +153,13 @@ bool Splitter::isLayout() {
     return true;
 }
 
-void Splitter::append() {
+Widget* Splitter::append(Widget *widget, Fill fill_policy, unsigned int proportion) {
     if (m_align_policy == Align::Horizontal) {
         assert(false && "append() should not be used for Splitter! Use left() and right() instead.");
     } else {
         assert(false && "append() should not be used for Splitter! Use top() and bottom() instead.");
     }
+    return nullptr;
 }
 
 void Splitter::top(Widget *widget) {
