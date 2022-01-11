@@ -445,6 +445,61 @@
                 this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
                     this->m_hovered = nullptr;
                 });
+                // TODO collapse and exapnd nodes with left and right arrows
+                bind(SDLK_UP, Mod::None, [&]() {
+                    if (m_focused) {
+                        // TODO make sure to scroll the node into view
+                        auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
+                            if (node->parent_index == 0 && node->depth != 1) {
+                                return node->parent;
+                            }
+                            if (node->parent_index > 0 && node->depth != 1) {
+                                return node->parent->children[node->parent_index - 1];
+                            }
+                            if (node->depth == 1 && node->parent_index > 0) {
+                                Traversal early_exit = Traversal::Continue;
+                                return m_model->descend(early_exit, m_model->roots[node->parent_index - 1]);;
+                            }
+                            return nullptr; // TODO change to maybe wrap around
+                        };
+                        TreeNode<T> *result = focusNextNode(m_focused);
+                        if (result) {
+                            m_focused = result;
+                        }
+                    } else {
+                        assert(m_model && m_model->roots.size() && "Trying to focus node when model doesnt exist or is empty!");
+                        m_focused = m_model->roots[0];
+                    }
+                    update();
+                });
+                bind(SDLK_DOWN, Mod::None, [&]() {
+                    if (m_focused) {
+                        // TODO make sure to scroll the node into view
+                        auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
+                            if (node->children.size()) {
+                                return node->children[0];
+                            }
+                            while (node->parent) {
+                                if ((int)node->parent->children.size() - 1 > node->parent_index) {
+                                    return node->parent->children[node->parent_index + 1];
+                                }
+                                node = node->parent;
+                            }
+                            if (node->depth == 1 && (int)m_model->roots.size() - 1 > node->parent_index) {
+                                return m_model->roots[node->parent_index + 1];
+                            }
+                            return nullptr; // TODO change to maybe wrap around
+                        };
+                        TreeNode<T> *result = focusNextNode(m_focused);
+                        if (result) {
+                            m_focused = result;
+                        }
+                    } else {
+                        assert(m_model && m_model->roots.size() && "Trying to focus node when model doesnt exist or is empty!");
+                        m_focused = m_model->roots[0];
+                    }
+                    update();
+                });
                 m_column_style = Style();
                 m_column_style.border.type = STYLE_BOTTOM | STYLE_RIGHT;
                 m_column_style.border.bottom = 1;
@@ -601,6 +656,7 @@
                 if (m_mode == Mode::Scroll) {
                     drawScrollBars(dc, rect, virtual_size);
                 }
+                dc.drawKeyboardFocus(this->rect, style, state);
             }
 
             void setModel(Tree<T> *model) {
@@ -1305,6 +1361,14 @@
                     ),
                     dc.iconForeground(style)
                 );
+            }
+
+            Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override {
+                return Widget::handleFocusEvent(event, state, data);
+            }
+
+            int isFocusable() override {
+                return (int)FocusType::Focusable;
             }
     };
 #endif
