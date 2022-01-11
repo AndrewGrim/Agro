@@ -22,7 +22,7 @@
             T *hidden = nullptr;
 
             TreeNode<T> *parent = nullptr;
-            size_t parent_index = 0;
+            int parent_index = -1;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
             int max_cell_height = 0;
@@ -1147,13 +1147,13 @@
 
             TreeNode<T>* findNextNode(TreeNode<T> *node) {
                 while (node->parent) {
-                    if (node->parent->children.size() - 1 > node->parent_index) {
+                    if ((int)node->parent->children.size() - 1 > node->parent_index) {
                         return node->parent->children[node->parent_index + 1];
                     }
                     node = node->parent;
                 }
                 if (node->depth == 1) {
-                    if (m_model->roots.size() - 1 > node->parent_index) {
+                    if ((int)m_model->roots.size() - 1 > node->parent_index) {
                         return m_model->roots[node->parent_index + 1];
                     }
                 }
@@ -1185,7 +1185,7 @@
                         drawTreeLineConnector(dc, x, y);
 
                         // Lower sibling
-                        if (node->parent_index < node->parent->children.size() - 1) {
+                        if (node->parent_index < (int)node->parent->children.size() - 1) {
                             auto sibling = node->parent->children[node->parent_index + 1];
                             size_t distance = sibling->bs_data.position - node->bs_data.position;
                             // Sibling off screen
