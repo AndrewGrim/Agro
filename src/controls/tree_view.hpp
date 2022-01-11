@@ -445,8 +445,8 @@
                 this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
                     this->m_hovered = nullptr;
                 });
-                // TODO collapse and exapnd nodes with left and right arrows
                 bind(SDLK_UP, Mod::None, [&]() {
+                    // TODO does not take is_collapsed status into account
                     if (m_focused) {
                         // TODO make sure to scroll the node into view
                         auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
@@ -473,6 +473,7 @@
                     update();
                 });
                 bind(SDLK_DOWN, Mod::None, [&]() {
+                    // TODO does not take is_collapsed status into account
                     if (m_focused) {
                         // TODO make sure to scroll the node into view
                         auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
@@ -499,6 +500,18 @@
                         m_focused = m_model->roots[0];
                     }
                     update();
+                });
+                bind(SDLK_LEFT, Mod::None, [&]() {
+                    if (m_focused && m_focused->children.size()) {
+                        m_focused->is_collapsed = true;
+                        update();
+                    }
+                });
+                bind(SDLK_RIGHT, Mod::None, [&]() {
+                    if (m_focused && m_focused->children.size()) {
+                        m_focused->is_collapsed = false;
+                        update();
+                    }
                 });
                 m_column_style = Style();
                 m_column_style.border.type = STYLE_BOTTOM | STYLE_RIGHT;
