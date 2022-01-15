@@ -446,7 +446,7 @@ void Window::layout() {
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
     assert(focused && "The passed in focused widget should never be null!");
     if (focused->isFocusable() && focused->isVisible()) {
-        if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, focused->parent_index))) {
+        if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, Option<int>()))) {
             if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
                 info("Unhandled focus event, starting again from m_main_widget");
                 m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<int>()));
