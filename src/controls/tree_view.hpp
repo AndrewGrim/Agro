@@ -446,7 +446,6 @@
                     this->m_hovered = nullptr;
                 });
                 bind(SDLK_UP, Mod::None, [&]() {
-                    // TODO does not take is_collapsed status into account
                     if (m_focused) {
                         // TODO make sure to scroll the node into view
                         auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
@@ -458,7 +457,10 @@
                             }
                             if (node->depth == 1 && node->parent_index > 0) {
                                 Traversal early_exit = Traversal::Continue;
-                                return m_model->descend(early_exit, m_model->roots[node->parent_index - 1]);;
+                                return m_model->descend(early_exit, m_model->roots[node->parent_index - 1], [&](TreeNode<T> *node) {
+                                    if (node->is_collapsed) { return Traversal::Break; }
+                                    else { return Traversal::Continue; }
+                                });
                             }
                             return nullptr; // TODO change to maybe wrap around
                         };
@@ -473,11 +475,10 @@
                     update();
                 });
                 bind(SDLK_DOWN, Mod::None, [&]() {
-                    // TODO does not take is_collapsed status into account
                     if (m_focused) {
                         // TODO make sure to scroll the node into view
                         auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
-                            if (node->children.size()) {
+                            if (node->children.size() && !node->is_collapsed) {
                                 return node->children[0];
                             }
                             while (node->parent) {
