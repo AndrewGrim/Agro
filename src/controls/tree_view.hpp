@@ -464,7 +464,7 @@
                         };
                         TreeNode<T> *result = focusNextNode(m_focused);
                         if (result) {
-                            m_focused = result;
+                            select(result);
                         }
                     } else {
                         assert(m_model && m_model->roots.size() && "Trying to focus node when model doesnt exist or is empty!");
@@ -493,7 +493,7 @@
                         };
                         TreeNode<T> *result = focusNextNode(m_focused);
                         if (result) {
-                            m_focused = result;
+                            select(result);
                         }
                     } else {
                         assert(m_model && m_model->roots.size() && "Trying to focus node when model doesnt exist or is empty!");
@@ -503,14 +503,12 @@
                 });
                 bind(SDLK_LEFT, Mod::None, [&]() {
                     if (m_focused && m_focused->children.size()) {
-                        m_focused->is_collapsed = true;
-                        update();
+                        collapse(m_focused);
                     }
                 });
                 bind(SDLK_RIGHT, Mod::None, [&]() {
                     if (m_focused && m_focused->children.size()) {
-                        m_focused->is_collapsed = false;
-                        update();
+                        expand(m_focused);
                     }
                 });
                 m_column_style = Style();
