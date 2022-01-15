@@ -217,30 +217,34 @@ int Splitter::isFocusable() {
 Widget* Splitter::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
     if (data.origin == m_first) {
         if (event == FocusEvent::Forward && m_second) {
-            return m_second->handleFocusEvent(event, state, data);
+            return m_second->handleFocusEvent(event, state, FocusPropagationData());
+        } else if (event == FocusEvent::Forward) {
+            // Call parent to move forward.
         } else {
             return setSoftFocus(event, state);
         }
     } else if (data.origin == m_second) {
         if (event == FocusEvent::Reverse && m_first) {
-            return m_first->handleFocusEvent(event, state, data);
+            return m_first->handleFocusEvent(event, state, FocusPropagationData());
+        } else if (event == FocusEvent::Reverse) {
+            return setSoftFocus(event, state);
         }
     } else if (data.origin == this) {
         if (event == FocusEvent::Forward) {
             if (m_first) {
-                return m_first->handleFocusEvent(event, state, data);
+                return m_first->handleFocusEvent(event, state, FocusPropagationData());
             }
             if (m_second) {
-                return m_second->handleFocusEvent(event, state, data);
+                return m_second->handleFocusEvent(event, state, FocusPropagationData());
             }
         }
     } else {
         if (event == FocusEvent::Reverse) {
             if (m_second) {
-                return m_second->handleFocusEvent(event, state, data);
+                return m_second->handleFocusEvent(event, state, FocusPropagationData());
             }
             if (m_first) {
-                return m_first->handleFocusEvent(event, state, data);
+                return m_first->handleFocusEvent(event, state, FocusPropagationData());
             }
         }
         return setSoftFocus(event, state);
