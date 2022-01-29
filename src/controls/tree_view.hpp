@@ -680,6 +680,10 @@
                 }
                 m_virtual_size_changed = true;
                 m_auto_size_columns = true;
+                m_hovered = nullptr;
+                m_focused = nullptr;
+                m_event_node = nullptr;
+                m_tree_collapser = nullptr;
                 if (m_last_sort) {
                     m_last_sort->sort(Sort::None);
                     m_last_sort = nullptr;
@@ -697,6 +701,8 @@
                     m_virtual_size_changed = true;
                     m_hovered = nullptr;
                     m_focused = nullptr;
+                    m_event_node = nullptr;
+                    m_tree_collapser = nullptr;
                     if (m_last_sort) {
                         m_last_sort->sort(Sort::None);
                         m_last_sort = nullptr;
@@ -1005,8 +1011,8 @@
             uint8_t m_indent = 24;
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_focused = nullptr;
-            TreeNode<T> *m_event_node = nullptr;
-            TreeNode<T> *m_tree_collapser = nullptr;
+            TreeNode<T> *m_event_node = nullptr; // node to be handled in mouse events
+            TreeNode<T> *m_tree_collapser = nullptr; // the tree collapse/expand icon node if any (for highlighting)
             GridLines m_grid_lines = GridLines::Both;
             int m_treeline_size = 2;
             int m_grid_line_width = 1;
