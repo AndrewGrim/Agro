@@ -958,11 +958,12 @@
                         x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                     }
                     if (event.x <= x + m_current_header_width) {
-                        size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_virtual_size.h) - inner_rect.h);
-                        // size_t x_scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((m_virtual_size.w) - inner_rect.w);
-                        if (!areColumnHeadersHidden()) {
-                            y += m_children_size.h;
+                        Size virtual_size = m_virtual_size;
+                        if (areColumnHeadersHidden()) {
+                            virtual_size.h -= m_children_size.h;
                         }
+                        size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
+                        // size_t x_scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.w) - inner_rect.w);
                         Option<TreeNode<T>*> result = binarySearch(m_model->roots, (event.y - y) + y_scroll_offset).value;
                         if (result) {
                             TreeNode<T> *node = result.value;
