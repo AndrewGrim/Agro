@@ -961,6 +961,8 @@
                         Size virtual_size = m_virtual_size;
                         if (areColumnHeadersHidden()) {
                             virtual_size.h -= m_children_size.h;
+                        } else {
+                            y += m_children_size.h;
                         }
                         size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
                         // size_t x_scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.w) - inner_rect.w);
