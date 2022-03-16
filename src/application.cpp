@@ -46,22 +46,22 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
     return 1;
 }
 
-Application::Application(const char *title, Size size) : Window(title, size) {
+Application::Application(const char *title, Size size) : Window(title, size, Point()) {
     assert(init == 0 && "Failed initializing SDL video!");
     SDL_SetEventFilter(forcePaintWhileResizing, this);
     current_window = this;
     m_windows.push_back(this);
     dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
+    is_owned = true;
 }
 
 Application::~Application() {
-    for (size_t i = 0; i < m_windows.size(); i++) {
+    for (Window *win : m_windows) {
         // This condition is to prevent the Application from deleting
         // itself again since it is also a Window.
-        if (i) {
-            Window *window = m_windows[i];
-            delete window;
-        }
+        // And to prevent it deleting Windows which are owned by something else
+        // like dropdown list and in the future tooltips etc.
+        if (!win->is_owned) { delete win; }
     }
     SDL_Quit();
 }

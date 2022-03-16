@@ -11,17 +11,17 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
     return 0;
 }
 
-Window::Window(const char* title, Size size) {
+Window::Window(const char* title, Size size, Point point, int flags) {
     this->m_title = title;
     size.w = size.w < 120 ? 120 : size.w;
     this->size = size;
 
     m_win = SDL_CreateWindow(
         title,
-        SDL_WINDOWPOS_CENTERED,
-        SDL_WINDOWPOS_CENTERED,
+        point.x,
+        point.y,
         size.w, size.h,
-        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
+        flags
     );
     if (!m_win) { fail("Failed to create SDL_Window"); }
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -157,6 +157,9 @@ void Window::handleSDLEvent(SDL_Event &event) {
                     break;
                 case SDL_WINDOWEVENT_CLOSE:
                     quit();
+                    break;
+                case SDL_WINDOWEVENT_FOCUS_LOST:
+                    if (onFocusLost) { onFocusLost(this); }
                     break;
             }
             break;
@@ -332,7 +335,7 @@ void Window::quit() {
         }
     }
     m_running = false;
-    if (this != Application::get()) { delete this; }
+    if (!is_owned) { delete this; }
 }
 
 void Window::handleResizeEvent(int width, int height) {

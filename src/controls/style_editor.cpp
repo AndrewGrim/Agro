@@ -173,7 +173,7 @@ StyleEditor::~StyleEditor() {
 }
 
 Window* StyleEditor::asWindow(const char *title, Size size) {
-    Window *window = new Window(title, size);
+    Window *window = new Window(title, size, Point());
         delete window->mainWidget();
         Widget *styling_widget = new StyleEditor();
         styling_widget->setFillPolicy(Fill::Both);

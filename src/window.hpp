@@ -40,6 +40,8 @@
             bool draw_tooltip = false;
             bool tooltip_did_draw = false;
 
+            bool is_owned = false;
+
             Widget *active_context_menu = nullptr;
             Point context_menu_position_start;
 
@@ -52,8 +54,9 @@
             std::function<bool(Window*)> onQuit = nullptr;
 
             std::function<void(Window*)> onResize = nullptr;
+            std::function<void(Window*)> onFocusLost = nullptr;
 
-            Window(const char* title, Size size);
+            Window(const char* title, Size size, Point point, int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
             virtual ~Window();
 
             /// This method is used to add a Widget to the children
