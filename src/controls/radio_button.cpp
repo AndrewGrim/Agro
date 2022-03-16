@@ -38,7 +38,7 @@ void RadioButton::draw(DrawingContext &dc, Rect rect, int state) {
 
     Image *image = m_is_checked ? m_checked_image : m_unchecked_image;
     Color check_image_bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.borderBackground(style);
-    if (isHovered()) {
+    if (state & STATE_HOVERED) {
         check_image_bg = m_is_checked ? check_image_bg : dc.accentHoveredBackground(style);
     }
     dc.drawTextureAligned(

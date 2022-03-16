@@ -205,9 +205,9 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
         style.border.color_top = Application::get()->getCurrentWindow()->dc->accentWidgetBackground(style);
         rect.h += BOTTOM_BORDER(this->parent);
         color = dc.windowBackground(style);
-    } else if (isPressed() && isHovered()) {
+    } else if (state & STATE_PRESSED && state & STATE_HOVERED) {
         color = dc.pressedBackground(style);
-    } else if (isHovered()) {
+    } else if (state & STATE_HOVERED) {
         color = dc.hoveredBackground(style);
     } else {
         color = dc.windowBackground(style);

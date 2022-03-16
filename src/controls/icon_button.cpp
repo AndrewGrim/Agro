@@ -10,9 +10,9 @@ const char* IconButton::name() {
 
 void IconButton::draw(DrawingContext &dc, Rect rect, int state) {
     Color color;
-    if (isPressed() && isHovered()) {
+    if (state & STATE_PRESSED && state & STATE_HOVERED) {
         color = dc.pressedBackground(style);
-    } else if (isHovered()) {
+    } else if (state & STATE_HOVERED) {
         color = dc.hoveredBackground(style);
     } else {
         color = dc.widgetBackground(style);

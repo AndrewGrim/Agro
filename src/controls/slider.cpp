@@ -19,9 +19,9 @@ const char* SliderButton::name() {
 void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
     this->rect = rect;
     Color color;
-    if (isPressed()) {
+    if (state & STATE_PRESSED) {
         color = dc.accentPressedBackground(style);
-    } else if (isHovered()) {
+    } else if (state & STATE_HOVERED) {
         color = dc.accentHoveredBackground(style);
     } else {
         color = dc.accentWidgetBackground(style);

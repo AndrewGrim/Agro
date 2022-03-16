@@ -240,9 +240,9 @@
                 Color color;
                 if (m_dragging) {
                     color = dc.widgetBackground(style);
-                } else if (isPressed() && isHovered()) {
+                } else if (state & STATE_PRESSED && state & STATE_HOVERED) {
                     color = dc.pressedBackground(style);
-                } else if (isHovered()) {
+                } else if (state & STATE_HOVERED) {
                     color = dc.hoveredBackground(style);
                 } else {
                     color = dc.widgetBackground(style);
