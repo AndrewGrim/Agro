@@ -8,6 +8,7 @@
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
 #include "../src/controls/spin_box.hpp"
+#include "../src/controls/drop_down.hpp"
 #include "../src/controls/splitter.hpp"
 #include "../src/controls/tree_view.hpp"
 #include "../src/controls/color_picker.hpp"
@@ -123,6 +124,44 @@ Widget* basic2(Application &app) {
             spin_boxes->append(new SpinBox(-100, 250));
             spin_boxes->append(new SpinBox(100, 150), Fill::Horizontal);
         box->append(spin_boxes, Fill::Both);
+
+        GroupBox *dropdown_boxes = new GroupBox(Align::Vertical, "DropDowns");
+            DropDown *dropdown_cellrenderers = new DropDown();
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 0", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 1", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 2", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 3", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 4", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 5", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 6", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 7", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 8", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 9", 5));
+                dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 10", 5));
+                dropdown_cellrenderers->onItemSelected.addEventListener([](Widget *widget, Drawable *item, int index) {
+                    println(widget);
+                    println(item);
+                    println(((TextCellRenderer*)item)->text);
+                    println(index);
+                });
+                dropdown_cellrenderers->setCurrent(0);
+            dropdown_boxes->append(dropdown_cellrenderers);
+            DropDown *dropdown_widgets = new DropDown();
+                dropdown_widgets->appendItem(new Button("Button with a longer label 1"));
+                dropdown_widgets->appendItem(new Button("Button with a longer label 2"));
+                dropdown_widgets->appendItem(new Button("Button with a longer label 3"));
+                dropdown_widgets->setCurrent(2);
+            dropdown_boxes->append(dropdown_widgets, Fill::Vertical);
+            DropDown *dropdown_any_drawable = new DropDown();
+                dropdown_any_drawable->appendItem((new Image(lena))->setMinSize(Size(24, 24)));
+                dropdown_any_drawable->appendItem(new Label("Label"));
+                dropdown_any_drawable->appendItem(new CheckButton("CheckButton 1", true));
+                dropdown_any_drawable->appendItem(new CheckButton("CheckButton 2", false));
+                dropdown_any_drawable->appendItem(new TextCellRenderer("TextCellRender"));
+                dropdown_any_drawable->appendItem(new ImageTextCellRenderer((new Image(lena))->setMinSize(Size(24, 24)), "ImageTextCellRenderer"));
+                dropdown_any_drawable->setCurrent(5);
+            dropdown_boxes->append(dropdown_any_drawable, Fill::Horizontal);
+        box->append(dropdown_boxes, Fill::Both);
 
     return box;
 }
