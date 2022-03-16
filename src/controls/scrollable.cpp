@@ -3,6 +3,7 @@
 
 Scrollable::Scrollable(Size min_size) {
     m_viewport = min_size;
+    m_size = min_size;
 }
 
 Scrollable::~Scrollable() {
