@@ -37,7 +37,6 @@
             void setMinSize(Size min_size);
             Rect clip();
 
-        protected:
             Size m_viewport = Size();
     };
 #endif
