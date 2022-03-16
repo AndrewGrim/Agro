@@ -111,43 +111,43 @@ void Application::run() {
                 case SDL_MOUSEBUTTONDOWN: {
                     Window *event_window = findEventWindow(m_windows, event.button.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event, 'SDL_MOUSEBUTTONDOWN' perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_MOUSEBUTTONUP: {
                     Window *event_window = findEventWindow(m_windows, event.button.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event 'SDL_MOUSEBUTTONUP', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_MOUSEMOTION: {
                     Window *event_window = findEventWindow(m_windows, event.motion.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event 'SDL_MOUSEMOTION', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_MOUSEWHEEL: {
                     Window *event_window = findEventWindow(m_windows, event.wheel.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event 'SDL_MOUSEWHEEL', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_WINDOWEVENT: {
                     Window *event_window = findEventWindow(m_windows, event.window.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event 'SDL_WINDOWEVENT', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_KEYDOWN: {
                     Window *event_window = findEventWindow(m_windows, event.key.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event 'SDL_KEYDOWN', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_TEXTINPUT: {
                     Window *event_window = findEventWindow(m_windows, event.text.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, perhaps it was deleted?"); }
+                    else { info("Couldn't find Window for event 'SDL_TEXTINPUT', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_QUIT:
