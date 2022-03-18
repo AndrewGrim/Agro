@@ -12,11 +12,11 @@ int main(int argc, char **argv) {
         app->setTitle("Window 1");
         app->append(new Button("Window 1"), Fill::Vertical);
 
-        Window *window2 = new Window("Window 2", Size(200, 200));
+        Window *window2 = new Window("Window 2", Size(200, 200), Point());
             window2->append(new Button("Window 2"));
         window2->run();
 
-        Window *window3 = new Window("Window 3", Size(100, 100));
+        Window *window3 = new Window("Window 3", Size(100, 100), Point());
             window3->append(new Button("Window 3"), Fill::Both);
         window3->run();
     app->run();
