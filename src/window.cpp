@@ -226,6 +226,7 @@ void Window::draw() {
     dc->renderer->shader.setMatrix4("u_projection", projection);
     dc->clear();
     dc->setClip(Rect(0, 0, size.w, size.h));
+    m_main_widget->sizeHint(*dc);
     m_main_widget->draw(*dc, Rect(0, 0, size.w, size.h), m_main_widget->state());
     if (active_context_menu) {
         Size size = active_context_menu->sizeHint(*dc);

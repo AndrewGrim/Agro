@@ -537,7 +537,6 @@
             virtual void draw(DrawingContext &dc, Rect rect, int state) override {
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
-                sizeHint(dc);
 
                 dc.margin(rect, style);
                 dc.drawBorder(rect, style, state);

@@ -13,7 +13,6 @@ void Box::draw(DrawingContext &dc, Rect rect, int state) {
 }
 
 void Box::layoutChildren(DrawingContext &dc, Rect rect) {
-    sizeHint(dc);
     Align parent_layout = alignPolicy();
     int generic_non_expandable_widgets;
     Point pos = Point(rect.x, rect.y);

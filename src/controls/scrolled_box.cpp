@@ -25,7 +25,6 @@ void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
 }
 
 void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
-    sizeHint(dc);
     Align parent_layout = m_align_policy;
     int generic_non_expandable_widgets;
     Point pos;

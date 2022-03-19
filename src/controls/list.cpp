@@ -55,7 +55,6 @@ void List::draw(DrawingContext &dc, Rect rect, int state) {
 
     dc.drawBorder(rect, style, state);
     dc.setClip(rect.clipTo(previous_clip));
-    sizeHint(dc);
     Point pos;
     dc.fillRect(rect, dc.textBackground(style));
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
