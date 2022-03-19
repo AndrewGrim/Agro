@@ -53,7 +53,6 @@ void List::draw(DrawingContext &dc, Rect rect, int state) {
     Rect previous_clip = dc.clip();
     clip();
 
-    // TODO we draw the items over the border
     dc.drawBorder(rect, style, state);
     dc.setClip(rect.clipTo(previous_clip));
     sizeHint(dc);
