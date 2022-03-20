@@ -317,7 +317,7 @@ int main(int argc, char **argv) {
             notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
             notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
-            notebook->setCurrentTab(1);
+            // notebook->setCurrentTab(1);
         app->append(notebook, Fill::Both);
         SDL_AddTimer(100, timerCallback, app);
         // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
