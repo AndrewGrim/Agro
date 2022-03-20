@@ -5,7 +5,7 @@ List::List(Size min_size) : Scrollable(min_size) {
     // TODO could do with binary search lookup
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         DrawingContext &dc = *Application::get()->dc;
-        int y = rect.y - (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
+        int y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         int index = 0;
         for (CellRenderer *item : m_items) {
             Size item_size = item->sizeHint(dc);
@@ -20,7 +20,7 @@ List::List(Size min_size) : Scrollable(min_size) {
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         DrawingContext &dc = *Application::get()->dc;
-        int y = rect.y - (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
+        int y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         int index = 0;
         for (CellRenderer *item : m_items) {
             Size item_size = item->sizeHint(dc);
@@ -78,6 +78,7 @@ void List::draw(DrawingContext &dc, Rect rect, int state) {
 
 Size List::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
+        Scrollable::sizeHint(dc);
         Size virtual_size = Size();
         for (Drawable *item : m_items) {
             Size item_size = item->sizeHint(dc);

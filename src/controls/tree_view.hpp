@@ -412,7 +412,7 @@
                             onNodeHovered.notify(this, m_event_node);
                         }
                         int x = inner_rect.x;
-                        if (m_horizontal_scrollbar) {
+                        if (m_horizontal_scrollbar->isVisible()) {
                             x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                         }
                         if ((m_event_node->children.size() && !m_table) &&
@@ -427,7 +427,7 @@
                 this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_event_node) {
                         int x = inner_rect.x;
-                        if (m_horizontal_scrollbar) {
+                        if (m_horizontal_scrollbar->isVisible()) {
                             x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                         }
                         if (m_event_node->children.size() &&
@@ -551,6 +551,9 @@
                 Point pos = Point(rect.x, rect.y);
                 if (m_mode == Mode::Scroll) {
                     pos = automaticallyAddOrRemoveScrollBars(dc, rect, virtual_size);
+                } else {
+                    m_vertical_scrollbar->hide();
+                    m_horizontal_scrollbar->hide();
                 }
                 this->inner_rect = rect;
                 Rect tv_clip = old_clip;
@@ -604,7 +607,7 @@
 
                 bool collapsed = false;
                 int collapsed_depth = -1;
-                size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
+                size_t y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
                 if (m_mode == Mode::Unroll && rect.y + m_children_size.h < 0) {
                     y_scroll_offset = (rect.y + m_children_size.h) * -1;
                 }
@@ -835,6 +838,7 @@
 
             virtual Size sizeHint(DrawingContext &dc) override {
                 if (m_size_changed) { // TODO this will be slow for a large number of columns
+                    Scrollable::sizeHint(dc);
                     m_virtual_size.w = 0;
                     m_column_widths.clear();
                     Size size = Size();
@@ -886,10 +890,6 @@
 
             void setMode(Mode mode) {
                 m_mode = mode;
-                delete m_horizontal_scrollbar;
-                m_horizontal_scrollbar = nullptr;
-                delete m_vertical_scrollbar;
-                m_vertical_scrollbar = nullptr;
                 layout();
             }
 
@@ -910,19 +910,19 @@
             }
 
             Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override {
-                if (m_vertical_scrollbar) {
+                if (m_vertical_scrollbar->isVisible()) {
                     if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
                         (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
                         return m_vertical_scrollbar->propagateMouseEvent(window, state, event);
                     }
                 }
-                if (m_horizontal_scrollbar) {
+                if (m_horizontal_scrollbar->isVisible()) {
                     if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
                         (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
                         return m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
                     }
                 }
-                if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+                if (m_vertical_scrollbar->isVisible() && m_horizontal_scrollbar->isVisible()) {
                     if ((event.x > m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
                         (event.y > m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
                         if (state->hovered) {
@@ -963,8 +963,8 @@
                         } else {
                             y += m_children_size.h;
                         }
-                        size_t y_scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
-                        // size_t x_scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.w) - inner_rect.w);
+                        size_t y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
+                        // size_t x_scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.w) - inner_rect.w);
                         Option<TreeNode<T>*> result = binarySearch(m_model->roots, (event.y - y) + y_scroll_offset).value;
                         if (result) {
                             TreeNode<T> *node = result.value;

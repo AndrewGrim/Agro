@@ -68,9 +68,9 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
 
     size_t scroll_offset = 0;
     if (m_align_policy == Align::Vertical) {
-        scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
+        scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
     } else {
-        scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
+        scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
     }
     BinarySearchResult<Widget*> result = binarySearch(scroll_offset);
     if (result.value) {
@@ -107,6 +107,7 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
     unsigned int vertical_non_expandable = 0;
     unsigned int horizontal_non_expandable = 0;
     if (m_size_changed) {
+        Scrollable::sizeHint(dc);
         m_children_positions.clear();
         m_children_positions.resize(children.size());
         Size size = Size();
@@ -169,11 +170,11 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
 bool ScrolledBox::handleScrollEvent(ScrollEvent event) {
     SDL_Keymod mod = SDL_GetModState();
     if (mod & Mod::Shift) {
-        if (m_horizontal_scrollbar) {
+        if (m_horizontal_scrollbar->isVisible()) {
             return m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
         }
     } else {
-        if (m_vertical_scrollbar) {
+        if (m_vertical_scrollbar->isVisible()) {
             return m_vertical_scrollbar->m_slider->handleScrollEvent(event);
         }
     }
@@ -296,19 +297,19 @@ BinarySearchResult<Widget*> ScrolledBox::binarySearch(size_t target) {
 }
 
 Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
-    if (m_vertical_scrollbar) {
+    if (m_vertical_scrollbar->isVisible()) {
         if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
             (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
             return m_vertical_scrollbar->propagateMouseEvent(window, state, event);
         }
     }
-    if (m_horizontal_scrollbar) {
+    if (m_horizontal_scrollbar->isVisible()) {
         if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
             (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
             return m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
         }
     }
-    if (m_vertical_scrollbar && m_horizontal_scrollbar) {
+    if (m_vertical_scrollbar->isVisible() && m_horizontal_scrollbar->isVisible()) {
         if ((event.x > m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
             (event.y > m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
             if (state->hovered) {
@@ -321,7 +322,7 @@ Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEven
     }
 
     if (m_align_policy == Align::Vertical) {
-        size_t scroll_offset = (m_vertical_scrollbar ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
+        size_t scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
         Option<Widget*> child = binarySearch((event.y - rect.y) + scroll_offset).value;
         if (child &&
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
@@ -334,7 +335,7 @@ Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEven
             return child.value;
         }
     } else {
-        size_t scroll_offset = (m_horizontal_scrollbar ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
+        size_t scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
         Option<Widget*> child = binarySearch((event.x - rect.x) + scroll_offset).value;
         if (child &&
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
