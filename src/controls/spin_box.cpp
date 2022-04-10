@@ -87,7 +87,7 @@ Size SpinBox::sizeHint(DrawingContext &dc) {
         m_text_height = m_virtual_size.h;
     }
     if (m_size_changed) {
-        Size size = Size(m_min_length, font() ? font()->max_height : dc.default_font->max_height);
+        Size size = Size(m_min_length, font() ? font()->maxHeight() : dc.default_font->maxHeight());
         Size arrow_button_size = m_up_arrow->sizeHint(dc);
 
         dc.sizeHintMargin(size, style);

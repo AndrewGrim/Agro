@@ -1,7 +1,7 @@
 #ifndef FONT_HPP
     #define FONT_HPP
 
-    #include <map>
+    #include <unordered_map>
     #include <string>
 
     #include <ft2build.h>
@@ -11,6 +11,7 @@
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
     #include "../common/point.hpp"
+    #include "../common/number_types.h"
 
     #include "glad.h"
     #include "shader.hpp"
@@ -27,25 +28,35 @@
         struct Character {
             Point bearing;
             Size size;
-            long int advance;
-            float texture_x;
+            i32 advance = 0;
+            f32 texture_x = 0.0f;
+
+            Character() {}
+            Character(Point bearing, Size size, i32 advance, f32 texture_x) :
+            bearing{bearing}, size{size}, advance{advance}, texture_x{texture_x} {}
         };
 
         std::string file_path;
-        unsigned int pixel_size = 0;
+        u32 pixel_size = 0;
         Type type;
 
-        unsigned int max_height = 0;
-        unsigned int atlas_width = 0;
-        unsigned int atlas_height = 0;
-        unsigned int atlas_ID;
-        std::map<char, Font::Character> characters;
+        u32 next_slot = 0;
+        u32 atlas_width = 0;
+        u32 atlas_height = 0;
+        u32 atlas_ID; // Set by opengl when creating font atlas texture.
 
         Font(FT_Library ft, std::string file_path, u32 pixel_size, Type type);
         Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Type type);
         ~Font();
+        u32 maxHeight();
+        Character get(u32 codepoint);
 
         private:
+            FT_Face face = NULL;
+            std::unordered_map<u32, Font::Character> characters;
+
             void load(FT_Face face);
+            void grow(u32 width, u32 height);
+            void loadGlyph(u32 codepoint, bool bind_texture = true);
     };
 #endif

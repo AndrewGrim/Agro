@@ -43,6 +43,7 @@
         void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, int tab_width = 4, int line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
         void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = COLOR_BLACK, int tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
         void fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = COLOR_BLACK, int tab_width = 4, int line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        Size measureText(Font *font, Slice<const char> text, int tab_width = 4);
         Size measureText(Font *font, std::string text, int tab_width = 4);
         Size measureText(Font *font, char c, int tab_width = 4);
         Size measureTextMultiline(Font *font, std::string text, int tab_width = 4, int line_spacing = 5);

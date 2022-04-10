@@ -1,6 +1,52 @@
 #include "renderer.hpp"
 #include "../application.hpp"
 
+static const u32 UTF8_TWO_BYTES    = 0b00011111;
+static const u32 UTF8_THREE_BYTES  = 0b00001111;
+static const u32 UTF8_FOUR_BYTES   = 0b00000111;
+static const u32 UTF8_CONTINUATION = 0b00111111;
+
+u8 utf8SequenceLength(const char *_first_byte) {
+    u8 first_byte = *_first_byte;
+    if (first_byte <= 0b01111111) { return 1; }
+    if (first_byte >= 0b11000000 && first_byte <= 0b11011111) { return 2; }
+    if (first_byte >= 0b11100000 && first_byte <= 0b11101111) { return 3; }
+    if (first_byte >= 0b11110000 && first_byte <= 0b11110111) { return 4; }
+    return 0; // Invalid first byte.
+}
+
+u32 utf8Decode(const char *first_byte) {
+    u32 codepoint = first_byte[0];
+    switch (utf8SequenceLength(first_byte)) {
+        case 1:
+            return codepoint;
+        case 2:
+            codepoint &= UTF8_TWO_BYTES;
+            codepoint <<= 6;
+            codepoint |= first_byte[1] & UTF8_CONTINUATION;
+            return codepoint;
+        case 3:
+            codepoint &= UTF8_THREE_BYTES;
+            codepoint <<= 6;
+            codepoint |= first_byte[1] & UTF8_CONTINUATION;
+            codepoint <<= 6;
+            codepoint |= first_byte[2] & UTF8_CONTINUATION;
+            return codepoint;
+        case 4:
+            codepoint &= UTF8_FOUR_BYTES;
+            codepoint <<= 6;
+            codepoint |= first_byte[1] & UTF8_CONTINUATION;
+            codepoint <<= 6;
+            codepoint |= first_byte[2] & UTF8_CONTINUATION;
+            codepoint <<= 6;
+            codepoint |= first_byte[3] & UTF8_CONTINUATION;
+            return codepoint;
+        default:
+            assert(false && "Invalid utf8 sequence start byte");
+            return 0;
+    }
+}
+
 Renderer::Renderer(Window *window, unsigned int *indices) : window{window} {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -157,7 +203,6 @@ void Renderer::textCheck(Font *font) {
 }
 
 void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing, Selection selection, Color selection_color) {
-    // TODO this needs to be window specific
     Size window_size = window->size;
     if (selection.begin > selection.end) {
         auto temp = selection.end;
@@ -171,90 +216,108 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     int x = point.x;
-    for (size_t i = 0; i < text.length; i++) {
-        char c = text.data[i];
+    i32 base_bearing = font->get((u32)'H').bearing.y;
+    i32 space_advance = font->get((u32)' ').advance;
+    for (size_t i = 0; i < text.length;) {
+        u8 c = text.data[i];
+        u8 length = utf8SequenceLength(text.data + i);
+        assert(length != 0 && "Invalid utf8 sequence start byte");
         textCheck(font);
-        Font::Character ch = font->characters[c];
-        int advance = ch.advance;
-        if (c == '\t') { advance = font->characters[' '].advance * tab_width; }
-        if (c == '\n' && is_multiline) {
-            point.y += font->max_height + line_spacing;
-            if (point.y >= window_size.h) { break; }
+        if (c == ' ') {
+            x += space_advance;
+        } else if (c == '\t') {
+            x += space_advance * tab_width;
+        } else if (c == '\n') {
+            if (is_multiline) {
+                point.y += font->maxHeight() + line_spacing;
+                if (point.y >= window_size.h) { break; }
+            }
             x = point.x;
-        }
-        if (!is_multiline && x > window_size.w) { break; }
-        auto _color = color;
-        if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
-        if (x + advance >= 0 && x <= window_size.w) {
-            float xpos = x + ch.bearing.x;
-            float ypos = point.y + (font->characters['H'].bearing.y - ch.bearing.y);
+        } else {
+            Font::Character ch = font->get(utf8Decode(text.data + i));
+            if (!is_multiline && x > window_size.w) { break; }
+            auto _color = color;
+            if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
+            if (x + ch.advance >= 0 && x <= window_size.w) {
+                float xpos = x + ch.bearing.x;
+                float ypos = point.y + (base_bearing - ch.bearing.y);
 
-            float w = ch.size.w;
-            float h = ch.size.h;
+                float w = ch.size.w;
+                float h = ch.size.h;
 
-            // TOP LEFT
-            vertices[index++] = {
-                {xpos, ypos + h},
-                {ch.texture_x, (h / font->atlas_height)},
-                {_color.r, _color.g, _color.b, _color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            // BOTTOM LEFT
-            vertices[index++] = {
-                {xpos, ypos},
-                {ch.texture_x, 0.0},
-                {_color.r, _color.g, _color.b, _color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            // BOTTOM RIGHT
-            vertices[index++] = {
-                {xpos + w, ypos},
-                {ch.texture_x + (w / font->atlas_width), 0.0},
-                {_color.r, _color.g, _color.b, _color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            // TOP RIGHT
-            vertices[index++] = {
-                {xpos + w, ypos + h},
-                {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
-                {_color.r, _color.g, _color.b, _color.a},
-                (float)current_texture_slot,
-                (float)Renderer::Sampler::Text,
-                {1.0, 1.0, 1.0, 1.0},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
-            };
-            quad_count++;
+                // TOP LEFT
+                vertices[index++] = {
+                    {xpos, ypos + h},
+                    {ch.texture_x, (h / font->atlas_height)},
+                    {_color.r, _color.g, _color.b, _color.a},
+                    (float)current_texture_slot,
+                    (float)Renderer::Sampler::Text,
+                    {1.0, 1.0, 1.0, 1.0},
+                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                };
+                // BOTTOM LEFT
+                vertices[index++] = {
+                    {xpos, ypos},
+                    {ch.texture_x, 0.0},
+                    {_color.r, _color.g, _color.b, _color.a},
+                    (float)current_texture_slot,
+                    (float)Renderer::Sampler::Text,
+                    {1.0, 1.0, 1.0, 1.0},
+                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                };
+                // BOTTOM RIGHT
+                vertices[index++] = {
+                    {xpos + w, ypos},
+                    {ch.texture_x + (w / font->atlas_width), 0.0},
+                    {_color.r, _color.g, _color.b, _color.a},
+                    (float)current_texture_slot,
+                    (float)Renderer::Sampler::Text,
+                    {1.0, 1.0, 1.0, 1.0},
+                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                };
+                // TOP RIGHT
+                vertices[index++] = {
+                    {xpos + w, ypos + h},
+                    {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
+                    {_color.r, _color.g, _color.b, _color.a},
+                    (float)current_texture_slot,
+                    (float)Renderer::Sampler::Text,
+                    {1.0, 1.0, 1.0, 1.0},
+                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                };
+                quad_count++;
+            }
+            x += ch.advance;
         }
-        x += advance;
+        i += length;
+        if (!length) i++;
     }
     current_texture_slot++;
 }
 
-Size Renderer::measureText(Font *font, std::string text, int tab_width, bool is_multiline, int line_spacing) {
-    Size size = Size(0, font->max_height);
+Size Renderer::measureText(Font *font, Slice<const char> text, int tab_width, bool is_multiline, int line_spacing) {
+    Size size = Size(0, font->maxHeight());
     int line_width = 0;
-    for (char c : text) {
-        Font::Character ch = font->characters[c];
+    i32 space_advance = font->get((u32)' ').advance;
+    for (size_t i = 0; i < text.length;) {
+        u8 c = text.data[i];
+        u8 length = utf8SequenceLength(text.data + i);
+        assert(length != 0 && "Invalid utf8 sequence start byte");
         if (c == '\t') {
-            line_width += font->characters[' '].advance * tab_width;
-        } else if (c == '\n' && is_multiline) {
-            size.h += font->max_height + line_spacing;
-            if (line_width > size.w) {
-                size.w = line_width;
-                line_width = 0;
+            line_width += space_advance * tab_width;
+        } else if (c == '\n') {
+            if (is_multiline) {
+                size.h += font->maxHeight() + line_spacing;
+                if (line_width > size.w) {
+                    size.w = line_width;
+                    line_width = 0;
+                }
             }
         } else {
-            line_width += ch.advance;
+            line_width += font->get(utf8Decode(text.data + i)).advance;
         }
+        i += length;
+        if (!length) i++;
     }
     if (line_width > size.w) { size.w = line_width; }
 

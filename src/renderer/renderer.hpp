@@ -22,6 +22,9 @@
     #include "texture.hpp"
     #include "font.hpp"
 
+    u8 utf8SequenceLength(const char *_first_byte);
+    u32 utf8Decode(const char *first_byte);
+
     class Window;
 
     struct Renderer {
@@ -63,7 +66,7 @@
         Renderer(Window *window, unsigned int *indices);
         ~Renderer();
         void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, int tab_width = 4, bool is_multiline = false, int line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
-        Size measureText(Font *font, std::string text, int tab_width = 4, bool is_multiline = false, int line_spacing = 5);
+        Size measureText(Font *font, Slice<const char> text, int tab_width = 4, bool is_multiline = false, int line_spacing = 5);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
