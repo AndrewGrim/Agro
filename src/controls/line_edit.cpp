@@ -17,8 +17,10 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
             int x = 0;
             size_t index = 0;
             int offset_event = event.x - inner_rect.x;
-            for (char c : this->text()) {
-                int w = dc.measureText(font(), c).w;
+            u8 length = 0;
+            for (size_t i = 0; i < this->text().length(); i += length) {
+                length = utf8SequenceLength(this->text().data() + i);
+                int w = dc.measureText(font(), Slice<const char>(this->text().data() + i, length)).w;
                 if (x + w > offset_event) {
                     if (x + (w / 2) < offset_event) {
                         x += w;
@@ -551,8 +553,10 @@ void LineEdit::setCursor(size_t index) {
         }
         DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
         size_t local_index = 0;
-        for (char c : text()) {
-            int w = dc.measureText(font(), c).w;
+        u8 length = 0;
+        for (size_t i = 0; i < text().length(); i += length) {
+            length = utf8SequenceLength(text().data() + i);
+            int w = dc.measureText(font(), Slice<const char>(text().data() + i, length)).w;
             inner_rect.x += w;
             local_index++;
             if (index == local_index) {
