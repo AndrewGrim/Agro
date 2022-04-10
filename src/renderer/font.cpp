@@ -1,6 +1,7 @@
 #include "font.hpp"
 
 Font::Font(std::string file_path, unsigned int pixel_size, Font::Type type)
+Font::Font(FT_Library ft, std::string file_path, u32 pixel_size, Font::Type type)
 : file_path{file_path}, pixel_size{pixel_size}, type{type} {
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {
@@ -15,7 +16,7 @@ Font::Font(std::string file_path, unsigned int pixel_size, Font::Type type)
     FT_Done_FreeType(ft);
 }
 
-Font::Font(const unsigned char *data, signed long length, unsigned int pixel_size, Font::Type type)
+Font::Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Font::Type type)
 : file_path{":memory:"}, pixel_size{pixel_size}, type{type} {
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) {

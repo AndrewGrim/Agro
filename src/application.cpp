@@ -47,11 +47,14 @@ int forcePaintWhileResizing(void *data, SDL_Event *event) {
 }
 
 Application::Application(const char *title, Size size) : Window(title, size, Point()) {
+    if (FT_Init_FreeType(&ft)) {
+        fail("FAILED_TO_INITIALISE_FREETYPE");
+    }
     assert(init == 0 && "Failed initializing SDL video!");
     SDL_SetEventFilter(forcePaintWhileResizing, this);
     current_window = this;
     m_windows.push_back(this);
-    dc->default_font = new Font(DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
+    dc->default_font = new Font(ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
     is_owned = true;
 }
 
@@ -64,6 +67,7 @@ Application::~Application() {
         if (!win->is_owned) { delete win; }
     }
     SDL_Quit();
+    FT_Done_FreeType(ft);
 }
 
 void Application::setMouseCursor(Cursor cursor) {

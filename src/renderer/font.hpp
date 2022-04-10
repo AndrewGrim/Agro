@@ -41,8 +41,8 @@
         unsigned int atlas_ID;
         std::map<char, Font::Character> characters;
 
-        Font(std::string file_path, unsigned int pixel_size, Type type);
-        Font(const unsigned char *data, signed long length, unsigned int pixel_size, Type type);
+        Font(FT_Library ft, std::string file_path, u32 pixel_size, Type type);
+        Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Type type);
         ~Font();
 
         private:

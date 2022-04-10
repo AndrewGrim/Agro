@@ -57,6 +57,7 @@
         Window *current_window = nullptr;
         std::vector<Window*> m_windows;
         Cursors m_cursors;
+        FT_Library ft = NULL;
 
         std::unordered_map<std::string, std::shared_ptr<Texture>> icons = {
             {"close", std::make_shared<Texture>(close_png, close_png_length)},

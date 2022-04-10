@@ -3,9 +3,9 @@
 
 class CustomWidget : public Widget {
     public:
-        Font *small = new Font(Karla_Regular_ttf, Karla_Regular_ttf_length, 12, Font::Type::Sans);
-        Font *big = new Font(Karla_Bold_ttf, Karla_Bold_ttf_length, 22, Font::Type::Sans);
-        Font *italic = new Font(Karla_Italic_ttf, Karla_Italic_ttf_length, 16, Font::Type::Sans);
+        Font *small = new Font(Application::get()->ft, Karla_Regular_ttf, Karla_Regular_ttf_length, 12, Font::Type::Sans);
+        Font *big = new Font(Application::get()->ft, Karla_Bold_ttf, Karla_Bold_ttf_length, 22, Font::Type::Sans);
+        Font *italic = new Font(Application::get()->ft, Karla_Italic_ttf, Karla_Italic_ttf_length, 16, Font::Type::Sans);
         std::shared_ptr<Texture> lena = std::make_shared<Texture>(lena_png, lena_png_length);
         Image *normal = new Image(lena);
         Image *flipped_h = (new Image(lena))->flipHorizontally();
