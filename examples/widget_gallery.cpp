@@ -39,7 +39,7 @@ Widget* basic1(Application &app) {
             GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
                 Label *lr = new Label("Right");
                     lr->setHorizontalAlignment(HorizontalAlignment::Right);
-                Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.");
+                Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
                     lc->setHorizontalAlignment(HorizontalAlignment::Center);
                     GroupBox *l_menu = new GroupBox(Align::Vertical, "");
                         l_menu->append(new LineEdit("", "Context Menu", 100), Fill::Horizontal);
