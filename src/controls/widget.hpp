@@ -5,16 +5,17 @@
     #include <unordered_map>
     #include <functional>
 
-    #include "../state.hpp"
-    #include "../event.hpp"
-    #include "../keyboard.hpp"
-    #include "../drawable.hpp"
+    #include "../common/number_types.h"
     #include "../common/enums.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
     #include "../common/color.hpp"
     #include "../common/point.hpp"
     #include "../common/style.hpp"
+    #include "../state.hpp"
+    #include "../event.hpp"
+    #include "../keyboard.hpp"
+    #include "../drawable.hpp"
     #include "../renderer/drawing_context.hpp"
     #include "../option.hpp"
 

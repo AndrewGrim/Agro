@@ -120,7 +120,7 @@ file(
 	COPY ${root}
 	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}
 )
-file(GLOB common "${PROJECT_SOURCE_DIR}/src/common/*.hpp")
+file(GLOB common "${PROJECT_SOURCE_DIR}/src/common/*.hpp" "${PROJECT_SOURCE_DIR}/src/common/*.h")
 file(
 	COPY ${common}
 	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}/common
