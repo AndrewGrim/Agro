@@ -9,16 +9,16 @@ struct Hidden {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("TreeView");
-        app->resize(1200, 600);
-        app->center();
+        app->mainWindow()->setTitle("TreeView");
+        app->mainWindow()->resize(1200, 600);
+        app->mainWindow()->center();
         TreeView<Hidden> *tv = nullptr;
         Box *h_box = new Box(Align::Horizontal);
             Button *scroll = new Button("Set Scroll");
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
                     tv->setMode(Mode::Unroll);
                 });
             h_box->append(unroll, Fill::Both);
-        app->append(h_box, Fill::Horizontal);
+        app->mainWindow()->append(h_box, Fill::Horizontal);
         tv = new TreeView<Hidden>();
             for (int i = 0; i < 4; i++) {
                 auto c = new Column<Hidden>(
@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
             tv->setModel(model);
             tv->setTableMode(true);
             tv->setMode(Mode::Unroll);
-        app->append(tv, Fill::Both);
+        app->mainWindow()->append(tv, Fill::Both);
     app->run();
 
     return 0;

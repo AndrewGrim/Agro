@@ -20,15 +20,15 @@
 
 uint32_t timerCallback(uint32_t interval, void *data) {
     Application *app = (Application*)data;
-    ProgressBar *bar = (ProgressBar*)(app->mainWidget()->children[0]->children[0]->children[3]->children[0]);
+    ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
     double value = bar->m_value;
     if (value < 1.0) {
         bar->m_value += 0.01;
     } else {
         bar->m_value = 0.0;
     }
-    app->update();
-    app->pulse();
+    app->mainWindow()->update();
+    app->mainWindow()->pulse();
 
     return 50;
 }
@@ -299,18 +299,18 @@ Widget* treeView(Application &app) {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        delete app->mainWidget();
-        app->setMainWidget(new Box(Align::Vertical));
-        app->onReady = [&](Window *window) {
+        delete app->mainWindow()->mainWidget();
+        app->mainWindow()->setMainWidget(new Box(Align::Vertical));
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->resize(800, 700);
-        app->center();
-        app->setTitle("Widget Gallery");
+        app->mainWindow()->resize(800, 700);
+        app->mainWindow()->center();
+        app->mainWindow()->setTitle("Widget Gallery");
         NoteBook *notebook = new NoteBook();
             notebook->appendTab(basic1(*app), "Basic 1", nullptr, false);
             notebook->appendTab(basic2(*app), "Basic 2", nullptr, false);
@@ -318,7 +318,7 @@ int main(int argc, char **argv) {
             notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
             // notebook->setCurrentTab(1);
-        app->append(notebook, Fill::Both);
+        app->mainWindow()->append(notebook, Fill::Both);
         SDL_AddTimer(100, timerCallback, app);
         // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
     app->run();

@@ -3,15 +3,15 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("New Title");
-        app->resize(500, 500);
+        app->mainWindow()->setTitle("New Title");
+        app->mainWindow()->resize(500, 500);
 
         Box *top = new Box(Align::Horizontal);
             Button *expand = new Button("Expand: false");
@@ -22,9 +22,9 @@ int main(int argc, char **argv) {
             top->append(small);
             Button *original = new Button("Original Size");
             top->append(original);
-        app->append(top, Fill::Horizontal);
+        app->mainWindow()->append(top, Fill::Horizontal);
         Image *img = new Image(lena_png, lena_png_length);
-        app->append(img, Fill::Both);
+        app->mainWindow()->append(img, Fill::Both);
 
         expand->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
             if (img->expand() == false) {

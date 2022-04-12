@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
                 auto five = model->append(nullptr, new TreeNode<char>({new TextCellRenderer("5")}, nullptr));
                 model->append(five, new TreeNode<char>({new TextCellRenderer("6")}, nullptr));
             tv->setModel(model);
-        app->append(tv, Fill::Both);
+        app->mainWindow()->append(tv, Fill::Both);
 
         {
             int count = 0;

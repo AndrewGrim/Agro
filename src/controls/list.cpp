@@ -4,7 +4,7 @@
 List::List(Size min_size) : Scrollable(min_size) {
     // TODO could do with binary search lookup
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
-        DrawingContext &dc = *Application::get()->dc;
+        DrawingContext &dc = *Application::get()->mainWindow()->dc;
         int y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         int index = 0;
         for (CellRenderer *item : m_items) {
@@ -19,7 +19,7 @@ List::List(Size min_size) : Scrollable(min_size) {
         m_focused = -1;
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-        DrawingContext &dc = *Application::get()->dc;
+        DrawingContext &dc = *Application::get()->mainWindow()->dc;
         int y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         int index = 0;
         for (CellRenderer *item : m_items) {

@@ -48,7 +48,7 @@ Window::~Window() {
     for (Window *window : app.m_windows) {
         if (window == this) {
             app.m_windows.erase(app.m_windows.begin() + index);
-            if (app.current_window == this) { app.current_window = &app; }
+            if (app.current_window == this) { app.current_window = app.mainWindow(); }
             break;
         }
         index++;
@@ -62,7 +62,7 @@ Window::~Window() {
 
 void Window::run() {
     Application::get()->m_windows.push_back(this);
-    dc->default_font = Application::get()->dc->default_font;
+    dc->default_font = Application::get()->mainWindow()->dc->default_font;
     show();
     if (onReady) {
         onReady(this);

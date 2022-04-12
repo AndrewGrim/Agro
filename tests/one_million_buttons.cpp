@@ -3,16 +3,16 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("One Million Buttons Test");
+        app->mainWindow()->setTitle("One Million Buttons Test");
         for (int i = 0; i < 1000000; i++) {
-            app->append(new Button(std::to_string(i)), Fill::Both);
+            app->mainWindow()->append(new Button(std::to_string(i)), Fill::Both);
         }
     app->run();
 

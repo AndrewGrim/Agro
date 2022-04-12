@@ -4,8 +4,8 @@
 
 int main(int argc, char **argv) { 
     Application *app = Application::get();
-        app->setTitle("Callbacks");
-    app->onReady = [&](Window *window) {
+        app->mainWindow()->setTitle("Callbacks");
+    app->mainWindow()->onReady = [&](Window *window) {
         println("READY");
         if (argc > 1) {
             if (std::string(argv[1]) == std::string("quit")) {
@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
         }
     };
     bool quit = true;
-    app->onQuit = [&](Window *win) -> bool {
+    app->mainWindow()->onQuit = [&](Window *win) -> bool {
         println("QUIT");
         return quit;
         // return false to not quit or true to quit
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
             button->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
                 button->setText("Mouse Left!");
             });
-        app->append(button, Fill::Both);
+        app->mainWindow()->append(button, Fill::Both);
         Button *disable_enable_quit = new Button("Disable Quit");
             disable_enable_quit->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                 if (quit) {
@@ -48,9 +48,9 @@ int main(int argc, char **argv) {
                     quit = true;
                 }
             });
-        app->append(disable_enable_quit, Fill::Both);
+        app->mainWindow()->append(disable_enable_quit, Fill::Both);
 
-        app->onResize = [&](Window *win) {
+        app->mainWindow()->onResize = [&](Window *win) {
             button->setText("Window Size:" + std::to_string((int)win->size.w) + ", " + std::to_string((int)win->size.h));
         };
     app->run();

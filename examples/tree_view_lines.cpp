@@ -763,16 +763,16 @@ int main(int argc, char **argv) {
     };
 
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("TreeView");
-        app->resize(1200, 600);
-        app->center();
+        app->mainWindow()->setTitle("TreeView");
+        app->mainWindow()->resize(1200, 600);
+        app->mainWindow()->center();
         TreeView<Hidden> *tv = new TreeView<Hidden>();
             auto c = new Column<Hidden>(
                 "Name",
@@ -793,7 +793,7 @@ int main(int argc, char **argv) {
                 }
             }
             tv->setModel(model);
-        app->append(tv, Fill::Both);
+        app->mainWindow()->append(tv, Fill::Both);
     app->run();
 
     return 0;

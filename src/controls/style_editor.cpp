@@ -4,13 +4,13 @@
 
 
 StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
-    Style &s = Application::get()->dc->default_style;
+    Style &s = Application::get()->mainWindow()->dc->default_style;
 
      Box *h_box = new Box(Align::Horizontal);
         Button *light = new Button("Light");
             light->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                 for (Window *window : Application::get()->m_windows) {
-                    window->dc->default_style = Application::get()->dc->default_light_style;
+                    window->dc->default_style = Application::get()->mainWindow()->dc->default_light_style;
                     window->layout();
                     window->update();
                 }
@@ -19,7 +19,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         Button *dark = new Button("Dark");
             dark->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                 for (Window *window : Application::get()->m_windows) {
-                    window->dc->default_style = Application::get()->dc->default_dark_style;
+                    window->dc->default_style = Application::get()->mainWindow()->dc->default_dark_style;
                     window->layout();
                     window->update();
                 }
@@ -29,7 +29,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
             reset->style.widget_background = Color("#ff5555");
             reset->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
                 for (Window *window : Application::get()->m_windows) {
-                    window->dc->default_style = Application::get()->dc->default_light_style;
+                    window->dc->default_style = Application::get()->mainWindow()->dc->default_light_style;
                     window->layout();
                     window->update();
                 }
@@ -61,7 +61,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                             *size_options[i*4+2] = value;
                             *size_options[i*4+3] = value;
                             for (Window *window : Application::get()->m_windows) {
-                                window->dc->default_style = Application::get()->dc->default_style;
+                                window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                 window->layout();
                                 window->update();
                             }
@@ -76,7 +76,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                         *size_options[i*4+2] = 0;
                         *size_options[i*4+3] = 0;
                         for (Window *window : Application::get()->m_windows) {
-                            window->dc->default_style = Application::get()->dc->default_style;
+                            window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                             window->layout();
                             window->update();
                         }
@@ -90,7 +90,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                             try {
                                 *size_options[i*4+j] = std::stoi(line->text().c_str());
                                 for (Window *window : Application::get()->m_windows) {
-                                    window->dc->default_style = Application::get()->dc->default_style;
+                                    window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                     window->layout();
                                     window->update();
                                 }
@@ -102,7 +102,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                         } else {
                             *size_options[i*4+j] = 0;
                             for (Window *window : Application::get()->m_windows) {
-                                window->dc->default_style = Application::get()->dc->default_style;
+                                window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                 window->layout();
                                 window->update();
                             }
@@ -124,7 +124,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                     *border_color[2] = value;
                     *border_color[3] = value;
                     for (Window *window : Application::get()->m_windows) {
-                        window->dc->default_style = Application::get()->dc->default_style;
+                        window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                     }
                 });
         gb->append(line, Fill::Horizontal);
@@ -133,7 +133,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                     line->onTextChanged.addEventListener([=]() {
                         *border_color[i] = Color(line->text().c_str());
                         for (Window *window : Application::get()->m_windows) {
-                            window->dc->default_style = Application::get()->dc->default_style;
+                            window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                         }
                     });
                 gb->append(line, Fill::Horizontal);
@@ -161,7 +161,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
             e->onTextChanged.addEventListener([=]() {
                 *color_options[i] = Color(e->text().c_str());
                 for (Window *window : Application::get()->m_windows) {
-                    window->dc->default_style = Application::get()->dc->default_style;
+                    window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                 }
             });
         append(e, Fill::Horizontal);

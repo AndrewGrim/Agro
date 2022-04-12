@@ -5,20 +5,20 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Tooltips");
+        app->mainWindow()->setTitle("Tooltips");
         Button *top = new Button("Top");
             top->tooltip = new Tooltip("top");
         Button *bottom = new Button("Bottom");
             bottom->tooltip = new Tooltip("bottom");
-        app->append(top, Fill::Both);
-        app->append(bottom, Fill::Both);
+        app->mainWindow()->append(top, Fill::Both);
+        app->mainWindow()->append(bottom, Fill::Both);
     app->run();
 
     return 0;

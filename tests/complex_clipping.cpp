@@ -5,16 +5,16 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Complex Clipping Test");
-        app->resize(1000, 1000);
-        app->center();
+        app->mainWindow()->setTitle("Complex Clipping Test");
+        app->mainWindow()->resize(1000, 1000);
+        app->mainWindow()->center();
         auto h_split = new Splitter(Align::Horizontal);
             ScrolledBox *left = new ScrolledBox(Align::Vertical, Size(800, 400));
                 for (char i = 'a'; i <= 'z'; i++) {
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
                 right->append(tv, Fill::Both);
             h_split->right(right);
             h_split->setSplit(0.2);
-        app->append(h_split, Fill::Both);
+        app->mainWindow()->append(h_split, Fill::Both);
     app->run();
 
     return 0;

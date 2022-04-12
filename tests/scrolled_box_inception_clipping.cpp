@@ -16,16 +16,16 @@
 //  4 - Regular old clip.
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Scrolledbox Inception Clipping Test");
-        app->resize(1000, 400);
-        app->append(new Button("Top"), Fill::Horizontal);
+        app->mainWindow()->setTitle("Scrolledbox Inception Clipping Test");
+        app->mainWindow()->resize(1000, 400);
+        app->mainWindow()->append(new Button("Top"), Fill::Horizontal);
         Box *h_box = new Box(Align::Horizontal);
         {
             h_box->append(new Button("Left"), Fill::Vertical);
@@ -86,8 +86,8 @@ int main(int argc, char **argv) {
             h_box->append(right, Fill::Both);
             h_box->append(new Button("Right"), Fill::Vertical);
         }
-        app->append(h_box, Fill::Both);
-        app->append(new Button("Bottom"), Fill::Horizontal);
+        app->mainWindow()->append(h_box, Fill::Both);
+        app->mainWindow()->append(new Button("Bottom"), Fill::Horizontal);
     app->run();
 
     return 0;

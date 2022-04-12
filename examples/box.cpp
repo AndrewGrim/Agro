@@ -10,17 +10,17 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Box");
-        app->resize(400, 600);
+        app->mainWindow()->setTitle("Box");
+        app->mainWindow()->resize(400, 600);
         Button *align_button = new Button("Switch Box Alignment");
-        app->append(align_button, Fill::None);
+        app->mainWindow()->append(align_button, Fill::None);
 
         // [0]: Align::Vertical, Fill::None
         Box *av_fn = new Box(Align::Vertical);
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
             av_fn->append(new Button("P: Fill::None, C: Fill::Vertical"), Fill::Vertical);
             av_fn->append(new Button("P: Fill::None, C: Fill::Both"), Fill::Both);
             for (auto child : av_fn->children) { child->style.widget_background = Color("#ff5555"); }
-        app->append(av_fn, Fill::None);
+        app->mainWindow()->append(av_fn, Fill::None);
 
         // [1]: Align::Vertical, Fill::Horizontal
         Box *av_fh = new Box(Align::Vertical);
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
             av_fh->append(new Button("P: Fill::Horizontal, C: Fill::Vertical"), Fill::Vertical);
             av_fh->append(new Button("P: Fill::Horizontal, C: Fill::Both"), Fill::Both);
             for (auto child : av_fh->children) { child->style.widget_background = Color("#ffff55"); }
-        app->append(av_fh, Fill::Horizontal);
+        app->mainWindow()->append(av_fh, Fill::Horizontal);
 
         // [2]: Align::Vertical, Fill::Vertical
         Box *av_fv = new Box(Align::Vertical);
@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
             av_fv->append(new Button("P: Fill::Vertical, C: Fill::Vertical"), Fill::Vertical);
             av_fv->append(new Button("P: Fill::Vertical, C: Fill::Both"), Fill::Both);
             for (auto child : av_fv->children) { child->style.widget_background = Color("#55ff55"); }
-        app->append(av_fv, Fill::Vertical);
+        app->mainWindow()->append(av_fv, Fill::Vertical);
 
         // [3]: Align::Vertical, Fill::Both
         Box *av_fb = new Box(Align::Vertical);
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
             av_fb->append(new Button("P: Fill::Both, C: Fill::Vertical"), Fill::Vertical);
             av_fb->append(new Button("P: Fill::Both, C: Fill::Both"), Fill::Both);
             for (auto child : av_fb->children) { child->style.widget_background = Color("#55ffff"); }
-        app->append(av_fb, Fill::Both);
+        app->mainWindow()->append(av_fb, Fill::Both);
 
         Align a = Align::Vertical;
         align_button->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {

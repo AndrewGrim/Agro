@@ -148,17 +148,17 @@ class CustomWidget : public Widget {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->resize(600, 600);
-        app->center();
-        app->setTitle("Custom Widget Drawing");
-        app->append(new CustomWidget(), Fill::Both);
+        app->mainWindow()->resize(600, 600);
+        app->mainWindow()->center();
+        app->mainWindow()->setTitle("Custom Widget Drawing");
+        app->mainWindow()->append(new CustomWidget(), Fill::Both);
     app->run();
 
     return 0;

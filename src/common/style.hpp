@@ -3,15 +3,15 @@
 
     #include "color.hpp"
 
-    #define TOP_PADDING(widget) (widget->style.padding.top == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.top : widget->style.padding.top)
-    #define BOTTOM_PADDING(widget) (widget->style.padding.bottom == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.bottom : widget->style.padding.bottom)
-    #define LEFT_PADDING(widget) (widget->style.padding.left == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.left : widget->style.padding.left)
-    #define RIGHT_PADDING(widget) (widget->style.padding.right == STYLE_DEFAULT ? Application::get()->dc->default_style.padding.right : widget->style.padding.right)
+    #define TOP_PADDING(widget) (widget->style.padding.top == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.top : widget->style.padding.top)
+    #define BOTTOM_PADDING(widget) (widget->style.padding.bottom == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.bottom : widget->style.padding.bottom)
+    #define LEFT_PADDING(widget) (widget->style.padding.left == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.left : widget->style.padding.left)
+    #define RIGHT_PADDING(widget) (widget->style.padding.right == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.right : widget->style.padding.right)
 
-    #define TOP_BORDER(widget) (widget->style.border.top == STYLE_DEFAULT ? Application::get()->dc->default_style.border.top : widget->style.border.top)
-    #define BOTTOM_BORDER(widget) (widget->style.border.bottom == STYLE_DEFAULT ? Application::get()->dc->default_style.border.bottom : widget->style.border.bottom)
-    #define LEFT_BORDER(widget) (widget->style.border.left == STYLE_DEFAULT ? Application::get()->dc->default_style.border.left : widget->style.border.left)
-    #define RIGHT_BORDER(widget) (widget->style.border.right == STYLE_DEFAULT ? Application::get()->dc->default_style.border.right : widget->style.border.right)
+    #define TOP_BORDER(widget) (widget->style.border.top == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.top : widget->style.border.top)
+    #define BOTTOM_BORDER(widget) (widget->style.border.bottom == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.bottom : widget->style.border.bottom)
+    #define LEFT_BORDER(widget) (widget->style.border.left == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.left : widget->style.border.left)
+    #define RIGHT_BORDER(widget) (widget->style.border.right == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.right : widget->style.border.right)
 
 
     enum StyleOptions {

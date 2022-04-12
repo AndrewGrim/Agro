@@ -2,15 +2,15 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Window 1");
-        app->append(new Button("Window 1"), Fill::Vertical);
+        app->mainWindow()->setTitle("Window 1");
+        app->mainWindow()->append(new Button("Window 1"), Fill::Vertical);
 
         Window *window2 = new Window("Window 2", Size(200, 200), Point());
             window2->append(new Button("Window 2"));

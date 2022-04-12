@@ -75,12 +75,12 @@ void update_rect_labels(std::string text, Button *button, Rect rect) {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->setTitle("Custom Widget Styling");
-        app->resize(600, 400);
+        app->mainWindow()->setTitle("Custom Widget Styling");
+        app->mainWindow()->resize(600, 400);
         // LEFT
-        app->setMainWidget(new Box(Align::Horizontal));
+        app->mainWindow()->setMainWidget(new Box(Align::Horizontal));
         CustomStyle *custom = new CustomStyle();
-        app->append(custom, Fill::Both);
+        app->mainWindow()->append(custom, Fill::Both);
 
         // RIOHT
         Box *right = new Box(Align::Vertical);
@@ -113,13 +113,13 @@ int main(int argc, char **argv) {
                 right->append(padding, Fill::Horizontal);
             Button *csir = new Button("Content Rect: ");
             right->append(csir, Fill::Horizontal);
-        app->append(right);
+        app->mainWindow()->append(right);
 
-        app->onResize = [&](Window *window) {
+        app->mainWindow()->onResize = [&](Window *window) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
         };
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
             if (argc > 1) {

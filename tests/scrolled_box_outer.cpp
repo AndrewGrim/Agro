@@ -10,15 +10,15 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("ScrolledBox Outer Test");
-        app->resize(500, 500);
+        app->mainWindow()->setTitle("ScrolledBox Outer Test");
+        app->mainWindow()->resize(500, 500);
         Box *top = new Box(Align::Horizontal);
             ScrolledBox *av_fn = new ScrolledBox(Align::Vertical, Size(300, 300));
                 av_fn->style.window_background = COLOR_BLACK;
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
                 av_fb->append(new Button("P: Fill::Both, C: Fill::Both"), Fill::Both);
                 for (auto child : av_fb->children) { child->style.widget_background = Color("#ffaa55"); }
             top->append(av_fb, Fill::Both);
-        app->append(top, Fill::Both);
+        app->mainWindow()->append(top, Fill::Both);
 
         Box *bottom = new Box(Align::Horizontal);
             ScrolledBox *av_fh = new ScrolledBox(Align::Vertical, Size(300, 300));
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
                 av_fv->append(new Button("P: Fill::Vertical, C: Fill::Both"), Fill::Both);
                 for (auto child : av_fv->children) { child->style.widget_background = Color("#5555ff"); }
             bottom->append(av_fv, Fill::Vertical);
-        app->append(bottom, Fill::Both);
+        app->mainWindow()->append(bottom, Fill::Both);
     app->run();
 
     return 0;

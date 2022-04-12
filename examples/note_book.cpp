@@ -6,14 +6,14 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Notebook Test");
+        app->mainWindow()->setTitle("Notebook Test");
         NoteBook *nb = new NoteBook();
         {
             for (int t = 1; t < 10; t++) {
@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        app->append(nb, Fill::Both);
+        app->mainWindow()->append(nb, Fill::Both);
     app->run();
 
     return 0;

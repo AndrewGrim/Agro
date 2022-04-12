@@ -4,17 +4,17 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->resize(600, 600);
-        app->center();
-        app->setTitle("Label");
-        app->append(new Label("Space: ' ', Tab: '\t'."));
+        app->mainWindow()->resize(600, 600);
+        app->mainWindow()->center();
+        app->mainWindow()->setTitle("Label");
+        app->mainWindow()->append(new Label("Space: ' ', Tab: '\t'."));
         VerticalAlignment v_align[3] = {
             VerticalAlignment::Top,
             VerticalAlignment::Center,
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
                         label->setHorizontalAlignment(h_align[j]);
                     box->append(label, Fill::Both);
                 }
-            app->append(box, Fill::Both);
+            app->mainWindow()->append(box, Fill::Both);
         }
     app->run();
 

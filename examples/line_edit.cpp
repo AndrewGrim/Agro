@@ -8,14 +8,14 @@
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        app->onReady = [&](Window *window) {
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("LineEdit");
+        app->mainWindow()->setTitle("LineEdit");
         std::vector<std::string> monster_names = {
             "Great Jagras", "Kulu-Ya-Ku", "Pukei-Pukei", "Barroth",
             "Jyuratodus", "Tobi-Kadachi", "Anjanath", "Rathian",
@@ -48,12 +48,12 @@ int main(int argc, char **argv) {
                     }
                 }
             });
-        app->append(edit, Fill::Horizontal);
+        app->mainWindow()->append(edit, Fill::Horizontal);
         results_view = new ScrolledBox(Align::Vertical);
             for (auto m : monster_names) {
                 results_view->append(new Label(m));
             }
-        app->append(results_view, Fill::Both);
+        app->mainWindow()->append(results_view, Fill::Both);
     app->run();
 
     return 0;

@@ -10,7 +10,7 @@ struct SplitBox : Box {
         h->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
             auto split = new Splitter(Align::Vertical);
             if (!this->parent) {
-                Application::get()->setMainWidget(split);
+                Application::get()->mainWindow()->setMainWidget(split);
             } else {
                 if (this == ((Splitter*)this->parent)->m_first) {
                     ((Splitter*)this->parent)->left(split);
@@ -27,7 +27,7 @@ struct SplitBox : Box {
         v->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
             auto split = new Splitter(Align::Horizontal);
             if (!this->parent) {
-                Application::get()->setMainWidget(split);
+                Application::get()->mainWindow()->setMainWidget(split);
             } else {
                 if (this == ((Splitter*)this->parent)->m_first) {
                     ((Splitter*)this->parent)->left(split);
@@ -49,16 +49,16 @@ struct SplitBox : Box {
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
-        delete app->mainWidget();
-        app->setMainWidget(new SplitBox());
-        app->onReady = [&](Window *window) {
+        delete app->mainWindow()->mainWidget();
+        app->mainWindow()->setMainWidget(new SplitBox());
+        app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
                 if (std::string(argv[1]) == std::string("quit")) {
                     window->quit();
                 }
             }
         };
-        app->setTitle("Splitter");
+        app->mainWindow()->setTitle("Splitter");
     app->run();
 
     return 0;
