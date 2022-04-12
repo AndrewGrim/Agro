@@ -231,8 +231,8 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             if (is_multiline) {
                 point.y += font->maxHeight() + line_spacing;
                 if (point.y >= window_size.h) { break; }
+                x = point.x;
             }
-            x = point.x;
         } else {
             Font::Character ch = font->get(utf8Decode(text.data + i));
             if (!is_multiline && x > window_size.w) { break; }
