@@ -50,7 +50,7 @@
         void setCurrentWindow(Window *window);
         Window* currentWindow();
         Window* mainWindow();
-        Timer addTimer(uint32_t after, uint32_t(*callback)(uint32_t, void*), void *data = nullptr);
+        Timer addTimer(uint32_t after, std::function<uint32_t(uint32_t interval)> callback);
         void removeTimer(Timer timer);
 
         Application(const char *title, Size size);

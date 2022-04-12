@@ -221,8 +221,8 @@ Window* Application::mainWindow() {
     return m_windows[0];
 }
 
-Timer Application::addTimer(uint32_t after, uint32_t(*callback)(uint32_t, void*), void *data) {
-    Timer t = Timer(after, callback, data);
+Timer Application::addTimer(uint32_t after, std::function<uint32_t(uint32_t interval)> callback) {
+    Timer t = Timer(after, callback);
     m_timers.push_back(t);
     t.index = m_timers.size() - 1;
     return t;

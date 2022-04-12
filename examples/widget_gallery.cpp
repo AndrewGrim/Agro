@@ -319,15 +319,23 @@ int main(int argc, char **argv) {
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
             // notebook->setCurrentTab(1);
         app->mainWindow()->append(notebook, Fill::Both);
-        app->addTimer(100, timerCallback, app);
-        // app->addTimer(
-        //     100,
-        //     [](uint32_t interval, void *data) -> uint32_t {
-        //         println(data);
-        //         return 50;
-        //     },
-        //     app
-        // );
+        // app->addTimer(100, timerCallback, app);
+        app->addTimer(
+            100,
+            [=](uint32_t interval) -> uint32_t {
+                ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
+                double value = bar->m_value;
+                if (value < 1.0) {
+                    bar->m_value += 0.01;
+                } else {
+                    bar->m_value = 0.0;
+                }
+                app->mainWindow()->update();
+                app->mainWindow()->pulse();
+
+                return 50;
+            }
+        );
         // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
     app->run();
 
