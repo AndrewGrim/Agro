@@ -4,7 +4,7 @@ Font::Font(FT_Library ft, std::string file_path, u32 pixel_size, Font::Type type
 : file_path{file_path}, pixel_size{pixel_size}, type{type} {
     if (FT_New_Face(ft, file_path.c_str(), 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path);
-        if(FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
+        if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
             fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path);
         }
     }
@@ -15,7 +15,7 @@ Font::Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Font::Type
 : file_path{":memory:"}, pixel_size{pixel_size}, type{type} {
     if (FT_New_Memory_Face(ft, data, length, 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path);
-        if(FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
+        if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
             fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path);
         }
     }
