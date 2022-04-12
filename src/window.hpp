@@ -76,7 +76,7 @@
             /// Tells the Application to update which causes a redraw.
             void update();
 
-            virtual void run();
+            void run();
 
             void handleSDLEvent(SDL_Event &event);
 
