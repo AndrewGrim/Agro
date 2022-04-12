@@ -290,7 +290,6 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             x += ch.advance;
         }
         i += length;
-        if (!length) i++;
     }
     current_texture_slot++;
 }
@@ -317,7 +316,6 @@ Size Renderer::measureText(Font *font, Slice<const char> text, int tab_width, bo
             line_width += font->get(utf8Decode(text.data + i)).advance;
         }
         i += length;
-        if (!length) i++;
     }
     if (line_width > size.w) { size.w = line_width; }
 
