@@ -977,8 +977,8 @@
                                         if ((event.x >= widget->rect.x && event.x <= widget->rect.x + widget->rect.w) &&
                                             (event.y >= widget->rect.y && event.y <= widget->rect.y + widget->rect.h)
                                         ) {
-                                            Application *app = Application::get();
-                                            widget->handleMouseEvent(app, app->m_state, event);
+                                            Window *win = Application::get()->getCurrentWindow();
+                                            widget->handleMouseEvent(win, win->m_state, event);
                                             return widget;
                                         } else {
                                             m_event_node = node;
