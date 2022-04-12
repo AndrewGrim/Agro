@@ -274,7 +274,7 @@
                             std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
                         }
                         ((TreeView<T>*)parent)->m_virtual_size_changed = true;
-                        ((TreeView<T>*)parent)->sizeHint(*Application::get()->getCurrentWindow()->dc);
+                        ((TreeView<T>*)parent)->sizeHint(*Application::get()->currentWindow()->dc);
                         update();
                     }
                 }
@@ -601,7 +601,7 @@
                 }
                 Rect drawing_rect = rect;
                 if (m_mode == Mode::Unroll) {
-                    drawing_rect = Rect(0, 0, Application::get()->getCurrentWindow()->size.w, Application::get()->getCurrentWindow()->size.h);
+                    drawing_rect = Rect(0, 0, Application::get()->currentWindow()->size.w, Application::get()->currentWindow()->size.h);
                     column_header = 0;
                 }
 
@@ -977,7 +977,7 @@
                                         if ((event.x >= widget->rect.x && event.x <= widget->rect.x + widget->rect.w) &&
                                             (event.y >= widget->rect.y && event.y <= widget->rect.y + widget->rect.h)
                                         ) {
-                                            Window *win = Application::get()->getCurrentWindow();
+                                            Window *win = Application::get()->currentWindow();
                                             widget->handleMouseEvent(win, win->m_state, event);
                                             return widget;
                                         } else {

@@ -8,7 +8,7 @@ DropDown::DropDown() {
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         if (!m_is_open) {
             m_open_close->flipVertically();
-            Window *current = Application::get()->getCurrentWindow();
+            Window *current = Application::get()->currentWindow();
             int x, y;
             SDL_GetWindowPosition(current->m_win, &x, &y);
             m_window = new Window(
@@ -127,7 +127,7 @@ void DropDown::setCurrent(int index) {
 
 int DropDown::appendItem(CellRenderer *cell) {
     m_list->appendItem(cell);
-    DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
     Size new_item_size = cell->sizeHint(dc);
     bool should_layout = false;
     if (new_item_size.w > m_biggest_item.w) {

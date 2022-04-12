@@ -48,7 +48,7 @@
         void run();
 
         void setCurrentWindow(Window *window);
-        Window* getCurrentWindow();
+        Window* currentWindow();
         Window* mainWindow();
         Timer addTimer(uint32_t after, uint32_t(*callback)(uint32_t, void*), void *data = nullptr);
         void removeTimer(Timer timer);

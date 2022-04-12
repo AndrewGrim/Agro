@@ -212,7 +212,7 @@ void Application::setCurrentWindow(Window *window) {
     SDL_GL_MakeCurrent(window->m_win, window->m_sdl_context);
 }
 
-Window* Application::getCurrentWindow() {
+Window* Application::currentWindow() {
     assert(current_window && "Current window found null!");
     return current_window;
 }

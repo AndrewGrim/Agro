@@ -13,7 +13,7 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
         if (!this->text().length()) {
             m_selection.x_begin = 0;
         } else {
-            DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+            DrawingContext &dc = *Application::get()->currentWindow()->dc;
             int x = 0;
             size_t index = 0;
             int offset_event = event.x - inner_rect.x;
@@ -44,7 +44,7 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
                 return;
             }
 
-            DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+            DrawingContext &dc = *Application::get()->currentWindow()->dc;
             int x = m_selection.x_begin;
             size_t index = m_selection.begin;
             int offset_event = event.x - inner_rect.x;
@@ -318,7 +318,7 @@ LineEdit* LineEdit::moveCursorLeft() {
             m_selection.end = m_selection.begin;
             goto END;
         }
-        DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+        DrawingContext &dc = *Application::get()->currentWindow()->dc;
         m_selection.end--;
         int char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end -= char_size;
@@ -351,7 +351,7 @@ LineEdit* LineEdit::moveCursorRight() {
             m_selection.begin = m_selection.end;
             goto END;
         }
-        DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+        DrawingContext &dc = *Application::get()->currentWindow()->dc;
         int char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end += char_size;
         m_selection.end++;
@@ -515,7 +515,7 @@ void LineEdit::swapSelection() {
 }
 
 void LineEdit::insert(size_t index, const char *text, bool skip) {
-    DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
     if (m_selection.hasSelection()) {
         deleteSelection(skip);
@@ -551,7 +551,7 @@ void LineEdit::setCursor(size_t index) {
         if (!(m_virtual_size.w < inner_rect.w)) {
             inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
         }
-        DrawingContext &dc = *Application::get()->getCurrentWindow()->dc;
+        DrawingContext &dc = *Application::get()->currentWindow()->dc;
         size_t local_index = 0;
         u8 length = 0;
         for (size_t i = 0; i < text().length(); i += length) {
