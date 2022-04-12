@@ -3,6 +3,7 @@
 
     #include "window.hpp"
     #include "resources.hpp"
+    #include "timer.hpp"
 
     enum class Cursor {
         Arrow,
@@ -49,12 +50,15 @@
         void setCurrentWindow(Window *window);
         Window* getCurrentWindow();
         Window* mainWindow();
+        Timer addTimer(uint32_t after, uint32_t(*callback)(uint32_t, void*), void *data = nullptr);
+        void removeTimer(Timer timer);
 
         Application(const char *title, Size size);
         ~Application();
 
         Window *current_window = nullptr;
         std::vector<Window*> m_windows;
+        std::vector<Timer> m_timers;
         Cursors *m_cursors = nullptr;
         FT_Library ft = NULL;
 

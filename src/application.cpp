@@ -76,8 +76,9 @@ Application::Application(const char *title, Size size) {
 }
 
 Application::~Application() {
-    // TODO somewhere around here we might want to introduce an abstraction
-    // that deals with timers so we can safely shut them down before getting rid of the windows.
+    for (Timer t : m_timers) {
+        SDL_RemoveTimer(t.id);
+    }
     for (Window *win : m_windows) {
         // This is to prevent deleting Windows which are owned by something else
         // like dropdown list and in the future tooltips etc.
@@ -218,4 +219,16 @@ Window* Application::getCurrentWindow() {
 
 Window* Application::mainWindow() {
     return m_windows[0];
+}
+
+Timer Application::addTimer(uint32_t after, uint32_t(*callback)(uint32_t, void*), void *data) {
+    Timer t = Timer(after, callback, data);
+    m_timers.push_back(t);
+    t.index = m_timers.size() - 1;
+    return t;
+}
+
+void Application::removeTimer(Timer timer) {
+    SDL_RemoveTimer(timer.id);
+    m_timers.erase(m_timers.begin() + timer.index);
 }

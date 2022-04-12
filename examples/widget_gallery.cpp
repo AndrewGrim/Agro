@@ -319,7 +319,15 @@ int main(int argc, char **argv) {
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
             // notebook->setCurrentTab(1);
         app->mainWindow()->append(notebook, Fill::Both);
-        SDL_AddTimer(100, timerCallback, app);
+        app->addTimer(100, timerCallback, app);
+        // app->addTimer(
+        //     100,
+        //     [](uint32_t interval, void *data) -> uint32_t {
+        //         println(data);
+        //         return 50;
+        //     },
+        //     app
+        // );
         // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
     app->run();
 
