@@ -41,7 +41,7 @@ class CustomStyle : public Widget {
             return "CustomStyle";
         }
 
-        void draw(DrawingContext &dc, Rect rect, i32 state) {
+        void draw(DrawingContext &dc, Rect rect, i32 state) override {
             this->rect = rect;
 
             dc.fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
@@ -54,7 +54,7 @@ class CustomStyle : public Widget {
             dc.fillRect(rect, Color(0.0f, 0.0f, 1.0f, 0.5f));
         }
 
-        Size sizeHint(DrawingContext &dc) {
+        Size sizeHint(DrawingContext &dc) override {
             Size s = Size(96, 96);
             dc.sizeHintMargin(s, style);
             dc.sizeHintBorder(s, style);

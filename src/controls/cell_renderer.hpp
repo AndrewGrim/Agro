@@ -9,8 +9,8 @@ class CellRenderer : public Drawable {
 
         CellRenderer();
         virtual ~CellRenderer();
-        virtual void draw(DrawingContext &dc, Rect rect, i32 state) = 0;
-        virtual Size sizeHint(DrawingContext &dc) = 0;
+        virtual void draw(DrawingContext &dc, Rect rect, i32 state) override = 0;
+        virtual Size sizeHint(DrawingContext &dc) override = 0;
         virtual bool isWidget() override;
 };
 
