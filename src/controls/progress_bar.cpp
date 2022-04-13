@@ -1,6 +1,6 @@
 #include "progress_bar.hpp"
 
-ProgressBar::ProgressBar(int custom_width) : m_custom_width{custom_width} {}
+ProgressBar::ProgressBar(i32 custom_width) : m_custom_width{custom_width} {}
 
 ProgressBar::~ProgressBar() {}
 
@@ -8,23 +8,23 @@ const char* ProgressBar::name() {
     return "ProgressBar";
 }
 
-void ProgressBar::draw(DrawingContext &dc, Rect rect, int state) {
+void ProgressBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style, state);
-    int fill_end = rect.w * m_value;
+    i32 fill_end = rect.w * m_value;
     dc.fillRect(Rect(rect.x, rect.y, fill_end, rect.h), dc.accentWidgetBackground(style));
     dc.padding(rect, style);
     fill_end = rect.w * m_value; // We have to recalculate the value again since we don't want to take the padding into account.
 
-    std::string percent_text = std::to_string((int)(m_value * 100)) + "%";
-    int text_width = dc.measureText(font(), percent_text).w;
-    int text_start = (rect.w / 2) - (text_width / 2);
+    std::string percent_text = std::to_string((i32)(m_value * 100)) + "%";
+    i32 text_width = dc.measureText(font(), percent_text).w;
+    i32 text_start = (rect.w / 2) - (text_width / 2);
     size_t begin = 0;
     size_t end = 0;
     if (fill_end > text_start) {
-        for (char c : percent_text) {
-            int len = dc.measureText(font(), c).w;
+        for (u8 c : percent_text) {
+            i32 len = dc.measureText(font(), c).w;
             text_start += len;
             if (fill_end > text_start - len / 2) {
                 end++;

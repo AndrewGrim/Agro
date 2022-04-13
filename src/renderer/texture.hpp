@@ -73,10 +73,10 @@
     };
 
     struct Texture {
-        int width = -1;
-        int height = -1;
-        int nr_channels = -1;
-        unsigned int ID;
+        i32 width = -1;
+        i32 height = -1;
+        i32 nr_channels = -1;
+        u32 ID;
 
         Texture(std::string file_path) {
             unsigned char *data = stbi_load(
@@ -89,7 +89,7 @@
             makeGLTexture(data, width, height, nr_channels, file_path);
         }
 
-        Texture(const unsigned char *image_data, int length) {
+        Texture(const unsigned char *image_data, i32 length) {
             assert(image_data && "Null image data!");
             unsigned char *data = stbi_load_from_memory(
                 image_data,
@@ -106,7 +106,7 @@
             glDeleteTextures(1, &this->ID);
         }
 
-        void makeGLTexture(unsigned char *data, int width, int height, int nr_channels, std::string file_path) {
+        void makeGLTexture(unsigned char *data, i32 width, i32 height, i32 nr_channels, std::string file_path) {
             if (data) {
                 glActiveTexture(GL_TEXTURE0);
                 glGenTextures(1, &ID);

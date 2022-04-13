@@ -15,7 +15,7 @@ const char* Scrollable::name() {
     return "Scrollable";
 }
 
-void Scrollable::draw(DrawingContext &dc, Rect rect, int state) {
+void Scrollable::draw(DrawingContext &dc, Rect rect, i32 state) {
 
 }
 
@@ -26,8 +26,8 @@ Size Scrollable::sizeHint(DrawingContext &dc) {
 }
 
 Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size) {
-    int content_x = rect.x;
-    int content_y = rect.y;
+    i32 content_x = rect.x;
+    i32 content_y = rect.y;
     bool vert = false;
     if (rect.h < virtual_size.h) {
         vert = true;
@@ -61,11 +61,11 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &r
     }
     if (m_vertical_scrollbar->isVisible()) {
         content_y -= m_vertical_scrollbar->m_slider->m_value * ((virtual_size.h) - rect.h);
-        m_vertical_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (double)(virtual_size.h - rect.h);
+        m_vertical_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (f64)(virtual_size.h - rect.h);
     }
     if (m_horizontal_scrollbar->isVisible()) {
         content_x -= m_horizontal_scrollbar->m_slider->m_value * ((virtual_size.w) - rect.w);
-        m_horizontal_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (double)(virtual_size.w - rect.w);
+        m_horizontal_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (f64)(virtual_size.w - rect.w);
     }
 
     return Point(content_x, content_y);
@@ -74,7 +74,7 @@ Point Scrollable::automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &r
 void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size) {
     if (m_vertical_scrollbar->isVisible()) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
-        int slider_size = rect.h * ((rect.h - size.h / 2.0) / virtual_size.h);
+        i32 slider_size = rect.h * ((rect.h - size.h / 2.0) / virtual_size.h);
         if (slider_size < 10) {
             slider_size = 10;
         }
@@ -92,7 +92,7 @@ void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
     }
     if (m_horizontal_scrollbar->isVisible()) {
         Size size = m_horizontal_scrollbar->sizeHint(dc);
-        int slider_size = rect.w * ((rect.w - size.w / 2.0) / virtual_size.w);
+        i32 slider_size = rect.w * ((rect.w - size.w / 2.0) / virtual_size.w);
         if (slider_size < 10) {
             slider_size = 10;
         }
@@ -127,8 +127,8 @@ bool Scrollable::isScrollable() {
     return true;
 }
 
-int Scrollable::isFocusable() {
-    return (int)FocusType::Passthrough;
+i32 Scrollable::isFocusable() {
+    return (i32)FocusType::Passthrough;
 }
 
 Widget* Scrollable::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
@@ -220,8 +220,8 @@ Rect Scrollable::clip() {
 Widget* Scrollable::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
     assert(event != FocusEvent::Activate && "handleFocusEvent should only be called with Forward and Reverse focus events!");
     if (event == FocusEvent::Forward) {
-        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() + 1 : 0;
-        for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
+        i32 child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() + 1 : 0;
+        for (; child_index_unwrapped < (i32)children.size(); child_index_unwrapped++) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {
                 return child->handleFocusEvent(event, state, FocusPropagationData());
@@ -232,7 +232,7 @@ Widget* Scrollable::handleFocusEvent(FocusEvent event, State *state, FocusPropag
         }
         return nullptr;
     } else {
-        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() - 1 : (int)children.size() - 1;
+        i32 child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() - 1 : (i32)children.size() - 1;
         for (; child_index_unwrapped > -1; child_index_unwrapped--) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {

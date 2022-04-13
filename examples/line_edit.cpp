@@ -36,11 +36,11 @@ int main(int argc, char **argv) {
                 }
                 for (auto m : monster_names) {
                     auto monster = m;
-                    std::transform(monster.begin(), monster.end(), monster.begin(), [](unsigned char c){
+                    std::transform(monster.begin(), monster.end(), monster.begin(), [](u8 c){
                         return std::tolower(c);
                     });
                     auto search_phrase = edit->text();
-                    std::transform(search_phrase.begin(), search_phrase.end(), search_phrase.begin(), [](unsigned char c){
+                    std::transform(search_phrase.begin(), search_phrase.end(), search_phrase.begin(), [](u8 c){
                         return std::tolower(c);
                     });
                     if (monster.find(search_phrase) != std::string::npos || !search_phrase.size()) {

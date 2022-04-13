@@ -8,8 +8,8 @@
     struct Selection {
         size_t begin = 0;
         size_t end = 0;
-        int x_begin = 0;
-        int x_end = 0;
+        i32 x_begin = 0;
+        i32 x_end = 0;
         bool mouse_selection = false;
 
         bool hasSelection() {
@@ -60,16 +60,16 @@
         public:
             EventListener<> onTextChanged = EventListener<>();
 
-            LineEdit(std::string text = "", std::string placeholder = "", int min_length = 50);
+            LineEdit(std::string text = "", std::string placeholder = "", i32 min_length = 50);
             ~LineEdit();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual void handleTextEvent(DrawingContext &dc, const char *text) override;
             LineEdit* setText(std::string text);
             std::string text();
-            int minLength();
-            LineEdit* setMinLength(int length);
+            i32 minLength();
+            LineEdit* setMinLength(i32 length);
             LineEdit* moveCursorLeft();
             LineEdit* moveCursorRight();
             LineEdit* moveCursorBegin();
@@ -89,19 +89,19 @@
             void setCursor(size_t index);
             void undo();
             void redo();
-            int isFocusable() override;
+            i32 isFocusable() override;
 
             std::string m_text;
             std::string m_placeholder_text;
-            double m_min_length = 50;
-            double m_min_view = 0.0;
-            double m_max_view = 1.0;
-            double m_current_view = m_min_view;
+            f64 m_min_length = 50;
+            f64 m_min_view = 0.0;
+            f64 m_max_view = 1.0;
+            f64 m_current_view = m_min_view;
             Size m_virtual_size = Size();
-            int m_text_height = 0;
+            i32 m_text_height = 0;
             bool m_text_changed = false;
-            int m_cursor_width = 1;
-            int m_tab_width = 4;
+            i32 m_cursor_width = 1;
+            i32 m_tab_width = 4;
             Selection m_selection;
             History m_history;
     };

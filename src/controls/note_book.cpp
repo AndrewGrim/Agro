@@ -10,13 +10,13 @@ NoteBookTabBar::~NoteBookTabBar() {
     delete m_horizontal_scrollbar;
 }
 
-void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
+void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
     dc.drawBorder(rect, style, state);
     rect.x += 5; // account for the 5 pixels on the left to give the first tab some breathing room
     rect.w -= 5; // account for the 5 pixels on the left to give the first tab some breathing room
-    int x = rect.x;
+    i32 x = rect.x;
 
     if (rect.w < m_size.w) {
         if (!m_horizontal_scrollbar) {
@@ -46,7 +46,7 @@ void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, int state) {
 
     if (m_horizontal_scrollbar) {
         Size scroll_size = m_horizontal_scrollbar->sizeHint(dc);
-        int slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
+        i32 slider_size = rect.w * ((rect.w - scroll_size.w / 2) / m_size.w);
         if (slider_size < 20) {
             slider_size = 20;
         } else if (slider_size > (rect.w - 10)) {
@@ -94,14 +94,14 @@ bool NoteBookTabBar::isLayout() {
     return true;
 }
 
-int NoteBookTabBar::isFocusable() {
-    return (int)FocusType::Passthrough;
+i32 NoteBookTabBar::isFocusable() {
+    return (i32)FocusType::Passthrough;
 }
 
 Widget* NoteBookTabBar::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
     if (data.origin == children[((NoteBook*)m_notebook_parent)->currentTab()]) {
         assert(event == FocusEvent::Reverse && "Got invalid focus event for this scenario!");
-        return m_notebook_parent->handleFocusEvent(event, state, FocusPropagationData(this, Option<int>()));
+        return m_notebook_parent->handleFocusEvent(event, state, FocusPropagationData(this, Option<i32>()));
     } else {
         return children[((NoteBook*)m_notebook_parent)->currentTab()]->handleFocusEvent(event, state, data);
     }
@@ -178,9 +178,9 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     });
     bind(SDLK_RIGHT, Mod::None, [&]{
         if (parent->children.size()) {
-            if (parent_index < (int)parent->children.size() - 1) {
+            if (parent_index < (i32)parent->children.size() - 1) {
                 parent->children[parent_index + 1]->activate();
-            } else if (parent_index == (int)parent->children.size() - 1) {
+            } else if (parent_index == (i32)parent->children.size() - 1) {
                 parent->children[0]->activate();
             }
         }
@@ -195,7 +195,7 @@ const char* NoteBookTabButton::name() {
     return "NoteBookTabButton";
 }
 
-void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
+void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Color color;
 
@@ -221,7 +221,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, int state) {
     Size text_size = dc.measureText(font(), text());
     if (this->m_image) {
         Size image_size = m_image->sizeHint(dc);
-        int width = rect.w;
+        i32 width = rect.w;
         if (m_close_button) {
             width -= 22; // 12 icon size + 10 padding
         }
@@ -309,8 +309,8 @@ bool NoteBookTabButton::isLayout() {
     return true;
 }
 
-int NoteBookTabButton::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 NoteBookTabButton::isFocusable() {
+    return (i32)FocusType::Focusable;
 }
 
 Widget* NoteBookTabButton::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
@@ -368,7 +368,7 @@ NoteBook::~NoteBook() {
     // TODO surely we should delete the notebooktabbar m_tabs?
 }
 
-void NoteBook::draw(DrawingContext &dc, Rect rect, int state) {
+void NoteBook::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     if (m_tabs->children.size()) {
         // NoteBookTabBar.
@@ -475,8 +475,8 @@ bool NoteBook::isLayout() {
     return true;
 }
 
-int NoteBook::isFocusable() {
-    return (int)FocusType::Passthrough;
+i32 NoteBook::isFocusable() {
+    return (i32)FocusType::Passthrough;
 }
 
 Widget* NoteBook::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {

@@ -24,7 +24,7 @@ const char* CheckButton::name() {
     return "CheckButton";
 }
 
-void CheckButton::draw(DrawingContext &dc, Rect rect, int state) {
+void CheckButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.margin(rect, style);
     dc.padding(rect, style);
     // Set rect only to the area where we actually draw the widget.
@@ -79,6 +79,6 @@ Size CheckButton::sizeHint(DrawingContext &dc) {
     return m_size;
 }
 
-int CheckButton::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 CheckButton::isFocusable() {
+    return (i32)FocusType::Focusable;
 }

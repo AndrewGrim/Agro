@@ -40,7 +40,7 @@
     };
 
     struct Application {
-        int scroll_amount = 50;
+        i32 scroll_amount = 50;
         void setMouseCursor(Cursor cursor);
         static Application* get();
 
@@ -50,7 +50,7 @@
         void setCurrentWindow(Window *window);
         Window* currentWindow();
         Window* mainWindow();
-        Timer addTimer(uint32_t after, std::function<uint32_t(uint32_t interval)> callback);
+        Timer addTimer(u32 after, std::function<u32(u32 interval)> callback);
         void removeTimer(Timer timer);
 
         Application(const char *title, Size size);

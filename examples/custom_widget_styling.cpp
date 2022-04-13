@@ -41,7 +41,7 @@ class CustomStyle : public Widget {
             return "CustomStyle";
         }
 
-        void draw(DrawingContext &dc, Rect rect, int state) {
+        void draw(DrawingContext &dc, Rect rect, i32 state) {
             this->rect = rect;
 
             dc.fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
@@ -66,10 +66,10 @@ class CustomStyle : public Widget {
 void update_rect_labels(std::string text, Button *button, Rect rect) {
     button->setText(
         text
-        + std::to_string((int)rect.x) + ", "
-        + std::to_string((int)rect.y) + ", "
-        + std::to_string((int)rect.w) + ", "
-        + std::to_string((int)rect.h)
+        + std::to_string((i32)rect.x) + ", "
+        + std::to_string((i32)rect.y) + ", "
+        + std::to_string((i32)rect.w) + ", "
+        + std::to_string((i32)rect.h)
     );
 }
 

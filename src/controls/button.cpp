@@ -21,7 +21,7 @@ const char* Button::name() {
     return "Button";
 }
 
-void Button::draw(DrawingContext &dc, Rect rect, int state) {
+void Button::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
         color = dc.pressedBackground(style);
@@ -152,6 +152,6 @@ Button* Button::setImage(Image *image) {
     return this;
 }
 
-int Button::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 Button::isFocusable() {
+    return (i32)FocusType::Focusable;
 }

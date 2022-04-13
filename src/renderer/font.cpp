@@ -11,7 +11,7 @@ Font::Font(FT_Library ft, std::string file_path, u32 pixel_size, Font::Type type
     load(face);
 }
 
-Font::Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Font::Type type)
+Font::Font(FT_Library ft, const unsigned char *data, i64 length, u32 pixel_size, Font::Type type)
 : file_path{":memory:"}, pixel_size{pixel_size}, type{type} {
     if (FT_New_Memory_Face(ft, data, length, 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path);

@@ -11,7 +11,7 @@
 
     class Shader {
         public:
-            unsigned int ID;
+            u32 ID;
 
             Shader() {
 
@@ -22,7 +22,7 @@
             }
 
             void compile(const char *vertext_shader, const char *fragment_shader) {
-                unsigned int vertex, fragment;
+                u32 vertex, fragment;
 
                 vertex = glCreateShader(GL_VERTEX_SHADER);
                 glShaderSource(vertex, 1, &vertext_shader, NULL);
@@ -49,22 +49,22 @@
             };
 
             void setBool(const std::string &name, bool value) const {
-                glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+                glUniform1i(glGetUniformLocation(ID, name.c_str()), (i32)value);
             };
 
-            void setInt(const std::string &name, int value) const {
+            void setInt(const std::string &name, i32 value) const {
                 glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
             };
 
-            void setFloat(const std::string &name, float value) const {
+            void setFloat(const std::string &name, f32 value) const {
                 glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
             };
 
-            void setVector2f(const char *name, float x, float y) {
+            void setVector2f(const char *name, f32 x, f32 y) {
                 glUniform2f(glGetUniformLocation(this->ID, name), x, y);
             }
 
-            void setVector3f(const char *name, float x, float y, float z) {
+            void setVector3f(const char *name, f32 x, f32 y, f32 z) {
                 glUniform3f(glGetUniformLocation(this->ID, name), x, y, z);
             }
 
@@ -72,16 +72,16 @@
                 glUniform4f(glGetUniformLocation(this->ID, name), color.r, color.g, color.b, color.a);
             }
 
-            void setVector4f(const char *name, float x, float y, float z, float w) {
+            void setVector4f(const char *name, f32 x, f32 y, f32 z, f32 w) {
                 glUniform4f(glGetUniformLocation(this->ID, name), x, y, z, w);
             }
 
-            void setMatrix4(const char *name, const float *matrix) {
+            void setMatrix4(const char *name, const f32 *matrix) {
                 glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, matrix);
             }
 
-            void checkCompileErrors(unsigned int shader, std::string type) {
-                int success;
+            void checkCompileErrors(u32 shader, std::string type) {
+                i32 success;
                 char infoLog[1024];
                 if (type != "PROGRAM")
                 {

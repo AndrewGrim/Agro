@@ -8,7 +8,7 @@ const char* SpinBoxIconButton::name() {
     return "SpinBoxIconButton";
 }
 
-void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, int state) {
+void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
         color = dc.accentPressedBackground(style);
@@ -32,7 +32,7 @@ void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, int state) {
     );
 }
 
-SpinBox::SpinBox(double value, int min_length) : LineEdit(std::to_string(value), "", min_length) {
+SpinBox::SpinBox(f64 value, i32 min_length) : LineEdit(std::to_string(value), "", min_length) {
     append(m_up_arrow);
     append(m_down_arrow);
     m_up_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
@@ -67,7 +67,7 @@ const char* SpinBox::name() {
     return "SpinBox";
 }
 
-void SpinBox::draw(DrawingContext &dc, Rect rect, int state) {
+void SpinBox::draw(DrawingContext &dc, Rect rect, i32 state) {
     Size arrow_button_size = m_up_arrow->sizeHint(dc);
 
     rect.w -= arrow_button_size.w;
@@ -112,12 +112,12 @@ bool SpinBox::isLayout() {
     return true;
 }
 
-Result<SpinBox::Error, double> SpinBox::value() {
+Result<SpinBox::Error, f64> SpinBox::value() {
     try {
-       return Result<SpinBox::Error, double>(std::stod(text()));
+       return Result<SpinBox::Error, f64>(std::stod(text()));
     } catch (std::invalid_argument &e) {
-        return Result<SpinBox::Error, double>(SpinBox::Error::InvalidArgument);
+        return Result<SpinBox::Error, f64>(SpinBox::Error::InvalidArgument);
     } catch (std::out_of_range &e) {
-        return Result<SpinBox::Error, double>(SpinBox::Error::OutOfRange);
+        return Result<SpinBox::Error, f64>(SpinBox::Error::OutOfRange);
     }
 }

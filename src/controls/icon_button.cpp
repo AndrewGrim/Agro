@@ -8,7 +8,7 @@ const char* IconButton::name() {
     return "IconButton";
 }
 
-void IconButton::draw(DrawingContext &dc, Rect rect, int state) {
+void IconButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
         color = dc.pressedBackground(style);

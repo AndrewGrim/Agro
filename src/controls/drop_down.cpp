@@ -2,14 +2,14 @@
 
 DropDown::DropDown() {
     append(m_list);
-    m_list->onItemSelected.addEventListener([&](Widget *widget, CellRenderer *cell, int index) {
+    m_list->onItemSelected.addEventListener([&](Widget *widget, CellRenderer *cell, i32 index) {
         setCurrent(index);
     });
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         if (!m_is_open) {
             m_open_close->flipVertically();
             Window *current = Application::get()->currentWindow();
-            int x, y;
+            i32 x, y;
             SDL_GetWindowPosition(current->m_win, &x, &y);
             m_window = new Window(
                 m_list->name(),
@@ -52,7 +52,7 @@ const char* DropDown::name() {
     return "DropDown";
 }
 
-void DropDown::draw(DrawingContext &dc, Rect rect, int state) {
+void DropDown::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
         color = dc.pressedBackground(style);
@@ -110,22 +110,22 @@ Size DropDown::sizeHint(DrawingContext &dc) {
     }
 }
 
-int DropDown::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 DropDown::isFocusable() {
+    return (i32)FocusType::Focusable;
 }
 
-int DropDown::current() {
+i32 DropDown::current() {
     return m_list->current();
 }
 
-void DropDown::setCurrent(int index) {
+void DropDown::setCurrent(i32 index) {
     m_list->m_focused = index;
     if (m_is_open) { m_window->onFocusLost(m_window); }
     onItemSelected.notify(this, getItem(index), index);
     update();
 }
 
-int DropDown::appendItem(CellRenderer *cell) {
+i32 DropDown::appendItem(CellRenderer *cell) {
     m_list->appendItem(cell);
     DrawingContext &dc = *Application::get()->currentWindow()->dc;
     Size new_item_size = cell->sizeHint(dc);
@@ -142,7 +142,7 @@ int DropDown::appendItem(CellRenderer *cell) {
     return m_list->m_items.size() - 1;
 }
 
-CellRenderer* DropDown::getItem(int index) {
+CellRenderer* DropDown::getItem(i32 index) {
     return m_list->getItem(index);
 }
 

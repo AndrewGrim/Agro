@@ -1,7 +1,7 @@
 #include "color_picker.hpp"
 #include "../application.hpp"
 
-void updatePosition(Point &m_position, int update_x, int update_y) {
+void updatePosition(Point &m_position, i32 update_x, i32 update_y) {
     if (m_position.x < 0 || m_position.x >= COLOR_PICKER_WIDTH) { m_position.x = 0; }
     if (m_position.y < 0 || m_position.y >= COLOR_PICKER_HEIGHT) { m_position.y = 0; }
     if (update_x >= 0 && update_x < COLOR_PICKER_WIDTH) { m_position.x = update_x; }
@@ -65,7 +65,7 @@ const char* ColorPicker::name() {
     return "ColorPicker";
 }
 
-void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
+void ColorPicker::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Rect old_clip = dc.clip();
     dc.setClip(rect.clipTo(old_clip));
@@ -104,8 +104,8 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, int state) {
 Size ColorPicker::sizeHint(DrawingContext &dc) {
     Size s = Size(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT);
     dc.sizeHintBorder(s, style);
-    int line = m_color_edit->sizeHint(dc).h;
-    int label = m_color_label->sizeHint(dc).h;
+    i32 line = m_color_edit->sizeHint(dc).h;
+    i32 label = m_color_label->sizeHint(dc).h;
     if (label > line) { s.h += label; }
     else { s.h += line; }
     return s;
@@ -119,8 +119,8 @@ bool ColorPicker::isLayout() {
     return true;
 }
 
-int ColorPicker::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 ColorPicker::isFocusable() {
+    return (i32)FocusType::Focusable;
 }
 
 Widget* ColorPicker::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {

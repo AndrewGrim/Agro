@@ -4,8 +4,10 @@
         #include <iostream>
         #include <ostream>
 
-        template <typename T> void pprint(int indent, T message, bool newline = true) {
-            for (int i = 0; i < indent; i++) {
+        #include "common/number_types.h"
+
+        template <typename T> void pprint(i32 indent, T message, bool newline = true) {
+            for (i32 i = 0; i < indent; i++) {
                 std::cout << " ";
             }
             std::cout << message;

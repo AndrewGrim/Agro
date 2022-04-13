@@ -3,12 +3,12 @@
 #include "../src/controls/line_edit.hpp"
 
 struct Hidden {
-    int id = -1;
-    Hidden(int id) : id{id} {}
+    i32 id = -1;
+    Hidden(i32 id) : id{id} {}
 };
 
 int main(int argc, char **argv) {
-    std::map<int, TreeNode<Hidden>*> nodes = {
+    std::map<i32, TreeNode<Hidden>*> nodes = {
         {2001, new TreeNode<Hidden>({new TextCellRenderer("Defender Great Sword I")}, new Hidden(-1))},
         {2002, new TreeNode<Hidden>({new TextCellRenderer("Defender Great Sword II")}, new Hidden(2001))},
         {2003, new TreeNode<Hidden>({new TextCellRenderer("Defender Great Sword III")}, new Hidden(2002))},

@@ -3,7 +3,7 @@
 #include "scroll_bar.hpp"
 #include "image.hpp"
 
-ScrollBarSlider::ScrollBarSlider(Align alignment, double value) : Slider(alignment, value) {}
+ScrollBarSlider::ScrollBarSlider(Align alignment, f64 value) : Slider(alignment, value) {}
 
 ScrollBarSlider::~ScrollBarSlider() {}
 
@@ -11,11 +11,11 @@ const char* ScrollBarSlider::name() {
     return "ScrollBarSlider";
 }
 
-void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
+void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
     // Get the size of the slider button.
-    int size;
+    i32 size;
     Size sizehint = m_slider_button->sizeHint(dc);
     if (!m_slider_button_size) {
         // Button size was not set. Default.
@@ -34,13 +34,13 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Determine and draw the location of the slider button.
     if (m_align_policy == Align::Horizontal) {
-        int result = ((rect.w - size) * m_value);
+        i32 result = ((rect.w - size) * m_value);
         if (result > 0) {
             rect.x += result;
         }
         m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h), m_slider_button->state());
     } else {
-        int result = ((rect.h - size) * m_value);
+        i32 result = ((rect.h - size) * m_value);
         if (result > 0) {
             rect.y += result;
         }
@@ -63,7 +63,7 @@ const char* SimpleScrollBar::name() {
     return "SimpleScrollBar";
 }
 
-void SimpleScrollBar::draw(DrawingContext &dc, Rect rect, int state) {
+void SimpleScrollBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     m_slider->draw(dc, rect, m_slider->state());
 }
@@ -104,7 +104,7 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     append(m_end_button, Fill::None);
 
     IconButton *buttons[2] = { m_begin_button, m_end_button };
-    for (int i = 0; i < 2; i++) {
+    for (i32 i = 0; i < 2; i++) {
         auto b = buttons[i];
         b->style.padding.type = STYLE_ALL;
         b->style.padding.top = 2;
@@ -124,7 +124,7 @@ const char* ScrollBar::name() {
     return "ScrollBar";
 }
 
-void ScrollBar::draw(DrawingContext &dc, Rect rect, int state) {
+void ScrollBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Size button_size = m_begin_button->sizeHint(dc);
     m_begin_button->draw(dc, Rect(rect.x, rect.y, button_size.w, button_size.h), m_begin_button->state());

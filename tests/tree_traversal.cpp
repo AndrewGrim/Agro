@@ -13,22 +13,22 @@ int main(int argc, char **argv) {
                 }
             }
         };
-        auto tv = new TreeView<char>();
-        tv->append(new Column<char>("col 1"));
-            auto model = new Tree<char>();
-                auto one = model->append(nullptr, new TreeNode<char>({new TextCellRenderer("1")}, nullptr));
-                model->append(one, new TreeNode<char>({new TextCellRenderer("2")}, nullptr));
-                auto three = model->append(nullptr, new TreeNode<char>({new TextCellRenderer("3")}, nullptr));
-                model->append(three, new TreeNode<char>({new TextCellRenderer("4")}, nullptr));
-                auto five = model->append(nullptr, new TreeNode<char>({new TextCellRenderer("5")}, nullptr));
-                model->append(five, new TreeNode<char>({new TextCellRenderer("6")}, nullptr));
+        auto tv = new TreeView<u8>();
+        tv->append(new Column<u8>("col 1"));
+            auto model = new Tree<u8>();
+                auto one = model->append(nullptr, new TreeNode<u8>({new TextCellRenderer("1")}, nullptr));
+                model->append(one, new TreeNode<u8>({new TextCellRenderer("2")}, nullptr));
+                auto three = model->append(nullptr, new TreeNode<u8>({new TextCellRenderer("3")}, nullptr));
+                model->append(three, new TreeNode<u8>({new TextCellRenderer("4")}, nullptr));
+                auto five = model->append(nullptr, new TreeNode<u8>({new TextCellRenderer("5")}, nullptr));
+                model->append(five, new TreeNode<u8>({new TextCellRenderer("6")}, nullptr));
             tv->setModel(model);
         app->mainWindow()->append(tv, Fill::Both);
 
         {
-            int count = 0;
-            tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<char> *node) -> Traversal {
-                int n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
+            i32 count = 0;
+            tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<u8> *node) -> Traversal {
+                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
                 if (n == 3) {
                     count++;
                     return Traversal::Continue;
@@ -39,9 +39,9 @@ int main(int argc, char **argv) {
             assert(count == 6 && "When using continue we should traverse the entire tree!");
         }
         {
-            int count = 0;
-            tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<char> *node) -> Traversal {
-                int n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
+            i32 count = 0;
+            tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<u8> *node) -> Traversal {
+                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
                 if (n == 3) {
                     return Traversal::Next;
                 }
@@ -51,9 +51,9 @@ int main(int argc, char **argv) {
             assert(count == 4 && "When using next we should jump to the next branch in the tree!");
         }
         {
-            int count = 0;
-            tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<char> *node) -> Traversal {
-                int n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
+            i32 count = 0;
+            tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<u8> *node) -> Traversal {
+                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
                 if (n == 3) {
                     return Traversal::Break;
                 }

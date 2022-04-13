@@ -8,7 +8,7 @@
             IconButton(Image *image);
             ~IconButton();
             const char* name() override;
-            void draw(DrawingContext &dc, Rect rect, int state) override;
+            void draw(DrawingContext &dc, Rect rect, i32 state) override;
             Size sizeHint(DrawingContext &dc) override;
     };
 #endif

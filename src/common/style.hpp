@@ -26,19 +26,19 @@
 
     struct Style {
         struct Margin {
-            int type = STYLE_DEFAULT;
-            int top = STYLE_DEFAULT;
-            int bottom = STYLE_DEFAULT;
-            int left = STYLE_DEFAULT;
-            int right = STYLE_DEFAULT;
+            i32 type = STYLE_DEFAULT;
+            i32 top = STYLE_DEFAULT;
+            i32 bottom = STYLE_DEFAULT;
+            i32 left = STYLE_DEFAULT;
+            i32 right = STYLE_DEFAULT;
         };
 
         struct Border {
-            int type = STYLE_DEFAULT;
-            int top = STYLE_DEFAULT;
-            int bottom = STYLE_DEFAULT;
-            int left = STYLE_DEFAULT;
-            int right = STYLE_DEFAULT;
+            i32 type = STYLE_DEFAULT;
+            i32 top = STYLE_DEFAULT;
+            i32 bottom = STYLE_DEFAULT;
+            i32 left = STYLE_DEFAULT;
+            i32 right = STYLE_DEFAULT;
 
             Color color_top = COLOR_DEFAULT;
             Color color_bottom = COLOR_DEFAULT;
@@ -47,11 +47,11 @@
         };
 
         struct Padding {
-            int type = STYLE_DEFAULT;
-            int top = STYLE_DEFAULT;
-            int bottom = STYLE_DEFAULT;
-            int left = STYLE_DEFAULT;
-            int right = STYLE_DEFAULT;
+            i32 type = STYLE_DEFAULT;
+            i32 top = STYLE_DEFAULT;
+            i32 bottom = STYLE_DEFAULT;
+            i32 left = STYLE_DEFAULT;
+            i32 right = STYLE_DEFAULT;
         };
 
         Margin margin;

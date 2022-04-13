@@ -13,7 +13,7 @@
             Button(Image *image);
             ~Button();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             std::string text();
             Button* setText(std::string text);
@@ -23,7 +23,7 @@
             Button* setHorizontalAlignment(HorizontalAlignment text_align);
             VerticalAlignment verticalAlignment();
             Button* setVerticalAlignment(VerticalAlignment text_align);
-            int isFocusable() override;
+            i32 isFocusable() override;
 
             std::string m_text = "";
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Center;

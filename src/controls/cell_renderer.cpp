@@ -13,7 +13,7 @@ bool CellRenderer::isWidget() {
 EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}
 
-void EmptyCell::draw(DrawingContext &dc, Rect rect, int state) {
+void EmptyCell::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color bg = dc.accentWidgetBackground(style);
     if (state & STATE_HARD_FOCUSED) {
         dc.fillRect(rect, bg);
@@ -27,11 +27,11 @@ Size EmptyCell::sizeHint(DrawingContext &dc) {
     return Size();
 }
 
-TextCellRenderer::TextCellRenderer(std::string text, int padding) : text{text}, padding{padding} {}
+TextCellRenderer::TextCellRenderer(std::string text, i32 padding) : text{text}, padding{padding} {}
 
 TextCellRenderer::~TextCellRenderer() {}
 
-void TextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
+void TextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color fg = dc.textForeground(style);
     Color bg = dc.widgetBackground(style); // TODO should be text_background most likely
     if (state & STATE_HARD_FOCUSED) {
@@ -73,7 +73,7 @@ ImageCellRenderer::~ImageCellRenderer() {
     delete image;
 }
 
-void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
+void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color bg = dc.widgetBackground(image->style);
     if (state & STATE_HARD_FOCUSED) {
         bg = dc.accentWidgetBackground(style);
@@ -101,7 +101,7 @@ Size ImageCellRenderer::sizeHint(DrawingContext &dc) {
 MultipleImagesCellRenderer::MultipleImagesCellRenderer(std::vector<Image> &&images) : images{images} {}
 MultipleImagesCellRenderer::~MultipleImagesCellRenderer() {}
 
-void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
+void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color bg = dc.widgetBackground(style);
     if (state & STATE_HARD_FOCUSED) {
         bg = dc.accentWidgetBackground(style);
@@ -145,14 +145,14 @@ ImageTextCellRenderer::ImageTextCellRenderer(
     Image *image,
     std::string text,
     HorizontalAlignment h_align,
-    int padding
+    i32 padding
 ) : image{image}, text{text}, h_align{h_align}, padding{padding} {}
 
 ImageTextCellRenderer::~ImageTextCellRenderer() {
     delete image;
 }
 
-void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
+void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color fg = dc.textForeground(style);
     Color bg = dc.widgetBackground(style);
     if (state & STATE_HARD_FOCUSED) {
@@ -168,7 +168,7 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, int state) {
     Size text_size = dc.measureTextMultiline(font, text);
     Rect local_rect = rect;
     Size image_size = image->size();
-    int x = rect.x;
+    i32 x = rect.x;
     switch (h_align) {
         case HorizontalAlignment::Right: x = rect.x + rect.w - (image_size.w + text_size.w + (padding * 2)); break;
         case HorizontalAlignment::Center: x = rect.x + (rect.w / 2) - ((image_size.w + text_size.w + (padding * 2)) / 2); break;

@@ -26,10 +26,10 @@ int main(int argc, char **argv) {
             HorizontalAlignment::Right
         };
         Color colors[3] = { Color("#ff5555"), Color("#55ff55"), Color("#5555ff") };
-        for (int i = 0; i < 3; i++) {
+        for (i32 i = 0; i < 3; i++) {
             Box *box = new Box(Align::Horizontal);
                 box->style.window_background = colors[i];
-                for (int j = 0; j < 3; j++) {
+                for (i32 j = 0; j < 3; j++) {
                     Label *label = new Label("This text spans\nmultiple\nlines!");
                         label->setVerticalAlignment(v_align[i]);
                         label->setHorizontalAlignment(h_align[j]);

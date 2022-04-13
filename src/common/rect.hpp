@@ -3,20 +3,22 @@
 
     #include <ostream>
 
-    struct Rect {
-        int x;
-        int y;
-        int w;
-        int h;
+    #include "number_types.h"
 
-        Rect(int x = 0, int y = 0, int w = 0, int h = 0) {
+    struct Rect {
+        i32 x;
+        i32 y;
+        i32 w;
+        i32 h;
+
+        Rect(i32 x = 0, i32 y = 0, i32 w = 0, i32 h = 0) {
             this->x = x;
             this->y = y;
             this->w = w;
             this->h = h;
         }
 
-        void shrink(int amount) {
+        void shrink(i32 amount) {
             this->x += amount;
             this->y += amount;
             this->w -= amount * 2;
@@ -27,7 +29,7 @@
             Rect new_clip = *this;
 
             if (new_clip.x < parent.x) {
-                int diff = parent.x - new_clip.x;
+                i32 diff = parent.x - new_clip.x;
                 new_clip.x += diff;
                 if (diff < new_clip.w) {
                     new_clip.w = new_clip.w - diff;
@@ -47,7 +49,7 @@
             }
 
             if (new_clip.y < parent.y) {
-                int diff = parent.y - new_clip.y;
+                i32 diff = parent.y - new_clip.y;
                 new_clip.y += diff;
                 if (diff < new_clip.h) {
                     new_clip.h = new_clip.h - diff;

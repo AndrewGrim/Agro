@@ -2,7 +2,7 @@
 #include "window.hpp"
 #include "resources.hpp"
 
-uint32_t tooltipCallback(uint32_t interval, void *window) {
+u32 tooltipCallback(u32 interval, void *window) {
     Window *win = (Window*)window;
     win->draw_tooltip = true;
     win->update();
@@ -11,7 +11,7 @@ uint32_t tooltipCallback(uint32_t interval, void *window) {
     return 0;
 }
 
-Window::Window(const char* title, Size size, Point point, int flags) {
+Window::Window(const char* title, Size size, Point point, i32 flags) {
     this->m_title = title;
     size.w = size.w < 120 ? 120 : size.w;
     this->size = size;
@@ -44,7 +44,7 @@ Window::Window(const char* title, Size size, Point point, int flags) {
 
 Window::~Window() {
     Application &app = *Application::get();
-    int index = 0;
+    i32 index = 0;
     for (Window *window : app.m_windows) {
         if (window == this) {
             app.m_windows.erase(app.m_windows.begin() + index);
@@ -217,7 +217,7 @@ void Window::handleSDLEvent(SDL_Event &event) {
 void Window::draw() {
     if (SDL_GL_GetCurrentWindow() != m_win) { Application::get()->setCurrentWindow(this); }
     dc->renderer->shader.use();
-    float projection[16] = {
+    f32 projection[16] = {
          2.0f / size.w,  0.0f         ,  0.0f, 0.0f,
          0.0f         , -2.0f / size.h,  0.0f, 0.0f,
          0.0f         ,  0.0f         , -1.0f, 0.0f,
@@ -256,7 +256,7 @@ void Window::show() {
     dc->swap_buffer(m_win);
 }
 
-Widget* Window::append(Widget *widget, Fill fill_policy, unsigned int proportion) {
+Widget* Window::append(Widget *widget, Fill fill_policy, u32 proportion) {
     m_main_widget->append(widget, fill_policy, proportion);
     return m_main_widget;
 }
@@ -291,7 +291,7 @@ void Window::removeFromState(Widget *widget) {
     }
 }
 
-int Window::bind(int key, int modifiers, std::function<void()> callback) {
+i32 Window::bind(i32 key, i32 modifiers, std::function<void()> callback) {
     Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
 
     if (modifiers & KMOD_CTRL) {
@@ -321,11 +321,11 @@ int Window::bind(int key, int modifiers, std::function<void()> callback) {
     return m_binding_id++;
 }
 
-int Window::bind(int key, Mod modifier, std::function<void()> callback) {
-    return bind(key, (int)modifier, callback);
+i32 Window::bind(i32 key, Mod modifier, std::function<void()> callback) {
+    return bind(key, (i32)modifier, callback);
 }
 
-void Window::unbind(int key) {
+void Window::unbind(i32 key) {
     m_keyboard_shortcuts.erase(key);
 }
 
@@ -339,11 +339,11 @@ void Window::quit() {
     if (!is_owned) { delete this; }
 }
 
-void Window::handleResizeEvent(int width, int height) {
+void Window::handleResizeEvent(i32 width, i32 height) {
     Application::get()->setCurrentWindow(this);
     active_context_menu = nullptr;
     size = Size(width, height);
-    int w, h;
+    i32 w, h;
     SDL_GL_GetDrawableSize(m_win, &w, &h);
     glViewport(0, 0, w, h);
     show();
@@ -352,7 +352,7 @@ void Window::handleResizeEvent(int width, int height) {
     }
 }
 
-void Window::resize(int width, int height) {
+void Window::resize(i32 width, i32 height) {
     SDL_SetWindowSize(m_win, width, height);
     handleResizeEvent(width, height);
 }
@@ -381,7 +381,7 @@ void Window::drawTooltip() {
     }
     dc->setClip(Rect(0, 0, size.w, size.h));
     Size s = m_state->tooltip->tooltip->sizeHint(*dc);
-    int x, y;
+    i32 x, y;
     SDL_GetMouseState(&x, &y);
 
     // From what i remember the 12 and 16 were based on the mouse cursor size
@@ -396,7 +396,7 @@ void Window::drawTooltip() {
     m_state->tooltip->tooltip->draw(*dc, r, m_state->tooltip->tooltip->state());
 }
 
-void Window::move(int x, int y) {
+void Window::move(i32 x, i32 y) {
     SDL_SetWindowPosition(m_win, x, y);
 }
 
@@ -450,10 +450,10 @@ void Window::layout() {
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
     assert(focused && "The passed in focused widget should never be null!");
     if (focused->isFocusable() && focused->isVisible()) {
-        if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, Option<int>()))) {
+        if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, Option<i32>()))) {
             if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
                 info("Unhandled focus event, starting again from m_main_widget");
-                m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<int>()));
+                m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<i32>()));
             }
         }
     } else {
@@ -463,13 +463,13 @@ void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
         warn(std::string("focused->name(): ") + focused->name());
         if (focused->parent) { warn(std::string("focused->parent->name(): ") + focused->parent->name()); }
         if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
-            m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<int>()));
+            m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<i32>()));
         }
     }
     update();
 }
 
-void Window::matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<int, KeyboardShortcut> keybinds) {
+void Window::matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<i32, KeyboardShortcut> keybinds) {
     for (auto hotkey : keybinds) {
         if (hotkey.second.key == key) {
             bool mods_matched = true;

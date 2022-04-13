@@ -1,11 +1,13 @@
 #ifndef POINT_HPP
     #define POINT_HPP
 
-    struct Point {
-        int x;
-        int y;
+    #include "number_types.h"
 
-        Point(int x = 0, int y = 0) {
+    struct Point {
+        i32 x;
+        i32 y;
+
+        Point(i32 x = 0, i32 y = 0) {
             this->x = x;
             this->y = y;
         }

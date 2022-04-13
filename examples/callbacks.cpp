@@ -2,7 +2,7 @@
 #include "../src/application.hpp"
 #include "../src/controls/button.hpp"
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->setTitle("Callbacks");
     app->mainWindow()->onReady = [&](Window *window) {
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
         app->mainWindow()->append(disable_enable_quit, Fill::Both);
 
         app->mainWindow()->onResize = [&](Window *win) {
-            button->setText("Window Size:" + std::to_string((int)win->size.w) + ", " + std::to_string((int)win->size.h));
+            button->setText("Window Size:" + std::to_string((i32)win->size.w) + ", " + std::to_string((i32)win->size.h));
         };
     app->run();
 

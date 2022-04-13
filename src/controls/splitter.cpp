@@ -27,9 +27,9 @@ Splitter::Splitter(Align alignment, Size min_size) : Widget(), m_align_policy{al
     onMouseMotion.addEventListener([&](Widget *splitter, MouseEvent event) {
         if (isPressed() && m_dragging) {
             if (m_align_policy == Align::Horizontal) {
-                m_split = (event.x - rect.x) / (double)rect.w;
+                m_split = (event.x - rect.x) / (f64)rect.w;
             } else {
-                m_split = (event.y - rect.y) / (double)rect.h;
+                m_split = (event.y - rect.y) / (f64)rect.h;
             }
             m_split = NORMALIZE(0.0, 1.0, m_split);
             update();
@@ -80,7 +80,7 @@ const char* Splitter::name() {
     return "Splitter";
 }
 
-void Splitter::draw(DrawingContext &dc, Rect rect, int state) {
+void Splitter::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
     Rect old_clip = dc.clip();
@@ -169,7 +169,7 @@ bool Splitter::isLayout() {
     return true;
 }
 
-Widget* Splitter::append(Widget *widget, Fill fill_policy, unsigned int proportion) {
+Widget* Splitter::append(Widget *widget, Fill fill_policy, u32 proportion) {
     if (m_align_policy == Align::Horizontal) {
         assert(false && "append() should not be used for Splitter! Use left() and right() instead.");
     } else {
@@ -200,18 +200,18 @@ void Splitter::right(Widget *widget) {
 // The split value determines the size available
 // to the left or top side with the remaining
 // ,if any, size going to the other side (right, down).
-void Splitter::setSplit(double new_split) {
+void Splitter::setSplit(f64 new_split) {
     m_split = new_split;
     m_split = NORMALIZE(0.0, 1.0, m_split);
     update();
 }
 
-double Splitter::split() {
+f64 Splitter::split() {
     return m_split;
 }
 
-int Splitter::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 Splitter::isFocusable() {
+    return (i32)FocusType::Focusable;
 }
 
 Widget* Splitter::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {

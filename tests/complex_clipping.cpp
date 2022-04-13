@@ -17,25 +17,25 @@ int main(int argc, char **argv) {
         app->mainWindow()->center();
         auto h_split = new Splitter(Align::Horizontal);
             ScrolledBox *left = new ScrolledBox(Align::Vertical, Size(800, 400));
-                for (char i = 'a'; i <= 'z'; i++) {
+                for (u8 i = 'a'; i <= 'z'; i++) {
                     left->append(new LineEdit(std::string(30, i)), Fill::Both);
                 }
-                for (char i = 'A'; i <= 'Z'; i++) {
+                for (u8 i = 'A'; i <= 'Z'; i++) {
                     left->append(new LineEdit(std::string(30, i)), Fill::Both);
                 }
             h_split->left(left);
             ScrolledBox *right = new ScrolledBox(Align::Vertical, Size(800, 400));
                 ScrolledBox *inner_right = new ScrolledBox(Align::Vertical, Size(400, 400));
-                    for (char i = 'A'; i < 'Z'; i++) {
+                    for (u8 i = 'A'; i < 'Z'; i++) {
                         inner_right->append(new Button(std::string(100, i)), Fill::Both);
                     }
                 right->append(inner_right, Fill::Both);
-                auto tv = new TreeView<char>(Size(400, 800));
-                    for (int i = 0; i < 5; i++) {
-                        tv->append(new Column<char>("Column: " + std::to_string(i)));
+                auto tv = new TreeView<u8>(Size(400, 800));
+                    for (i32 i = 0; i < 5; i++) {
+                        tv->append(new Column<u8>("Column: " + std::to_string(i)));
                     }
-                    auto model = new Tree<char>();
-                        for (int row = 0; row < 100; row++) {
+                    auto model = new Tree<u8>();
+                        for (i32 row = 0; row < 100; row++) {
                             std::vector<Drawable*> columns = {
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 1"),
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 2"),
@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 4"),
                                 new TextCellRenderer("Row: " + std::to_string(row) + ", Column: 5"),
                             };
-                            auto node = new TreeNode<char>(columns, nullptr);
+                            auto node = new TreeNode<u8>(columns, nullptr);
                             model->append(nullptr, node);
                         }
                     tv->setTableMode(true);

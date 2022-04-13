@@ -16,9 +16,9 @@ int main(int argc, char **argv) {
         app->mainWindow()->setTitle("Notebook Test");
         NoteBook *nb = new NoteBook();
         {
-            for (int t = 1; t < 10; t++) {
+            for (i32 t = 1; t < 10; t++) {
                 Box *_b = new Box(Align::Vertical);
-                    for (int i = 0; i < 10; i++) {
+                    for (i32 i = 0; i < 10; i++) {
                         _b->append(new Button(std::to_string(i)), Fill::Both);
                     }
                 if (t % 3 == 0) {

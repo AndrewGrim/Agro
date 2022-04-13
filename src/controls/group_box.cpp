@@ -13,12 +13,12 @@ const char* GroupBox::name() {
     return "GroupBox";
 }
 
-void GroupBox::draw(DrawingContext &dc, Rect rect, int state) {
+void GroupBox::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.margin(rect, style);
     this->rect = rect;
     Point point;
     Size text_size;
-    int text_size_half = 0;
+    i32 text_size_half = 0;
     if (label.length()) {
         point = Point(rect.x + 10, rect.y); // 10 padding from the left
         text_size = dc.measureText(font(), label);
@@ -39,9 +39,9 @@ void GroupBox::draw(DrawingContext &dc, Rect rect, int state) {
 }
 
 Size GroupBox::sizeHint(DrawingContext &dc) {
-    unsigned int visible = 0;
-    unsigned int vertical_non_expandable = 0;
-    unsigned int horizontal_non_expandable = 0;
+    u32 visible = 0;
+    u32 vertical_non_expandable = 0;
+    u32 horizontal_non_expandable = 0;
     if (m_size_changed) {
         Size size = Size();
         if (m_align_policy == Align::Horizontal) {

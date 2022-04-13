@@ -6,7 +6,7 @@ Image::Image(std::string file_path) : Widget() {
     style.widget_background = COLOR_NONE;
 }
 
-Image::Image(const unsigned char *image_data, int length) : Widget() {
+Image::Image(const unsigned char *image_data, i32 length) : Widget() {
     m_texture = std::make_shared<Texture>(image_data, length);
     m_size = originalSize();
     style.widget_background = COLOR_NONE;
@@ -26,7 +26,7 @@ const char* Image::name() {
     return "Image";
 }
 
-void Image::draw(DrawingContext &dc, Rect rect, int state) {
+void Image::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
     dc.fillRect(rect, dc.widgetBackground(style));

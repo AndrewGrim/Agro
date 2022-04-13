@@ -29,7 +29,7 @@ class CustomWidget : public Widget {
             return "CustomWidget";
         }
 
-        void draw(DrawingContext &dc, Rect rect, int state) {
+        void draw(DrawingContext &dc, Rect rect, i32 state) {
             this->rect = rect;
 
             HorizontalAlignment h_align[3] = {
@@ -42,7 +42,7 @@ class CustomWidget : public Widget {
                 Font *fonts[3] = { small, big, italic };
                 {
                     Color colors[3] = { Color("#ffaaaa"), Color("#aaffaa"), Color("#aaaaff") };
-                    for (int i = 0; i < 3; i++) {
+                    for (i32 i = 0; i < 3; i++) {
                         dc.fillRect(Rect(rect.x, rect.y, rect.w, 50), colors[i]);
                         dc.fillTextAligned(
                             fonts[i], "This text\n is on a\n single line.",
@@ -54,7 +54,7 @@ class CustomWidget : public Widget {
                 }
                 {
                     Color colors[3] = { Color("#ffffaa"), Color("#aaffff"), Color("#ffaaff") };
-                    for (int i = 0; i < 3; i++) {
+                    for (i32 i = 0; i < 3; i++) {
                         dc.fillRect(Rect(rect.x, rect.y, rect.w, 100), colors[i]);
                         dc.fillTextMultilineAligned(
                             fonts[i], "This text\nspans multiple\nlines.",
@@ -108,7 +108,7 @@ class CustomWidget : public Widget {
                 Image *images[3] = { normal, flipped_h, flipped_v };
                 Size sizes[3] = { Size(48, 48), Size(72, 72), Size(96, 96) };
                 dc.fillRect(Rect(rect.x, rect.y, rect.w, 128), Color("#ffaa5555"));
-                for (int i = 0; i < 3; i++) {
+                for (i32 i = 0; i < 3; i++) {
                     dc.drawTextureAligned(
                         Rect(rect.x, rect.y, rect.w, 128), sizes[i],
                         images[i]->_texture(),

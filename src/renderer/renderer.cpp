@@ -47,7 +47,7 @@ u32 utf8Decode(const char *first_byte) {
     }
 }
 
-Renderer::Renderer(Window *window, unsigned int *indices) : window{window} {
+Renderer::Renderer(Window *window, u32 *indices) : window{window} {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -56,7 +56,7 @@ Renderer::Renderer(Window *window, unsigned int *indices) : window{window} {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * MAX_BATCH_SIZE * QUAD_VERTEX_COUNT, nullptr, GL_DYNAMIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * MAX_BATCH_SIZE * QUAD_INDEX_COUNT, indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(u32) * MAX_BATCH_SIZE * QUAD_INDEX_COUNT, indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
@@ -169,8 +169,8 @@ Renderer::Renderer(Window *window, unsigned int *indices) : window{window} {
     );
 
     shader.use();
-    std::vector<int> texture_indices;
-    for (int i = 0; i < 32; i++) {
+    std::vector<i32> texture_indices;
+    for (i32 i = 0; i < 32; i++) {
         texture_indices.push_back(i);
     }
     auto loc = glGetUniformLocation(shader.ID, "textures");
@@ -202,7 +202,7 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, int tab_width, bool is_multiline, int line_spacing, Selection selection, Color selection_color) {
+void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, i32 tab_width, bool is_multiline, i32 line_spacing, Selection selection, Color selection_color) {
     Size window_size = window->size;
     if (selection.begin > selection.end) {
         auto temp = selection.end;
@@ -215,7 +215,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     }
     glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
-    int x = point.x;
+    i32 x = point.x;
     i32 base_bearing = font->get((u32)'H').bearing.y;
     i32 space_advance = font->get((u32)' ').advance;
     for (size_t i = 0; i < text.length;) {
@@ -239,51 +239,51 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
             auto _color = color;
             if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
             if (x + ch.advance >= 0 && x <= window_size.w) {
-                float xpos = x + ch.bearing.x;
-                float ypos = point.y + (base_bearing - ch.bearing.y);
+                f32 xpos = x + ch.bearing.x;
+                f32 ypos = point.y + (base_bearing - ch.bearing.y);
 
-                float w = ch.size.w;
-                float h = ch.size.h;
+                f32 w = ch.size.w;
+                f32 h = ch.size.h;
 
                 // TOP LEFT
                 vertices[index++] = {
                     {xpos, ypos + h},
                     {ch.texture_x, (h / font->atlas_height)},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (float)current_texture_slot,
-                    (float)Renderer::Sampler::Text,
+                    (f32)current_texture_slot,
+                    (f32)Renderer::Sampler::Text,
                     {1.0, 1.0, 1.0, 1.0},
-                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 // BOTTOM LEFT
                 vertices[index++] = {
                     {xpos, ypos},
                     {ch.texture_x, 0.0},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (float)current_texture_slot,
-                    (float)Renderer::Sampler::Text,
+                    (f32)current_texture_slot,
+                    (f32)Renderer::Sampler::Text,
                     {1.0, 1.0, 1.0, 1.0},
-                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 // BOTTOM RIGHT
                 vertices[index++] = {
                     {xpos + w, ypos},
                     {ch.texture_x + (w / font->atlas_width), 0.0},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (float)current_texture_slot,
-                    (float)Renderer::Sampler::Text,
+                    (f32)current_texture_slot,
+                    (f32)Renderer::Sampler::Text,
                     {1.0, 1.0, 1.0, 1.0},
-                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 // TOP RIGHT
                 vertices[index++] = {
                     {xpos + w, ypos + h},
                     {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (float)current_texture_slot,
-                    (float)Renderer::Sampler::Text,
+                    (f32)current_texture_slot,
+                    (f32)Renderer::Sampler::Text,
                     {1.0, 1.0, 1.0, 1.0},
-                    {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 quad_count++;
             }
@@ -294,9 +294,9 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     current_texture_slot++;
 }
 
-Size Renderer::measureText(Font *font, Slice<const char> text, int tab_width, bool is_multiline, int line_spacing) {
+Size Renderer::measureText(Font *font, Slice<const char> text, i32 tab_width, bool is_multiline, i32 line_spacing) {
     Size size = Size(0, font->maxHeight());
-    int line_width = 0;
+    i32 line_width = 0;
     i32 space_advance = font->get((u32)' ').advance;
     for (size_t i = 0; i < text.length;) {
         u8 c = text.data[i];
@@ -334,42 +334,42 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     // TOP LEFT
     vertices[index++] = {
         {0.0, 1.0},
-        {(float)coords->top_left.x, (float)coords->top_left.y},
+        {(f32)coords->top_left.x, (f32)coords->top_left.y},
         {color.r, color.g, color.b, color.a},
-        (float)current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)current_texture_slot,
+        (f32)Renderer::Sampler::Texture,
+        {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
         {0.0, 0.0},
-        {(float)coords->bottom_left.x, (float)coords->bottom_left.y},
+        {(f32)coords->bottom_left.x, (f32)coords->bottom_left.y},
         {color.r, color.g, color.b, color.a},
-        (float)current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)current_texture_slot,
+        (f32)Renderer::Sampler::Texture,
+        {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
         {1.0, 0.0},
-        {(float)coords->bottom_right.x, (float)coords->bottom_right.y},
+        {(f32)coords->bottom_right.x, (f32)coords->bottom_right.y},
         {color.r, color.g, color.b, color.a},
-        (float)current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)current_texture_slot,
+        (f32)Renderer::Sampler::Texture,
+        {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
         {1.0, 1.0},
-        {(float)coords->top_right.x, (float)coords->top_right.y},
+        {(f32)coords->top_right.x, (f32)coords->top_right.y},
         {color.r, color.g, color.b, color.a},
-        (float)current_texture_slot,
-        (float)Renderer::Sampler::Texture,
-        {(float)point.x, (float)point.y, (float)size.w, (float)size.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)current_texture_slot,
+        (f32)Renderer::Sampler::Texture,
+        {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     quad_count++;
     current_texture_slot++;
@@ -394,9 +394,9 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Color,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Color,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
@@ -404,9 +404,9 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Color,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Color,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
@@ -414,9 +414,9 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Color,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Color,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
@@ -424,9 +424,9 @@ void Renderer::fillRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Color,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Color,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
 
     quad_count++;
@@ -443,9 +443,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
@@ -453,9 +453,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
@@ -463,9 +463,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
@@ -473,9 +473,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             break;
         }
@@ -486,9 +486,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
@@ -496,9 +496,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
@@ -506,9 +506,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
@@ -516,9 +516,9 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
                 {0.0, 0.0},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
                 0.0,
-                (float)Renderer::Sampler::Color,
-                {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-                {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+                (f32)Renderer::Sampler::Color,
+                {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+                {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             break;
         }
@@ -536,9 +536,9 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Dashed,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Dashed,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
@@ -546,9 +546,9 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Dashed,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Dashed,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
@@ -556,9 +556,9 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Dashed,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Dashed,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
@@ -566,9 +566,9 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
         {0.0, 0.0},
         {color.r, color.g, color.b, color.a},
         0.0,
-        (float)Renderer::Sampler::Dashed,
-        {(float)rect.x, (float)rect.y, (float)rect.w, (float)rect.h},
-        {(float)clip_rect.x, (float)clip_rect.y, (float)clip_rect.w, (float)clip_rect.h}
+        (f32)Renderer::Sampler::Dashed,
+        {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
 
     quad_count++;

@@ -56,7 +56,7 @@
             std::function<void(Window*)> onResize = nullptr;
             std::function<void(Window*)> onFocusLost = nullptr;
 
-            Window(const char* title, Size size, Point point, int flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+            Window(const char* title, Size size, Point point, i32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
             virtual ~Window();
 
             /// This method is used to add a Widget to the children
@@ -65,7 +65,7 @@
             /// the same as the append() method in Widget and is
             /// provided for conveniance.
             /// It simply calls the append() method on the main Widget.
-            Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
+            Widget* append(Widget *widget, Fill fill_policy = Fill::None, u32 proportion = 1);
 
             /// Returns the pointer to the main Widget of the Application.
             Widget* mainWidget();
@@ -85,21 +85,21 @@
 
             void removeFromState(Widget *widget);
 
-            int bind(int key, int modifiers, std::function<void()> callback);
-            int bind(int key, Mod modifier, std::function<void()> callback);
-            void unbind(int map_key);
+            i32 bind(i32 key, i32 modifiers, std::function<void()> callback);
+            i32 bind(i32 key, Mod modifier, std::function<void()> callback);
+            void unbind(i32 map_key);
 
             void quit();
 
-            void handleResizeEvent(int width, int height);
-            void resize(int width, int height);
+            void handleResizeEvent(i32 width, i32 height);
+            void resize(i32 width, i32 height);
 
             std::string title();
             void setTitle(std::string title);
 
             void setTooltip(Widget *widget);
 
-            void move(int x, int y);
+            void move(i32 x, i32 y);
             void center();
             void pulse();
             ContextEventResult propagateMouseEvent(MouseEvent event);
@@ -113,16 +113,16 @@
             State *m_state = new State();
             bool m_needs_update = false;
             // TODO have another map for hotkeys ie menu shortcut keys
-            std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
-            int m_binding_id = 0; // This is used to give out the next id to a binding. // TODO look in notes for a better solution
+            std::unordered_map<i32, KeyboardShortcut> m_keyboard_shortcuts;
+            i32 m_binding_id = 0; // This is used to give out the next id to a binding. // TODO look in notes for a better solution
             bool m_running = true;
             bool m_mouse_inside = true;
             bool m_is_mouse_captured = false;
             std::string m_title;
 
-            uint32_t m_tooltip_time = 500;
+            u32 m_tooltip_time = 500;
             SDL_TimerID m_tooltip_callback = -1;
-            uint32_t delay_till = 0;
+            u32 delay_till = 0;
 
             /// Updates the projection matrix, clears the context and
             /// renders any state that was stored in the renderer from
@@ -130,6 +130,6 @@
             /// Used internally by show().
             void draw();
             void drawTooltip();
-            void matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<int, KeyboardShortcut> keybinds);
+            void matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<i32, KeyboardShortcut> keybinds);
     };
 #endif

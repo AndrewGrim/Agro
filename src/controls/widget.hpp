@@ -52,10 +52,10 @@
 
     struct FocusPropagationData {
         Widget *origin = nullptr;
-        Option<int> origin_index = Option<int>();
+        Option<i32> origin_index = Option<i32>();
 
         FocusPropagationData() {}
-        FocusPropagationData(Widget *origin, Option<int> origin_index) : origin{origin}, origin_index{origin_index} {}
+        FocusPropagationData(Widget *origin, Option<i32> origin_index) : origin{origin}, origin_index{origin_index} {}
     };
 
     enum class FocusType {
@@ -82,14 +82,14 @@
             /// The parent* is mostly used by compound Widgets.
             Widget *parent = nullptr;
 
-            int parent_index = -1; // TODO Have another look at parent and parent_index for some widgets
+            i32 parent_index = -1; // TODO Have another look at parent and parent_index for some widgets
             // when there is a parent but the widget its not part of the children
             // like in Splitter
             // also means remove is gonna totally break for splitter and any other
             // Widget that doesnt use the children vector to store the child Widgets.
 
             // TODO multiple windows
-            // int window_index;
+            // i32 window_index;
 
             /// Stores all the children Widgets of this Widget.
             /// Its not meant to be interacted with directly but
@@ -165,12 +165,12 @@
             /// states; such as Disabled, Focused, Pressed, Hovered.
             /// When applicable it should prefer to use global
             /// color theme values.
-            virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) = 0;
 
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
             /// end of the children dynamic array.
-            virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, unsigned int proportion = 1);
+            virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, u32 proportion = 1);
 
             /// This method is used to remove a Widget from parent's children based on the given index.
             // TODO the index should be passed in internally rather than requiring the user to pass it in.
@@ -220,10 +220,10 @@
             virtual bool isLayout();
 
             /// Used to check if the Widget implements a Scrollable interface.
-            // TODO double check what this is about??? i think it just indicates whether a Widget utilizes ScrollBar?
+            // TODO f64 check what this is about??? i think it just indicates whether a Widget utilizes ScrollBar?
             virtual bool isScrollable();
 
-            virtual int isFocusable();
+            virtual i32 isFocusable();
 
             /// Returns whether the Widget is currently hovered or not.
             bool isHovered();
@@ -257,9 +257,9 @@
             void setHardFocus(State *state);
             virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data);
 
-            unsigned int proportion();
+            u32 proportion();
 
-            Widget* setProportion(unsigned int proportion);
+            Widget* setProportion(u32 proportion);
 
             // TODO font should probably be moved to style
             Font* font();
@@ -269,12 +269,12 @@
 
             /// Returns the Widget state bit flag consisting of:
             /// focus, hover and pressed states.
-            int state();
+            i32 state();
 
-            int bind(int key, int modifiers, std::function<void()> callback);
-            int bind(int key, Mod modifier, std::function<void()> callback);
-            void unbind(int map_key);
-            const std::unordered_map<int, KeyboardShortcut> keyboardShortcuts();
+            i32 bind(i32 key, i32 modifiers, std::function<void()> callback);
+            i32 bind(i32 key, Mod modifier, std::function<void()> callback);
+            void unbind(i32 map_key);
+            const std::unordered_map<i32, KeyboardShortcut> keyboardShortcuts();
             Size size();
             void setStyle(Style style);
 
@@ -306,7 +306,7 @@
             /// amount of expandable space if its available.
             /// Proportion higher than that, 5 for example, will mean that for every pixel a default
             /// Widget expands this one will expand 5 pixels.
-            unsigned int m_proportion = 1;
+            u32 m_proportion = 1;
 
             /// The precomputed sizeHint of the Widget.
             /// Returned when nothing changed that would
@@ -321,7 +321,7 @@
             Font *m_font = nullptr;
 
             // TODO wtf is this for?
-            int m_binding_id = 0;
-            std::unordered_map<int, KeyboardShortcut> m_keyboard_shortcuts;
+            i32 m_binding_id = 0;
+            std::unordered_map<i32, KeyboardShortcut> m_keyboard_shortcuts;
     };
 #endif

@@ -13,7 +13,7 @@ const char* Label::name() {
     return "Label";
 }
 
-void Label::draw(DrawingContext &dc, Rect rect, int state) {
+void Label::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
     dc.margin(rect, style);

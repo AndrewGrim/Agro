@@ -37,7 +37,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         h_box->append(reset);
     append(h_box);
 
-    int *size_options[12] = {
+    i32 *size_options[12] = {
         &s.margin.top, &s.margin.bottom, &s.margin.left, &s.margin.right,
         &s.border.top, &s.border.bottom, &s.border.left, &s.border.right,
         &s.padding.top, &s.padding.bottom, &s.padding.left, &s.padding.right
@@ -49,13 +49,13 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         "Top", "Bottom", "Left", "Right"
     };
     Box *size_box = new Box(Align::Horizontal);
-        for (int i = 0; i < 3; i++) {
+        for (i32 i = 0; i < 3; i++) {
             GroupBox *gb = new GroupBox(Align::Vertical, size_options_names[i]);
                 auto line = new LineEdit("", "All", 100);
                 line->onTextChanged.addEventListener([=]() {
                     if (line->text().length()) {
                         try {
-                            int value = std::stoi(line->text().c_str());
+                            i32 value = std::stoi(line->text().c_str());
                             *size_options[i*4+0] = value;
                             *size_options[i*4+1] = value;
                             *size_options[i*4+2] = value;
@@ -83,7 +83,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                     }
                 });
                 gb->append(line);
-                for (int j = 0; j < 4; j++) {
+                for (i32 j = 0; j < 4; j++) {
                     auto line = new LineEdit("", size_options_sides_names[j], 100);
                     line->onTextChanged.addEventListener([=]() {
                         if (line->text().length()) {
@@ -128,7 +128,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                     }
                 });
         gb->append(line, Fill::Horizontal);
-            for (int i = 0; i < 4; i++) {
+            for (i32 i = 0; i < 4; i++) {
                 LineEdit *line = new LineEdit("", size_options_sides_names[i], 100);
                     line->onTextChanged.addEventListener([=]() {
                         *border_color[i] = Color(line->text().c_str());
@@ -153,7 +153,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         "hovered_background", "pressed_background", "accent_hovered_background",
         "accent_pressed_background", "icon_foreground", "border_background"
     };
-    for (int i = 0; i < 13; i++) {
+    for (i32 i = 0; i < 13; i++) {
         Label *l = new Label(color_option_names[i]);
         append(l);
 

@@ -6,7 +6,7 @@ Box::Box(Align align_policy) : m_align_policy{align_policy} {}
 
 Box::~Box() {}
 
-void Box::draw(DrawingContext &dc, Rect rect, int state) {
+void Box::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     dc.fillRect(rect, dc.windowBackground(style));
     layoutChildren(dc, rect);
@@ -14,17 +14,17 @@ void Box::draw(DrawingContext &dc, Rect rect, int state) {
 
 void Box::layoutChildren(DrawingContext &dc, Rect rect) {
     Align parent_layout = alignPolicy();
-    int generic_non_expandable_widgets;
+    i32 generic_non_expandable_widgets;
     Point pos = Point(rect.x, rect.y);
-    int generic_total_layout_length;
-    int *generic_position_coord; // Needs to be a ptr because the value will change.
-    int rect_length;
-    int rect_opposite_length;
+    i32 generic_total_layout_length;
+    i32 *generic_position_coord; // Needs to be a ptr because the value will change.
+    i32 rect_length;
+    i32 rect_opposite_length;
     Size size; // Widget size after optional expansion.
-    int *generic_length; // Needs to be a ptr because the value will change.
+    i32 *generic_length; // Needs to be a ptr because the value will change.
     Rect parent_rect = parent ? parent->rect : Rect(0, 0, Application::get()->currentWindow()->size.w, Application::get()->currentWindow()->size.h);
-    int generic_parent_coord;
-    int generic_parent_length;
+    i32 generic_parent_coord;
+    i32 generic_parent_length;
     if (parent_layout == Align::Vertical) {
         generic_non_expandable_widgets = m_vertical_non_expandable;
         generic_total_layout_length = m_widgets_only.h;
@@ -44,17 +44,17 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
         generic_parent_coord = parent_rect.x;
         generic_parent_length = parent_rect.w;
     }
-    int child_count = m_visible_children - generic_non_expandable_widgets;
+    i32 child_count = m_visible_children - generic_non_expandable_widgets;
     if (!child_count) child_count = 1; // Protects from division by zero
-    int expandable_length = (rect_length - generic_total_layout_length) / child_count;
-    int remainder = (rect_length - generic_total_layout_length) % child_count;
+    i32 expandable_length = (rect_length - generic_total_layout_length) / child_count;
+    i32 remainder = (rect_length - generic_total_layout_length) % child_count;
     if (expandable_length < 0) {
         expandable_length = 0;
         remainder = 0;
     }
     for (Widget *child : children) {
         Size child_hint = child->sizeHint(dc);
-        int child_expandable_length = expandable_length;
+        i32 child_expandable_length = expandable_length;
         switch (parent_layout) {
             case Align::Vertical:
                 switch (child->fillPolicy()) {
@@ -65,7 +65,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
                         }
                         size = Size {
                             rect_opposite_length > child_hint.w ? rect_opposite_length : child_hint.w,
-                            child_hint.h + (child_expandable_length * (int)child->proportion())
+                            child_hint.h + (child_expandable_length * (i32)child->proportion())
                         };
                         break;
                     }
@@ -76,7 +76,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
                         }
                         size = Size {
                             child_hint.w,
-                            child_hint.h + (child_expandable_length * (int)child->proportion())
+                            child_hint.h + (child_expandable_length * (i32)child->proportion())
                         };
                         break;
                     }
@@ -99,7 +99,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
                                 remainder--;
                             }
                             size = Size {
-                                child_hint.w + (child_expandable_length * (int)child->proportion()),
+                                child_hint.w + (child_expandable_length * (i32)child->proportion()),
                                 rect_opposite_length > child_hint.h ? rect_opposite_length : child_hint.h
                             };
                             break;
@@ -116,7 +116,7 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
                                 remainder--;
                             }
                             size = Size {
-                                child_hint.w + (child_expandable_length * (int)child->proportion()),
+                                child_hint.w + (child_expandable_length * (i32)child->proportion()),
                                 child_hint.h
                             };
                             break;
@@ -145,9 +145,9 @@ void Box::layoutChildren(DrawingContext &dc, Rect rect) {
 }
 
 Size Box::sizeHint(DrawingContext &dc) {
-    unsigned int visible = 0;
-    unsigned int vertical_non_expandable = 0;
-    unsigned int horizontal_non_expandable = 0;
+    u32 visible = 0;
+    u32 vertical_non_expandable = 0;
+    u32 horizontal_non_expandable = 0;
     if (m_size_changed) {
         Size size = Size();
         if (m_align_policy == Align::Horizontal) {
@@ -196,8 +196,8 @@ bool Box::isLayout() {
     return true;
 }
 
-int Box::isFocusable() {
-    return (int)FocusType::Passthrough;
+i32 Box::isFocusable() {
+    return (i32)FocusType::Passthrough;
 }
 
 const char* Box::name() {
@@ -218,8 +218,8 @@ Align Box::alignPolicy() {
 Widget* Box::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
     assert(event != FocusEvent::Activate && "handleFocusEvent should only be called with Forward and Reverse focus events!");
     if (event == FocusEvent::Forward) {
-        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() + 1 : 0;
-        for (; child_index_unwrapped < (int)children.size(); child_index_unwrapped++) {
+        i32 child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() + 1 : 0;
+        for (; child_index_unwrapped < (i32)children.size(); child_index_unwrapped++) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {
                 return child->handleFocusEvent(event, state, FocusPropagationData());
@@ -230,7 +230,7 @@ Widget* Box::handleFocusEvent(FocusEvent event, State *state, FocusPropagationDa
         }
         return nullptr;
     } else {
-        int child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() - 1 : (int)children.size() - 1;
+        i32 child_index_unwrapped = data.origin_index ? data.origin_index.unwrap() - 1 : (i32)children.size() - 1;
         for (; child_index_unwrapped > -1; child_index_unwrapped--) {
             Widget *child = children[child_index_unwrapped];
             if (child->isFocusable() && child->isVisible()) {

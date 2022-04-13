@@ -3,11 +3,13 @@
 
     #include <ostream>
 
-    struct Size {
-        int w;
-        int h;
+    #include "number_types.h"
 
-        Size(int w = 0, int h = 0) {
+    struct Size {
+        i32 w;
+        i32 h;
+
+        Size(i32 w = 0, i32 h = 0) {
             this->w = w;
             this->h = h;
         }

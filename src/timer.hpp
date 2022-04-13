@@ -4,13 +4,15 @@
     #include <functional>
     #include <SDL.h>
 
-    uint32_t timerCallbackWrapper(uint32_t interval, void *real_callback);
+    #include "common/number_types.h"
+
+    u32 timerCallbackWrapper(u32 interval, void *real_callback);
 
     struct Timer {
         SDL_TimerID id = -1;
         uint64_t index = 0;
-        std::shared_ptr<std::function<uint32_t(uint32_t interval)>> real_callback;
+        std::shared_ptr<std::function<u32(u32 interval)>> real_callback;
 
-        Timer(uint32_t after, std::function<uint32_t(uint32_t interval)> callback);
+        Timer(u32 after, std::function<u32(u32 interval)> callback);
     };
 #endif

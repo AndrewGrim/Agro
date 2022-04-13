@@ -2,7 +2,7 @@
 #include "../renderer/renderer.hpp"
 #include "../application.hpp"
 
-LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : Widget() {
+LineEdit::LineEdit(std::string text, std::string placeholder, i32 min_length) : Widget() {
     setText(text);
     setPlaceholderText(placeholder);
     setMinLength(min_length);
@@ -14,13 +14,13 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
             m_selection.x_begin = 0;
         } else {
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
-            int x = 0;
+            i32 x = 0;
             size_t index = 0;
-            int offset_event = event.x - inner_rect.x;
+            i32 offset_event = event.x - inner_rect.x;
             u8 length = 0;
             for (size_t i = 0; i < this->text().length(); i += length) {
                 length = utf8SequenceLength(this->text().data() + i);
-                int w = dc.measureText(font(), Slice<const char>(this->text().data() + i, length)).w;
+                i32 w = dc.measureText(font(), Slice<const char>(this->text().data() + i, length)).w;
                 if (x + w > offset_event) {
                     if (x + (w / 2) < offset_event) {
                         x += w;
@@ -45,15 +45,15 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
             }
 
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
-            int x = m_selection.x_begin;
+            i32 x = m_selection.x_begin;
             size_t index = m_selection.begin;
-            int offset_event = event.x - inner_rect.x;
+            i32 offset_event = event.x - inner_rect.x;
 
             // Selection is to the right of the origin point.
             if (offset_event >= x) {
                 while (index < this->text().length()) {
-                    char c = this->text()[index];
-                    int w = dc.measureText(font(), c).w;
+                    u8 c = this->text()[index];
+                    i32 w = dc.measureText(font(), c).w;
                     if (x + w > offset_event) {
                         break;
                     }
@@ -63,8 +63,8 @@ LineEdit::LineEdit(std::string text, std::string placeholder, int min_length) : 
             // Selection is to the left of the origin point.
             } else {
                 while (index) {
-                    char c = this->text()[--index];
-                    int w = dc.measureText(font(), c).w;
+                    u8 c = this->text()[--index];
+                    i32 w = dc.measureText(font(), c).w;
                     x -= w;
                     if (x < offset_event) {
                         break;
@@ -180,7 +180,7 @@ const char* LineEdit::name() {
     return "LineEdit";
 }
 
-void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
+void LineEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.margin(rect, style);
     this->rect = rect;
     dc.drawBorder(rect, style, state);
@@ -209,9 +209,9 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
     // Draw normal text;
     } else {
         if (m_selection.mouse_selection || (isHardFocused() && m_selection.hasSelection())) {
-            int text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
-            int start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
-            int end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
+            i32 text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
+            i32 start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
+            i32 end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
             dc.fillRect(
                 Rect(
                     inner_rect.x + start,
@@ -238,7 +238,7 @@ void LineEdit::draw(DrawingContext &dc, Rect rect, int state) {
 
     // Draw the text insertion cursor.
     if (isHardFocused()) {
-        int text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
+        i32 text_height = m_text_height + TOP_PADDING(this) + BOTTOM_PADDING(this);
         dc.fillRect(
             Rect(
                 inner_rect.x + m_selection.x_end,
@@ -291,11 +291,11 @@ void LineEdit::handleTextEvent(DrawingContext &dc, const char *text) {
     insert(m_selection.end, text);
 }
 
-int LineEdit::minLength() {
+i32 LineEdit::minLength() {
     return m_min_length;
 }
 
-LineEdit* LineEdit::setMinLength(int length) {
+LineEdit* LineEdit::setMinLength(i32 length) {
     if (m_min_length != length) {
         m_min_length = length;
         layout();
@@ -320,7 +320,7 @@ LineEdit* LineEdit::moveCursorLeft() {
         }
         DrawingContext &dc = *Application::get()->currentWindow()->dc;
         m_selection.end--;
-        int char_size = dc.measureText(font(), text()[m_selection.end]).w;
+        i32 char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end -= char_size;
         if (!isShiftPressed()) {
             m_selection.x_begin = m_selection.x_end;
@@ -352,7 +352,7 @@ LineEdit* LineEdit::moveCursorRight() {
             goto END;
         }
         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-        int char_size = dc.measureText(font(), text()[m_selection.end]).w;
+        i32 char_size = dc.measureText(font(), text()[m_selection.end]).w;
         m_selection.x_end += char_size;
         m_selection.end++;
         if (!isShiftPressed()) {
@@ -505,7 +505,7 @@ void LineEdit::selectAll() {
 
 void LineEdit::swapSelection() {
     if (m_selection.begin > m_selection.end) {
-        int temp_x = m_selection.x_end;
+        i32 temp_x = m_selection.x_end;
         size_t temp = m_selection.end;
         m_selection.x_end = m_selection.x_begin;
         m_selection.end = m_selection.begin;
@@ -556,7 +556,7 @@ void LineEdit::setCursor(size_t index) {
         u8 length = 0;
         for (size_t i = 0; i < text().length(); i += length) {
             length = utf8SequenceLength(text().data() + i);
-            int w = dc.measureText(font(), Slice<const char>(text().data() + i, length)).w;
+            i32 w = dc.measureText(font(), Slice<const char>(text().data() + i, length)).w;
             inner_rect.x += w;
             local_index++;
             if (index == local_index) {
@@ -625,6 +625,6 @@ void LineEdit::redo() {
     }
 }
 
-int LineEdit::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 LineEdit::isFocusable() {
+    return (i32)FocusType::Focusable;
 }

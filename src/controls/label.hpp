@@ -11,7 +11,7 @@
             Label(std::string text);
             ~Label();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             std::string text();
             virtual Label* setText(std::string text);
@@ -23,6 +23,6 @@
             std::string m_text;
             HorizontalAlignment m_horizontal_align = HorizontalAlignment::Left;
             VerticalAlignment m_vertical_align = VerticalAlignment::Center;
-            int m_line_spacing = 5;
+            i32 m_line_spacing = 5;
     };
 #endif

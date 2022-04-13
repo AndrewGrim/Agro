@@ -18,10 +18,10 @@
 #include "../src/controls/style_editor.hpp"
 #include "resources.hpp"
 
-uint32_t timerCallback(uint32_t interval, void *data) {
+u32 timerCallback(u32 interval, void *data) {
     Application *app = (Application*)data;
     ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
-    double value = bar->m_value;
+    f64 value = bar->m_value;
     if (value < 1.0) {
         bar->m_value += 0.01;
     } else {
@@ -139,7 +139,7 @@ Widget* basic2(Application &app) {
                     dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 8", 5));
                     dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 9", 5));
                     dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 10", 5));
-                    dropdown_cellrenderers->onItemSelected.addEventListener([](Widget *widget, CellRenderer *item, int index) {
+                    dropdown_cellrenderers->onItemSelected.addEventListener([](Widget *widget, CellRenderer *item, i32 index) {
                         println(widget);
                         println(item);
                         println(((TextCellRenderer*)item)->text);
@@ -169,7 +169,7 @@ Widget* basic2(Application &app) {
         dropdowns_and_list->append(dropdown_boxes, Fill::Both);
             GroupBox *lists = new GroupBox(Align::Vertical, "Lists");
             List *list = new List();
-                for (int i = 0; i < 50; i++) {
+                for (i32 i = 0; i < 50; i++) {
                     list->appendItem(new TextCellRenderer("TextCellRender"));
                 }
             lists->append(list, Fill::Both);
@@ -214,8 +214,8 @@ Widget* splitter(Application &app) {
 }
 
 struct Hidden {
-    int id = -1;
-    Hidden(int id) : id{id} {}
+    i32 id = -1;
+    Hidden(i32 id) : id{id} {}
 };
 
 Widget* treeView(Application &app) {
@@ -224,7 +224,7 @@ Widget* treeView(Application &app) {
             GroupBox *group = new GroupBox(Align::Vertical, "Mode::Unroll");
                 TreeView<Hidden> *tv = new TreeView<Hidden>();
                     tv->hideColumnHeaders();
-                    for (int i = 1; i < 4; i++) {
+                    for (i32 i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
                             "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
                             [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
@@ -235,7 +235,7 @@ Widget* treeView(Application &app) {
                         tv->append(c);
                     }
                     Tree<Hidden> *model = new Tree<Hidden>();
-                    for (int i = 1; i < 101; i++) {
+                    for (i32 i = 1; i < 101; i++) {
                         model->append(nullptr, new TreeNode<Hidden>(
                             {
                                 new TextCellRenderer("Row " + std::to_string(i)),
@@ -254,7 +254,7 @@ Widget* treeView(Application &app) {
         {
             GroupBox *group = new GroupBox(Align::Vertical, "Mode::Scroll");
                 TreeView<Hidden> *tv = new TreeView<Hidden>(Size(400, 400));
-                    for (int i = 1; i < 4; i++) {
+                    for (i32 i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
                             "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
                             [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
@@ -265,11 +265,11 @@ Widget* treeView(Application &app) {
                         if (i == 1) { c->setExpand(true); }
                     }
                     Tree<Hidden> *model = new Tree<Hidden>();
-                    int count = 0;
-                    float ic = 0.0f;
-                    for (int i = 1; i < 6; i++) {
+                    i32 count = 0;
+                    f32 ic = 0.0f;
+                    for (i32 i = 1; i < 6; i++) {
                         TreeNode<Hidden> *parent = nullptr;
-                        for (int j = 1; j < 21; j++) {
+                        for (i32 j = 1; j < 21; j++) {
                             auto n = model->append(parent, new TreeNode<Hidden>(
                                 {
                                     new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
@@ -322,9 +322,9 @@ int main(int argc, char **argv) {
         // app->addTimer(100, timerCallback, app);
         app->addTimer(
             100,
-            [=](uint32_t interval) -> uint32_t {
+            [=](u32 interval) -> u32 {
                 ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
-                double value = bar->m_value;
+                f64 value = bar->m_value;
                 if (value < 1.0) {
                     bar->m_value += 0.01;
                 } else {

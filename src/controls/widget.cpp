@@ -14,7 +14,7 @@ Widget::~Widget() {
     delete this->tooltip;
 }
 
-Widget* Widget::append(Widget* widget, Fill fill_policy, unsigned int proportion) {
+Widget* Widget::append(Widget* widget, Fill fill_policy, u32 proportion) {
     if (widget->parent) {
         widget->parent->remove(widget->parent_index);
     }
@@ -104,8 +104,8 @@ bool Widget::isHardFocused() {
     return Application::get()->currentWindow()->m_state->hard_focused == this;
 }
 
-int Widget::state() {
-    int widget_state = STATE_DEFAULT;
+i32 Widget::state() {
+    i32 widget_state = STATE_DEFAULT;
     State *app_state = Application::get()->currentWindow()->m_state;
     if (app_state->hovered == this) { widget_state |= STATE_HOVERED; }
     if (app_state->pressed == this) { widget_state |= STATE_PRESSED; }
@@ -243,8 +243,8 @@ Widget* Widget::handleFocusEvent(FocusEvent event, State *state, FocusPropagatio
     return nullptr;
 }
 
-int Widget::isFocusable() {
-    return (int)FocusType::None;
+i32 Widget::isFocusable() {
+    return (i32)FocusType::None;
 }
 
 bool Widget::isLayout() {
@@ -255,11 +255,11 @@ bool Widget::isScrollable() {
     return false;
 }
 
-unsigned int Widget::proportion() {
+u32 Widget::proportion() {
     return this->m_proportion;
 }
 
-Widget* Widget::setProportion(unsigned int proportion) {
+Widget* Widget::setProportion(u32 proportion) {
     if (this->m_proportion != proportion) {
         this->m_proportion = proportion ? proportion : 1;
         this->layout();
@@ -281,7 +281,7 @@ Widget* Widget::setFont(Font *font) {
     return this;
 }
 
-int Widget::bind(int key, int modifiers, std::function<void()> callback) {
+i32 Widget::bind(i32 key, i32 modifiers, std::function<void()> callback) {
     Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
 
     if (modifiers & KMOD_CTRL) {
@@ -311,15 +311,15 @@ int Widget::bind(int key, int modifiers, std::function<void()> callback) {
     return m_binding_id++;
 }
 
-int Widget::bind(int key, Mod modifier, std::function<void()> callback) {
-    return bind(key, (int)modifier, callback);
+i32 Widget::bind(i32 key, Mod modifier, std::function<void()> callback) {
+    return bind(key, (i32)modifier, callback);
 }
 
-void Widget::unbind(int key) {
+void Widget::unbind(i32 key) {
     this->m_keyboard_shortcuts.erase(key);
 }
 
-const std::unordered_map<int, KeyboardShortcut> Widget::keyboardShortcuts() {
+const std::unordered_map<i32, KeyboardShortcut> Widget::keyboardShortcuts() {
     return this->m_keyboard_shortcuts;
 }
 

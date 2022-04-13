@@ -30,7 +30,7 @@ const char* RadioButton::name() {
     return "RadioButton";
 }
 
-void RadioButton::draw(DrawingContext &dc, Rect rect, int state) {
+void RadioButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.margin(rect, style);
     dc.padding(rect, style);
     // Set rect only to the area where we actually draw the widget.

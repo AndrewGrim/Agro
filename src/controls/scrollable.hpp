@@ -23,11 +23,11 @@
             Scrollable(Size min_size = Size(400, 400));
             ~Scrollable();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             virtual bool isLayout() override;
             virtual bool isScrollable() override;
-            virtual int isFocusable() override;
+            virtual i32 isFocusable() override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
             virtual bool handleScrollEvent(ScrollEvent event) override;
             virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;

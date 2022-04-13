@@ -3,9 +3,9 @@
 #include "../slice.hpp"
 
 DrawingContext::DrawingContext(Window *window) : window{window} {
-    unsigned int offset = 0;
-    unsigned int indexCount = MAX_BATCH_SIZE * QUAD_INDEX_COUNT;
-    for (unsigned int i = 0; i < indexCount; i += QUAD_INDEX_COUNT) {
+    u32 offset = 0;
+    u32 indexCount = MAX_BATCH_SIZE * QUAD_INDEX_COUNT;
+    for (u32 i = 0; i < indexCount; i += QUAD_INDEX_COUNT) {
         indices[i + 0] = 0 + offset;
         indices[i + 1] = 1 + offset;
         indices[i + 2] = 2 + offset;
@@ -134,15 +134,15 @@ void DrawingContext::render() {
     renderer->render();
 }
 
-void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, int tab_width, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
     renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, false, 0, selection, selection_color);
 }
 
-void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, int tab_width, int line_spacing, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
     renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, true, line_spacing, selection, selection_color);
 }
 
-void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
     Point pos = Point();
     Size text_size = measureText(font, text, tab_width);
     switch (h_align) {
@@ -178,7 +178,7 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
     );
 }
 
-void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color, int tab_width, int line_spacing, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
     font = font ? font : default_font;
     Point pos = Point(rect.x, rect.y);
     Size text_size = measureTextMultiline(font, text, tab_width, line_spacing);
@@ -194,7 +194,7 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
             break;
     }
 
-    int line_width = 0;
+    i32 line_width = 0;
     const char *start = text.data();
     size_t count = 0;
     u8 length = 0;
@@ -236,23 +236,23 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
     renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false, 0, selection, selection_color);
 }
 
-Size DrawingContext::measureText(Font *font, Slice<const char> text, int tab_width) {
+Size DrawingContext::measureText(Font *font, Slice<const char> text, i32 tab_width) {
     return renderer->measureText(font ? font : default_font, text, tab_width);
 }
 
-Size DrawingContext::measureText(Font *font, std::string text, int tab_width) {
+Size DrawingContext::measureText(Font *font, std::string text, i32 tab_width) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.length()), tab_width);
 }
 
-Size DrawingContext::measureText(Font *font, char c, int tab_width) {
+Size DrawingContext::measureText(Font *font, char c, i32 tab_width) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(&c, 1), tab_width);
 }
 
-Size DrawingContext::measureTextMultiline(Font *font, std::string text, int tab_width, int line_spacing) {
+Size DrawingContext::measureTextMultiline(Font *font, std::string text, i32 tab_width, i32 line_spacing) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.length()), tab_width, true, line_spacing);
 }
 
-Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color) {
+Rect DrawingContext::drawBorder3D(Rect rect, i32 border_width, Color rect_color) {
     // light border
     {
         // bottom layer of the top & left border : white, drawn first so that the top layer will paint over some extra pixels from here
@@ -331,38 +331,38 @@ Rect DrawingContext::drawBorder3D(Rect rect, int border_width, Color rect_color)
     return rect;
 }
 
-void DrawingContext::drawBorder(Rect &rect, Style &style, int state) {
+void DrawingContext::drawBorder(Rect &rect, Style &style, i32 state) {
     // TODO if the widget is focused draw the border using the accent color
     // we will probably pass the whole state and check for focus
     // which means all the call sites will need to change
     if (style.border.type != STYLE_NONE) {
-        const int border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
+        const i32 border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
-            const int size = style.border.top < 0 ? default_style.border.top : style.border.top;
+            const i32 size = style.border.top < 0 ? default_style.border.top : style.border.top;
             fillRect(Rect(rect.x, rect.y, rect.w, size), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderTopBackground(style));
             rect.y += size;
             rect.h -= size;
         }
         if (border & STYLE_BOTTOM) {
-            const int size = style.border.bottom < 0 ? default_style.border.bottom : style.border.bottom;
+            const i32 size = style.border.bottom < 0 ? default_style.border.bottom : style.border.bottom;
             rect.h -= size;
             fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderBottomBackground(style));
         }
         if (border & STYLE_LEFT) {
-            const int size = style.border.left < 0 ? default_style.border.left : style.border.left;
+            const i32 size = style.border.left < 0 ? default_style.border.left : style.border.left;
             fillRect(Rect(rect.x, rect.y, size, rect.h), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderLeftBackground(style));
             rect.x += size;
             rect.w -= size;
         }
         if (border & STYLE_RIGHT) {
-            const int size = style.border.right < 0 ? default_style.border.right : style.border.right;
+            const i32 size = style.border.right < 0 ? default_style.border.right : style.border.right;
             rect.w -= size;
             fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderRightBackground(style));
         }
     }
 }
 
-void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, int state) {
+void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, i32 state) {
     if (state & Drawable::DrawableState::STATE_SOFT_FOCUSED) {
         if (state & Drawable::DrawableState::STATE_HARD_FOCUSED) {
             drawDashedRect(rect, accentWidgetBackground(style));
@@ -374,23 +374,23 @@ void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, int state) {
 
 void DrawingContext::margin(Rect &rect, Style &style) {
     if (style.margin.type != STYLE_NONE) {
-        const int margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;
+        const i32 margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;
         if (margin & STYLE_TOP) {
-            const int size = style.margin.top < 0 ? default_style.margin.top : style.margin.top;
+            const i32 size = style.margin.top < 0 ? default_style.margin.top : style.margin.top;
             rect.y += size;
             rect.h -= size;
         }
         if (margin & STYLE_BOTTOM) {
-            const int size = style.margin.bottom < 0 ? default_style.margin.bottom : style.margin.bottom;
+            const i32 size = style.margin.bottom < 0 ? default_style.margin.bottom : style.margin.bottom;
             rect.h -= size;
         }
         if (margin & STYLE_LEFT) {
-            const int size = style.margin.left < 0 ? default_style.margin.left : style.margin.left;
+            const i32 size = style.margin.left < 0 ? default_style.margin.left : style.margin.left;
             rect.x += size;
             rect.w -= size;
         }
         if (margin & STYLE_RIGHT) {
-            const int size = style.margin.right < 0 ? default_style.margin.right : style.margin.right;
+            const i32 size = style.margin.right < 0 ? default_style.margin.right : style.margin.right;
             rect.w -= size;
         }
     }
@@ -398,23 +398,23 @@ void DrawingContext::margin(Rect &rect, Style &style) {
 
 void DrawingContext::padding(Rect &rect, Style &style) {
     if (style.padding.type != STYLE_NONE) {
-        const int padding = style.padding.type == STYLE_DEFAULT ? default_style.padding.type : style.padding.type;
+        const i32 padding = style.padding.type == STYLE_DEFAULT ? default_style.padding.type : style.padding.type;
         if (padding & STYLE_TOP) {
-            const int size = style.padding.top < 0 ? default_style.padding.top : style.padding.top;
+            const i32 size = style.padding.top < 0 ? default_style.padding.top : style.padding.top;
             rect.y += size;
             rect.h -= size;
         }
         if (padding & STYLE_BOTTOM) {
-            const int size = style.padding.bottom < 0 ? default_style.padding.bottom : style.padding.bottom;
+            const i32 size = style.padding.bottom < 0 ? default_style.padding.bottom : style.padding.bottom;
             rect.h -= size;
         }
         if (padding & STYLE_LEFT) {
-            const int size = style.padding.left < 0 ? default_style.padding.left : style.padding.left;
+            const i32 size = style.padding.left < 0 ? default_style.padding.left : style.padding.left;
             rect.x += size;
             rect.w -= size;
         }
         if (padding & STYLE_RIGHT) {
-            const int size = style.padding.right < 0 ? default_style.padding.right : style.padding.right;
+            const i32 size = style.padding.right < 0 ? default_style.padding.right : style.padding.right;
             rect.w -= size;
         }
     }
@@ -422,7 +422,7 @@ void DrawingContext::padding(Rect &rect, Style &style) {
 
 void DrawingContext::sizeHintMargin(Size &size, Style &style) {
     if (style.margin.type != STYLE_NONE) {
-        const int margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;
+        const i32 margin = style.margin.type == STYLE_DEFAULT ? default_style.margin.type : style.margin.type;
         if (margin & STYLE_TOP) {
             size.h += style.margin.top < 0 ? default_style.margin.top : style.margin.top;
         }
@@ -440,7 +440,7 @@ void DrawingContext::sizeHintMargin(Size &size, Style &style) {
 
 void DrawingContext::sizeHintBorder(Size &size, Style &style) {
     if (style.border.type != STYLE_NONE) {
-        const int border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
+        const i32 border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
             size.h += style.border.top < 0 ? default_style.border.top : style.border.top;
         }
@@ -458,7 +458,7 @@ void DrawingContext::sizeHintBorder(Size &size, Style &style) {
 
 void DrawingContext::sizeHintPadding(Size &size, Style &style) {
     if (style.padding.type != STYLE_NONE) {
-        const int padding = style.padding.type == STYLE_DEFAULT ? default_style.padding.type : style.padding.type;
+        const i32 padding = style.padding.type == STYLE_DEFAULT ? default_style.padding.type : style.padding.type;
         if (padding & STYLE_TOP) {
             size.h += style.padding.top < 0 ? default_style.padding.top : style.padding.top;
         }
@@ -601,7 +601,7 @@ Color DrawingContext::borderRightBackground(Style &style) {
 }
 
 Color DrawingContext::getColor(Point point) {
-    float data[4] = { 0, 0, 0, 0 };
+    f32 data[4] = { 0, 0, 0, 0 };
     Size window_size = window->size;
     if (point.x >= window_size.w || point.y >= window_size.h) { return COLOR_NONE; }
     glReadPixels(point.x, window_size.h - point.y, 1, 1, GL_RGBA, GL_FLOAT, data);

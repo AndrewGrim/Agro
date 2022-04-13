@@ -13,7 +13,7 @@ const char* ScrolledBox::name() {
     return "ScrolledBox";
 }
 
-void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
+void ScrolledBox::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Rect previous_clip = dc.clip();
     // TODO clips before scrollbars which means that
@@ -26,15 +26,15 @@ void ScrolledBox::draw(DrawingContext &dc, Rect rect, int state) {
 
 void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     Align parent_layout = m_align_policy;
-    int generic_non_expandable_widgets;
+    i32 generic_non_expandable_widgets;
     Point pos;
-    int generic_total_layout_length;
-    int *generic_position_coord;
-    int *generic_rect_coord;
-    int *rect_length;
-    int *rect_opposite_length;
+    i32 generic_total_layout_length;
+    i32 *generic_position_coord;
+    i32 *generic_rect_coord;
+    i32 *rect_length;
+    i32 *rect_opposite_length;
     Size size; // Individual widget size.
-    int *generic_length;
+    i32 *generic_length;
     if (parent_layout == Align::Vertical) {
         generic_non_expandable_widgets = m_vertical_non_expandable;
         generic_total_layout_length = m_widgets_only.h;
@@ -55,12 +55,12 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
 
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
 
-    int child_count = m_visible_children - generic_non_expandable_widgets;
+    i32 child_count = m_visible_children - generic_non_expandable_widgets;
     if (!child_count) {
         child_count = 1; // Protects from division by zero
     }
-    int expandable_length = (*rect_length - generic_total_layout_length) / child_count;
-    int remainder = (*rect_length - generic_total_layout_length) % child_count;
+    i32 expandable_length = (*rect_length - generic_total_layout_length) / child_count;
+    i32 remainder = (*rect_length - generic_total_layout_length) % child_count;
     if (expandable_length < 0) {
         expandable_length = 0;
         remainder = 0;
@@ -103,9 +103,9 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
 }
 
 Size ScrolledBox::sizeHint(DrawingContext &dc) {
-    unsigned int visible = 0;
-    unsigned int vertical_non_expandable = 0;
-    unsigned int horizontal_non_expandable = 0;
+    u32 visible = 0;
+    u32 vertical_non_expandable = 0;
+    u32 horizontal_non_expandable = 0;
     if (m_size_changed) {
         Scrollable::sizeHint(dc);
         m_children_positions.clear();
@@ -192,9 +192,9 @@ Align ScrolledBox::alignPolicy() {
     return m_align_policy;
 }
 
-Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int rect_opposite_length, Widget *child, int &remainder) {
+Size ScrolledBox::calculateChildSize(Size child_hint, i32 expandable_length, i32 rect_opposite_length, Widget *child, i32 &remainder) {
     Size size;
-    int child_expandable_length = expandable_length;
+    i32 child_expandable_length = expandable_length;
     switch (m_align_policy) {
         case Align::Vertical:
             switch (child->fillPolicy()) {
@@ -205,7 +205,7 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
                     }
                     size = Size {
                         rect_opposite_length > child_hint.w ? rect_opposite_length : child_hint.w,
-                        child_hint.h + (child_expandable_length * (int)child->proportion())
+                        child_hint.h + (child_expandable_length * (i32)child->proportion())
                     };
                     break;
                 }
@@ -216,7 +216,7 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
                     }
                     size = Size {
                         child_hint.w,
-                        child_hint.h + (child_expandable_length * (int)child->proportion())
+                        child_hint.h + (child_expandable_length * (i32)child->proportion())
                     };
                     break;
                 }
@@ -239,7 +239,7 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
                             remainder--;
                         }
                         size = Size {
-                            child_hint.w + (child_expandable_length * (int)child->proportion()),
+                            child_hint.w + (child_expandable_length * (i32)child->proportion()),
                             rect_opposite_length > child_hint.h ? rect_opposite_length : child_hint.h
                         };
                         break;
@@ -256,7 +256,7 @@ Size ScrolledBox::calculateChildSize(Size child_hint, int expandable_length, int
                             remainder--;
                         }
                         size = Size {
-                            child_hint.w + (child_expandable_length * (int)child->proportion()),
+                            child_hint.w + (child_expandable_length * (i32)child->proportion()),
                             child_hint.h
                         };
                         break;

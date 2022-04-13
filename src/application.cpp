@@ -19,7 +19,7 @@ Cursors::~Cursors() {
     SDL_FreeCursor(hand);
 }
 
-Window* findEventWindow(std::vector<Window*> &windows, Uint32 id) {
+Window* findEventWindow(std::vector<Window*> &windows, u32 id) {
     for (Window *window : windows) {
         if (SDL_GetWindowID(window->m_win) == id) {
             return window;
@@ -30,7 +30,7 @@ Window* findEventWindow(std::vector<Window*> &windows, Uint32 id) {
 
 // This is needed on Windows and on MacOS to
 // redraw the window while the user is resizing it.
-int forcePaintWhileResizing(void *data, SDL_Event *event) {
+i32 forcePaintWhileResizing(void *data, SDL_Event *event) {
     switch (event->type) {
         case SDL_WINDOWEVENT:
             // We are using the below instead of `SDL_WINDOWEVENT_RESIZED` because this one
@@ -123,14 +123,14 @@ void Application::run() {
     // TODO not sure why we have this here, if anything we should handle the nullptr
     // since its not guaranteed that the main widget will be hovered
     mainWindow()->m_state->hovered = mainWindow()->m_main_widget;
-    uint32_t fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
-    uint32_t frame_time = 1000 / fps;
+    u32 fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
+    u32 frame_time = 1000 / fps;
     SDL_StartTextInput();
     while (mainWindow()->m_running) {
         DELAY:;
-        uint32_t frame_start;
+        u32 frame_start;
         SDL_Event event;
-        int status;
+        i32 status;
         if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
             frame_start = SDL_GetTicks();
             switch (event.type) {
@@ -195,7 +195,7 @@ void Application::run() {
                 window->m_needs_update = false;
             }
         }
-        uint32_t frame_end = SDL_GetTicks() - frame_start;
+        u32 frame_end = SDL_GetTicks() - frame_start;
         if (frame_time > frame_end) {
             mainWindow()->delay_till = SDL_GetTicks() + (frame_time - frame_end);
         } else {
@@ -221,7 +221,7 @@ Window* Application::mainWindow() {
     return m_windows[0];
 }
 
-Timer Application::addTimer(uint32_t after, std::function<uint32_t(uint32_t interval)> callback) {
+Timer Application::addTimer(u32 after, std::function<u32(u32 interval)> callback) {
     Timer t = Timer(after, callback);
     m_timers.push_back(t);
     t.index = m_timers.size() - 1;

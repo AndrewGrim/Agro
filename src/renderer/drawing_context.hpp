@@ -26,7 +26,7 @@
         // renderer instances that refer to different windows/glcontexts
         // finally it will need to be made static and initialized before
         // all other imports so we could access it anywhere
-        unsigned int indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
+        u32 indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer = nullptr;
         Font *default_font = nullptr;
         Style default_light_style;
@@ -39,18 +39,18 @@
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void drawDashedRect(Rect rect, Color color);
-        void fillText(Font *font, std::string text, Point point, Color color = COLOR_BLACK, int tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, int tab_width = 4, int line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = COLOR_BLACK, int tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, int padding, Color color = COLOR_BLACK, int tab_width = 4, int line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        Size measureText(Font *font, Slice<const char> text, int tab_width = 4);
-        Size measureText(Font *font, std::string text, int tab_width = 4);
-        Size measureText(Font *font, char c, int tab_width = 4);
-        Size measureTextMultiline(Font *font, std::string text, int tab_width = 4, int line_spacing = 5);
+        void fillText(Font *font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        Size measureText(Font *font, Slice<const char> text, i32 tab_width = 4);
+        Size measureText(Font *font, std::string text, i32 tab_width = 4);
+        Size measureText(Font *font, char c, i32 tab_width = 4);
+        Size measureTextMultiline(Font *font, std::string text, i32 tab_width = 4, i32 line_spacing = 5);
         void render();
-        Rect drawBorder3D(Rect rect, int border_width, Color rect_color);
-        void drawBorder(Rect &rect, Style &style, int state);
-        void drawKeyboardFocus(Rect &rect, Style &style, int state);
+        Rect drawBorder3D(Rect rect, i32 border_width, Color rect_color);
+        void drawBorder(Rect &rect, Style &style, i32 state);
+        void drawKeyboardFocus(Rect &rect, Style &style, i32 state);
         void margin(Rect &rect, Style &style);
         void padding(Rect &rect, Style &style);
         void sizeHintMargin(Size &size, Style &style);

@@ -30,7 +30,7 @@ struct Drawable {
     /// at this moment, so whenever draw is called the Drawable should
     /// draw itself in its entirety every time unless it is a Scrollable or
     /// similar where you would only draw the visible portion.
-    virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
+    virtual void draw(DrawingContext &dc, Rect rect, i32 state) = 0;
 
     /// The sizeHint informs layout Widgets the extents
     /// a Drawable should have.

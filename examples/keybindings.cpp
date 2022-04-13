@@ -2,7 +2,7 @@
 #include "../src/application.hpp"
 #include "../src/controls/button.hpp"
 
-int main(int argc, char **argv) { 
+int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
             }
         };
         app->mainWindow()->setTitle("Keybindings");
-        int map_key = app->mainWindow()->bind(
+        i32 map_key = app->mainWindow()->bind(
             SDLK_q,
             Mod::None, 
             [&]{

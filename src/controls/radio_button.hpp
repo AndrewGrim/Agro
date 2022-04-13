@@ -18,7 +18,7 @@
             RadioButton(std::shared_ptr<RadioGroup> group, std::string text);
             ~RadioButton();
             virtual const char* name() override;
-            void draw(DrawingContext &dc, Rect rect, int state) override;
+            void draw(DrawingContext &dc, Rect rect, i32 state) override;
 
             std::shared_ptr<RadioGroup> m_group;
             Image *m_background_image = nullptr;

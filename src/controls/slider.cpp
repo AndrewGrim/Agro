@@ -16,7 +16,7 @@ const char* SliderButton::name() {
     return "SliderButton";
 }
 
-void SliderButton::draw(DrawingContext &dc, Rect rect, int state) {
+void SliderButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Color color;
     if (state & STATE_PRESSED) {
@@ -47,11 +47,11 @@ Size SliderButton::minSize() {
     return m_size;
 }
 
-int SliderButton::isFocusable() {
-    return (int)FocusType::Focusable;
+i32 SliderButton::isFocusable() {
+    return (i32)FocusType::Focusable;
 }
 
-Slider::Slider(Align alignment, double value) : Box(alignment), m_value{value} {
+Slider::Slider(Align alignment, f64 value) : Box(alignment), m_value{value} {
     m_slider_button = new SliderButton();
     append(m_slider_button, Fill::Both);
     m_slider_button->parent = this;
@@ -71,11 +71,11 @@ Slider::Slider(Align alignment, double value) : Box(alignment), m_value{value} {
         SliderButton *self = m_slider_button;
         if (self->isPressed()) {
             Rect rect = this->rect;
-            int size = m_slider_button_size;
+            i32 size = m_slider_button_size;
 
-            int event_pos;
-            int position;
-            int length;
+            i32 event_pos;
+            i32 position;
+            i32 length;
             if (m_align_policy == Align::Horizontal) {
                 event_pos = event.x;
                 position = rect.x;
@@ -86,8 +86,8 @@ Slider::Slider(Align alignment, double value) : Box(alignment), m_value{value} {
                 length = rect.h;
             }
 
-            int start = size - m_origin;
-            double value = (event_pos - (position + start)) / (double)(length - start - m_origin);
+            i32 start = size - m_origin;
+            f64 value = (event_pos - (position + start)) / (f64)(length - start - m_origin);
             m_value = NORMALIZE(m_min, m_max, value);
 
             onValueChanged.notify();
@@ -97,11 +97,11 @@ Slider::Slider(Align alignment, double value) : Box(alignment), m_value{value} {
 
     this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         Rect rect = this->rect;
-        int size = m_slider_button_size;
+        i32 size = m_slider_button_size;
         if (m_align_policy == Align::Horizontal) {
-            m_value = (event.x - (rect.x + size / 2.0)) / (double)(rect.w - size);
+            m_value = (event.x - (rect.x + size / 2.0)) / (f64)(rect.w - size);
         } else {
-            m_value = (event.y - (rect.y + size / 2.0)) / (double)(rect.h - size);
+            m_value = (event.y - (rect.y + size / 2.0)) / (f64)(rect.h - size);
         }
         m_value = NORMALIZE(m_min, m_max, m_value);
     });
@@ -116,11 +116,11 @@ const char* Slider::name() {
     return "Slider";
 }
 
-void Slider::draw(DrawingContext &dc, Rect rect, int state) {
+void Slider::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
     // Get the size of the slider button.
-    int size;
+    i32 size;
     Size sizehint = m_slider_button->sizeHint(dc);
     if (!m_slider_button_size) {
         // Button size was not set. Default.
@@ -142,7 +142,7 @@ void Slider::draw(DrawingContext &dc, Rect rect, int state) {
     }
 
     // Determine and draw the location of the slider button.
-    int start = size - m_origin;
+    i32 start = size - m_origin;
     if (m_align_policy == Align::Horizontal) {
         rect.x += (rect.w - start - m_origin) * m_value;
         m_slider_button->draw(dc, Rect(rect.x, rect.y, size, rect.h), m_slider_button->state());

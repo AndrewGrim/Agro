@@ -10,11 +10,11 @@
     class Image : public Widget {
         public:
             Image(std::string file_path);
-            Image(const unsigned char *image_data, int length);
+            Image(const unsigned char *image_data, i32 length);
             Image(std::shared_ptr<Texture> texture);
             ~Image();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
             Color foreground();
             Image* setForeground(Color foreground);

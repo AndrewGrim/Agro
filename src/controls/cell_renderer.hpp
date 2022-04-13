@@ -9,7 +9,7 @@ class CellRenderer : public Drawable {
 
         CellRenderer();
         virtual ~CellRenderer();
-        virtual void draw(DrawingContext &dc, Rect rect, int state) = 0;
+        virtual void draw(DrawingContext &dc, Rect rect, i32 state) = 0;
         virtual Size sizeHint(DrawingContext &dc) = 0;
         virtual bool isWidget() override;
 };
@@ -18,7 +18,7 @@ class EmptyCell : public CellRenderer {
     public:
         EmptyCell();
         ~EmptyCell();
-        void draw(DrawingContext &dc, Rect rect, int state);
+        void draw(DrawingContext &dc, Rect rect, i32 state);
         Size sizeHint(DrawingContext &dc);
 };
 
@@ -28,17 +28,17 @@ class TextCellRenderer : public CellRenderer {
         // ^ i could see this being a problem because we dont recalculate
         // the virtual_size for treeview? but maybe im missing something
         std::string text;
-        int padding;
+        i32 padding;
         Font *font = nullptr;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
         VerticalAlignment v_align = VerticalAlignment::Center;
 
         TextCellRenderer(
             std::string text,
-            int padding = 5
+            i32 padding = 5
         );
         ~TextCellRenderer();
-        void draw(DrawingContext &dc, Rect rect, int state) override;
+        void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
 
     protected:
@@ -52,7 +52,7 @@ class ImageCellRenderer : public CellRenderer {
 
         ImageCellRenderer(Image *image);
         ~ImageCellRenderer();
-        void draw(DrawingContext &dc, Rect rect, int state) override;
+        void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
 };
 
@@ -62,7 +62,7 @@ class MultipleImagesCellRenderer : public CellRenderer {
 
         MultipleImagesCellRenderer(std::vector<Image> &&images);
         ~MultipleImagesCellRenderer();
-        void draw(DrawingContext &dc, Rect rect, int state) override;
+        void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
 
     protected:
@@ -77,16 +77,16 @@ class ImageTextCellRenderer : public CellRenderer {
         Font *font = nullptr;
         std::string text;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
-        int padding;
+        i32 padding;
 
         ImageTextCellRenderer(
             Image *image,
             std::string text,
             HorizontalAlignment h_align = HorizontalAlignment::Left,
-            int padding = 5
+            i32 padding = 5
         );
         ~ImageTextCellRenderer();
-        void draw(DrawingContext &dc, Rect rect, int state) override;
+        void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
 
     protected:

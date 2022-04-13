@@ -9,7 +9,7 @@ class GroupBox : public Box {
         GroupBox(Align align_policy, std::string label);
         ~GroupBox();
         virtual const char* name() override;
-        virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+        virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
         virtual Size sizeHint(DrawingContext &dc) override;
 
         std::string label;

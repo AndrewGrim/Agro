@@ -4,9 +4,9 @@
 static void printLog(std::string message_type, std::string message, std::string text, Color color = Color("#ffffff")) {
     printf(
         "\033[38;2;%d;%d;%dm%s::%s %s\033[0m\n",
-        ((int)(color.r * 255)),
-        ((int)(color.g * 255)),
-        ((int)(color.b * 255)),
+        ((i32)(color.r * 255)),
+        ((i32)(color.g * 255)),
+        ((i32)(color.b * 255)),
         message_type.c_str(),
         message.c_str(),
         text.c_str()

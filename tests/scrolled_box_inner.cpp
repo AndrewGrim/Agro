@@ -20,12 +20,12 @@ int main(int argc, char **argv) {
         app->mainWindow()->setTitle("ScrolledBox Inner Test");
         app->mainWindow()->resize(500, 500);
         ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(200, 200));
-            for (char i = 'a'; i <= 'z'; i++) {
+            for (u8 i = 'a'; i <= 'z'; i++) {
                 top->append(new Button(std::string(100, i)), Fill::Both);
             }
         app->mainWindow()->append(top, Fill::Both);
         ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size(200, 200));
-            for (char i = 'A'; i < 'Z'; i++) {
+            for (u8 i = 'A'; i < 'Z'; i++) {
                 bottom->append(new Button(std::string(100, i)), Fill::Both);
             }
         app->mainWindow()->append(bottom, Fill::Both);

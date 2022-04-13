@@ -22,11 +22,11 @@
             T *hidden = nullptr;
 
             TreeNode<T> *parent = nullptr;
-            int parent_index = -1;
+            i32 parent_index = -1;
             std::vector<TreeNode<T>*> children;
             bool is_collapsed = false;
-            int max_cell_height = 0;
-            int depth = 0;
+            i32 max_cell_height = 0;
+            i32 depth = 0;
 
             /// Internal data that stores the vertical position and height of the TreeNode.
             BinarySearchData bs_data;
@@ -235,7 +235,7 @@
                 return "Column";
             }
 
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override {
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override {
                 this->rect = rect;
                 Color color;
                 if (m_dragging) {
@@ -289,8 +289,8 @@
             }
 
             virtual Size sizeHint(DrawingContext &dc) override {
-                unsigned int visible = 0;
-                unsigned int horizontal_non_expandable = 0;
+                u32 visible = 0;
+                u32 horizontal_non_expandable = 0;
                 if (m_size_changed) {
                     Size size = Size();
                     for (Widget *child : children) {
@@ -325,14 +325,14 @@
                 }
             }
 
-            int width() {
+            i32 width() {
                 if (m_custom_size) {
                     return m_custom_width;
                 }
                 return m_size.w;
             }
 
-            void setWidth(int width) {
+            void setWidth(i32 width) {
                 if (width < m_min_width) {
                     return;
                 }
@@ -368,8 +368,8 @@
             Tree<T> *m_model = nullptr;
             bool m_dragging = false;
             bool m_custom_size = false;
-            int m_custom_width = 0;
-            int m_min_width = 16;
+            i32 m_custom_width = 0;
+            i32 m_min_width = 16;
             bool m_expand = false;
     };
 
@@ -411,7 +411,7 @@
                             m_hovered = m_event_node;
                             onNodeHovered.notify(this, m_event_node);
                         }
-                        int x = inner_rect.x;
+                        i32 x = inner_rect.x;
                         if (m_horizontal_scrollbar->isVisible()) {
                             x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                         }
@@ -426,7 +426,7 @@
                 });
                 this->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
                     if (m_event_node) {
-                        int x = inner_rect.x;
+                        i32 x = inner_rect.x;
                         if (m_horizontal_scrollbar->isVisible()) {
                             x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                         }
@@ -482,12 +482,12 @@
                                 return node->children[0];
                             }
                             while (node->parent) {
-                                if ((int)node->parent->children.size() - 1 > node->parent_index) {
+                                if ((i32)node->parent->children.size() - 1 > node->parent_index) {
                                     return node->parent->children[node->parent_index + 1];
                                 }
                                 node = node->parent;
                             }
-                            if (node->depth == 1 && (int)m_model->roots.size() - 1 > node->parent_index) {
+                            if (node->depth == 1 && (i32)m_model->roots.size() - 1 > node->parent_index) {
                                 return m_model->roots[node->parent_index + 1];
                             }
                             return nullptr; // TODO change to maybe wrap around
@@ -534,7 +534,7 @@
                 return "TreeView";
             }
 
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override {
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override {
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
 
@@ -558,19 +558,19 @@
                 this->inner_rect = rect;
                 Rect tv_clip = old_clip;
 
-                int child_count = m_expandable_columns;
+                i32 child_count = m_expandable_columns;
                 if (child_count < 1) { child_count = 1; }
-                int expandable_length = (rect.w - m_children_size.w) / child_count;
-                int remainder = (rect.w - m_children_size.w) % child_count;
+                i32 expandable_length = (rect.w - m_children_size.w) / child_count;
+                i32 remainder = (rect.w - m_children_size.w) % child_count;
                 if (expandable_length < 0) {
                     expandable_length = 0;
                     remainder = 0;
                 }
-                int local_pos_x = pos.x;
-                int i = 0;
+                i32 local_pos_x = pos.x;
+                i32 i = 0;
                 m_current_header_width = 0;
                 for (Widget *child : children) {
-                    int child_expandable_length = expandable_length;
+                    i32 child_expandable_length = expandable_length;
                     if (remainder) {
                         child_expandable_length++;
                         remainder--;
@@ -594,7 +594,7 @@
                     local_pos_x += s.w;
                     i++;
                 }
-                int column_header = 0;
+                i32 column_header = 0;
                 if (!areColumnHeadersHidden()) {
                     column_header = m_children_size.h;
                     pos.y += column_header;
@@ -606,7 +606,7 @@
                 }
 
                 bool collapsed = false;
-                int collapsed_depth = -1;
+                i32 collapsed_depth = -1;
                 size_t y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
                 if (m_mode == Mode::Unroll && rect.y + m_children_size.h < 0) {
                     y_scroll_offset = (rect.y + m_children_size.h) * -1;
@@ -655,11 +655,11 @@
                 }
 
                 if (m_model->roots.size()) {
-                    int local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0;
+                    i32 local_column_header = !areColumnHeadersHidden() ? m_children_size.h : 0;
                     // Clip and draw column grid lines.
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
-                        for (int width : m_column_widths) {
+                        for (i32 width : m_column_widths) {
                             dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), dc.textDisabled(style));
                             pos.x += width;
                         }
@@ -732,11 +732,11 @@
                 return m_focused;
             }
 
-            uint8_t indent() {
+            u8 indent() {
                 return m_indent;
             }
 
-            void setIndent(uint8_t indent_width) {
+            void setIndent(u8 indent_width) {
                 if (indent_width >= 12) {
                     m_indent = indent_width;
                     update();
@@ -951,8 +951,8 @@
                 {
                     // Go down the Node tree to find either a Widget to pass the event to
                     // or simply record the node and pass the event to the TreeView itself as per usual.
-                    int x = inner_rect.x;
-                    int y = inner_rect.y;
+                    i32 x = inner_rect.x;
+                    i32 y = inner_rect.y;
                     if (m_horizontal_scrollbar) {
                         x -= m_horizontal_scrollbar->m_slider->m_value * ((m_virtual_size.w) - inner_rect.w);
                     }
@@ -1010,26 +1010,26 @@
             Size m_virtual_size;
             bool m_virtual_size_changed = false;
             Mode m_mode = Mode::Scroll;
-            uint8_t m_indent = 24;
+            u8 m_indent = 24;
             TreeNode<T> *m_hovered = nullptr;
             TreeNode<T> *m_focused = nullptr;
             TreeNode<T> *m_event_node = nullptr; // node to be handled in mouse events
             TreeNode<T> *m_tree_collapser = nullptr; // the tree collapse/expand icon node if any (for highlighting)
             GridLines m_grid_lines = GridLines::Both;
-            int m_treeline_size = 2;
-            int m_grid_line_width = 1;
+            i32 m_treeline_size = 2;
+            i32 m_grid_line_width = 1;
             Column<T> *m_last_sort = nullptr;
             Size m_children_size = Size();
-            int m_current_header_width = 0;
+            i32 m_current_header_width = 0;
             bool m_column_headers_hidden = false;
-            std::vector<int> m_column_widths;
+            std::vector<i32> m_column_widths;
             bool m_auto_size_columns = false;
             bool m_table = false;
             Style m_column_style;
             Style m_column_button_style;
             Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90();
             Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically();
-            int m_expandable_columns = 0;
+            i32 m_expandable_columns = 0;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
@@ -1064,8 +1064,8 @@
             void calculateVirtualSize(DrawingContext &dc) {
                 m_virtual_size = m_children_size;
                 bool collapsed = false;
-                int collapsed_depth = -1;
-                int parent_index = 0;
+                i32 collapsed_depth = -1;
+                i32 parent_index = 0;
                 size_t scroll_offset = 0;
 
                 m_model->forEachNode(
@@ -1080,7 +1080,7 @@
                         }
                         if (!collapsed) {
                             // Check and set the max height of the node.
-                            int index = 0;
+                            i32 index = 0;
                             assert(node->columns.size() == children.size() && "The amount of Column<T>s and Drawables should be the same!");
                             for (Drawable *drawable : node->columns) {
                                 Size s = drawable->sizeHint(dc);
@@ -1157,10 +1157,10 @@
                 return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() };
             }
 
-            void drawNode(DrawingContext &dc, Point &pos, TreeNode<T> *node, Rect rect, Rect drawing_rect, Rect tv_clip, int column_header) {
-                int cell_start = pos.x;
+            void drawNode(DrawingContext &dc, Point &pos, TreeNode<T> *node, Rect rect, Rect drawing_rect, Rect tv_clip, i32 column_header) {
+                i32 cell_start = pos.x;
                 for (size_t i = 0; i < node->columns.size(); i++) {
-                    int col_width = m_column_widths[i];
+                    i32 col_width = m_column_widths[i];
                     Drawable *drawable = node->columns[i];
                     Size s = drawable->sizeHint(dc);
                     if (cell_start + col_width > drawing_rect.x && cell_start < drawing_rect.x + drawing_rect.w) {
@@ -1176,8 +1176,8 @@
                                 );
                         // Clip and draw the current cell.
                         dc.setClip(cell_clip.clipTo(tv_clip));
-                        int cell_x = cell_start;
-                        int state = STATE_DEFAULT;
+                        i32 cell_x = cell_start;
+                        i32 state = STATE_DEFAULT;
                         if (m_focused == node) { state |= STATE_HARD_FOCUSED; }
                         if (m_hovered == node) { state |= STATE_HOVERED; }
                         if (!m_table && !i) {
@@ -1223,13 +1223,13 @@
 
             TreeNode<T>* findNextNode(TreeNode<T> *node) {
                 while (node->parent) {
-                    if ((int)node->parent->children.size() - 1 > node->parent_index) {
+                    if ((i32)node->parent->children.size() - 1 > node->parent_index) {
                         return node->parent->children[node->parent_index + 1];
                     }
                     node = node->parent;
                 }
                 if (node->depth == 1) {
-                    if ((int)m_model->roots.size() - 1 > node->parent_index) {
+                    if ((i32)m_model->roots.size() - 1 > node->parent_index) {
                         return m_model->roots[node->parent_index + 1];
                     }
                 }
@@ -1237,10 +1237,10 @@
                 return nullptr;
             }
 
-            void drawTreeLine(DrawingContext &dc, Point pos, Rect rect, Rect tv_clip, int column_header, TreeNode<T> *node) {
+            void drawTreeLine(DrawingContext &dc, Point pos, Rect rect, Rect tv_clip, i32 column_header, TreeNode<T> *node) {
                 dc.setClip(Rect(rect.x, rect.y + column_header, m_column_widths[0], rect.h - column_header).clipTo(tv_clip));
-                int x = pos.x + (node->depth * m_indent);
-                int y = pos.y + (node->max_cell_height / 2);
+                i32 x = pos.x + (node->depth * m_indent);
+                i32 y = pos.y + (node->max_cell_height / 2);
 
                 if (node->children.size()) {
                     // Draw a little line connecting the parent to its children.
@@ -1261,11 +1261,11 @@
                         drawTreeLineConnector(dc, x, y);
 
                         // Lower sibling
-                        if (node->parent_index < (int)node->parent->children.size() - 1) {
+                        if (node->parent_index < (i32)node->parent->children.size() - 1) {
                             auto sibling = node->parent->children[node->parent_index + 1];
                             size_t distance = sibling->bs_data.position - node->bs_data.position;
                             // Sibling off screen
-                            if (pos.y + (int)distance > rect.y + rect.h) {
+                            if (pos.y + (i32)distance > rect.y + rect.h) {
                                 dc.fillRect(
                                     Rect(
                                         x - (m_indent * 1.5) - (m_treeline_size / 2),
@@ -1293,7 +1293,7 @@
                             // So if pos.y is halfway through the start node then just the distance will not take
                             // us all the way to the beginning of the sibling and to keep it safe we use the
                             // entire height of the node rather than just the the different between pos.y and node->bs_data.position.
-                            if (pos.y - (int)(distance + node->bs_data.length) <= rect.y + column_header) {
+                            if (pos.y - (i32)(distance + node->bs_data.length) <= rect.y + column_header) {
                                 // When the higher sibling is off screen
                                 // recursively go up the tree to root and draw a line
                                 // between the parent and its last child.
@@ -1346,7 +1346,7 @@
                 }
             }
 
-            void drawTreeLineConnector(DrawingContext &dc, int x, int y) {
+            void drawTreeLineConnector(DrawingContext &dc, i32 x, i32 y) {
                 dc.fillRect(
                     Rect(
                         x - (m_indent * 1.5) - (m_treeline_size / 2),
@@ -1358,20 +1358,20 @@
                 );
             }
 
-            void drawTreeLineToParent(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
+            void drawTreeLineToParent(DrawingContext &dc, i32 x, i32 y, TreeNode<T> *node) {
                 size_t distance = node->bs_data.position - node->parent->bs_data.position;
                 dc.fillRect(
                     Rect(
                         x - (m_indent * 1.5) - (m_treeline_size / 2),
                         y - (distance - node->parent->bs_data.length) - m_grid_line_width,
                         m_treeline_size,
-                        (int)distance - node->parent->bs_data.length + (node->bs_data.length / 2) + m_grid_line_width
+                        (i32)distance - node->parent->bs_data.length + (node->bs_data.length / 2) + m_grid_line_width
                     ),
                     dc.borderBackground(style)
                 );
             }
 
-            void drawTreeLineNoChildrenIndicator(DrawingContext &dc, int x, int y, TreeNode<T> *node) {
+            void drawTreeLineNoChildrenIndicator(DrawingContext &dc, i32 x, i32 y, TreeNode<T> *node) {
                 dc.fillRect(
                     Rect(
                         x + ((node->depth - 1) * m_indent) + (m_indent / 3),
@@ -1387,8 +1387,8 @@
                 return Widget::handleFocusEvent(event, state, data);
             }
 
-            int isFocusable() override {
-                return (int)FocusType::Focusable;
+            i32 isFocusable() override {
+                return (i32)FocusType::Focusable;
             }
     };
 #endif

@@ -3,8 +3,8 @@
 #include "../src/controls/line_edit.hpp"
 
 struct Hidden {
-    int id = -1;
-    Hidden(int id) : id{id} {}
+    i32 id = -1;
+    Hidden(i32 id) : id{id} {}
 };
 
 int main(int argc, char **argv) {
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
             h_box->append(unroll, Fill::Both);
         app->mainWindow()->append(h_box, Fill::Horizontal);
         tv = new TreeView<Hidden>();
-            for (int i = 0; i < 4; i++) {
+            for (i32 i = 0; i < 4; i++) {
                 auto c = new Column<Hidden>(
                     "Column: " + std::to_string(i),
                     nullptr,
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
                 tv->append(c);
             }
             Tree<Hidden> *model = new Tree<Hidden>();
-                for (int i = 0; i < 1000; i++) {
+                for (i32 i = 0; i < 1000; i++) {
                     std::vector<Drawable*> columns = {
                         new TextCellRenderer("Row: " + std::to_string(i) + "\nColumn: 0"),
                         new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 1"),

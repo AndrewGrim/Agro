@@ -6,18 +6,18 @@
 
     class DropDown : public Widget {
         public:
-            EventListener<Widget*, CellRenderer*, int> onItemSelected = EventListener<Widget*, CellRenderer*, int>();
+            EventListener<Widget*, CellRenderer*, i32> onItemSelected = EventListener<Widget*, CellRenderer*, i32>();
 
             DropDown();
             ~DropDown();
             virtual const char* name() override;
-            virtual void draw(DrawingContext &dc, Rect rect, int state) override;
+            virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
-            int isFocusable() override;
-            int current();
-            void setCurrent(int index);
-            int appendItem(CellRenderer *cell);
-            CellRenderer* getItem(int index);
+            i32 isFocusable() override;
+            i32 current();
+            void setCurrent(i32 index);
+            i32 appendItem(CellRenderer *cell);
+            CellRenderer* getItem(i32 index);
             void clear();
 
             bool m_is_open = false;

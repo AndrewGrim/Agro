@@ -1,9 +1,10 @@
 #ifndef COLOR_HPP
     #define COLOR_HPP
 
-    #include <cinttypes>
     #include <cassert>
     #include <string>
+
+    #include "number_types.h"
 
     #define COLOR_DEFAULT Color(Color::IsDefault::Yes)
     #define COLOR_NONE Color(0.0f, 0.0f, 0.0f, 0.0f)
@@ -17,17 +18,17 @@
 
         IsDefault is_default = IsDefault::No;
 
-        float r = 0.0f;
-        float g = 0.0f;
-        float b = 0.0f;
-        float a = 1.0f;
+        f32 r = 0.0f;
+        f32 g = 0.0f;
+        f32 b = 0.0f;
+        f32 a = 1.0f;
 
 
         Color(IsDefault is_default) : is_default{is_default} {
 
         }
 
-        Color(float r = 0.0f, float g = 0.0f, float b = 0.0f, float a = 1.0f) :
+        Color(f32 r = 0.0f, f32 g = 0.0f, f32 b = 0.0f, f32 a = 1.0f) :
             r{r}, g{g}, b{b}, a{a} {
 
         }
@@ -36,8 +37,8 @@
             if (!string || *string == '\0') return;
             else if (*string == '#') string++;
 
-            float *color_attribute = &r;
-            for (int i = 0; i < 4; i++) {
+            f32 *color_attribute = &r;
+            for (i32 i = 0; i < 4; i++) {
                 if (*string == '\0') { return; }
                 *color_attribute = (matchHexFromChar(*string) * 16) / 255.0f;
                 string++;
@@ -48,7 +49,7 @@
             }
         }
 
-        uint8_t matchHexFromChar(char c) {
+        u8 matchHexFromChar(u8 c) {
             switch (c) {
                 case '0': return 0;
                 case '1': return 1;
@@ -72,11 +73,11 @@
 
         std::string toString() {
             char buffer[10] = {};
-            sprintf(buffer, "#%.02X%.02X%.02X%.02X", (int)(r * 255), (int)(g * 255), (int)(b * 255), (int)(a * 255));
+            sprintf(buffer, "#%.02X%.02X%.02X%.02X", (i32)(r * 255), (i32)(g * 255), (i32)(b * 255), (i32)(a * 255));
             return std::string(buffer);
         }
 
-        static Color fromInt(uint8_t r, uint8_t g = 0, uint8_t b = 0, uint8_t a = 255) {
+        static Color fromInt(u8 r, u8 g = 0, u8 b = 0, u8 a = 255) {
             return Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
         }
 
@@ -105,11 +106,11 @@
             return *this;
         }
 
-        static Color interpolate(Color from, Color to, float step) {
-            float r = (to.r - from.r) * step;
-            float g = (to.g - from.g) * step;
-            float b = (to.b - from.b) * step;
-            float a = (to.a - from.a) * step;
+        static Color interpolate(Color from, Color to, f32 step) {
+            f32 r = (to.r - from.r) * step;
+            f32 g = (to.g - from.g) * step;
+            f32 b = (to.b - from.b) * step;
+            f32 a = (to.a - from.a) * step;
 
             return from += Color(r, g, b, a);
         }

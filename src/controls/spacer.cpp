@@ -12,7 +12,7 @@ const char* Spacer::name() {
     return "Spacer";
 }
 
-void Spacer::draw(DrawingContext &dc, Rect rect, int state) {
+void Spacer::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 }
 

@@ -3,6 +3,8 @@
 
     #include <SDL.h>
 
+    #include "common/number_types.h"
+
     // TODO rework event
     // base event class?? im not sure what the benefits would be yet
     // but definitely split mousebutton and mousemotion events to
@@ -24,7 +26,7 @@
         enum class Click {
             None,
             Single,
-            Double,
+            f64,
         };
 
         enum class Button {
@@ -40,15 +42,15 @@
         State state;
         Click click;
         Button button;
-        int x;
-        int y;
-        int xrel;
-        int yrel;
+        i32 x;
+        i32 y;
+        i32 xrel;
+        i32 yrel;
 
         MouseEvent(SDL_MouseButtonEvent event) {
             this->type = event.type == SDL_MOUSEBUTTONDOWN ? Type::Down : Type::Up;
             this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
-            this->click = event.clicks == 1 ? Click::Single : Click::Double; // Note: this only cover single and double click
+            this->click = event.clicks == 1 ? Click::Single : Click::f64; // Note: this only cover single and f64 click
             this->button = this->handleButton(event.button);
             this->x = event.x;
             this->y = event.y;
@@ -67,7 +69,7 @@
             this->yrel = event.yrel;
         }
 
-        Button handleButton(int button) {
+        Button handleButton(i32 button) {
             switch (button) {
                 case SDL_BUTTON_LEFT: return Button::Left;
                 case SDL_BUTTON_MIDDLE: return Button::Middle;
@@ -80,9 +82,9 @@
     };
 
     struct ScrollEvent {
-        Uint32 timestamp;
-        int x;
-        int y;
+        u32 timestamp;
+        i32 x;
+        i32 y;
 
         ScrollEvent(SDL_MouseWheelEvent event) {
             this->timestamp = event.timestamp;
