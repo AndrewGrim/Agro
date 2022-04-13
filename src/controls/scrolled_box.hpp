@@ -25,6 +25,6 @@
 
             Size m_widgets_only; // The layout's size without padding, border, margin etc.
             std::vector<BinarySearchData> m_children_positions;
-            BinarySearchResult<Widget*> binarySearch(size_t position);
+            BinarySearchResult<Widget*> binarySearch(u64 position);
     };
 #endif

@@ -135,7 +135,7 @@
             }
             // TreeNode find(compare function);
             // Goes down the tree using row (skips non visible nodes)
-            // TreeNode get(size_t row);
+            // TreeNode get(u64 row);
             // TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
     };
 
@@ -607,7 +607,7 @@
 
                 bool collapsed = false;
                 i32 collapsed_depth = -1;
-                size_t y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
+                u64 y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
                 if (m_mode == Mode::Unroll && rect.y + m_children_size.h < 0) {
                     y_scroll_offset = (rect.y + m_children_size.h) * -1;
                 }
@@ -693,7 +693,7 @@
                 update();
             }
 
-            void sort(size_t column_index, Sort sort_type) {
+            void sort(u64 column_index, Sort sort_type) {
                 ((Column<T>*)children[column_index])->sort(sort_type);
             }
 
@@ -754,8 +754,8 @@
                 }
             }
 
-            void select(size_t index) {
-                size_t i = 0;
+            void select(u64 index) {
+                u64 i = 0;
                 m_model->forEachNode(m_model->roots, [&](TreeNode<T> *node) -> Traversal {
                     if (i == index) {
                         select(node);
@@ -963,12 +963,12 @@
                         } else {
                             y += m_children_size.h;
                         }
-                        size_t y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
-                        // size_t x_scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.w) - inner_rect.w);
+                        u64 y_scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.h) - inner_rect.h);
+                        // u64 x_scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * ((virtual_size.w) - inner_rect.w);
                         Option<TreeNode<T>*> result = binarySearch(m_model->roots, (event.y - y) + y_scroll_offset).value;
                         if (result) {
                             TreeNode<T> *node = result.value;
-                            for (size_t i = 0; i < children.size(); i++) {
+                            for (u64 i = 0; i < children.size(); i++) {
                                 Column<T> *col = (Column<T>*)children[i];
                                 if ((event.x >= col->rect.x) && (event.x <= (col->rect.x + col->rect.w))) {
                                     if (node->columns[i]->isWidget()) {
@@ -1066,7 +1066,7 @@
                 bool collapsed = false;
                 i32 collapsed_depth = -1;
                 i32 parent_index = 0;
-                size_t scroll_offset = 0;
+                u64 scroll_offset = 0;
 
                 m_model->forEachNode(
                     m_model->roots,
@@ -1108,8 +1108,8 @@
                                 }
                                 index++;
                             }
-                            node->bs_data = BinarySearchData{scroll_offset, (size_t)node->max_cell_height};
-                            scroll_offset += (size_t)node->max_cell_height;
+                            node->bs_data = BinarySearchData{scroll_offset, (u64)node->max_cell_height};
+                            scroll_offset += (u64)node->max_cell_height;
                             m_virtual_size.h += node->max_cell_height;
                         } else {
                             node->bs_data = BinarySearchData{scroll_offset, 0};
@@ -1129,11 +1129,11 @@
             }
 
 
-            BinarySearchResult<TreeNode<T>*> binarySearch(std::vector<TreeNode<T>*> &roots, size_t target) {
+            BinarySearchResult<TreeNode<T>*> binarySearch(std::vector<TreeNode<T>*> &roots, u64 target) {
                 if (!roots.size()) { return BinarySearchResult<TreeNode<T>*>{ 0, Option<TreeNode<T>*>() }; }
-                size_t lower = 0;
-                size_t upper = roots.size() - 1;
-                size_t mid = 0;
+                u64 lower = 0;
+                u64 upper = roots.size() - 1;
+                u64 mid = 0;
                 BinarySearchData point = {0, 0};
 
                 while (lower <= upper) {
@@ -1159,7 +1159,7 @@
 
             void drawNode(DrawingContext &dc, Point &pos, TreeNode<T> *node, Rect rect, Rect drawing_rect, Rect tv_clip, i32 column_header) {
                 i32 cell_start = pos.x;
-                for (size_t i = 0; i < node->columns.size(); i++) {
+                for (u64 i = 0; i < node->columns.size(); i++) {
                     i32 col_width = m_column_widths[i];
                     Drawable *drawable = node->columns[i];
                     Size s = drawable->sizeHint(dc);
@@ -1263,7 +1263,7 @@
                         // Lower sibling
                         if (node->parent_index < (i32)node->parent->children.size() - 1) {
                             auto sibling = node->parent->children[node->parent_index + 1];
-                            size_t distance = sibling->bs_data.position - node->bs_data.position;
+                            u64 distance = sibling->bs_data.position - node->bs_data.position;
                             // Sibling off screen
                             if (pos.y + (i32)distance > rect.y + rect.h) {
                                 dc.fillRect(
@@ -1279,7 +1279,7 @@
                         // Higher sibling or no sibling
                         } else {
                             TreeNode<T> *sibling = nullptr;
-                            size_t distance = 0;
+                            u64 distance = 0;
                             if (node->parent->children.size() > 1 && node->parent_index > 0) {
                                 sibling = node->parent->children[node->parent_index - 1];
                                 distance = node->bs_data.position - sibling->bs_data.position;
@@ -1359,7 +1359,7 @@
             }
 
             void drawTreeLineToParent(DrawingContext &dc, i32 x, i32 y, TreeNode<T> *node) {
-                size_t distance = node->bs_data.position - node->parent->bs_data.position;
+                u64 distance = node->bs_data.position - node->parent->bs_data.position;
                 dc.fillRect(
                     Rect(
                         x - (m_indent * 1.5) - (m_treeline_size / 2),

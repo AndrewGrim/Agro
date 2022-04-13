@@ -1,12 +1,13 @@
 #pragma once
 
 #include <cassert>
+#include "common/number_types.h"
 
 template <typename T> struct Slice {
 	T *data = nullptr;
-	size_t length = 0;
+	u64 length = 0;
 
-	Slice(T *data, size_t length) : data{data}, length{length} {
+	Slice(T *data, u64 length) : data{data}, length{length} {
 		assert(data && "Don't pass around invalid slices!");
 	}
 

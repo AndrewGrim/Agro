@@ -15,10 +15,10 @@ LineEdit::LineEdit(std::string text, std::string placeholder, i32 min_length) : 
         } else {
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             i32 x = 0;
-            size_t index = 0;
+            u64 index = 0;
             i32 offset_event = event.x - inner_rect.x;
             u8 length = 0;
-            for (size_t i = 0; i < this->text().length(); i += length) {
+            for (u64 i = 0; i < this->text().length(); i += length) {
                 length = utf8SequenceLength(this->text().data() + i);
                 i32 w = dc.measureText(font(), Slice<const char>(this->text().data() + i, length)).w;
                 if (x + w > offset_event) {
@@ -46,7 +46,7 @@ LineEdit::LineEdit(std::string text, std::string placeholder, i32 min_length) : 
 
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             i32 x = m_selection.x_begin;
-            size_t index = m_selection.begin;
+            u64 index = m_selection.begin;
             i32 offset_event = event.x - inner_rect.x;
 
             // Selection is to the right of the origin point.
@@ -397,7 +397,7 @@ LineEdit* LineEdit::moveCursorEnd() {
     return this;
 }
 
-LineEdit* LineEdit::deleteAt(size_t index, bool skip) {
+LineEdit* LineEdit::deleteAt(u64 index, bool skip) {
     if (index < text().length()) {
         if (!skip) {
             m_history.append({HistoryItem::Action::Delete, std::string(1, m_text[index]), m_selection});
@@ -506,7 +506,7 @@ void LineEdit::selectAll() {
 void LineEdit::swapSelection() {
     if (m_selection.begin > m_selection.end) {
         i32 temp_x = m_selection.x_end;
-        size_t temp = m_selection.end;
+        u64 temp = m_selection.end;
         m_selection.x_end = m_selection.x_begin;
         m_selection.end = m_selection.begin;
         m_selection.x_begin = temp_x;
@@ -514,7 +514,7 @@ void LineEdit::swapSelection() {
     }
 }
 
-void LineEdit::insert(size_t index, const char *text, bool skip) {
+void LineEdit::insert(u64 index, const char *text, bool skip) {
     DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
     if (m_selection.hasSelection()) {
@@ -541,7 +541,7 @@ void LineEdit::insert(size_t index, const char *text, bool skip) {
     onTextChanged.notify();
 }
 
-void LineEdit::setCursor(size_t index) {
+void LineEdit::setCursor(u64 index) {
     if (!index) {
         m_selection.x_begin = 0;
         m_selection.begin = 0;
@@ -552,9 +552,9 @@ void LineEdit::setCursor(size_t index) {
             inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
         }
         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-        size_t local_index = 0;
+        u64 local_index = 0;
         u8 length = 0;
-        for (size_t i = 0; i < text().length(); i += length) {
+        for (u64 i = 0; i < text().length(); i += length) {
             length = utf8SequenceLength(text().data() + i);
             i32 w = dc.measureText(font(), Slice<const char>(text().data() + i, length)).w;
             inner_rect.x += w;
@@ -582,7 +582,7 @@ void LineEdit::undo() {
             if (m_selection.hasSelection()) {
                 deleteSelection(true);
             } else if (item.text.length() > 1) {
-                for (size_t i = 0; i < item.text.length(); i++) {
+                for (u64 i = 0; i < item.text.length(); i++) {
                     deleteAt(m_selection.begin, true);
                 }
             } else {
@@ -606,7 +606,7 @@ void LineEdit::redo() {
             if (m_selection.hasSelection()) {
                 deleteSelection(true);
             } else if (item.text.length() > 1) {
-                for (size_t i = 0; i < item.text.length(); i++) {
+                for (u64 i = 0; i < item.text.length(); i++) {
                     deleteAt(m_selection.begin, true);
                 }
             } else {

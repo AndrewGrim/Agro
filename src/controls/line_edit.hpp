@@ -6,8 +6,8 @@
     #include "widget.hpp"
 
     struct Selection {
-        size_t begin = 0;
-        size_t end = 0;
+        u64 begin = 0;
+        u64 end = 0;
         i32 x_begin = 0;
         i32 x_end = 0;
         bool mouse_selection = false;
@@ -30,7 +30,7 @@
 
     struct History {
         std::vector<HistoryItem> items;
-        size_t index = 0;
+        u64 index = 0;
         bool undo_end = true;
         bool redo_end = true;
 
@@ -38,7 +38,7 @@
 
         }
 
-        HistoryItem get(size_t index) {
+        HistoryItem get(u64 index) {
             HistoryItem item = items[index];
             return item;
         }
@@ -74,7 +74,7 @@
             LineEdit* moveCursorRight();
             LineEdit* moveCursorBegin();
             LineEdit* moveCursorEnd();
-            LineEdit* deleteAt(size_t index, bool skip = false);
+            LineEdit* deleteAt(u64 index, bool skip = false);
             LineEdit* clear();
             LineEdit* setPlaceholderText(std::string text);
             std::string placeholderText();
@@ -85,8 +85,8 @@
             void deleteSelection(bool skip = false);
             void selectAll();
             void swapSelection();
-            void insert(size_t index, const char *text, bool skip = false);
-            void setCursor(size_t index);
+            void insert(u64 index, const char *text, bool skip = false);
+            void setCursor(u64 index);
             void undo();
             void redo();
             i32 isFocusable() override;

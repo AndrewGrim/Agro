@@ -174,7 +174,7 @@
 
             /// This method is used to remove a Widget from parent's children based on the given index.
             // TODO the index should be passed in internally rather than requiring the user to pass it in.
-            virtual Widget* remove(size_t parent_index);
+            virtual Widget* remove(u64 parent_index);
 
             /// This method is used to free the Widget. It will also remove it from its parent's children when applicable.
             /// DO NOT manually delete defualt Widgets.

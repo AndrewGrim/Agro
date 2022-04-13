@@ -196,9 +196,9 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
 
     i32 line_width = 0;
     const char *start = text.data();
-    size_t count = 0;
+    u64 count = 0;
     u8 length = 0;
-    for (size_t i = 0; i < text.length(); i += length) {
+    for (u64 i = 0; i < text.length(); i += length) {
         length = utf8SequenceLength(text.data() + i);
         line_width += measureText(font, Slice<const char>(text.data() + i, length), tab_width).w;
         count += length;

@@ -66,7 +66,7 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
         remainder = 0;
     }
 
-    size_t scroll_offset = 0;
+    u64 scroll_offset = 0;
     if (m_align_policy == Align::Vertical) {
         scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
     } else {
@@ -74,18 +74,18 @@ void ScrolledBox::layoutChildren(DrawingContext &dc, Rect rect) {
     }
     BinarySearchResult<Widget*> result = binarySearch(scroll_offset);
     if (result.value) {
-        size_t i = result.index;
+        u64 i = result.index;
         Widget *child = children[i];
         // Move position to the start of the first visible widget.
         *generic_position_coord += m_children_positions[i].position;
-        size_t expandable_coord = 0;
+        u64 expandable_coord = 0;
         while (true) {
             Size child_hint = child->sizeHint(dc);
             size = calculateChildSize(child_hint, expandable_length, *rect_opposite_length, child, remainder);
             Rect widget_rect = Rect(pos.x, pos.y, size.w, size.h);
             if (child->isVisible()) {
                 if (expandable_length > 0) {
-                    m_children_positions[i] = BinarySearchData{ expandable_coord, (size_t)*generic_length };
+                    m_children_positions[i] = BinarySearchData{ expandable_coord, (u64)*generic_length };
                     expandable_coord += *generic_length;
                 }
                 child->draw(dc, widget_rect, child->state());
@@ -112,8 +112,8 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
         m_children_positions.resize(children.size());
         Size size = Size();
         if (m_align_policy == Align::Horizontal) {
-            size_t scroll_offset = 0;
-            size_t i = 0;
+            u64 scroll_offset = 0;
+            u64 i = 0;
             for (Widget* child : children) {
                 if (child->isVisible()) {
                     Size s = child->sizeHint(dc);
@@ -125,7 +125,7 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
                     if (child->fillPolicy() == Fill::Vertical || child->fillPolicy() == Fill::None) {
                         horizontal_non_expandable++;
                     }
-                    m_children_positions[i] = BinarySearchData{scroll_offset, (size_t)s.w};
+                    m_children_positions[i] = BinarySearchData{scroll_offset, (u64)s.w};
                     scroll_offset += s.w;
                 } else {
                     m_children_positions[i] = BinarySearchData{scroll_offset, 0};
@@ -133,8 +133,8 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
                 i++;
             }
         } else {
-            size_t scroll_offset = 0;
-            size_t i = 0;
+            u64 scroll_offset = 0;
+            u64 i = 0;
             for (Widget* child : children) {
                 if (child->isVisible()) {
                     Size s = child->sizeHint(dc);
@@ -146,7 +146,7 @@ Size ScrolledBox::sizeHint(DrawingContext &dc) {
                     if (child->fillPolicy() == Fill::Horizontal || child->fillPolicy() == Fill::None) {
                         vertical_non_expandable++;
                     }
-                    m_children_positions[i] = BinarySearchData{scroll_offset, (size_t)s.h};
+                    m_children_positions[i] = BinarySearchData{scroll_offset, (u64)s.h};
                     scroll_offset += s.h;
                 } else {
                     m_children_positions[i] = BinarySearchData{scroll_offset, 0};
@@ -270,11 +270,11 @@ Size ScrolledBox::calculateChildSize(Size child_hint, i32 expandable_length, i32
     return size;
 }
 
-BinarySearchResult<Widget*> ScrolledBox::binarySearch(size_t target) {
+BinarySearchResult<Widget*> ScrolledBox::binarySearch(u64 target) {
     if (!children.size()) { return BinarySearchResult<Widget*>{ 0, Option<Widget*>() }; }
-    size_t lower = 0;
-    size_t upper = children.size() - 1;
-    size_t mid = 0;
+    u64 lower = 0;
+    u64 upper = children.size() - 1;
+    u64 mid = 0;
     BinarySearchData point = {0, 0};
 
     while (lower <= upper) {
@@ -322,7 +322,7 @@ Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEven
     }
 
     if (m_align_policy == Align::Vertical) {
-        size_t scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
+        u64 scroll_offset = (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_size.h - rect.h);
         Option<Widget*> child = binarySearch((event.y - rect.y) + scroll_offset).value;
         if (child &&
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
@@ -335,7 +335,7 @@ Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEven
             return child.value;
         }
     } else {
-        size_t scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
+        u64 scroll_offset = (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_size.w - rect.w);
         Option<Widget*> child = binarySearch((event.x - rect.x) + scroll_offset).value;
         if (child &&
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&

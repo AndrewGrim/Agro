@@ -46,10 +46,10 @@
         };
 
         struct Selection {
-            size_t begin = 0;
-            size_t end = 0;
+            u64 begin = 0;
+            u64 end = 0;
 
-            Selection(size_t begin = 0, size_t end = 0) : begin{begin}, end{end} {}
+            Selection(u64 begin = 0, u64 end = 0) : begin{begin}, end{end} {}
         };
 
         i32 max_texture_slots;

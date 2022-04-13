@@ -28,11 +28,11 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, u32 proportion) {
     return this;
 }
 
-Widget* Widget::remove(size_t parent_index) {
+Widget* Widget::remove(u64 parent_index) {
     Widget *child = this->children[parent_index];
     Application::get()->currentWindow()->removeFromState(child);
     this->children.erase(this->children.begin() + parent_index);
-    size_t i = 0;
+    u64 i = 0;
     for (Widget *child : this->children) {
         child->parent_index = i;
         i++;

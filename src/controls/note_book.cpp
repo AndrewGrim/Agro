@@ -426,7 +426,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
 //     return this;
 // }
 
-NoteBook* NoteBook::destroyTab(size_t index) {
+NoteBook* NoteBook::destroyTab(u64 index) {
     if (children.size() > 1) { // TODO this should not be a library level thing, should be up to the user
         if (index < this->children.size()) {
             m_tabs->children[index]->destroy();
@@ -453,11 +453,11 @@ NoteBook* NoteBook::destroyTab(size_t index) {
 //     return this;
 // }
 
-size_t NoteBook::currentTab() {
+u64 NoteBook::currentTab() {
     return m_tab_index;
 }
 
-NoteBook* NoteBook::setCurrentTab(size_t index) {
+NoteBook* NoteBook::setCurrentTab(u64 index) {
     if (m_tab_index < children.size()) {
         ((NoteBookTabButton*)m_tabs->children[m_tab_index])->setActive(false);
     }

@@ -218,7 +218,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     i32 x = point.x;
     i32 base_bearing = font->get((u32)'H').bearing.y;
     i32 space_advance = font->get((u32)' ').advance;
-    for (size_t i = 0; i < text.length;) {
+    for (u64 i = 0; i < text.length;) {
         u8 c = text.data[i];
         u8 length = utf8SequenceLength(text.data + i);
         assert(length != 0 && "Invalid utf8 sequence start byte");
@@ -298,7 +298,7 @@ Size Renderer::measureText(Font *font, Slice<const char> text, i32 tab_width, bo
     Size size = Size(0, font->maxHeight());
     i32 line_width = 0;
     i32 space_advance = font->get((u32)' ').advance;
-    for (size_t i = 0; i < text.length;) {
+    for (u64 i = 0; i < text.length;) {
         u8 c = text.data[i];
         u8 length = utf8SequenceLength(text.data + i);
         assert(length != 0 && "Invalid utf8 sequence start byte");

@@ -20,8 +20,8 @@ void ProgressBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     std::string percent_text = std::to_string((i32)(m_value * 100)) + "%";
     i32 text_width = dc.measureText(font(), percent_text).w;
     i32 text_start = (rect.w / 2) - (text_width / 2);
-    size_t begin = 0;
-    size_t end = 0;
+    u64 begin = 0;
+    u64 end = 0;
     if (fill_end > text_start) {
         for (u8 c : percent_text) {
             i32 len = dc.measureText(font(), c).w;

@@ -6,12 +6,12 @@
     #include "../option.hpp"
 
     struct BinarySearchData {
-        size_t position;
-        size_t length;
+        u64 position;
+        u64 length;
     };
 
     template <typename T> struct BinarySearchResult {
-        size_t index;
+        u64 index;
         Option<T> value;
     };
 
