@@ -29,7 +29,9 @@ def main():
 
     # ICONS
     BASE_DIR = "images"
-    images = filter(lambda img : not img.startswith("screenshot"), os.listdir(BASE_DIR))
+    image_dir = os.listdir(BASE_DIR)
+    image_dir.sort()
+    images = filter(lambda img : not img.startswith("screenshot"), image_dir)
     for img in images:
         cpp.write(create_resource_bytes(f"{BASE_DIR}/{img}"))
         hpp.write(f"extern const unsigned char {normalize_filename(img)}[];\n")
