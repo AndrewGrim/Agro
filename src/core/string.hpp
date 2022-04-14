@@ -3,16 +3,17 @@
 
     #include <string.h>
     #include <assert.h>
-    #include <stdint.h>
+
+    #include "../common/number_types.h"
 
     namespace utf8 {
-        static const uint32_t TWO_BYTES    = 0b00011111;
-        static const uint32_t THREE_BYTES  = 0b00001111;
-        static const uint32_t FOUR_BYTES   = 0b00000111;
-        static const uint32_t CONTINUATION = 0b00111111;
+        static const u32 TWO_BYTES    = 0b00011111;
+        static const u32 THREE_BYTES  = 0b00001111;
+        static const u32 FOUR_BYTES   = 0b00000111;
+        static const u32 CONTINUATION = 0b00111111;
 
-        uint8_t length(const char *_first_byte) {
-            uint8_t first_byte = *_first_byte;
+        u8 length(const char *_first_byte) {
+            u8 first_byte = *_first_byte;
             if (first_byte <= 0b01111111) { return 1; }
             if (first_byte >= 0b11000000 && first_byte <= 0b11011111) { return 2; }
             if (first_byte >= 0b11100000 && first_byte <= 0b11101111) { return 3; }
@@ -20,8 +21,8 @@
             return 0; // Invalid first byte.
         }
 
-        uint32_t decode(const char *first_byte, uint8_t length) {
-            uint32_t codepoint = first_byte[0];
+        u32 decode(const char *first_byte, u8 length) {
+            u32 codepoint = first_byte[0];
             switch (length) {
                 case 1:
                     return codepoint;
@@ -56,8 +57,8 @@
         struct Iterator {
             char *begin = nullptr;
             char *data = nullptr;
-            uint8_t length = 0;
-            uint32_t codepoint = 0;
+            u8 length = 0;
+            u32 codepoint = 0;
 
             // Initialise iterator at data address.
             Iterator(char *data) : begin{data}, data{data} {}
@@ -65,7 +66,7 @@
             // Initialise iterator at data address with size offset.
             // This way you can start iterating from the end and use prev()
             // to iterate in reverse without having to iterate forward first.
-            Iterator(char *data, uint64_t size) : begin{data}, data{data + size} {}
+            Iterator(char *data, u64 size) : begin{data}, data{data + size} {}
 
             Iterator next() {
                 length = utf8::length(data);
@@ -92,8 +93,8 @@
 
     struct HeapString {
         char *_data;
-        uint64_t _size;
-        uint64_t _capacity;
+        u64 _size;
+        u64 _capacity;
         unsigned char _padding[sizeof(void*)];
     };
 
@@ -101,7 +102,7 @@
 
     struct SmallString {
         char _data[SMALL_STRING_BUFFER];
-        uint8_t _size;
+        u8 _size;
         bool _is_heap;
         // We can infer capacity based on the fact that its a small string.
     };
@@ -116,7 +117,7 @@
 
         String(const char *text) { _setContent(strlen(text), text); }
 
-        String(uint64_t starting_size) { _setContent(starting_size, ""); }
+        String(u64 starting_size) { _setContent(starting_size, ""); }
 
         String(String &string) {
             this->~String();
@@ -164,7 +165,7 @@
         }
 
         friend bool operator==(const String &lhs, const char *rhs) {
-            uint64_t length = strlen(rhs);
+            u64 length = strlen(rhs);
             if (lhs.size() != length) { return false; }
             return memcmp(lhs.data(), rhs, lhs.size()) == 0;
         }
@@ -190,8 +191,8 @@
 
         // Note: this method only works on ascii.
         String toLower() {
-            for (uint64_t i = 0; i < size(); i++) {
-                uint8_t byte = data()[i];
+            for (u64 i = 0; i < size(); i++) {
+                u8 byte = data()[i];
                 if (byte > 64 && byte < 91) {
                     data()[i] = byte + 32;
                 }
@@ -201,8 +202,8 @@
 
         // Note: this method only works on ascii.
         String toUpper() {
-            for (uint64_t i = 0; i < size(); i++) {
-                uint8_t byte = data()[i];
+            for (u64 i = 0; i < size(); i++) {
+                u8 byte = data()[i];
                 if (byte > 96 && byte < 123) {
                     data()[i] = byte - 32;
                 }
@@ -210,10 +211,10 @@
             return *this;
         }
 
-        static String repeat(const char *text, uint64_t count) {
-            uint64_t length = strlen(text);
+        static String repeat(const char *text, u64 count) {
+            u64 length = strlen(text);
             String s = String(length * count);
-            for (uint64_t i = 0; i < count; i++) {
+            for (u64 i = 0; i < count; i++) {
                 memcpy(s.data() + (length * i), text, length);
             }
             s.data()[s.size()] = '\0';
@@ -221,18 +222,18 @@
         }
 
         bool startsWith(const char *text) {
-            uint64_t length = strlen(text);
+            u64 length = strlen(text);
             if (size() < length) { return false; }
             return memcmp(data(), text, length) == 0;
         }
 
         bool endsWith(const char *text) {
-            uint64_t length = strlen(text);
+            u64 length = strlen(text);
             if (size() < length) { return false; }
             return memcmp(data() + size() - length, text, length) == 0;
         }
 
-        String substring(uint64_t begin, uint64_t end) {
+        String substring(u64 begin, u64 end) {
             // TODO ideally we will use option in this case
             // another option is to silently just substring until end of data instead
             assert(size() - begin >= end - begin);

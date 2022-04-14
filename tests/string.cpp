@@ -50,32 +50,32 @@ int main() {
 
         s = "a";
         assert(utf8::length(s.data()) == 1);
-        assert((uint8_t)s.data()[0] == 97);
-        assert((uint8_t)s.data()[1] == '\0');
+        assert((u8)s.data()[0] == 97);
+        assert((u8)s.data()[1] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 97);
 
         s = "ð";
         assert(utf8::length(s.data()) == 2);
-        assert((uint8_t)s.data()[0] == 195);
-        assert((uint8_t)s.data()[1] == 176);
-        assert((uint8_t)s.data()[2] == '\0');
+        assert((u8)s.data()[0] == 195);
+        assert((u8)s.data()[1] == 176);
+        assert((u8)s.data()[2] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 240);
 
         s = "⋒";
         assert(utf8::length(s.data()) == 3);
-        assert((uint8_t)s.data()[0] == 226);
-        assert((uint8_t)s.data()[1] == 139);
-        assert((uint8_t)s.data()[2] == 146);
-        assert((uint8_t)s.data()[3] == '\0');
+        assert((u8)s.data()[0] == 226);
+        assert((u8)s.data()[1] == 139);
+        assert((u8)s.data()[2] == 146);
+        assert((u8)s.data()[3] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 8914);
 
         s = "😁";
         assert(utf8::length(s.data()) == 4);
-        assert((uint8_t)s.data()[0] == 240);
-        assert((uint8_t)s.data()[1] == 159);
-        assert((uint8_t)s.data()[2] == 152);
-        assert((uint8_t)s.data()[3] == 129);
-        assert((uint8_t)s.data()[4] == '\0');
+        assert((u8)s.data()[0] == 240);
+        assert((u8)s.data()[1] == 159);
+        assert((u8)s.data()[2] == 152);
+        assert((u8)s.data()[3] == 129);
+        assert((u8)s.data()[4] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 128513);
 
         s = "Óreiða";
