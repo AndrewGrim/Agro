@@ -267,7 +267,7 @@
             return data() + size();
         }
 
-        utf8::Iterator utf8() {
+        utf8::Iterator utf8Begin() {
             return utf8::Iterator(data());
         }
 

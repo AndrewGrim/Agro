@@ -173,7 +173,7 @@ int main() {
             }
             printf("\n");
             // Iterate using utf8 codepoints from the beginning.
-            utf8::Iterator iter = s1.utf8();
+            utf8::Iterator iter = s1.utf8Begin();
             while ((iter = iter.next())) {
                 printf("%u ", iter.codepoint);
             }
@@ -191,7 +191,7 @@ int main() {
             printf("\n");
         }
         {
-            utf8::Iterator iter = s1.utf8();
+            utf8::Iterator iter = s1.utf8Begin();
             assert(iter.prev().codepoint == 0);
             assert(iter.next().codepoint == 108);
             assert(iter.next().codepoint == 111);
