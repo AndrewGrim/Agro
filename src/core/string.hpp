@@ -95,7 +95,7 @@
         char *_data;
         u64 _size;
         u64 _capacity;
-        unsigned char _padding[sizeof(void*)];
+        u8 _padding[sizeof(void*)];
     };
 
     #define SMALL_STRING_BUFFER (sizeof(HeapString) - 3) // -1 for null terminator, -1 for _size, -1 for _is_heap
