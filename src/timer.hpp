@@ -2,6 +2,8 @@
     #define TIMER_HPP
 
     #include <functional>
+    #include <memory>
+
     #include <SDL.h>
 
     #include "common/number_types.h"
