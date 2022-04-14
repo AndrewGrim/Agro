@@ -304,6 +304,14 @@
             }
         }
 
+        void erase(u64 index, u64 count) {
+            // TODO change to result
+            assert(index + count < size());
+            memcpy(data() + index, data() + index + count, size() - (index + count));
+            _isSmall() ? _string._small._size -= count : _string._heap._size -= count;
+            data()[size()] = '\0';
+        }
+
         void clear() {
             if (!_isSmall()) {
                 delete _string._heap._data;

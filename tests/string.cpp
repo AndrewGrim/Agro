@@ -118,6 +118,13 @@ int main() {
         assert(s.slice().length == 3);
     }
     {
+        String s = "Hello, 123 World!";
+        assert(s.size() == 17);
+        s.erase(7, 4);
+        assert(s == "Hello, World!");
+        assert(s.size() == 13);
+    }
+    {
         String s = "";
 
         s = "a";
