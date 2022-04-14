@@ -170,6 +170,22 @@
             return memcmp(lhs.data(), rhs, lhs.size()) == 0;
         }
 
+        friend void operator+=(String &lhs, const char *rhs) {
+            lhs.insert(lhs.size(), rhs);
+        }
+
+        friend String operator+(String &lhs, const char *rhs) {
+            String new_string = lhs;
+            new_string.insert(new_string.size(), rhs);
+            return new_string;
+        }
+
+        friend String operator+(String &&lhs, const char *rhs) {
+            String new_string = lhs;
+            new_string.insert(new_string.size(), rhs);
+            return new_string;
+        }
+
         void _setContent(size_t new_size, const char *text) {
             if (new_size > SMALL_STRING_BUFFER) {
                 _string._heap._data = new char[new_size + 1];  // +1 to account for null terminator.

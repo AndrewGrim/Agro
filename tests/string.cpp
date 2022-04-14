@@ -93,6 +93,21 @@ int main() {
             assert(s.capacity() == 29);
             assert(s == "");
         }
+        {
+            String s = "abc";
+            s += "123";
+            assert(s == "abc123");
+        }
+        {
+            String s = String("abc");
+            assert(s + "123" == "abc123");
+            assert(s == "abc");
+            assert(s + "123" + "def" + "456" == "abc123def456");
+        }
+        {
+            String s = String("abc") + "123";
+            assert(s == "abc123");
+        }
     }
     {
         String s = "";
