@@ -284,5 +284,12 @@
                 _string._heap._capacity = new_size;
             }
         }
+
+        void clear() {
+            if (!_isSmall()) {
+                delete _string._heap._data;
+            }
+            _setContent(0, "");
+        }
     };
 #endif

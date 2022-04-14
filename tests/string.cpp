@@ -75,6 +75,26 @@ int main() {
         }
     }
     {
+        {
+            String s = "test";
+            s.clear();
+            assert(s.size() == 0);
+            assert(s.capacity() == 29);
+            assert(s == "");
+        }
+        {
+            String s = "abcdefghijklmnopqrstuvwxyz1234";
+            assert(!s._isSmall());
+            assert(s.size() == 30);
+            assert(s.capacity() == 30);
+            s.clear();
+            assert(s._isSmall());
+            assert(s.size() == 0);
+            assert(s.capacity() == 29);
+            assert(s == "");
+        }
+    }
+    {
         String s = "";
 
         s = "a";
