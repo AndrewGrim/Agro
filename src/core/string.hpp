@@ -251,8 +251,7 @@
         }
 
         String substring(u64 begin, u64 end) {
-            // TODO ideally we will use option in this case
-            // another option is to silently just substring until end of data instead
+            // TODO change to option
             assert(size() - begin >= end - begin);
             String s = String(end - begin);
             memcpy(s.data(), data() + begin, end - begin);
@@ -277,6 +276,9 @@
         }
 
         void insert(u64 index, const char *text) {
+            // TODO change to result
+            assert(index <= size());
+            assert(utf8::length(data() + index));
             u64 length = strlen(text);
             u64 new_size = size() + length;
             if (new_size <= capacity()) {
