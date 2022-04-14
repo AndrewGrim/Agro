@@ -5,6 +5,7 @@
     #include <assert.h>
 
     #include "../common/number_types.h"
+    #include "../slice.hpp"
 
     namespace utf8 {
         static const u32 TWO_BYTES    = 0b00011111;
@@ -306,6 +307,10 @@
                 delete _string._heap._data;
             }
             _setContent(0, "");
+        }
+
+        Slice<const char> slice() {
+            return Slice<const char>(data(), size());
         }
     };
 #endif

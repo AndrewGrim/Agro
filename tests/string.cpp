@@ -113,6 +113,11 @@ int main() {
 
     }
     {
+        String s = "abc";
+        assert(s == s.slice().data);
+        assert(s.slice().length == 3);
+    }
+    {
         String s = "";
 
         s = "a";
