@@ -258,5 +258,31 @@
         utf8::Iterator utf8End() {
             return utf8::Iterator(data(), size());
         }
+
+        void insert(u64 index, const char *text) {
+            u64 length = strlen(text);
+            u64 new_size = size() + length;
+            if (new_size <= capacity()) {
+                memcpy(data() + index + length, data() + index, size() - index);
+                memcpy(data() + index, text, length);
+                data()[new_size] = '\0';
+                _isSmall() ? _string._small._size = new_size : _string._heap._size = new_size;
+            } else {
+                char *new_buffer = new char[new_size + 1];
+                assert(new_buffer && "Failed memory allocation when inserting into String!");
+                memcpy(new_buffer, data(), index);
+                memcpy(new_buffer + index + length, data() + index, size() - index);
+                memcpy(new_buffer + index, text, length);
+                new_buffer[new_size] = '\0';
+                if (!_isSmall()) {
+                    delete _string._heap._data;
+                } else {
+                    _string._small._is_heap = true;
+                }
+                _string._heap._data = new_buffer;
+                _string._heap._size = new_size;
+                _string._heap._capacity = new_size;
+            }
+        }
     };
 #endif

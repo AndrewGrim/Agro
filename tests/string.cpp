@@ -46,6 +46,35 @@ int main() {
         assert(s3 == "abc");
     }
     {
+        {
+            String s = "13";
+            assert(s.size() == 2);
+            assert(s._isSmall());
+            s.insert(1, "2");
+            assert(s.size() == 3);
+            assert(s._isSmall());
+            assert(s == "123");
+        }
+        {
+            String s = "abcdefghijklmnopqrstuvwxyz123";
+            assert(s.size() == 29);
+            assert(s._isSmall());
+            s.insert(3, "C");
+            assert(s.size() == 30);
+            assert(!s._isSmall());
+            assert(s == "abcCdefghijklmnopqrstuvwxyz123");
+        }
+        {
+            String s = "The quick brown fox jumped over the lazy dog.";
+            assert(s.size() == 45);
+            assert(!s._isSmall());
+            s.insert(19, " 🦊");
+            assert(s.size() == 50);
+            assert(!s._isSmall());
+            assert(s == "The quick brown fox 🦊 jumped over the lazy dog.");
+        }
+    }
+    {
         String s = "";
 
         s = "a";
