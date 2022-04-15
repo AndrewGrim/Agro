@@ -78,7 +78,7 @@ String::String(const char *text) { _setContent(strlen(text), text); }
 
 String::String(u64 starting_size) { _setContent(starting_size, ""); }
 
-String::String(String &string) {
+String::String(const String &string) {
     this->~String();
     _setContent(string.size(), string.data());
 }
@@ -108,6 +108,12 @@ size_t String::capacity() const {
 String& String::operator=(const char *text) {
     this->~String();
     _setContent(strlen(text), text);
+    return *this;
+}
+
+String& String::operator=(const String &string) {
+    this->~String();
+    _setContent(string.size(), string.data());
     return *this;
 }
 

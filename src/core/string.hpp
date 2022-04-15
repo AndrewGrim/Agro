@@ -64,13 +64,14 @@
         String();
         String(const char *text);
         String(u64 starting_size);
-        String(String &string);
+        String(const String &string);
         String(String &&string);
         ~String();
         char* data() const;
         size_t size() const;
         size_t capacity() const;
         String& operator=(const char *text);
+        String& operator=(const String &string);
         String& operator=(String &&string);
         friend bool operator==(const String &lhs, const String &rhs);
         friend bool operator==(const String &lhs, const char *rhs);
