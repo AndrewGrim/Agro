@@ -25,6 +25,8 @@ file(GLOB sources
 	"${PROJECT_SOURCE_DIR}/src/common/*.hpp"
 	"${PROJECT_SOURCE_DIR}/src/controls/*.cpp"
 	"${PROJECT_SOURCE_DIR}/src/controls/*.hpp"
+	"${PROJECT_SOURCE_DIR}/src/core/*.cpp"
+	"${PROJECT_SOURCE_DIR}/src/core/*.hpp"
 	"${PROJECT_SOURCE_DIR}/src/renderer/*.cpp"
 	"${PROJECT_SOURCE_DIR}/src/renderer/*.c"
 	"${PROJECT_SOURCE_DIR}/src/renderer/*.hpp"
@@ -129,6 +131,11 @@ file(GLOB controls "${PROJECT_SOURCE_DIR}/src/controls/*.hpp")
 file(
 	COPY ${controls}
 	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}/controls
+)
+file(GLOB core "${PROJECT_SOURCE_DIR}/src/core/*.hpp")
+file(
+	COPY ${core}
+	DESTINATION ${PROJECT_SOURCE_DIR}/${PROJECT_NAME}/include/${PROJECT_NAME}/core
 )
 file(GLOB renderer "${PROJECT_SOURCE_DIR}/src/renderer/*.hpp" "${PROJECT_SOURCE_DIR}/src/renderer/*.h")
 file(
