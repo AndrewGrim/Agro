@@ -72,20 +72,20 @@ namespace utf8 {
 
 }
 
-String::String() { _setContent(0, ""); }
+String::String() { _setContent(0, nullptr); }
 
 String::String(const char *text) { _setContent(strlen(text), text); }
 
-String::String(u64 starting_size) { _setContent(starting_size, ""); }
+String::String(const char *text, u64 length) { _setContent(length, text); }
+
+String::String(u64 starting_size) { _setContent(starting_size, nullptr); }
 
 String::String(const String &string) {
-    this->~String();
     _setContent(string.size(), string.data());
 }
 
 String::String(String &&string) {
-    this->~String();
-    memcpy((void*)this, (void*)&string, sizeof(String));
+    memcpy(this, &string, sizeof(String));
     string._string._heap._data = nullptr;
 }
 
@@ -97,11 +97,11 @@ char* String::data() const {
     return _isSmall() ? (char*)_string._small._data : (char*)_string._heap._data;
 }
 
-size_t String::size() const {
+u64 String::size() const {
     return _isSmall() ? _string._small._size : _string._heap._size;
 }
 
-size_t String::capacity() const {
+u64 String::capacity() const {
     return _isSmall() ? SMALL_STRING_BUFFER : _string._heap._capacity;
 }
 
@@ -119,7 +119,7 @@ String& String::operator=(const String &string) {
 
 String& String::operator=(String &&string) {
     this->~String();
-    memcpy((void*)this, (void*)&string, sizeof(String));
+    memcpy(this, &string, sizeof(String));
     string._string._heap._data = nullptr;
     return *this;
 }
@@ -151,17 +151,27 @@ String operator+(String &&lhs, const char *rhs) {
     return new_string;
 }
 
-void String::_setContent(size_t new_size, const char *text) {
+void String::_setContent(u64 new_size, const char *text) {
     if (new_size > SMALL_STRING_BUFFER) {
-        _string._heap._data = new char[new_size + 1];  // +1 to account for null terminator.
+        _string._heap._data = new u8[new_size + 1];  // +1 to account for null terminator.
         assert(_string._heap._data && "Failed memory allocation for String!");
-        strcpy(_string._heap._data, text);
+        if (text) {
+            memcpy(_string._heap._data, text, new_size);
+        } else {
+            _string._heap._data[0] = '\0';
+        }
         _string._heap._size = new_size;
+        _string._heap._data[_string._heap._size] = '\0';
         _string._heap._capacity = new_size;
         _string._small._is_heap = true;
     } else {
-        strcpy(_string._small._data, text);
+        if (text) {
+            memcpy(_string._small._data, text, new_size);
+        } else {
+            _string._small._data[0] = '\0';
+        }
         _string._small._size = new_size;
+        _string._small._data[_string._small._size] = '\0';
         _string._small._is_heap = false;
     }
 }
@@ -202,19 +212,19 @@ String String::repeat(const char *text, u64 count) {
     return s;
 }
 
-bool String::startsWith(const char *text) {
+bool String::startsWith(const char *text) const {
     u64 length = strlen(text);
     if (size() < length) { return false; }
     return memcmp(data(), text, length) == 0;
 }
 
-bool String::endsWith(const char *text) {
+bool String::endsWith(const char *text) const {
     u64 length = strlen(text);
     if (size() < length) { return false; }
     return memcmp(data() + size() - length, text, length) == 0;
 }
 
-String String::substring(u64 begin, u64 end) {
+String String::substring(u64 begin, u64 end) const {
     // TODO change to option
     assert(size() - begin >= end - begin);
     String s = String(end - begin);
@@ -223,19 +233,19 @@ String String::substring(u64 begin, u64 end) {
     return s;
 }
 
-char* String::begin() {
+char* String::begin() const {
     return data();
 }
 
-char* String::end() {
+char* String::end() const {
     return data() + size();
 }
 
-utf8::Iterator String::utf8Begin() {
+utf8::Iterator String::utf8Begin() const {
     return utf8::Iterator(data());
 }
 
-utf8::Iterator String::utf8End() {
+utf8::Iterator String::utf8End() const {
     return utf8::Iterator(data(), size());
 }
 
@@ -251,17 +261,14 @@ void String::insert(u64 index, const char *text) {
         data()[new_size] = '\0';
         _isSmall() ? _string._small._size = new_size : _string._heap._size = new_size;
     } else {
-        char *new_buffer = new char[new_size + 1];
+        u8 *new_buffer = new u8[new_size + 1];
         assert(new_buffer && "Failed memory allocation when inserting into String!");
         memcpy(new_buffer, data(), index);
         memcpy(new_buffer + index + length, data() + index, size() - index);
         memcpy(new_buffer + index, text, length);
         new_buffer[new_size] = '\0';
-        if (!_isSmall()) {
-            delete _string._heap._data;
-        } else {
-            _string._small._is_heap = true;
-        }
+        if (!_isSmall()) { delete[] _string._heap._data; }
+        else { _string._small._is_heap = true; }
         _string._heap._data = new_buffer;
         _string._heap._size = new_size;
         _string._heap._capacity = new_size;
@@ -277,12 +284,10 @@ void String::erase(u64 index, u64 count) {
 }
 
 void String::clear() {
-    if (!_isSmall()) {
-        delete _string._heap._data;
-    }
-    _setContent(0, "");
+    if (!_isSmall()) { delete[] _string._heap._data; }
+    _setContent(0, nullptr);
 }
 
-Slice<const char> String::slice() {
+Slice<const char> String::slice() const {
     return Slice<const char>(data(), size());
 }

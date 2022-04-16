@@ -38,7 +38,7 @@
     }
 
     struct HeapString {
-        char *_data;
+        u8 *_data;
         u64 _size;
         u64 _capacity;
         u8 _padding[sizeof(void*)];
@@ -47,7 +47,7 @@
     #define SMALL_STRING_BUFFER (sizeof(HeapString) - 3) // -1 for null terminator, -1 for _size, -1 for _is_heap
 
     struct SmallString {
-        char _data[SMALL_STRING_BUFFER];
+        u8 _data[SMALL_STRING_BUFFER + 1]; // +1 to have space for null terminator.
         u8 _size;
         bool _is_heap;
         // We can infer capacity based on the fact that its a small string.
@@ -63,13 +63,14 @@
 
         String();
         String(const char *text);
+        String(const char *text, u64 length);
         String(u64 starting_size);
         String(const String &string);
         String(String &&string);
         ~String();
         char* data() const;
-        size_t size() const;
-        size_t capacity() const;
+        u64 size() const;
+        u64 capacity() const;
         String& operator=(const char *text);
         String& operator=(const String &string);
         String& operator=(String &&string);
@@ -78,23 +79,23 @@
         friend void operator+=(String &lhs, const char *rhs);
         friend String operator+(String &lhs, const char *rhs);
         friend String operator+(String &&lhs, const char *rhs);
-        void _setContent(size_t new_size, const char *text);
+        void _setContent(u64 new_size, const char *text);
         bool _isSmall() const;
         // Note: this method only works on ascii.
         String toLower();
         // Note: this method only works on ascii.
         String toUpper();
         static String repeat(const char *text, u64 count);
-        bool startsWith(const char *text);
-        bool endsWith(const char *text);
-        String substring(u64 begin, u64 end);
-        char* begin();
-        char* end();
-        utf8::Iterator utf8Begin();
-        utf8::Iterator utf8End();
+        bool startsWith(const char *text) const;
+        bool endsWith(const char *text) const;
+        String substring(u64 begin, u64 end) const;
+        char* begin() const;
+        char* end() const;
+        utf8::Iterator utf8Begin() const;
+        utf8::Iterator utf8End() const;
         void insert(u64 index, const char *text);
         void erase(u64 index, u64 count);
         void clear();
-        Slice<const char> slice();
+        Slice<const char> slice() const;
     };
 #endif
