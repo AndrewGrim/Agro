@@ -201,6 +201,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     inner_rect = rect;
 
+    printf("selection: %lu, %lu\n", m_selection.begin, m_selection.end);
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     if (m_buffer.size() && m_buffer[0].size()) {
         // TODO start drawing text based on scroll position and not from the beginning
@@ -235,7 +236,8 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 m_tab_width,
                 // TODO the text selection im sure is gonna be fucked and will need changing
                 isHardFocused() ? selection : Renderer::Selection(),
-                dc.textSelected(style)
+                // dc.textSelected(style)
+                Color(1)
             );
             text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
             text_region.y += m_line_spacing;
