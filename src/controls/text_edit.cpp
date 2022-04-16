@@ -62,7 +62,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             // Selection is to the left of the origin point.
             } else {
                 while ((iter = iter.prev())) {
-                    i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
+                    i32 w = dc.measureText(font(), Slice<const char>(iter.data, iter.length)).w;
                     x -= w;
                     index -= iter.length;
                     if (x < event.x) {
