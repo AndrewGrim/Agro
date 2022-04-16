@@ -232,6 +232,18 @@ int main() {
             assert(iter.prev().codepoint == 108);
             assert(iter.prev().codepoint == 0);
         }
+        {
+            String s = "lol 😂 lmao";
+            utf8::Iterator iter = utf8::Iterator(s.data(), 10);
+            assert(*iter.prev().data == 'l');
+            assert(*iter.prev().data == ' ');
+            assert(iter.prev().codepoint == 128514);
+            assert(*iter.prev().data == ' ');
+            assert(*iter.prev().data == 'l');
+            assert(*iter.prev().data == 'o');
+            assert(*iter.prev().data == 'l');
+            assert(!iter.prev());
+        }
     }
     return 0;
 }
