@@ -194,43 +194,43 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     inner_rect = rect;
 
+    Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     if (m_buffer.size() && m_buffer[0].size()) {
         // TODO start drawing text based on scroll position and not from the beginning
-        Rect region = inner_rect;
         for (const String &line : m_buffer) {
             dc.fillTextAligned(
                 font(),
                 line.slice(),
                 HorizontalAlignment::Left,
                 VerticalAlignment::Top,
-                region,
+                text_region,
                 0,
                 dc.textForeground(style),
                 m_tab_width,
+                // TODO the text selection im sure is gonna be fucked and will need changing
                 isHardFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
                 dc.textSelected(style)
             );
-            region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            region.y += m_line_spacing;
-            if (region.y > rect.y + rect.h) { break; }
+            text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
+            text_region.y += m_line_spacing;
+            if (text_region.y > rect.y + rect.h) { break; }
         }
     } else {
         // TODO start drawing text based on scroll position and not from the beginning
-        Rect region = inner_rect;
         for (const String &line : m_placeholder_buffer) {
             dc.fillTextAligned(
                 font(),
                 line.slice(),
                 HorizontalAlignment::Left,
                 VerticalAlignment::Top,
-                region,
+                text_region,
                 0,
                 dc.textDisabled(style),
                 m_tab_width
             );
-            region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            region.y += m_line_spacing;
-            if (region.y > rect.y + rect.h) { break; }
+            text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
+            text_region.y += m_line_spacing;
+            if (text_region.y > rect.y + rect.h) { break; }
         }
     }
 
