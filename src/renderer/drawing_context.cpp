@@ -260,6 +260,10 @@ Size DrawingContext::measureTextMultiline(Font *font, std::string text, i32 tab_
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.length()), tab_width, true, line_spacing);
 }
 
+Size DrawingContext::measureTextMultiline(Font *font, Slice<const char> text, i32 tab_width, i32 line_spacing) {
+    return renderer->measureText(font ? font : default_font, text, tab_width, true, line_spacing);
+}
+
 Rect DrawingContext::drawBorder3D(Rect rect, i32 border_width, Color rect_color) {
     // light border
     {

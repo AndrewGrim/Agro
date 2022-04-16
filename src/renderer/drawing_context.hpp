@@ -49,6 +49,7 @@
         Size measureText(Font *font, std::string text, i32 tab_width = 4);
         Size measureText(Font *font, char c, i32 tab_width = 4);
         Size measureTextMultiline(Font *font, std::string text, i32 tab_width = 4, i32 line_spacing = 5);
+        Size measureTextMultiline(Font *font, Slice<const char> text, i32 tab_width = 4, i32 line_spacing = 5);
         void render();
         Rect drawBorder3D(Rect rect, i32 border_width, Color rect_color);
         void drawBorder(Rect &rect, Style &style, i32 state);
