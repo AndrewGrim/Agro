@@ -36,6 +36,8 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     index += iter.length;
                 }
             }
+            // TODO but actually what we want is for the selection to go straight to the end when clicking outside
+            if (line == m_buffer.size()) { line--; } // This accounts for clicking outside text on y axis.
             m_selection.x_begin = x;
             m_selection.line_begin = line;
             m_selection.begin = index;
