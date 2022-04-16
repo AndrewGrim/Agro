@@ -308,6 +308,7 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
             m_virtual_size.h += size.h;
             if (size.w > m_virtual_size.w) { m_virtual_size.w = size.w; }
         }
+        if (m_buffer.size() == 1) { m_virtual_size.h -= m_line_spacing; }
     }
     if (m_size_changed) {
         Scrollable::sizeHint(dc);
