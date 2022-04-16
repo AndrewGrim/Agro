@@ -196,7 +196,12 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     if (m_buffer.size() && m_buffer[0].size()) {
         // TODO start drawing text based on scroll position and not from the beginning
+        u64 line_index = 0;
+        Renderer::Selection selection;
         for (const String &line : m_buffer) {
+            if (line_index >= m_selection.line_begin &&
+                line_index <= m_selection.line_end) { selection = Renderer::Selection(m_selection.begin, m_selection.end); }
+            else { selection = Renderer::Selection(); }
             dc.fillTextAligned(
                 font(),
                 line.slice(),
@@ -207,12 +212,13 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 dc.textForeground(style),
                 m_tab_width,
                 // TODO the text selection im sure is gonna be fucked and will need changing
-                isHardFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
+                isHardFocused() ? selection : Renderer::Selection(),
                 dc.textSelected(style)
             );
             text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
             text_region.y += m_line_spacing;
             if (text_region.y > rect.y + rect.h) { break; }
+            line_index++;
         }
     } else {
         // TODO start drawing text based on scroll position and not from the beginning
