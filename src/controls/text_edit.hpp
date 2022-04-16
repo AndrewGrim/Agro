@@ -97,7 +97,7 @@
         // bool isLayout() override { return false; }
 
         std::vector<String> m_buffer;
-        String m_placeholder_text;
+        std::vector<String> m_placeholder_buffer;
         Size m_virtual_size = Size();
         bool m_text_changed = false;
         i32 m_cursor_width = 1;

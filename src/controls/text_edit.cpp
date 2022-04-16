@@ -195,19 +195,45 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Point pos;
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
 
-    dc.fillTextMultilineAligned(
-        font(),
-        text().slice(),
-        HorizontalAlignment::Left,
-        VerticalAlignment::Center,
-        inner_rect,
-        0,
-        dc.textForeground(style),
-        m_tab_width,
-        m_line_spacing,
-        isHardFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
-        dc.textSelected(style)
-    );
+    if (m_buffer.size() && m_buffer[0].size()) {
+        // TODO start drawing text based on scroll position and not from the beginning
+        Rect region = inner_rect;
+        for (const String &line : m_buffer) {
+            dc.fillTextAligned(
+                font(),
+                line.slice(),
+                HorizontalAlignment::Left,
+                VerticalAlignment::Top,
+                region,
+                0,
+                dc.textForeground(style),
+                m_tab_width,
+                isHardFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
+                dc.textSelected(style)
+            );
+            region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
+            region.y += m_line_spacing;
+            if (region.y > rect.y + rect.h) { break; }
+        }
+    } else {
+        // TODO start drawing text based on scroll position and not from the beginning
+        Rect region = inner_rect;
+        for (const String &line : m_placeholder_buffer) {
+            dc.fillTextAligned(
+                font(),
+                line.slice(),
+                HorizontalAlignment::Left,
+                VerticalAlignment::Top,
+                region,
+                0,
+                dc.textDisabled(style),
+                m_tab_width
+            );
+            region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
+            region.y += m_line_spacing;
+            if (region.y > rect.y + rect.h) { break; }
+        }
+    }
 
     drawScrollBars(dc, rect, m_virtual_size);
 
@@ -323,6 +349,7 @@ TextEdit* TextEdit::setText(String text) {
             }
             index++;
         }
+        m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
     }
 
     m_text_changed = true;
@@ -458,14 +485,31 @@ TextEdit* TextEdit::clear() {
 }
 
 TextEdit* TextEdit::setPlaceholderText(String text) {
-    m_placeholder_text = text;
-    update();
+    m_placeholder_buffer.clear();
+    u64 index = 0;
+    u64 last_line_index = 0;
+    if (m_mode == Mode::SingleLine) {
+        m_placeholder_buffer.push_back(String(text.data()));
+    } else {
+        for (char c : text) {
+            if (c == '\n') {
+                m_placeholder_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+                last_line_index = index;
+            }
+            index++;
+        }
+        m_placeholder_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+    }
 
     return this;
 }
 
 String TextEdit::placeholderText() {
-    return m_placeholder_text;
+    String s = "";
+    for (const String &line : m_placeholder_buffer) {
+        s += line.data();
+    }
+    return s;
 }
 
 // TextEdit* TextEdit::updateView() {
