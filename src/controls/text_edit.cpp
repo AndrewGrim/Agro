@@ -44,13 +44,24 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
+            // TODO figure out how we want to handle selecting newlines
+            // because atm i believe they affect things to a certain extent
+            // and in terms of buffer do we want to store them at the beginning of next line
+            // or at the end of previous one?
+            // and in singleline mode we need to skip over them as well
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
-            i32 x = m_selection.x_begin;
-            u64 index = m_selection.begin;
+            i32 x = inner_rect.x;
+            x -= (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.w - inner_rect.w);
+            i32 y = inner_rect.y;
+            y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
+            u64 index = 0;
+            i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
+            u64 line = (event.y - y) / (text_height + m_line_spacing);
 
-            // Selection is to the right of the origin point.
-            utf8::Iterator iter = utf8::Iterator(m_buffer[m_selection.line_begin].data(), index);
-            if (event.x >= x) {
+            if (line < m_buffer.size()) {
+                // TODO we could optimise it for single line by doing what we did previously
+                // and check if lines are the same
+                utf8::Iterator iter = utf8::Iterator(m_buffer[line].data());
                 while ((iter = iter.next())) {
                     i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
                     if (x + w > event.x) {
@@ -59,19 +70,10 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     x += w;
                     index += iter.length;
                 }
-            // Selection is to the left of the origin point.
             } else {
-                while ((iter = iter.prev())) {
-                    i32 w = dc.measureText(font(), Slice<const char>(iter.data, iter.length)).w;
-                    x -= w;
-                    index -= iter.length;
-                    if (x < event.x) {
-                        break;
-                    }
-                }
+                // TODO we select until the end, yeah the -- wont event help because we can receive motion events outside bounds
+                line--;
             }
-
-            // TODO account for y motion so we can select multiple lines
 
             // TODO tackle this last but essentially
             // we need to update the viewport to show us the contents
@@ -85,6 +87,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             //     m_current_view = m_selection.x_end / m_virtual_size.w;
             // }
             m_selection.x_end = x;
+            m_selection.line_end = line;
             m_selection.end = index;
             update();
     //     Application::get()->setMouseCursor(Cursor::IBeam);
@@ -199,9 +202,23 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         u64 line_index = 0;
         Renderer::Selection selection;
         for (const String &line : m_buffer) {
-            if (line_index >= m_selection.line_begin &&
-                line_index <= m_selection.line_end) { selection = Renderer::Selection(m_selection.begin, m_selection.end); }
-            else { selection = Renderer::Selection(); }
+            if (line_index >= m_selection.line_begin && line_index <= m_selection.line_end) {
+                if (line_index == m_selection.line_begin) {
+                    if (m_selection.line_begin == m_selection.line_end) {
+                        selection = Renderer::Selection(m_selection.begin, m_selection.end);
+                    } else {
+                        selection = Renderer::Selection(m_selection.begin, line.size());
+                    }
+                } else if (line_index == m_selection.line_end) {
+                    if (m_selection.line_begin == m_selection.line_end) {
+                        selection = Renderer::Selection(m_selection.begin, m_selection.end);
+                    } else {
+                        selection = Renderer::Selection(0, m_selection.end);
+                    }
+                } else {
+                    selection = Renderer::Selection(0, line.size());
+                }
+            } else { selection = Renderer::Selection(); }
             dc.fillTextAligned(
                 font(),
                 line.slice(),
