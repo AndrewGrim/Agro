@@ -1,10 +1,10 @@
 #ifndef TEXT_EDIT_HPP
     #define TEXT_EDIT_HPP
 
-    #include "widget.hpp"
+    #include "scrollable.hpp"
     #include "../core/string.hpp"
 
-    struct TextEdit : public Widget {
+    struct TextEdit : public Scrollable {
         struct Selection {
             u64 begin = 0;
             u64 end = 0;
@@ -59,9 +59,14 @@
             }
         };
 
+        enum class Mode {
+            SingleLine,
+            MultiLine
+        };
+
         EventListener<> onTextChanged = EventListener<>();
 
-        TextEdit(String text = "", String placeholder = "", i32 min_length = 50);
+        TextEdit(String text = "", String placeholder = "", Mode mode = Mode::SingleLine,Size min_size = Size(100, 100));
         ~TextEdit();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
@@ -69,41 +74,37 @@
         virtual void handleTextEvent(DrawingContext &dc, const char *text) override;
         TextEdit* setText(String text);
         String text();
-        i32 minLength();
-        TextEdit* setMinLength(i32 length);
-        TextEdit* moveCursorLeft();
-        TextEdit* moveCursorRight();
-        TextEdit* moveCursorBegin();
-        TextEdit* moveCursorEnd();
-        TextEdit* deleteAt(u64 index, bool skip = false);
+        // TextEdit* moveCursorLeft();
+        // TextEdit* moveCursorRight();
+        // TextEdit* moveCursorBegin();
+        // TextEdit* moveCursorEnd();
+        // TextEdit* deleteAt(u64 index, bool skip = false);
         TextEdit* clear();
         TextEdit* setPlaceholderText(String text);
         String placeholderText();
-        TextEdit* updateView();
-        TextEdit* jumpWordLeft();
-        TextEdit* jumpWordRight();
+        // TextEdit* updateView();
+        // TextEdit* jumpWordLeft();
+        // TextEdit* jumpWordRight();
         bool isShiftPressed();
-        void deleteSelection(bool skip = false);
-        void selectAll();
-        void swapSelection();
-        void insert(u64 index, const char *text, bool skip = false);
-        void setCursor(u64 index);
-        void undo();
-        void redo();
+        // void deleteSelection(bool skip = false);
+        // void selectAll();
+        // void swapSelection();
+        // void insert(u64 index, const char *text, bool skip = false);
+        // void setCursor(u64 index);
+        // void undo();
+        // void redo();
         i32 isFocusable() override;
+        // bool isLayout() override { return false; }
 
-        String m_text;
+        std::vector<String> m_buffer;
         String m_placeholder_text;
-        f64 m_min_length = 50;
-        f64 m_min_view = 0.0;
-        f64 m_max_view = 1.0;
-        f64 m_current_view = m_min_view;
         Size m_virtual_size = Size();
-        i32 m_text_height = 0;
         bool m_text_changed = false;
         i32 m_cursor_width = 1;
         i32 m_tab_width = 4;
+        i32 m_line_spacing = 5;
         Selection m_selection;
         History m_history;
+        Mode m_mode = Mode::SingleLine;
     };
 #endif
