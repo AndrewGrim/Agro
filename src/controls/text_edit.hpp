@@ -8,6 +8,8 @@
         struct Selection {
             u64 begin = 0;
             u64 end = 0;
+            u64 line_begin = 0;
+            u64 line_end = 0;
             i32 x_begin = 0;
             i32 x_end = 0;
             bool mouse_selection = false;

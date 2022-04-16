@@ -36,10 +36,11 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     index += iter.length;
                 }
             }
-            // TODO selection will need to account for lines as well
             m_selection.x_begin = x;
+            m_selection.line_begin = line;
             m_selection.begin = index;
             m_selection.x_end = m_selection.x_begin;
+            m_selection.line_end = m_selection.line_begin;
             m_selection.end = m_selection.begin;
         }
     });
