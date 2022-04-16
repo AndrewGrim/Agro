@@ -8,35 +8,41 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     setPlaceholderText(placeholder);
     m_selection.x_begin = 0;
     m_selection.x_end = m_selection.x_begin;
-    // onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
-    //     m_selection.mouse_selection = true;
-    //     if (!this->text().size()) {
-    //         m_selection.x_begin = 0;
-    //     } else {
-    //         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-    //         i32 x = 0;
-    //         u64 index = 0;
-    //         i32 offset_event = event.x - inner_rect.x;
-    //         u8 length = 0;
-    //         for (u64 i = 0; i < this->text().size(); i += length) {
-    //             length = utf8SequenceLength(this->text().data() + i);
-    //             i32 w = dc.measureText(font(), Slice<const char>(this->text().data() + i, length)).w;
-    //             if (x + w > offset_event) {
-    //                 if (x + (w / 2) < offset_event) {
-    //                     x += w;
-    //                     index++;
-    //                 }
-    //                 break;
-    //             }
-    //             x += w;
-    //             index++;
-    //         }
-    //         m_selection.x_begin = x;
-    //         m_selection.begin = index;
-    //         m_selection.x_end = m_selection.x_begin;
-    //         m_selection.end = m_selection.begin;
-    //     }
-    // });
+    onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+        m_selection.mouse_selection = true;
+        if (!(m_buffer.size() && m_buffer[0].size())) {
+            m_selection.x_begin = 0;
+        } else {
+            DrawingContext &dc = *Application::get()->currentWindow()->dc;
+            u64 index = 0;
+            i32 x = inner_rect.x;
+            x -= (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.w - inner_rect.w);
+            i32 y = inner_rect.y;
+            y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
+            i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
+            u64 line = (event.y - y) / (text_height + m_line_spacing);
+            if (line < m_buffer.size()) {
+                utf8::Iterator iter = m_buffer[line].utf8Begin();
+                while ((iter = iter.next())) {
+                    i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
+                    if (x + w > event.x) {
+                        if (x + (w / 2) < event.x) {
+                            x += w;
+                            index += iter.length;
+                        }
+                        break;
+                    }
+                    x += w;
+                    index += iter.length;
+                }
+            }
+            // TODO selection will need to account for lines as well
+            m_selection.x_begin = x;
+            m_selection.begin = index;
+            m_selection.x_end = m_selection.x_begin;
+            m_selection.end = m_selection.begin;
+        }
+    });
     // onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
     //     if (isPressed()) {
     //         // No x mouse movement.
