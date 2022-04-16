@@ -7,6 +7,7 @@
 #include "../src/controls/tooltip.hpp"
 #include "../src/controls/button.hpp"
 #include "../src/controls/line_edit.hpp"
+#include "../src/controls/text_edit.hpp"
 #include "../src/controls/spin_box.hpp"
 #include "../src/controls/drop_down.hpp"
 #include "../src/controls/splitter.hpp"
@@ -33,8 +34,31 @@ u32 timerCallback(u32 interval, void *data) {
     return 50;
 }
 
+String loadFileToString(const char *path) {
+    FILE *file = fopen(path, "rb");
+    char byte;
+    u64 index = 0;
+    u64 size = 0;
+    while (fgetc(file) != EOF) {
+        size++;
+    }
+    fseek(file, 0, 0);
+    String s = String(size);
+    while ((byte = fgetc(file)) != EOF) {
+        s.data()[index] = (u8)byte;
+        index++;
+    }
+    s.data()[index] = '\0';
+    return s;
+}
+
 Widget* basic1(Application &app) {
     Box *box = new Box(Align::Vertical);
+        // TODO test this with "some text\ntest" because i think that we need to handle skipping newlines when in singleline mode
+        TextEdit *text_edit_single = new TextEdit("some text\ntest", "Single line", TextEdit::Mode::SingleLine, Size(100, 100));
+        box->append(text_edit_single);
+        TextEdit *text_edit_multi = new TextEdit(loadFileToString("examples/widget_gallery.cpp"), "Multi\nline\nplaceholder\ntext", TextEdit::Mode::MultiLine, Size(200, 200));
+        box->append(text_edit_multi, Fill::Both, 5);
         Box *labels_and_buttons = new Box(Align::Horizontal);
             GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
                 Label *lr = new Label("Right");
@@ -320,22 +344,23 @@ int main(int argc, char **argv) {
             // notebook->setCurrentTab(1);
         app->mainWindow()->append(notebook, Fill::Both);
         // app->addTimer(100, timerCallback, app);
-        app->addTimer(
-            100,
-            [=](u32 interval) -> u32 {
-                ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
-                f64 value = bar->m_value;
-                if (value < 1.0) {
-                    bar->m_value += 0.01;
-                } else {
-                    bar->m_value = 0.0;
-                }
-                app->mainWindow()->update();
-                app->mainWindow()->pulse();
+        // app->addTimer(
+        //     100,
+        //     [=](u32 interval) -> u32 {
+        //         // TODO change back from 5 to 3 after removing the test lineeditv2
+        //         ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[5]->children[0]);
+        //         f64 value = bar->m_value;
+        //         if (value < 1.0) {
+        //             bar->m_value += 0.01;
+        //         } else {
+        //             bar->m_value = 0.0;
+        //         }
+        //         app->mainWindow()->update();
+        //         app->mainWindow()->pulse();
 
-                return 50;
-            }
-        );
+        //         return 50;
+        //     }
+        // );
         // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
     app->run();
 
