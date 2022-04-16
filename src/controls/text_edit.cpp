@@ -90,12 +90,18 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             m_selection.line_end = line;
             m_selection.end = index;
             update();
-    //     Application::get()->setMouseCursor(Cursor::IBeam);
-    // });
-    // onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
-    //     Application::get()->setMouseCursor(Cursor::Default);
-    //     m_selection.mouse_selection = false;
-    // });
+        }
+    });
+    onMouseUp.addEventListener([&](Widget *widget, MouseEvent event) {
+        m_selection.mouse_selection = false;
+    });
+    onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
+        Application::get()->setMouseCursor(Cursor::IBeam);
+    });
+    onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
+        Application::get()->setMouseCursor(Cursor::Default);
+        m_selection.mouse_selection = false; // TODO maybe dont do that
+    });
     // auto left = [&]{
     //     moveCursorLeft();
     // };
