@@ -313,12 +313,16 @@ TextEdit* TextEdit::setText(String text) {
     m_buffer.clear();
     u64 index = 0;
     u64 last_line_index = 0;
-    for (char c : text) {
-        if (c == '\n') {
-            m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
-            last_line_index = index;
+    if (m_mode == Mode::SingleLine) {
+        m_buffer.push_back(String(text.data()));
+    } else {
+        for (char c : text) {
+            if (c == '\n') {
+                m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+                last_line_index = index;
+            }
+            index++;
         }
-        index++;
     }
 
     m_text_changed = true;
