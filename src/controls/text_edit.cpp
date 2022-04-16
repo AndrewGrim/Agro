@@ -188,12 +188,12 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Rect focus_rect = rect;
     dc.fillRect(rect, dc.textBackground(style));
     dc.padding(rect, style);
-    inner_rect = rect;
 
     // dc.setClip(Rect(rect.x, rect.y, rect.w + 1, rect.h).clipTo(previous_clip));
     dc.setClip(rect.clipTo(previous_clip));
     Point pos;
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
+    inner_rect = rect;
 
     if (m_buffer.size() && m_buffer[0].size()) {
         // TODO start drawing text based on scroll position and not from the beginning
