@@ -6,13 +6,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     m_mode = mode;
     setText(text);
     setPlaceholderText(placeholder);
-    m_selection.x_begin = 0;
-    m_selection.x_end = m_selection.x_begin;
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         m_selection.mouse_selection = true;
-        if (!(m_buffer.size() && m_buffer[0].size())) {
-            m_selection.x_begin = 0;
-        } else {
+        if (m_buffer.size() && m_buffer[0].size()) {
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             u64 index = 0;
             i32 x = inner_rect.x;
