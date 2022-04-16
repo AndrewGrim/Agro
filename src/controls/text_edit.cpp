@@ -189,7 +189,6 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, dc.textBackground(style));
     dc.padding(rect, style);
 
-    // dc.setClip(Rect(rect.x, rect.y, rect.w + 1, rect.h).clipTo(previous_clip));
     dc.setClip(rect.clipTo(previous_clip));
     Point pos;
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
