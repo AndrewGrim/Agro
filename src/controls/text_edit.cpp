@@ -46,57 +46,51 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             m_selection.end = m_selection.begin;
         }
     });
-    // onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-    //     if (isPressed()) {
-    //         // No x mouse movement.
-    //         if (event.xrel == 0) {
-    //             return;
-    //         }
+    onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+        if (isPressed()) {
+            DrawingContext &dc = *Application::get()->currentWindow()->dc;
+            i32 x = m_selection.x_begin;
+            u64 index = m_selection.begin;
 
-    //         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-    //         i32 x = m_selection.x_begin;
-    //         u64 index = m_selection.begin;
-    //         i32 offset_event = event.x - inner_rect.x;
+            // Selection is to the right of the origin point.
+            utf8::Iterator iter = utf8::Iterator(m_buffer[m_selection.line_begin].data(), index);
+            if (event.x >= x) {
+                while ((iter = iter.next())) {
+                    i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
+                    if (x + w > event.x) {
+                        break;
+                    }
+                    x += w;
+                    index += iter.length;
+                }
+            // Selection is to the left of the origin point.
+            } else {
+                while ((iter = iter.prev())) {
+                    i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
+                    x -= w;
+                    index -= iter.length;
+                    if (x < event.x) {
+                        break;
+                    }
+                }
+            }
 
-    //         // Selection is to the right of the origin point.
-    //         if (offset_event >= x) {
-    //             while (index < this->text().size()) {
-    //                 u8 c = this->text().data()[index];
-    //                 i32 w = dc.measureText(font(), c).w;
-    //                 if (x + w > offset_event) {
-    //                     break;
-    //                 }
-    //                 x += w;
-    //                 index++;
-    //             }
-    //         // Selection is to the left of the origin point.
-    //         } else {
-    //             while (index) {
-    //                 u8 c = this->text().data()[--index];
-    //                 i32 w = dc.measureText(font(), c).w;
-    //                 x -= w;
-    //                 if (x < offset_event) {
-    //                     break;
-    //                 }
-    //             }
-    //         }
+            // TODO account for y motion so we can select multiple lines
 
-    //         if (!index) {
-    //             m_current_view = m_min_view;
-    //         } else if (index == this->text().size()) {
-    //             m_current_view = m_max_view;
-    //         } else {
-    //             m_current_view = m_selection.x_end / m_virtual_size.w;
-    //         }
-    //         m_selection.x_end = x;
-    //         m_selection.end = index;
-    //         update();
-    //     }
-    // });
-    // onMouseUp.addEventListener([&](Widget *widget, MouseEvent event) {
-    //     m_selection.mouse_selection = false;
-    // });
-    // onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
+            // TODO tackle this last but essentially
+            // we need to update the viewport to show us the contents
+            // after the mouse movement, so maybe move slightly to the right lets say
+            // or event fully scroll to the end or something
+            // if (!index) {
+            //     m_current_view = m_min_view;
+            // } else if (index == this->text().size()) {
+            //     m_current_view = m_max_view;
+            // } else {
+            //     m_current_view = m_selection.x_end / m_virtual_size.w;
+            // }
+            m_selection.x_end = x;
+            m_selection.end = index;
+            update();
     //     Application::get()->setMouseCursor(Cursor::IBeam);
     // });
     // onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
