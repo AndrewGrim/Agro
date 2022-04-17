@@ -238,7 +238,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 dc.textForeground(style),
                 m_tab_width,
                 // TODO the text selection im sure is gonna be fucked and will need changing
-                isHardFocused() ? selection : Renderer::Selection(),
+                state & STATE_HARD_FOCUSED ? selection : Renderer::Selection(),
                 // dc.textSelected(style)
                 Color(1)
             );
@@ -274,7 +274,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     //     inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
     // }
     // } else {
-    //     if (m_selection.mouse_selection || (isHardFocused() && m_selection.hasSelection())) {
+    //     if (m_selection.mouse_selection || (state & STATE_HARD_FOCUSED && m_selection.hasSelection())) {
     //         i32 text_height = (font() ? font()->maxHeight() : dc.default_font->maxHeight()) + TOP_PADDING(this) + BOTTOM_PADDING(this);
     //         i32 start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
     //         i32 end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
@@ -297,13 +297,13 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     //         0,
     //         dc.textForeground(style),
     //         m_tab_width,
-    //         isHardFocused() ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
+    //         state & STATE_HARD_FOCUSED ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
     //         dc.textSelected(style)
     //     );
     // }
 
     // Draw the text insertion cursor.
-    if (isHardFocused()) {
+    if (state & STATE_HARD_FOCUSED) {
         i32 y = inner_rect.y;
         y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
         i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
