@@ -59,69 +59,69 @@ Widget* basic1(Application &app) {
         box->append(text_edit_single);
         TextEdit *text_edit_multi = new TextEdit(loadFileToString("examples/widget_gallery.cpp"), "Multi\nline\nplaceholder\ntext", TextEdit::Mode::MultiLine, Size(200, 200));
         box->append(text_edit_multi, Fill::Both, 5);
-        Box *labels_and_buttons = new Box(Align::Horizontal);
-            GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
-                Label *lr = new Label("Right");
-                    lr->setHorizontalAlignment(HorizontalAlignment::Right);
-                Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
-                    lc->setHorizontalAlignment(HorizontalAlignment::Center);
-                    GroupBox *l_menu = new GroupBox(Align::Vertical, "");
-                        l_menu->append(new LineEdit("", "Context Menu", 100), Fill::Horizontal);
-                    lc->context_menu = l_menu;
-                labels->append(new Label("Left"), Fill::Both);
-                labels->append(lr, Fill::Both);
-                labels->append(lc, Fill::Both);
-            labels_and_buttons->append(labels, Fill::Both);
+        // Box *labels_and_buttons = new Box(Align::Horizontal);
+        //     GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
+        //         Label *lr = new Label("Right");
+        //             lr->setHorizontalAlignment(HorizontalAlignment::Right);
+        //         Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
+        //             lc->setHorizontalAlignment(HorizontalAlignment::Center);
+        //             GroupBox *l_menu = new GroupBox(Align::Vertical, "");
+        //                 l_menu->append(new LineEdit("", "Context Menu", 100), Fill::Horizontal);
+        //             lc->context_menu = l_menu;
+        //         labels->append(new Label("Left"), Fill::Both);
+        //         labels->append(lr, Fill::Both);
+        //         labels->append(lc, Fill::Both);
+        //     labels_and_buttons->append(labels, Fill::Both);
 
-            GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
-                buttons->append(new Button("Button"));
-                buttons->append(new Button(new Image(notes_png, notes_png_length)));
-                Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
-                    image_and_text->setText("Button");
-                    image_and_text->tooltip = new Tooltip("Tooltip");
-                    GroupBox *b_menu = new GroupBox(Align::Vertical, "");
-                        Button *mb = new Button("Menu Button");
-                            mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
-                                println("context menu event");
-                            });
-                            mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
-                        b_menu->append(mb, Fill::Horizontal);
-                        b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
-                    image_and_text->context_menu = b_menu;
-                buttons->append(image_and_text, Fill::Both);
-            labels_and_buttons->append(buttons, Fill::Both);
-        box->append(labels_and_buttons, Fill::Both);
+        //     GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
+        //         buttons->append(new Button("Button"));
+        //         buttons->append(new Button(new Image(notes_png, notes_png_length)));
+        //         Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
+        //             image_and_text->setText("Button");
+        //             image_and_text->tooltip = new Tooltip("Tooltip");
+        //             GroupBox *b_menu = new GroupBox(Align::Vertical, "");
+        //                 Button *mb = new Button("Menu Button");
+        //                     mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
+        //                         println("context menu event");
+        //                     });
+        //                     mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
+        //                 b_menu->append(mb, Fill::Horizontal);
+        //                 b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
+        //             image_and_text->context_menu = b_menu;
+        //         buttons->append(image_and_text, Fill::Both);
+        //     labels_and_buttons->append(buttons, Fill::Both);
+        // box->append(labels_and_buttons, Fill::Both);
 
-        Box *check_and_radio = new Box(Align::Horizontal);
-            GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
-                checks->append(new CheckButton("Unchecked", false));
-                checks->append(new CheckButton("Checked", true));
-                checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
-            check_and_radio->append(checks, Fill::Both);
+        // Box *check_and_radio = new Box(Align::Horizontal);
+        //     GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
+        //         checks->append(new CheckButton("Unchecked", false));
+        //         checks->append(new CheckButton("Checked", true));
+        //         checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
+        //     check_and_radio->append(checks, Fill::Both);
 
-            GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
-                std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
-                radios->append(new RadioButton(radio_group, "Radio 1"));
-                radio_group->buttons[0]->m_is_checked = true;
-                radios->append(new RadioButton(radio_group, "Radio 2"));
-                radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
-            check_and_radio->append(radios, Fill::Both);
-        box->append(check_and_radio, Fill::Both);
+        //     GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
+        //         std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
+        //         radios->append(new RadioButton(radio_group, "Radio 1"));
+        //         radio_group->buttons[0]->m_is_checked = true;
+        //         radios->append(new RadioButton(radio_group, "Radio 2"));
+        //         radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
+        //     check_and_radio->append(radios, Fill::Both);
+        // box->append(check_and_radio, Fill::Both);
 
-        GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
-            line_edits->append(new LineEdit("", "Placeholder text", 200));
-            line_edits->append(new LineEdit("Default text", "", 300));
-            line_edits->append(new LineEdit("", ""), Fill::Horizontal);
-        box->append(line_edits, Fill::Horizontal);
+        // GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
+        //     line_edits->append(new LineEdit("", "Placeholder text", 200));
+        //     line_edits->append(new LineEdit("Default text", "", 300));
+        //     line_edits->append(new LineEdit("", ""), Fill::Horizontal);
+        // box->append(line_edits, Fill::Horizontal);
 
-        GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
-            // TODO look at off and use a thread to continously update one the progressbars
-            progress->append(new ProgressBar(200));
-            progress->append(new ProgressBar(300));
-            ((ProgressBar*)progress->children[1])->m_value = 0.50;
-            progress->append(new ProgressBar(), Fill::Horizontal);
-            ((ProgressBar*)progress->children[2])->m_value = 1.0;
-        box->append(progress, Fill::Horizontal);
+        // GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
+        //     // TODO look at off and use a thread to continously update one the progressbars
+        //     progress->append(new ProgressBar(200));
+        //     progress->append(new ProgressBar(300));
+        //     ((ProgressBar*)progress->children[1])->m_value = 0.50;
+        //     progress->append(new ProgressBar(), Fill::Horizontal);
+        //     ((ProgressBar*)progress->children[2])->m_value = 1.0;
+        // box->append(progress, Fill::Horizontal);
 
     return box;
 }
