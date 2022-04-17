@@ -608,16 +608,21 @@ bool TextEdit::isShiftPressed() {
 //     update();
 // }
 
-// void TextEdit::swapSelection() {
-//     if (m_selection.begin > m_selection.end) {
-//         i32 temp_x = m_selection.x_end;
-//         u64 temp = m_selection.end;
-//         m_selection.x_end = m_selection.x_begin;
-//         m_selection.end = m_selection.begin;
-//         m_selection.x_begin = temp_x;
-//         m_selection.begin = temp;
-//     }
-// }
+bool TextEdit::swapSelection() {
+    if (m_selection.line_begin > m_selection.line_end) {
+        i32 temp_x = m_selection.x_end;
+        u64 temp_line = m_selection.line_end;
+        u64 temp = m_selection.end;
+        m_selection.x_end = m_selection.x_begin;
+        m_selection.line_end = m_selection.line_begin;
+        m_selection.end = m_selection.begin;
+        m_selection.x_begin = temp_x;
+        m_selection.line_begin = temp_line;
+        m_selection.begin = temp;
+        return true;
+    }
+    return false;
+}
 
 // void TextEdit::insert(u64 index, const char *text, bool skip) {
 //     DrawingContext &dc = *Application::get()->currentWindow()->dc;

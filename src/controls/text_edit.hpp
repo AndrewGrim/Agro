@@ -90,7 +90,7 @@
         bool isShiftPressed();
         // void deleteSelection(bool skip = false);
         // void selectAll();
-        // void swapSelection();
+        bool swapSelection();
         // void insert(u64 index, const char *text, bool skip = false);
         // void setCursor(u64 index);
         // void undo();
