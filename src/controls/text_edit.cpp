@@ -204,6 +204,8 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     printf("selection: %lu, %lu\n", m_selection.begin, m_selection.end);
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     if (m_buffer.size() && m_buffer[0].size()) {
+        Selection before_swap = m_selection;
+        bool did_swap = swapSelection();
         // TODO start drawing text based on scroll position and not from the beginning
         u64 line_index = 0;
         Renderer::Selection selection;
@@ -244,6 +246,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             if (text_region.y > rect.y + rect.h) { break; }
             line_index++;
         }
+        if (did_swap) { m_selection = before_swap; }
     } else {
         // TODO start drawing text based on scroll position and not from the beginning
         for (const String &line : m_placeholder_buffer) {
