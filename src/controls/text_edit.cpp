@@ -202,6 +202,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     inner_rect = rect;
 
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
+    // Draw normal text;
     if (m_buffer.size() && m_buffer[0].size()) {
         Selection before_swap = m_selection;
         bool did_swap = swapSelection();
@@ -226,6 +227,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                     selection = Renderer::Selection(0, line.size());
                 }
             } else { selection = Renderer::Selection(); }
+            // TODO before the text draw the selection rectangle over the line area
             dc.fillTextAligned(
                 font(),
                 line.slice(),
@@ -246,6 +248,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             line_index++;
         }
         if (did_swap) { m_selection = before_swap; }
+    // Draw placeholder text.
     } else {
         // TODO start drawing text based on scroll position and not from the beginning
         for (const String &line : m_placeholder_buffer) {
@@ -270,18 +273,6 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     // if (m_virtual_size.w > inner_rect.w) {
     //     inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
     // }
-    // // Draw placeholder text.
-    // if (!text().size()) {
-    //     dc.fillTextAligned(
-    //         font(),
-    //         placeholderText().slice(),
-    //         HorizontalAlignment::Left,
-    //         VerticalAlignment::Center,
-    //         inner_rect,
-    //         0,
-    //         dc.textDisabled(style)
-    //     );
-    // // Draw normal text;
     // } else {
     //     if (m_selection.mouse_selection || (isHardFocused() && m_selection.hasSelection())) {
     //         i32 text_height = (font() ? font()->maxHeight() : dc.default_font->maxHeight()) + TOP_PADDING(this) + BOTTOM_PADDING(this);
