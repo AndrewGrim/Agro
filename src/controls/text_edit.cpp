@@ -302,20 +302,25 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     //     );
     // }
 
-    // // Draw the text insertion cursor.
-    // if (isHardFocused()) {
-    //     i32 text_height = (font() ? font()->maxHeight() : dc.default_font->maxHeight()) + TOP_PADDING(this) + BOTTOM_PADDING(this);
-    //     dc.fillRect(
-    //         Rect(
-    //             inner_rect.x + m_selection.x_end,
-    //             inner_rect.y + (inner_rect.h / 2) - (text_height / 2),
-    //             m_cursor_width,
-    //             text_height
-    //         ),
-    //         dc.textForeground(style) // TODO should be a separate color setting
-    //     );
-    // }
-    // dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
+    // Draw the text insertion cursor.
+    if (isHardFocused()) {
+        i32 y = inner_rect.y;
+        y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
+        i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
+        dc.fillRect(
+            Rect(
+                m_selection.x_end,
+                y + ((text_height + m_line_spacing) * m_selection.line_end),
+                // m_cursor_width,
+                5,
+                text_height
+            ),
+            // dc.textForeground(style) // TODO should be a separate color setting
+            Color(1, 0, 1)
+        );
+    }
+
+    dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style, state);
     dc.setClip(previous_clip);
 }
