@@ -106,7 +106,7 @@
         std::vector<String> m_placeholder_buffer;
         Size m_virtual_size = Size();
         bool m_text_changed = false;
-        i32 m_cursor_width = 1;
+        i32 m_cursor_width = 2;
         i32 m_tab_width = 4;
         i32 m_line_spacing = 5;
         Selection m_selection;
