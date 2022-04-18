@@ -102,16 +102,16 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         Application::get()->setMouseCursor(Cursor::Default);
         m_selection.mouse_selection = false; // TODO maybe dont do that
     });
-    // auto left = [&]{
-    //     moveCursorLeft();
-    // };
-    // bind(SDLK_LEFT, Mod::None, left);
-    // bind(SDLK_LEFT, Mod::Shift, left);
-    // auto right = [&]{
-    //     moveCursorRight();
-    // };
-    // bind(SDLK_RIGHT, Mod::None, right);
-    // bind(SDLK_RIGHT, Mod::Shift, right);
+    auto left = [&]{
+        moveCursorLeft();
+    };
+    bind(SDLK_LEFT, Mod::None, left);
+    bind(SDLK_LEFT, Mod::Shift, left);
+    auto right = [&]{
+        moveCursorRight();
+    };
+    bind(SDLK_RIGHT, Mod::None, right);
+    bind(SDLK_RIGHT, Mod::Shift, right);
     // auto home = [&]{
     //     moveCursorBegin();
     // };
@@ -386,72 +386,132 @@ void TextEdit::handleTextEvent(DrawingContext &dc, const char *text) {
     // insert(m_selection.end, text);
 }
 
-// TextEdit* TextEdit::moveCursorLeft() {
-//     if (m_selection.end == 0) {
-//        if (m_selection.hasSelection() && !isShiftPressed()) {
-//             swapSelection();
-//             m_selection.x_end = m_selection.x_begin;
-//             m_selection.end = m_selection.begin;
-//         }
-//     } else if (m_selection.end) {
-//         if (m_selection.hasSelection() && !isShiftPressed()) {
-//             swapSelection();
-//             m_selection.x_end = m_selection.x_begin;
-//             m_selection.end = m_selection.begin;
-//             goto END;
-//         }
-//         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-//         m_selection.end--;
-//         i32 char_size = dc.measureText(font(), text().data()[m_selection.end]).w;
-//         m_selection.x_end -= char_size;
-//         if (!isShiftPressed()) {
-//             m_selection.x_begin = m_selection.x_end;
-//             m_selection.begin = m_selection.end;
-//         }
-//     }
-//     END:;
-//     if (!m_selection.end) {
-//         m_current_view = m_min_view;
-//     } else {
-//         m_current_view = m_selection.x_end / m_virtual_size.w;
-//     }
-//     update();
+void TextEdit::_noSelection() {
+    m_selection.x_begin = m_selection.x_end;
+    m_selection.line_begin = m_selection.line_end;
+    m_selection.begin = m_selection.end;
+}
 
-//     return this;
-// }
+void TextEdit::_moveLeft(DrawingContext &dc) {
+    // beginning of the line
+    if (m_selection.end == 0) {
+        // move to line above if one exists
+        if (m_selection.line_end) {
+            m_selection.line_end -= 1;
+            m_selection.end = m_buffer[m_selection.line_end].size();
+            m_selection.x_end = inner_rect.x + m_buffer_length[m_selection.line_end];
+        } // otherwise do nothing, end of text
+    // decrement by one
+    } else {
+        utf8::Iterator iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end).prev();
+        i32 w = dc.measureText(font(), Slice<const char>(iter.data, iter.length)).w;
+        m_selection.end -= iter.length;
+        m_selection.x_end -= w;
+    }
+}
 
-// TextEdit* TextEdit::moveCursorRight() {
-//     if (m_selection.end == text().size()) {
-//        if (m_selection.hasSelection() && !isShiftPressed()) {
-//             m_selection.x_begin = m_selection.x_end;
-//             m_selection.begin = m_selection.end;
-//         }
-//     } else if (m_selection.end < text().size()) {
-//         if (m_selection.hasSelection() && !isShiftPressed()) {
-//             swapSelection();
-//             m_selection.x_begin = m_selection.x_end;
-//             m_selection.begin = m_selection.end;
-//             goto END;
-//         }
-//         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-//         i32 char_size = dc.measureText(font(), text().data()[m_selection.end]).w;
-//         m_selection.x_end += char_size;
-//         m_selection.end++;
-//         if (!isShiftPressed()) {
-//             m_selection.x_begin = m_selection.x_end;
-//             m_selection.begin = m_selection.end;
-//         }
-//     }
-//     END:;
-//     if (m_selection.end == text().size()) {
-//         m_current_view = m_max_view;
-//     } else {
-//         m_current_view = m_selection.x_end / m_virtual_size.w;
-//     }
-//     update();
+TextEdit* TextEdit::moveCursorLeft() {
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
+    if (isShiftPressed()) {
+        // extend selection by one
+        _moveLeft(dc);
+    } else {
+        if (m_selection.hasSelection()) {
+            // go to the edge of the selection
+            _noSelection();
+        } else {
+            // move cursor by one
+            _moveLeft(dc);
+            _noSelection();
+        }
+    }
 
-//     return this;
-// }
+    // TODO at some point update the view to account for the movement
+    // if (!m_selection.end) {
+    //     m_current_view = m_min_view;
+    // } else {
+    //     m_current_view = m_selection.x_end / m_virtual_size.w;
+    // }
+    update();
+
+    return this;
+}
+
+void TextEdit::_moveRight(DrawingContext &dc) {
+    // end of the line
+    if (m_selection.end == m_buffer[m_selection.line_end].size()) {
+        // move to line below if one exists
+        if (m_selection.line_end < m_buffer.size()) {
+            m_selection.line_end += 1;
+            m_selection.end = 0;
+            m_selection.x_end = inner_rect.x;
+        } // otherwise do nothing, end of text
+    // increment by one
+    } else {
+        utf8::Iterator iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end).next();
+        i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
+        m_selection.end += iter.length;
+        m_selection.x_end += w;
+    }
+}
+
+TextEdit* TextEdit::moveCursorRight() {
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
+    if (isShiftPressed()) {
+        // extend selection by one
+        _moveRight(dc);
+    } else {
+        if (m_selection.hasSelection()) {
+            // go to the edge of the selection
+            _noSelection();
+        } else {
+            // move cursor by one
+            _moveRight(dc);
+            _noSelection();
+        }
+    }
+
+    // TODO at some point update the view to account for the movement
+    // if (!m_selection.end) {
+    //     m_current_view = m_min_view;
+    // } else {
+    //     m_current_view = m_selection.x_end / m_virtual_size.w;
+    // }
+    update();
+
+    return this;
+
+    // if (m_selection.end == text().size()) {
+    //    if (m_selection.hasSelection() && !isShiftPressed()) {
+    //         m_selection.x_begin = m_selection.x_end;
+    //         m_selection.begin = m_selection.end;
+    //     }
+    // } else if (m_selection.end < text().size()) {
+    //     if (m_selection.hasSelection() && !isShiftPressed()) {
+    //         swapSelection();
+    //         m_selection.x_begin = m_selection.x_end;
+    //         m_selection.begin = m_selection.end;
+    //         goto END;
+    //     }
+    //     DrawingContext &dc = *Application::get()->currentWindow()->dc;
+    //     i32 char_size = dc.measureText(font(), text().data()[m_selection.end]).w;
+    //     m_selection.x_end += char_size;
+    //     m_selection.end++;
+    //     if (!isShiftPressed()) {
+    //         m_selection.x_begin = m_selection.x_end;
+    //         m_selection.begin = m_selection.end;
+    //     }
+    // }
+    // END:;
+    // if (m_selection.end == text().size()) {
+    //     m_current_view = m_max_view;
+    // } else {
+    //     m_current_view = m_selection.x_end / m_virtual_size.w;
+    // }
+    // update();
+
+    // return this;
+}
 
 // TextEdit* TextEdit::moveCursorBegin() {
 //     m_selection.x_end = 0;

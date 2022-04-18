@@ -15,7 +15,7 @@
             bool mouse_selection = false;
 
             bool hasSelection() {
-                return begin != end;
+                return (line_begin != line_end) || (begin != end);
             }
         };
 
@@ -76,8 +76,11 @@
         virtual void handleTextEvent(DrawingContext &dc, const char *text) override;
         TextEdit* setText(String text);
         String text();
-        // TextEdit* moveCursorLeft();
-        // TextEdit* moveCursorRight();
+        void _noSelection();
+        void _moveLeft(DrawingContext &dc);
+        TextEdit* moveCursorLeft();
+        void _moveRight(DrawingContext &dc);
+        TextEdit* moveCursorRight();
         // TextEdit* moveCursorBegin();
         // TextEdit* moveCursorEnd();
         // TextEdit* deleteAt(u64 index, bool skip = false);
