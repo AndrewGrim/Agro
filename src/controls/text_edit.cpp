@@ -480,37 +480,6 @@ TextEdit* TextEdit::moveCursorRight() {
     update();
 
     return this;
-
-    // if (m_selection.end == text().size()) {
-    //    if (m_selection.hasSelection() && !isShiftPressed()) {
-    //         m_selection.x_begin = m_selection.x_end;
-    //         m_selection.begin = m_selection.end;
-    //     }
-    // } else if (m_selection.end < text().size()) {
-    //     if (m_selection.hasSelection() && !isShiftPressed()) {
-    //         swapSelection();
-    //         m_selection.x_begin = m_selection.x_end;
-    //         m_selection.begin = m_selection.end;
-    //         goto END;
-    //     }
-    //     DrawingContext &dc = *Application::get()->currentWindow()->dc;
-    //     i32 char_size = dc.measureText(font(), text().data()[m_selection.end]).w;
-    //     m_selection.x_end += char_size;
-    //     m_selection.end++;
-    //     if (!isShiftPressed()) {
-    //         m_selection.x_begin = m_selection.x_end;
-    //         m_selection.begin = m_selection.end;
-    //     }
-    // }
-    // END:;
-    // if (m_selection.end == text().size()) {
-    //     m_current_view = m_max_view;
-    // } else {
-    //     m_current_view = m_selection.x_end / m_virtual_size.w;
-    // }
-    // update();
-
-    // return this;
 }
 
 // TextEdit* TextEdit::moveCursorBegin() {
