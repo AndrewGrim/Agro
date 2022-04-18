@@ -204,13 +204,14 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     // Draw normal text;
+    u64 line_index = -((pos.y - inner_rect.y) / (text_height + m_line_spacing));
+    text_region.y += (text_height + m_line_spacing) * line_index;
     if (m_buffer.size() && m_buffer[0].size()) {
         Selection before_swap = m_selection;
         bool did_swap = swapSelection();
-        // TODO start drawing text based on scroll position and not from the beginning
-        u64 line_index = 0;
         Renderer::Selection selection;
-        for (const String &line : m_buffer) {
+        for (; line_index < m_buffer.size(); line_index++) {
+            const String &line = m_buffer[line_index];
             // Determine the selection to pass in to the renderer and dimensions to use for selection background.
             i32 bg_start = 0;
             i32 bg_end = 0;
@@ -268,16 +269,14 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 state & STATE_HARD_FOCUSED ? selection : Renderer::Selection(),
                 dc.textSelected(style)
             );
-            text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            text_region.y += m_line_spacing;
+            text_region.y += text_height + m_line_spacing;
             if (text_region.y > rect.y + rect.h) { break; }
-            line_index++;
         }
         if (did_swap) { m_selection = before_swap; }
     // Draw placeholder text.
     } else {
-        // TODO start drawing text based on scroll position and not from the beginning
-        for (const String &line : m_placeholder_buffer) {
+        for (; line_index < m_placeholder_buffer.size(); line_index++) {
+            const String &line = m_placeholder_buffer[line_index];
             dc.fillTextAligned(
                 font(),
                 line.slice(),
@@ -288,8 +287,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 dc.textDisabled(style),
                 m_tab_width
             );
-            text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            text_region.y += m_line_spacing;
+            text_region.y += text_height + m_line_spacing;
             if (text_region.y > rect.y + rect.h) { break; }
         }
     }
