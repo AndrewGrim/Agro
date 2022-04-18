@@ -32,8 +32,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     index += iter.length;
                 }
             }
-            // TODO but actually what we want is for the selection to go straight to the end when clicking outside
-            if (line == m_buffer.size()) { line--; } // This accounts for clicking outside text on y axis.
+            if (line >= m_buffer.size()) { line = m_buffer.size() - 1; } // This accounts for clicking outside text on y axis.
             m_selection.x_begin = x;
             m_selection.line_begin = line;
             m_selection.begin = index;
@@ -56,9 +55,11 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
             u64 index = 0;
             i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            u64 line = (event.y - y) / (text_height + m_line_spacing);
+            i32 line = (event.y - y) / (text_height + m_line_spacing);
 
-            if (line < m_buffer.size()) {
+            if (line < 0) {
+                line = 0;
+            } else if (line < m_buffer.size()) {
                 // TODO we could optimise it for single line by doing what we did previously
                 // and check if lines are the same
                 utf8::Iterator iter = utf8::Iterator(m_buffer[line].data());
@@ -71,8 +72,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     index += iter.length;
                 }
             } else {
-                // TODO we select until the end, yeah the -- wont event help because we can receive motion events outside bounds
-                line--;
+                line = m_buffer.size() - 1;
             }
 
             // TODO tackle this last but essentially
@@ -243,9 +243,6 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             } else { selection = Renderer::Selection(); }
 
             // Draw selection background
-            // TODO a few bugs:
-            // selection is reversed (swapped perhaps) if mouse exits the window
-            // and begin is > end
             if (m_selection.mouse_selection || (state & STATE_HARD_FOCUSED && selection.begin != selection.end)) {
                 dc.fillRect(
                     Rect(
