@@ -55,9 +55,9 @@ String loadFileToString(const char *path) {
 Widget* basic1(Application &app) {
     Box *box = new Box(Align::Vertical);
         // TODO test this with "some text\ntest" because i think that we need to handle skipping newlines when in singleline mode
-        TextEdit *text_edit_single = new TextEdit("some text\ntest", "Single line", TextEdit::Mode::SingleLine, Size(100, 100));
-        box->append(text_edit_single);
-        TextEdit *text_edit_multi = new TextEdit(loadFileToString("examples/widget_gallery.cpp"), "Multi\nline\nplaceholder\ntext", TextEdit::Mode::MultiLine, Size(200, 200));
+        // TextEdit *text_edit_single = new TextEdit("some text\ntest", "Single line", TextEdit::Mode::SingleLine, Size(100, 100));
+        // box->append(text_edit_single);
+        TextEdit *text_edit_multi = new TextEdit(loadFileToString("examples/widget_gallery.cpp"), loadFileToString("examples/widget_gallery.cpp"), TextEdit::Mode::MultiLine, Size(200, 200));
         box->append(text_edit_multi, Fill::Both, 5);
         // Box *labels_and_buttons = new Box(Align::Horizontal);
         //     GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
