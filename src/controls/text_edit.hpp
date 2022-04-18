@@ -98,11 +98,8 @@
         i32 isFocusable() override;
         // bool isLayout() override { return false; }
 
-        // TODO we might want to have a line abstraction
-        // or at least have an equivalent array for buffer
-        // that contains line lengths
-        // so that we can accurately draw the text selection per line to its extents
         std::vector<String> m_buffer;
+        std::vector<u64> m_buffer_length;
         std::vector<String> m_placeholder_buffer;
         Size m_virtual_size = Size();
         bool m_text_changed = false;

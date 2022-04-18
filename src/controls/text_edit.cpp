@@ -201,6 +201,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     inner_rect = rect;
 
+    i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     // Draw normal text;
     if (m_buffer.size() && m_buffer[0].size()) {
@@ -210,24 +211,54 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         u64 line_index = 0;
         Renderer::Selection selection;
         for (const String &line : m_buffer) {
+            // Determine the selection to pass in to the renderer and dimensions to use for selection background.
+            i32 bg_start = 0;
+            i32 bg_end = 0;
             if (line_index >= m_selection.line_begin && line_index <= m_selection.line_end) {
                 if (line_index == m_selection.line_begin) {
                     if (m_selection.line_begin == m_selection.line_end) {
                         selection = Renderer::Selection(m_selection.begin, m_selection.end);
+                        bg_start = m_selection.x_begin;
+                        bg_end = m_selection.x_end;
                     } else {
                         selection = Renderer::Selection(m_selection.begin, line.size());
+                        bg_start = m_selection.x_begin;
+                        bg_end = inner_rect.x + m_buffer_length[line_index];
                     }
                 } else if (line_index == m_selection.line_end) {
                     if (m_selection.line_begin == m_selection.line_end) {
                         selection = Renderer::Selection(m_selection.begin, m_selection.end);
+                        bg_start = m_selection.x_begin;
+                        bg_end = m_selection.x_end;
                     } else {
                         selection = Renderer::Selection(0, m_selection.end);
+                        bg_start = inner_rect.x;
+                        bg_end = m_selection.x_end;
                     }
                 } else {
                     selection = Renderer::Selection(0, line.size());
+                    bg_start = inner_rect.x;
+                    bg_end = inner_rect.x + m_buffer_length[line_index];
                 }
             } else { selection = Renderer::Selection(); }
-            // TODO before the text draw the selection rectangle over the line area
+
+            // Draw selection background
+            // TODO a few bugs:
+            // selection is reversed (swapped perhaps) if mouse exits the window
+            // and begin is > end
+            if (m_selection.mouse_selection || (state & STATE_HARD_FOCUSED && selection.begin != selection.end)) {
+                dc.fillRect(
+                    Rect(
+                        bg_start,
+                        text_region.y - (m_line_spacing / 2),
+                        (bg_end - bg_start) + m_cursor_width,
+                        text_height + m_line_spacing
+                    ),
+                    dc.accentWidgetBackground(style)
+                );
+            }
+
+            // Draw the text buffer.
             dc.fillTextAligned(
                 font(),
                 line.slice(),
@@ -237,10 +268,8 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 0,
                 dc.textForeground(style),
                 m_tab_width,
-                // TODO the text selection im sure is gonna be fucked and will need changing
                 state & STATE_HARD_FOCUSED ? selection : Renderer::Selection(),
-                // dc.textSelected(style)
-                Color(1)
+                dc.textSelected(style)
             );
             text_region.y += font() ? font()->maxHeight() : dc.default_font->maxHeight();
             text_region.y += m_line_spacing;
@@ -270,53 +299,18 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     drawScrollBars(dc, rect, m_virtual_size);
 
-    // if (m_virtual_size.w > inner_rect.w) {
-    //     inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
-    // }
-    // } else {
-    //     if (m_selection.mouse_selection || (state & STATE_HARD_FOCUSED && m_selection.hasSelection())) {
-    //         i32 text_height = (font() ? font()->maxHeight() : dc.default_font->maxHeight()) + TOP_PADDING(this) + BOTTOM_PADDING(this);
-    //         i32 start = m_selection.x_begin < m_selection.x_end ? m_selection.x_begin : m_selection.x_end;
-    //         i32 end = m_selection.x_begin < m_selection.x_end ? m_selection.x_end : m_selection.x_begin;
-    //         dc.fillRect(
-    //             Rect(
-    //                 inner_rect.x + start,
-    //                 inner_rect.y + (inner_rect.h / 2) - (text_height / 2),
-    //                 (end - start) + m_cursor_width,
-    //                 text_height
-    //             ),
-    //             dc.accentWidgetBackground(style)
-    //         );
-    //     }
-    //     dc.fillTextAligned(
-    //         font(),
-    //         text().slice(),
-    //         HorizontalAlignment::Left,
-    //         VerticalAlignment::Center,
-    //         inner_rect,
-    //         0,
-    //         dc.textForeground(style),
-    //         m_tab_width,
-    //         state & STATE_HARD_FOCUSED ? Renderer::Selection(m_selection.begin, m_selection.end) : Renderer::Selection(),
-    //         dc.textSelected(style)
-    //     );
-    // }
-
     // Draw the text insertion cursor.
     if (state & STATE_HARD_FOCUSED) {
         i32 y = inner_rect.y;
         y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
-        i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
         dc.fillRect(
             Rect(
                 m_selection.x_end,
-                y + ((text_height + m_line_spacing) * m_selection.line_end),
-                // m_cursor_width,
-                5,
-                text_height
+                y + ((text_height + m_line_spacing) * m_selection.line_end) - (m_line_spacing / 2),
+                m_cursor_width,
+                text_height + m_line_spacing
             ),
-            // dc.textForeground(style) // TODO should be a separate color setting
-            Color(1, 0, 1)
+            dc.textForeground(style) // TODO should be a separate color setting
         );
     }
 
@@ -328,11 +322,14 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
 Size TextEdit::sizeHint(DrawingContext &dc) {
     if (m_text_changed) {
         m_virtual_size = Size();
+        u64 index = 0;
         for (const String &line : m_buffer) {
             Size size = dc.measureText(font(), line.slice(), m_tab_width);
+            m_buffer_length[index] = size.w;
             size.h += m_line_spacing;
             m_virtual_size.h += size.h;
             if (size.w > m_virtual_size.w) { m_virtual_size.w = size.w; }
+            index++;
         }
         if (m_buffer.size() == 1) { m_virtual_size.h -= m_line_spacing; }
     }
@@ -364,19 +361,23 @@ String TextEdit::text() {
 
 TextEdit* TextEdit::setText(String text) {
     m_buffer.clear();
+    m_buffer_length.clear();
     u64 index = 0;
     u64 last_line_index = 0;
     if (m_mode == Mode::SingleLine) {
         m_buffer.push_back(String(text.data()));
+        m_buffer_length.push_back(0);
     } else {
         for (char c : text) {
             if (c == '\n') {
                 m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+                m_buffer_length.push_back(0);
                 last_line_index = index;
             }
             index++;
         }
         m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+        m_buffer_length.push_back(0);
     }
 
     m_text_changed = true;
@@ -499,6 +500,7 @@ void TextEdit::handleTextEvent(DrawingContext &dc, const char *text) {
 
 TextEdit* TextEdit::clear() {
     m_buffer.clear();
+    m_buffer_length.clear();
     m_text_changed = true;
     m_selection.x_begin = inner_rect.x;
     m_selection.begin = 0;
