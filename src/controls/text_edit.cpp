@@ -193,11 +193,11 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Rect previous_clip = dc.clip();
     dc.drawBorder(rect, style, state);
+    dc.setClip(rect.clipTo(previous_clip));
     Rect focus_rect = rect;
     dc.fillRect(rect, dc.textBackground(style));
     dc.padding(rect, style);
 
-    dc.setClip(rect.clipTo(previous_clip));
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     inner_rect = rect;
 
