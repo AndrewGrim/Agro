@@ -303,7 +303,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         dc.fillRect(
             Rect(
                 m_selection.x_end,
-                y + ((text_height + m_line_spacing) * m_selection.line_end) - (m_line_spacing / 2),
+                y  - (m_line_spacing / 2) + ((text_height + m_line_spacing) * m_selection.line_end),
                 m_cursor_width,
                 text_height + m_line_spacing
             ),
