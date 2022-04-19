@@ -112,6 +112,16 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     };
     bind(SDLK_RIGHT, Mod::None, right);
     bind(SDLK_RIGHT, Mod::Shift, right);
+    auto up = [&]{
+        moveCursorUp();
+    };
+    bind(SDLK_UP, Mod::None, up);
+    bind(SDLK_UP, Mod::Shift, up);
+    auto down = [&]{
+        moveCursorDown();
+    };
+    bind(SDLK_DOWN, Mod::None, down);
+    bind(SDLK_DOWN, Mod::Shift, down);
     // auto home = [&]{
     //     moveCursorBegin();
     // };
@@ -480,6 +490,56 @@ TextEdit* TextEdit::moveCursorRight() {
     update();
 
     return this;
+}
+
+TextEdit* TextEdit::moveCursorUp() {
+    // TODO this is close to ready
+    // but we need to change left and right cursor movement and mousedown handler
+    // to set m_last_codepoint_index to whatever it happens to be for that line and index
+    // then we use that here to keep the position when going between the lines
+    // TODO we also need to handle selection
+    // so jump to edge if selection is active but shift isnt pressed
+    // and if shift isnt pressed then set begin selection vars to the same values as end vars
+
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
+
+    if (m_selection.line_end) {
+        u64 next_line = m_selection.line_end - 1;
+
+        if (!m_buffer_length[next_line]) {
+            m_selection.end = 0;
+            m_selection.x_end = inner_rect.x;
+            m_selection.line_end = next_line;
+            update();
+            return this;
+        }
+
+        utf8::Iterator current_line_iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end);
+        u64 current_codepoint_index = 0;
+        for (; (current_line_iter = current_line_iter.prev()); current_codepoint_index++);
+
+        utf8::Iterator next_line_iter = m_buffer[next_line].utf8Begin();
+        u64 next_codepoint_index = 0;
+        i32 next_x_end = inner_rect.x;
+        u64 next_end = 0;
+        while ((next_line_iter = next_line_iter.next())) {
+            next_codepoint_index++;
+            next_x_end += dc.measureText(font(), Slice<const char>(next_line_iter.data - next_line_iter.length, next_line_iter.length)).w;
+            next_end += next_line_iter.length;
+            if (next_codepoint_index == current_codepoint_index) { break; }
+        }
+
+        m_selection.x_end = next_x_end;
+        m_selection.line_end = next_line;
+        m_selection.end = next_end;
+    }
+
+    update();
+    return this;
+}
+
+TextEdit* TextEdit::moveCursorDown() {
+
 }
 
 // TextEdit* TextEdit::moveCursorBegin() {

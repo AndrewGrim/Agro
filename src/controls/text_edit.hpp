@@ -81,6 +81,8 @@
         TextEdit* moveCursorLeft();
         void _moveRight(DrawingContext &dc);
         TextEdit* moveCursorRight();
+        TextEdit* moveCursorUp();
+        TextEdit* moveCursorDown();
         // TextEdit* moveCursorBegin();
         // TextEdit* moveCursorEnd();
         // TextEdit* deleteAt(u64 index, bool skip = false);
@@ -112,5 +114,6 @@
         Selection m_selection;
         History m_history;
         Mode m_mode = Mode::SingleLine;
+        i32 m_last_codepoint_index = -1;
     };
 #endif
