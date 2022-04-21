@@ -493,7 +493,7 @@ TextEdit* TextEdit::moveCursorRight() {
     return this;
 }
 
-TextEdit* TextEdit::_moveUp(DrawingContext &dc) {
+void TextEdit::_moveUp(DrawingContext &dc) {
     if (m_selection.line_end) {
         u64 next_line = m_selection.line_end - 1;
 
@@ -502,7 +502,7 @@ TextEdit* TextEdit::_moveUp(DrawingContext &dc) {
             m_selection.x_end = inner_rect.x;
             m_selection.line_end = next_line;
             update();
-            return this;
+            return;
         }
 
         utf8::Iterator current_line_iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end);
@@ -564,7 +564,7 @@ TextEdit* TextEdit::moveCursorUp() {
     return this;
 }
 
-TextEdit* TextEdit::_moveDown(DrawingContext &dc) {
+void TextEdit::_moveDown(DrawingContext &dc) {
     if (m_selection.line_end < m_buffer.size() - 1) {
         u64 next_line = m_selection.line_end + 1;
 
@@ -573,7 +573,7 @@ TextEdit* TextEdit::_moveDown(DrawingContext &dc) {
             m_selection.x_end = inner_rect.x;
             m_selection.line_end = next_line;
             update();
-            return this;
+            return;
         }
 
         utf8::Iterator current_line_iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end);
