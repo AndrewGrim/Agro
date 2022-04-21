@@ -302,7 +302,6 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         }
     }
 
-    drawScrollBars(dc, rect, m_virtual_size);
 
     // Draw the text insertion cursor.
     if (state & STATE_HARD_FOCUSED) {
@@ -319,6 +318,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         );
     }
 
+    drawScrollBars(dc, rect, m_virtual_size);
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style, state);
     dc.setClip(previous_clip);
