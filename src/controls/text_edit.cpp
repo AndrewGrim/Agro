@@ -535,6 +535,8 @@ TextEdit* TextEdit::moveCursorUp() {
     // then we use that here to keep the position when going between the lines
     DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
+    // TODO when end line is opposite of cursor key
+    // instead of just going by one line move one line from begin selection
     if (isShiftPressed()) {
         // extend selection by one
         _moveUp(dc);
@@ -543,16 +545,63 @@ TextEdit* TextEdit::moveCursorUp() {
         _noSelection();
     }
 
+    // TODO update buffer view
     update();
     return this;
 }
 
 TextEdit* TextEdit::_moveDown(DrawingContext &dc) {
+    if (m_selection.line_end < m_buffer.size() - 1) {
+        u64 next_line = m_selection.line_end + 1;
 
+        if (!m_buffer_length[next_line]) {
+            m_selection.end = 0;
+            m_selection.x_end = inner_rect.x;
+            m_selection.line_end = next_line;
+            update();
+            return this;
+        }
+
+        utf8::Iterator current_line_iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end);
+        u64 current_codepoint_index = 0;
+        for (; (current_line_iter = current_line_iter.prev()); current_codepoint_index++);
+
+        utf8::Iterator next_line_iter = m_buffer[next_line].utf8Begin();
+        u64 next_codepoint_index = 0;
+        i32 next_x_end = inner_rect.x;
+        u64 next_end = 0;
+        while ((next_line_iter = next_line_iter.next())) {
+            next_codepoint_index++;
+            next_x_end += dc.measureText(font(), Slice<const char>(next_line_iter.data - next_line_iter.length, next_line_iter.length)).w;
+            next_end += next_line_iter.length;
+            if (next_codepoint_index == current_codepoint_index) { break; }
+        }
+
+        m_selection.x_end = next_x_end;
+        m_selection.line_end = next_line;
+        m_selection.end = next_end;
+    } else { // End of text, set cursor to the end
+        m_selection.x_end = inner_rect.x + m_buffer_length[m_selection.line_end];
+        m_selection.end = m_buffer[m_selection.line_end].size();
+    }
 }
 
 TextEdit* TextEdit::moveCursorDown() {
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
+    // TODO when end line is opposite of cursor key
+    // instead of just going by one line move one line from begin selection
+    if (isShiftPressed()) {
+        // extend selection by one
+        _moveDown(dc);
+    } else {
+        _moveDown(dc);
+        _noSelection();
+    }
+
+    // TODO update buffer view
+    update();
+    return this;
 }
 
 // TextEdit* TextEdit::moveCursorBegin() {
