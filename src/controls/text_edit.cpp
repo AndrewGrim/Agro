@@ -59,7 +59,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
 
             if (line < 0) {
                 line = 0;
-            } else if (line < m_buffer.size()) {
+            } else if ((u32)line < m_buffer.size()) {
                 // TODO we could optimise it for single line by doing what we did previously
                 // and check if lines are the same
                 utf8::Iterator iter = utf8::Iterator(m_buffer[line].data());
