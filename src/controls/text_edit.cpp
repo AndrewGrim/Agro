@@ -535,14 +535,27 @@ TextEdit* TextEdit::moveCursorUp() {
     // then we use that here to keep the position when going between the lines
     DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
-    // TODO when end line is opposite of cursor key
-    // instead of just going by one line move one line from begin selection
     if (isShiftPressed()) {
         // extend selection by one
         _moveUp(dc);
     } else {
-        _moveUp(dc);
-        _noSelection();
+        if (m_selection.hasSelection()) {
+            // go to whichever selection edge is closer to the top
+            if (
+                (m_selection.line_begin < m_selection.line_end) ||
+                ((m_selection.line_begin == m_selection.line_end) && (m_selection.begin < m_selection.end))
+            ) {
+                m_selection.line_end = m_selection.line_begin;
+                m_selection.x_end = m_selection.x_begin;
+                m_selection.end = m_selection.begin;
+            }
+            _moveUp(dc);
+            _noSelection();
+        } else {
+            // move cursor by one
+            _moveUp(dc);
+            _noSelection();
+        }
     }
 
     // TODO update buffer view
@@ -589,14 +602,27 @@ TextEdit* TextEdit::_moveDown(DrawingContext &dc) {
 TextEdit* TextEdit::moveCursorDown() {
     DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
-    // TODO when end line is opposite of cursor key
-    // instead of just going by one line move one line from begin selection
     if (isShiftPressed()) {
         // extend selection by one
         _moveDown(dc);
     } else {
-        _moveDown(dc);
-        _noSelection();
+        if (m_selection.hasSelection()) {
+            // go to whichever selection edge is closer to the bottom
+            if (
+                (m_selection.line_begin > m_selection.line_end) ||
+                ((m_selection.line_begin == m_selection.line_end) && (m_selection.begin > m_selection.end))
+            ) {
+                m_selection.line_end = m_selection.line_begin;
+                m_selection.x_end = m_selection.x_begin;
+                m_selection.end = m_selection.begin;
+            }
+            _moveDown(dc);
+            _noSelection();
+        } else {
+            // move cursor by one
+            _moveDown(dc);
+            _noSelection();
+        }
     }
 
     // TODO update buffer view
