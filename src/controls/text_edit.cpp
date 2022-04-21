@@ -216,6 +216,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     // Draw normal text;
     u64 line_index = -((pos.y - inner_rect.y) / (text_height + m_line_spacing));
     text_region.y += (text_height + m_line_spacing) * line_index;
+    i32 x_scroll_offset = (pos.x - inner_rect.x);
     if (m_buffer.size() && m_buffer[0].size()) {
         Selection before_swap = m_selection;
         bool did_swap = swapSelection();
@@ -257,7 +258,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             if (m_selection.mouse_selection || (state & STATE_HARD_FOCUSED && selection.begin != selection.end)) {
                 dc.fillRect(
                     Rect(
-                        bg_start,
+                        x_scroll_offset + bg_start,
                         text_region.y - (m_line_spacing / 2),
                         (bg_end - bg_start) + m_cursor_width,
                         text_height + m_line_spacing
@@ -309,7 +310,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
         dc.fillRect(
             Rect(
-                m_selection.x_end,
+                x_scroll_offset + m_selection.x_end,
                 y  - (m_line_spacing / 2) + ((text_height + m_line_spacing) * m_selection.line_end),
                 m_cursor_width,
                 text_height + m_line_spacing
