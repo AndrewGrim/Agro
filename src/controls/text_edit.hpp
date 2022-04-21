@@ -81,7 +81,9 @@
         TextEdit* moveCursorLeft();
         void _moveRight(DrawingContext &dc);
         TextEdit* moveCursorRight();
+        TextEdit* _moveUp(DrawingContext &dc);
         TextEdit* moveCursorUp();
+        TextEdit* _moveDown(DrawingContext &dc);
         TextEdit* moveCursorDown();
         // TextEdit* moveCursorBegin();
         // TextEdit* moveCursorEnd();

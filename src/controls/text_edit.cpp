@@ -492,17 +492,7 @@ TextEdit* TextEdit::moveCursorRight() {
     return this;
 }
 
-TextEdit* TextEdit::moveCursorUp() {
-    // TODO this is close to ready
-    // but we need to change left and right cursor movement and mousedown handler
-    // to set m_last_codepoint_index to whatever it happens to be for that line and index
-    // then we use that here to keep the position when going between the lines
-    // TODO we also need to handle selection
-    // so jump to edge if selection is active but shift isnt pressed
-    // and if shift isnt pressed then set begin selection vars to the same values as end vars
-
-    DrawingContext &dc = *Application::get()->currentWindow()->dc;
-
+TextEdit* TextEdit::_moveUp(DrawingContext &dc) {
     if (m_selection.line_end) {
         u64 next_line = m_selection.line_end - 1;
 
@@ -532,10 +522,33 @@ TextEdit* TextEdit::moveCursorUp() {
         m_selection.x_end = next_x_end;
         m_selection.line_end = next_line;
         m_selection.end = next_end;
+    } else { // End of text, set cursor to beginning
+        m_selection.x_end = inner_rect.x;
+        m_selection.end = 0;
+    }
+}
+
+TextEdit* TextEdit::moveCursorUp() {
+    // TODO this is close to ready
+    // but we need to change left and right cursor movement and mousedown handler
+    // to set m_last_codepoint_index to whatever it happens to be for that line and index
+    // then we use that here to keep the position when going between the lines
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
+
+    if (isShiftPressed()) {
+        // extend selection by one
+        _moveUp(dc);
+    } else {
+        _moveUp(dc);
+        _noSelection();
     }
 
     update();
     return this;
+}
+
+TextEdit* TextEdit::_moveDown(DrawingContext &dc) {
+
 }
 
 TextEdit* TextEdit::moveCursorDown() {
