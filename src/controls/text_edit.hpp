@@ -116,6 +116,6 @@
         Selection m_selection;
         History m_history;
         Mode m_mode = Mode::SingleLine;
-        i32 m_last_codepoint_index = -1;
+        u64 m_last_codepoint_index = 0;
     };
 #endif
