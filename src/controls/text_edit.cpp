@@ -17,6 +17,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
             i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
             u64 line = (event.y - y) / (text_height + m_line_spacing);
+            m_last_codepoint_index = 0;
             if (line < m_buffer.size()) {
                 utf8::Iterator iter = m_buffer[line].utf8Begin();
                 while ((iter = iter.next())) {
@@ -25,11 +26,13 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         if (x + (w / 2) < event.x) {
                             x += w;
                             index += iter.length;
+                            m_last_codepoint_index++;
                         }
                         break;
                     }
                     x += w;
                     index += iter.length;
+                    m_last_codepoint_index++;
                 }
             }
             if (line >= m_buffer.size()) { line = m_buffer.size() - 1; } // This accounts for clicking outside text on y axis.
@@ -411,6 +414,9 @@ void TextEdit::_moveLeft(DrawingContext &dc) {
             m_selection.line_end -= 1;
             m_selection.end = m_buffer[m_selection.line_end].size();
             m_selection.x_end = inner_rect.x + m_buffer_length[m_selection.line_end];
+            utf8::Iterator iter = m_buffer[m_selection.line_end].utf8Begin();
+            m_last_codepoint_index = 0;
+            for (; ((iter = iter.next())); m_last_codepoint_index++);
         } // otherwise do nothing, end of text
     // decrement by one
     } else {
@@ -418,6 +424,9 @@ void TextEdit::_moveLeft(DrawingContext &dc) {
         i32 w = dc.measureText(font(), Slice<const char>(iter.data, iter.length)).w;
         m_selection.end -= iter.length;
         m_selection.x_end -= w;
+        iter = m_buffer[m_selection.line_end].utf8Begin();
+        m_last_codepoint_index = 0;
+        for (u64 codepoint_byte_offset = 0; codepoint_byte_offset != m_selection.end ; iter = iter.next(), codepoint_byte_offset += iter.length, m_last_codepoint_index++);
     }
 }
 
@@ -456,6 +465,7 @@ void TextEdit::_moveRight(DrawingContext &dc) {
             m_selection.line_end += 1;
             m_selection.end = 0;
             m_selection.x_end = inner_rect.x;
+            m_last_codepoint_index = 0;
         } // otherwise do nothing, end of text
     // increment by one
     } else {
@@ -463,6 +473,9 @@ void TextEdit::_moveRight(DrawingContext &dc) {
         i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
         m_selection.end += iter.length;
         m_selection.x_end += w;
+        iter = m_buffer[m_selection.line_end].utf8Begin();
+        m_last_codepoint_index = 0;
+        for (u64 codepoint_byte_offset = 0; codepoint_byte_offset != m_selection.end ; iter = iter.next(), codepoint_byte_offset += iter.length, m_last_codepoint_index++);
     }
 }
 
@@ -505,19 +518,15 @@ void TextEdit::_moveUp(DrawingContext &dc) {
             return;
         }
 
-        utf8::Iterator current_line_iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end);
-        u64 current_codepoint_index = 0;
-        for (; (current_line_iter = current_line_iter.prev()); current_codepoint_index++);
-
         utf8::Iterator next_line_iter = m_buffer[next_line].utf8Begin();
         u64 next_codepoint_index = 0;
         i32 next_x_end = inner_rect.x;
         u64 next_end = 0;
         while ((next_line_iter = next_line_iter.next())) {
+            if (next_codepoint_index == m_last_codepoint_index) { break; }
             next_codepoint_index++;
             next_x_end += dc.measureText(font(), Slice<const char>(next_line_iter.data - next_line_iter.length, next_line_iter.length)).w;
             next_end += next_line_iter.length;
-            if (next_codepoint_index == current_codepoint_index) { break; }
         }
 
         m_selection.x_end = next_x_end;
@@ -530,10 +539,6 @@ void TextEdit::_moveUp(DrawingContext &dc) {
 }
 
 TextEdit* TextEdit::moveCursorUp() {
-    // TODO this is close to ready
-    // but we need to change left and right cursor movement and mousedown handler
-    // to set m_last_codepoint_index to whatever it happens to be for that line and index
-    // then we use that here to keep the position when going between the lines
     DrawingContext &dc = *Application::get()->currentWindow()->dc;
 
     if (isShiftPressed()) {
@@ -576,19 +581,15 @@ void TextEdit::_moveDown(DrawingContext &dc) {
             return;
         }
 
-        utf8::Iterator current_line_iter = utf8::Iterator(m_buffer[m_selection.line_end].data(), m_selection.end);
-        u64 current_codepoint_index = 0;
-        for (; (current_line_iter = current_line_iter.prev()); current_codepoint_index++);
-
         utf8::Iterator next_line_iter = m_buffer[next_line].utf8Begin();
         u64 next_codepoint_index = 0;
         i32 next_x_end = inner_rect.x;
         u64 next_end = 0;
         while ((next_line_iter = next_line_iter.next())) {
+            if (next_codepoint_index == m_last_codepoint_index) { break; }
             next_codepoint_index++;
             next_x_end += dc.measureText(font(), Slice<const char>(next_line_iter.data - next_line_iter.length, next_line_iter.length)).w;
             next_end += next_line_iter.length;
-            if (next_codepoint_index == current_codepoint_index) { break; }
         }
 
         m_selection.x_end = next_x_end;
