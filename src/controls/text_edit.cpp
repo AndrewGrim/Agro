@@ -555,6 +555,9 @@ TextEdit* TextEdit::moveCursorUp() {
                 m_selection.line_end = m_selection.line_begin;
                 m_selection.x_end = m_selection.x_begin;
                 m_selection.end = m_selection.begin;
+                utf8::Iterator iter = m_buffer[m_selection.line_end].utf8Begin();
+                m_last_codepoint_index = 0;
+                for (u64 codepoint_byte_offset = 0; codepoint_byte_offset != m_selection.end ; iter = iter.next(), codepoint_byte_offset += iter.length, m_last_codepoint_index++);
             }
             _moveUp(dc);
             _noSelection();
@@ -617,6 +620,9 @@ TextEdit* TextEdit::moveCursorDown() {
                 m_selection.line_end = m_selection.line_begin;
                 m_selection.x_end = m_selection.x_begin;
                 m_selection.end = m_selection.begin;
+                utf8::Iterator iter = m_buffer[m_selection.line_end].utf8Begin();
+                m_last_codepoint_index = 0;
+                for (u64 codepoint_byte_offset = 0; codepoint_byte_offset != m_selection.end ; iter = iter.next(), codepoint_byte_offset += iter.length, m_last_codepoint_index++);
             }
             _moveDown(dc);
             _noSelection();
