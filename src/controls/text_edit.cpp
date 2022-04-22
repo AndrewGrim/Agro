@@ -65,6 +65,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             } else if ((u32)line < m_buffer.size()) {
                 // TODO we could optimise it for single line by doing what we did previously
                 // and check if lines are the same
+                m_last_codepoint_index = 0;
                 utf8::Iterator iter = utf8::Iterator(m_buffer[line].data());
                 while ((iter = iter.next())) {
                     i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
@@ -73,6 +74,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     }
                     x += w;
                     index += iter.length;
+                    m_last_codepoint_index++;
                 }
             } else {
                 line = m_buffer.size() - 1;
