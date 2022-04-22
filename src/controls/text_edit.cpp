@@ -514,7 +514,6 @@ void TextEdit::_moveUp(DrawingContext &dc) {
             m_selection.end = 0;
             m_selection.x_end = inner_rect.x;
             m_selection.line_end = next_line;
-            update();
             return;
         }
 
@@ -577,7 +576,6 @@ void TextEdit::_moveDown(DrawingContext &dc) {
             m_selection.end = 0;
             m_selection.x_end = inner_rect.x;
             m_selection.line_end = next_line;
-            update();
             return;
         }
 
