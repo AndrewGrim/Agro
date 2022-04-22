@@ -127,16 +127,16 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     };
     bind(SDLK_DOWN, Mod::None, down);
     bind(SDLK_DOWN, Mod::Shift, down);
-    // auto home = [&]{
-    //     moveCursorBegin();
-    // };
-    // bind(SDLK_HOME, Mod::None, home);
-    // bind(SDLK_HOME, Mod::Shift, home);
-    // auto end = [&]{
-    //     moveCursorEnd();
-    // };
-    // bind(SDLK_END, Mod::None, end);
-    // bind(SDLK_END, Mod::Shift, end);
+    auto home = [&]{
+        moveCursorBegin();
+    };
+    bind(SDLK_HOME, Mod::None, home);
+    bind(SDLK_HOME, Mod::Shift, home);
+    auto end = [&]{
+        moveCursorEnd();
+    };
+    bind(SDLK_END, Mod::None, end);
+    bind(SDLK_END, Mod::Shift, end);
     // bind(SDLK_BACKSPACE, Mod::None, [&]{
     //     if (m_selection.hasSelection()) {
     //         deleteSelection();
@@ -638,31 +638,45 @@ TextEdit* TextEdit::moveCursorDown() {
     return this;
 }
 
-// TextEdit* TextEdit::moveCursorBegin() {
-//     m_selection.x_end = 0;
-//     m_selection.end = 0;
-//     if (!isShiftPressed()) {
-//         m_selection.x_begin = m_selection.x_end;
-//         m_selection.begin = m_selection.end;
-//     }
-//     m_current_view = m_min_view;
-//     update();
+TextEdit* TextEdit::moveCursorBegin() {
+    m_selection.x_end = inner_rect.x;
+    m_selection.end = 0;
 
-//     return this;
-// }
+    if (!isShiftPressed()) {
+        m_selection.x_begin = m_selection.x_end;
+        m_selection.line_begin = m_selection.line_end;
+        m_selection.begin = m_selection.end;
+    }
 
-// TextEdit* TextEdit::moveCursorEnd() {
-//     m_selection.x_end = m_virtual_size.w;
-//     m_selection.end = text().size();
-//     if (!isShiftPressed()) {
-//         m_selection.x_begin = m_selection.x_end;
-//         m_selection.begin = m_selection.end;
-//     }
-//     m_current_view = m_max_view;
-//     update();
+    m_last_codepoint_index = 0;
 
-//     return this;
-// }
+    // TODO update view
+    //m_current_view = m_min_view;
+    update();
+
+    return this;
+}
+
+TextEdit* TextEdit::moveCursorEnd() {
+    m_selection.x_end = inner_rect.x + m_buffer_length[m_selection.line_end];
+    m_selection.end = m_buffer[m_selection.line_end].size();
+
+    if (!isShiftPressed()) {
+        m_selection.x_begin = m_selection.x_end;
+        m_selection.line_begin = m_selection.line_end;
+        m_selection.begin = m_selection.end;
+    }
+
+    m_last_codepoint_index = 0;
+    utf8::Iterator iter = m_buffer[m_selection.line_end].utf8Begin();
+    for (; ((iter = iter.next())); m_last_codepoint_index++);
+
+    // TODO update view
+    //m_current_view = m_max_view;
+    update();
+
+    return this;
+}
 
 // TextEdit* TextEdit::deleteAt(u64 index, bool skip) {
 //     if (index < text().size()) {

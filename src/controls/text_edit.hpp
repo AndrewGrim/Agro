@@ -85,8 +85,8 @@
         TextEdit* moveCursorUp();
         void _moveDown(DrawingContext &dc);
         TextEdit* moveCursorDown();
-        // TextEdit* moveCursorBegin();
-        // TextEdit* moveCursorEnd();
+        TextEdit* moveCursorBegin();
+        TextEdit* moveCursorEnd();
         // TextEdit* deleteAt(u64 index, bool skip = false);
         TextEdit* clear();
         TextEdit* setPlaceholderText(String text);
