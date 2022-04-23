@@ -92,8 +92,8 @@
         TextEdit* setPlaceholderText(String text);
         String placeholderText();
         // TextEdit* updateView();
-        // TextEdit* jumpWordLeft();
-        // TextEdit* jumpWordRight();
+        TextEdit* jumpWordLeft();
+        TextEdit* jumpWordRight();
         bool isShiftPressed();
         // void deleteSelection(bool skip = false);
         void selectAll();

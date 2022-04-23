@@ -154,16 +154,16 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     //     }
     //     updateView();
     // });
-    // auto jump_left = [&]{
-    //     jumpWordLeft();
-    // };
-    // bind(SDLK_LEFT, Mod::Ctrl, jump_left);
-    // bind(SDLK_LEFT, Mod::Ctrl|Mod::Shift, jump_left);
-    // auto jump_right = [&]{
-    //     jumpWordRight();
-    // };
-    // bind(SDLK_RIGHT, Mod::Ctrl, jump_right);
-    // bind(SDLK_RIGHT, Mod::Ctrl|Mod::Shift, jump_right);
+    auto jump_left = [&]{
+        jumpWordLeft();
+    };
+    bind(SDLK_LEFT, Mod::Ctrl, jump_left);
+    bind(SDLK_LEFT, Mod::Ctrl|Mod::Shift, jump_left);
+    auto jump_right = [&]{
+        jumpWordRight();
+    };
+    bind(SDLK_RIGHT, Mod::Ctrl, jump_right);
+    bind(SDLK_RIGHT, Mod::Ctrl|Mod::Shift, jump_right);
     bind(SDLK_a, Mod::Ctrl, [&]{
         selectAll();
     });
@@ -747,27 +747,31 @@ String TextEdit::placeholderText() {
 //     return this;
 // }
 
-// TextEdit* TextEdit::jumpWordLeft() {
-//     while (m_selection.end) {
-//         moveCursorLeft();
-//         if (text().data()[m_selection.end] == ' ') {
-//             break;
-//         }
-//     }
-//     update();
-//     return this;
-// }
+TextEdit* TextEdit::jumpWordLeft() {
+    if (!m_selection.end) {
+        return moveCursorLeft();
+    }
+    do {
+        moveCursorLeft();
+        if (m_buffer[m_selection.line_end].data()[m_selection.end] == ' ') {
+            break;
+        }
+    } while (m_selection.end);
+    return this;
+}
 
-// TextEdit* TextEdit::jumpWordRight() {
-//     while (m_selection.end < text().size()) {
-//         moveCursorRight();
-//         if (text().data()[m_selection.end] == ' ') {
-//             break;
-//         }
-//     }
-//     update();
-//     return this;
-// }
+TextEdit* TextEdit::jumpWordRight() {
+    if (m_selection.end == m_buffer[m_selection.line_end].size()) {
+        return moveCursorRight();
+    }
+    do {
+        moveCursorRight();
+        if (m_buffer[m_selection.line_end].data()[m_selection.end] == ' ') {
+            break;
+        }
+    } while (m_selection.end < m_buffer[m_selection.line_end].size());
+    return this;
+}
 
 bool TextEdit::isShiftPressed() {
     SDL_Keymod mod = SDL_GetModState();
