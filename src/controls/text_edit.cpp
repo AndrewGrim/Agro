@@ -164,9 +164,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     // };
     // bind(SDLK_RIGHT, Mod::Ctrl, jump_right);
     // bind(SDLK_RIGHT, Mod::Ctrl|Mod::Shift, jump_right);
-    // bind(SDLK_a, Mod::Ctrl, [&]{
-    //     selectAll();
-    // });
+    bind(SDLK_a, Mod::Ctrl, [&]{
+        selectAll();
+    });
     // bind(SDLK_v, Mod::Ctrl, [&]{
     //     if (SDL_HasClipboardText()) {
     //         char *s = SDL_GetClipboardText();
@@ -793,14 +793,15 @@ bool TextEdit::isShiftPressed() {
 //     onTextChanged.notify();
 // }
 
-// void TextEdit::selectAll() {
-//     m_selection.x_begin = 0;
-//     m_selection.begin = 0;
-//     m_selection.x_end = m_virtual_size.w;
-//     m_selection.end = text().size();
-//     m_current_view = m_max_view;
-//     update();
-// }
+void TextEdit::selectAll() {
+    m_selection.x_begin = inner_rect.x;
+    m_selection.line_begin = 0;
+    m_selection.begin = 0;
+    m_selection.x_end = inner_rect.x + m_buffer_length[m_buffer.size() - 1];
+    m_selection.line_end = m_buffer.size() - 1;
+    m_selection.end = m_buffer[m_buffer.size() - 1].size();
+    update();
+}
 
 bool TextEdit::swapSelection() {
     if (m_selection.line_begin > m_selection.line_end) {
