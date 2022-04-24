@@ -77,6 +77,7 @@
         TextEdit* setText(String text);
         String text();
         void _noSelection();
+        void _updateView(DrawingContext &dc);
         void _moveLeft(DrawingContext &dc);
         TextEdit* moveCursorLeft();
         void _moveRight(DrawingContext &dc);
@@ -91,7 +92,6 @@
         TextEdit* clear();
         TextEdit* setPlaceholderText(String text);
         String placeholderText();
-        // TextEdit* updateView();
         TextEdit* jumpWordLeft();
         TextEdit* jumpWordRight();
         bool isShiftPressed();

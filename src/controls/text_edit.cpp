@@ -2,6 +2,12 @@
 #include "../renderer/renderer.hpp"
 #include "../application.hpp"
 
+#define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
+#define TEXT_HEIGHT ((i32)((font() ? font()->maxHeight() : dc.default_font->maxHeight()) + m_line_spacing))
+#define X_SCROLL_OFFSET ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.w - inner_rect.w))
+#define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
+#define DC (*(Application::get()->currentWindow()->dc))
+
 TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : Scrollable(min_size) {
     m_mode = mode;
     setText(text);
@@ -12,11 +18,10 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             u64 index = 0;
             i32 x = inner_rect.x;
-            x -= (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.w - inner_rect.w);
+            x -= X_SCROLL_OFFSET;
             i32 y = inner_rect.y;
-            y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
-            i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            u64 line = (event.y - y) / (text_height + m_line_spacing);
+            y -= Y_SCROLL_OFFSET;
+            u64 line = (event.y - y) / TEXT_HEIGHT;
             m_last_codepoint_index = 0;
             if (line < m_buffer.size()) {
                 utf8::Iterator iter = m_buffer[line].utf8Begin();
@@ -53,12 +58,11 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             // and in singleline mode we need to skip over them as well
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             i32 x = inner_rect.x;
-            x -= (m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.w - inner_rect.w);
+            x -= X_SCROLL_OFFSET;
             i32 y = inner_rect.y;
-            y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
+            y -= Y_SCROLL_OFFSET;
             u64 index = 0;
-            i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
-            i32 line = (event.y - y) / (text_height + m_line_spacing);
+            i32 line = (event.y - y) / TEXT_HEIGHT;
 
             if (line < 0) {
                 line = 0;
@@ -216,11 +220,10 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     inner_rect = rect;
 
-    i32 text_height = font() ? font()->maxHeight() : dc.default_font->maxHeight();
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     // Draw normal text;
-    u64 line_index = -((pos.y - inner_rect.y) / (text_height + m_line_spacing));
-    text_region.y += (text_height + m_line_spacing) * line_index;
+    u64 line_index = -((pos.y - inner_rect.y) / TEXT_HEIGHT);
+    text_region.y += TEXT_HEIGHT * line_index;
     i32 x_scroll_offset = (pos.x - inner_rect.x);
     if (m_buffer.size() && m_buffer[0].size()) {
         Selection before_swap = m_selection;
@@ -266,7 +269,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                         x_scroll_offset + bg_start,
                         text_region.y - (m_line_spacing / 2),
                         (bg_end - bg_start) + m_cursor_width,
-                        text_height + m_line_spacing
+                        TEXT_HEIGHT
                     ),
                     dc.accentWidgetBackground(style)
                 );
@@ -285,7 +288,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 state & STATE_HARD_FOCUSED ? selection : Renderer::Selection(),
                 dc.textSelected(style)
             );
-            text_region.y += text_height + m_line_spacing;
+            text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
         }
         if (did_swap) { m_selection = before_swap; }
@@ -303,7 +306,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 dc.textDisabled(style),
                 m_tab_width
             );
-            text_region.y += text_height + m_line_spacing;
+            text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
         }
     }
@@ -312,13 +315,13 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     // Draw the text insertion cursor.
     if (state & STATE_HARD_FOCUSED) {
         i32 y = inner_rect.y;
-        y -= (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h);
+        y -= Y_SCROLL_OFFSET;
         dc.fillRect(
             Rect(
                 x_scroll_offset + m_selection.x_end,
-                y  - (m_line_spacing / 2) + ((text_height + m_line_spacing) * m_selection.line_end),
+                y  - (m_line_spacing / 2) + (TEXT_HEIGHT * m_selection.line_end),
                 m_cursor_width,
-                text_height + m_line_spacing
+                TEXT_HEIGHT
             ),
             dc.textForeground(style) // TODO should be a separate color setting
         );
@@ -408,6 +411,29 @@ void TextEdit::_noSelection() {
     m_selection.begin = m_selection.end;
 }
 
+void TextEdit::_updateView(DrawingContext &dc) {
+    u64 viewport_start_x = X_SCROLL_OFFSET;
+    u64 viewport_start_y = Y_SCROLL_OFFSET;
+    u64 next_x_pos = m_selection.x_end;
+    u64 next_y_pos = m_selection.line_end * TEXT_HEIGHT;
+
+    if (next_x_pos < viewport_start_x) {
+        m_horizontal_scrollbar->m_slider->m_value = (next_x_pos - inner_rect.x) / (f64)(m_virtual_size.w - inner_rect.w);
+        m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+    } else if (next_x_pos > viewport_start_x + inner_rect.w) {
+        m_horizontal_scrollbar->m_slider->m_value = (next_x_pos - inner_rect.w) / (f64)(m_virtual_size.w - inner_rect.w);
+        m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+    }
+
+    if (next_y_pos < viewport_start_y) {
+        m_vertical_scrollbar->m_slider->m_value = next_y_pos / (f64)(m_virtual_size.h - inner_rect.h);
+        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+    } else if (next_y_pos > viewport_start_y + inner_rect.h) {
+        m_vertical_scrollbar->m_slider->m_value = (next_y_pos - inner_rect.h) / (f64)(m_virtual_size.h - inner_rect.h);
+        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+    }
+}
+
 void TextEdit::_moveLeft(DrawingContext &dc) {
     // beginning of the line
     if (m_selection.end == 0) {
@@ -448,12 +474,7 @@ TextEdit* TextEdit::moveCursorLeft() {
         }
     }
 
-    // TODO at some point update the view to account for the movement
-    // if (!m_selection.end) {
-    //     m_current_view = m_min_view;
-    // } else {
-    //     m_current_view = m_selection.x_end / m_virtual_size.w;
-    // }
+    _updateView(DC);
     update();
 
     return this;
@@ -497,12 +518,7 @@ TextEdit* TextEdit::moveCursorRight() {
         }
     }
 
-    // TODO at some point update the view to account for the movement
-    // if (!m_selection.end) {
-    //     m_current_view = m_min_view;
-    // } else {
-    //     m_current_view = m_selection.x_end / m_virtual_size.w;
-    // }
+    _updateView(DC);
     update();
 
     return this;
@@ -568,7 +584,7 @@ TextEdit* TextEdit::moveCursorUp() {
         }
     }
 
-    // TODO update buffer view
+    _updateView(dc);
     update();
     return this;
 }
@@ -633,7 +649,7 @@ TextEdit* TextEdit::moveCursorDown() {
         }
     }
 
-    // TODO update buffer view
+    _updateView(dc);
     update();
     return this;
 }
@@ -650,8 +666,7 @@ TextEdit* TextEdit::moveCursorBegin() {
 
     m_last_codepoint_index = 0;
 
-    // TODO update view
-    //m_current_view = m_min_view;
+    _updateView(DC);
     update();
 
     return this;
@@ -671,8 +686,7 @@ TextEdit* TextEdit::moveCursorEnd() {
     utf8::Iterator iter = m_buffer[m_selection.line_end].utf8Begin();
     for (; ((iter = iter.next())); m_last_codepoint_index++);
 
-    // TODO update view
-    //m_current_view = m_max_view;
+    _updateView(DC);
     update();
 
     return this;
@@ -734,18 +748,6 @@ String TextEdit::placeholderText() {
     }
     return s;
 }
-
-// TextEdit* TextEdit::updateView() {
-//     if (!m_selection.end) {
-//         m_current_view = m_min_view;
-//     } else if (m_selection.end == text().size()) {
-//         m_current_view = m_max_view;
-//     } else {
-//         m_current_view = m_selection.x_end / m_virtual_size.w;
-//     }
-//     update();
-//     return this;
-// }
 
 TextEdit* TextEdit::jumpWordLeft() {
     if (!m_selection.end) {
