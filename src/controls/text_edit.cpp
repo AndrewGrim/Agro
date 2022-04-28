@@ -108,57 +108,81 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             m_selection.line_end = line;
             m_selection.end = index;
             {
+                auto _mouseScrollCallback = [&](u32 interval) -> u32 {
+                    SDL_Event event = {};
+                    event.type = SDL_MOUSEMOTION;
+                    event.motion = m_mouse_scroll_event;
+                    SDL_PushEvent(&event);
+                    return 16;
+                };
+
                 m_mouse_scroll_event.timestamp = SDL_GetTicks();
                 m_mouse_scroll_event.windowID = SDL_GetWindowID(Application::get()->currentWindow()->m_win);
                 m_mouse_scroll_event.state = SDL_GetMouseState(&m_mouse_scroll_event.x, &m_mouse_scroll_event.y);
+                bool can_remove_callback = true;
+
+                if (event.x < inner_rect.x && m_horizontal_scrollbar->m_slider->m_value > 0.0) {
+                    if (m_mouse_x_scroll != -(m_virtual_size.w / 1000)) {
+                        m_mouse_x_scroll = -(m_virtual_size.w / 1000);
+                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
+                        if (!m_mouse_scroll_callback) {
+                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                        }
+                    }
+                    if (event.xrel < 0) {
+                        m_horizontal_scrollbar->m_slider->m_value += event.xrel / (f64)(m_virtual_size.w - inner_rect.w);
+                        m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+                    }
+                    can_remove_callback = false;
+                } else if (event.x > inner_rect.x + inner_rect.w && m_horizontal_scrollbar->m_slider->m_value < 1.0) {
+                    if (m_mouse_x_scroll != m_virtual_size.w / 1000) {
+                        m_mouse_x_scroll = m_virtual_size.w / 1000;
+                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
+                        if (!m_mouse_scroll_callback) {
+                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                        }
+                    }
+                    if (event.xrel > 0) {
+                        m_horizontal_scrollbar->m_slider->m_value += event.xrel / (f64)(m_virtual_size.w - inner_rect.w);
+                        m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+                    }
+                    can_remove_callback = false;
+                }
 
                 if (event.y < inner_rect.y && m_vertical_scrollbar->m_slider->m_value > 0.0) {
                     if (m_mouse_y_scroll != -(m_virtual_size.h / 1000)) {
-                        if (m_mouse_scroll_callback) {
-                            Application::get()->removeTimer(m_mouse_scroll_callback.value);
-                        }
                         m_mouse_y_scroll = -(m_virtual_size.h / 1000);
-                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
                         m_mouse_scroll_event.yrel = m_mouse_y_scroll;
-                        m_mouse_scroll_callback = Application::get()->addTimer(0, [=](u32 interval) -> u32 {
-                            SDL_Event event = {};
-                            event.type = SDL_MOUSEMOTION;
-                            event.motion = m_mouse_scroll_event;
-                            SDL_PushEvent(&event);
-                            return 16;
-                        });
+                        if (!m_mouse_scroll_callback) {
+                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                        }
                     }
                     if (event.yrel < 0) {
                         m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
                         m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
                     }
+                    can_remove_callback = false;
                 } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
                     if (m_mouse_y_scroll != m_virtual_size.h / 1000) {
-                        if (m_mouse_scroll_callback) {
-                            Application::get()->removeTimer(m_mouse_scroll_callback.value);
-                        }
                         m_mouse_y_scroll = m_virtual_size.h / 1000;
-                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
                         m_mouse_scroll_event.yrel = m_mouse_y_scroll;
-                        m_mouse_scroll_callback = Application::get()->addTimer(0, [=](u32 interval) -> u32 {
-                            SDL_Event event = {};
-                            event.type = SDL_MOUSEMOTION;
-                            event.motion = m_mouse_scroll_event;
-                            SDL_PushEvent(&event);
-                            return 16;
-                        });
+                        if (!m_mouse_scroll_callback) {
+                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                        }
                     }
                     if (event.yrel > 0) {
                         m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
                         m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
                     }
-                } else {
-                    if (m_mouse_scroll_callback) {
-                        // TODO probably need extra invocations for focus lost button up and so on
-                        Application::get()->removeTimer(m_mouse_scroll_callback.value);
-                        m_mouse_scroll_callback = Option<Timer>();
-                        m_mouse_y_scroll = 0;
-                    }
+                    can_remove_callback = false;
+                }
+
+                if (can_remove_callback && m_mouse_scroll_callback) {
+                    // TODO probably need extra invocations for focus lost button up and so on
+                    Application::get()->removeTimer(m_mouse_scroll_callback.value);
+                    m_mouse_scroll_callback = Option<Timer>();
+                    m_mouse_x_scroll = 0;
+                    m_mouse_y_scroll = 0;
                 }
             }
             update();
@@ -169,6 +193,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
+            m_mouse_x_scroll = 0;
             m_mouse_y_scroll = 0;
         }
     });
@@ -181,6 +206,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
+            m_mouse_x_scroll = 0;
             m_mouse_y_scroll = 0;
         }
     });
