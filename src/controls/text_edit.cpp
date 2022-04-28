@@ -122,12 +122,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 bool can_remove_callback = true;
 
                 if (event.x < inner_rect.x && m_horizontal_scrollbar->m_slider->m_value > 0.0) {
-                    if (m_mouse_x_scroll != -(m_virtual_size.w / 1000)) {
-                        m_mouse_x_scroll = -(m_virtual_size.w / 1000);
-                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
-                        if (!m_mouse_scroll_callback) {
-                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
-                        }
+                    m_mouse_scroll_event.xrel = event.x - inner_rect.x;
+                    if (!m_mouse_scroll_callback) {
+                        m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
                     }
                     if (event.xrel < 0) {
                         m_horizontal_scrollbar->m_slider->m_value += event.xrel / (f64)(m_virtual_size.w - inner_rect.w);
@@ -135,12 +132,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     }
                     can_remove_callback = false;
                 } else if (event.x > inner_rect.x + inner_rect.w && m_horizontal_scrollbar->m_slider->m_value < 1.0) {
-                    if (m_mouse_x_scroll != m_virtual_size.w / 1000) {
-                        m_mouse_x_scroll = m_virtual_size.w / 1000;
-                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
-                        if (!m_mouse_scroll_callback) {
-                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
-                        }
+                    m_mouse_scroll_event.xrel = event.x - (inner_rect.x + inner_rect.w);
+                    if (!m_mouse_scroll_callback) {
+                        m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
                     }
                     if (event.xrel > 0) {
                         m_horizontal_scrollbar->m_slider->m_value += event.xrel / (f64)(m_virtual_size.w - inner_rect.w);
@@ -150,12 +144,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 }
 
                 if (event.y < inner_rect.y && m_vertical_scrollbar->m_slider->m_value > 0.0) {
-                    if (m_mouse_y_scroll != -(m_virtual_size.h / 1000)) {
-                        m_mouse_y_scroll = -(m_virtual_size.h / 1000);
-                        m_mouse_scroll_event.yrel = m_mouse_y_scroll;
-                        if (!m_mouse_scroll_callback) {
-                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
-                        }
+                    m_mouse_scroll_event.yrel = event.y - inner_rect.y;
+                    if (!m_mouse_scroll_callback) {
+                        m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
                     }
                     if (event.yrel < 0) {
                         m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
@@ -163,12 +154,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     }
                     can_remove_callback = false;
                 } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
-                    if (m_mouse_y_scroll != m_virtual_size.h / 1000) {
-                        m_mouse_y_scroll = m_virtual_size.h / 1000;
-                        m_mouse_scroll_event.yrel = m_mouse_y_scroll;
-                        if (!m_mouse_scroll_callback) {
-                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
-                        }
+                    m_mouse_scroll_event.yrel = event.y - (inner_rect.y + inner_rect.h);
+                    if (!m_mouse_scroll_callback) {
+                        m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
                     }
                     if (event.yrel > 0) {
                         m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
@@ -181,8 +169,6 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     // TODO probably need extra invocations for focus lost button up and so on
                     Application::get()->removeTimer(m_mouse_scroll_callback.value);
                     m_mouse_scroll_callback = Option<Timer>();
-                    m_mouse_x_scroll = 0;
-                    m_mouse_y_scroll = 0;
                 }
             }
             update();
@@ -193,8 +179,6 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
-            m_mouse_x_scroll = 0;
-            m_mouse_y_scroll = 0;
         }
     });
     onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -206,8 +190,6 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
-            m_mouse_x_scroll = 0;
-            m_mouse_y_scroll = 0;
         }
     });
     auto left = [&]{
