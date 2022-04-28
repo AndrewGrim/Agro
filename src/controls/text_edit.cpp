@@ -166,7 +166,6 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 }
 
                 if (can_remove_callback && m_mouse_scroll_callback) {
-                    // TODO probably need extra invocations for focus lost button up and so on
                     Application::get()->removeTimer(m_mouse_scroll_callback.value);
                     m_mouse_scroll_callback = Option<Timer>();
                 }
@@ -187,6 +186,12 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
         Application::get()->setMouseCursor(Cursor::Default);
         m_selection.mouse_selection = false; // TODO maybe dont do that
+        if (m_mouse_scroll_callback) {
+            Application::get()->removeTimer(m_mouse_scroll_callback.value);
+            m_mouse_scroll_callback = Option<Timer>();
+        }
+    });
+    onFocusLost.addEventListener([&](Widget *widget, FocusEvent event) {
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
