@@ -3,6 +3,7 @@
 
     #include "scrollable.hpp"
     #include "../core/string.hpp"
+    #include "../timer.hpp"
 
     struct TextEdit : public Scrollable {
         struct Selection {
@@ -117,5 +118,7 @@
         History m_history;
         Mode m_mode = Mode::SingleLine;
         u64 m_last_codepoint_index = 0;
+        Option<Timer> m_mouse_scroll_callback;
+        i32 m_y_scroll_direction = 0;
     };
 #endif

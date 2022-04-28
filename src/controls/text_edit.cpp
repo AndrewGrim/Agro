@@ -84,25 +84,95 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 line = m_buffer.size() - 1;
             }
 
-            // TODO tackle this last but essentially
-            // we need to update the viewport to show us the contents
-            // after the mouse movement, so maybe move slightly to the right lets say
-            // or event fully scroll to the end or something
-            // if (!index) {
-            //     m_current_view = m_min_view;
-            // } else if (index == this->text().size()) {
-            //     m_current_view = m_max_view;
-            // } else {
-            //     m_current_view = m_selection.x_end / m_virtual_size.w;
-            // }
             m_selection.x_end = x;
             m_selection.line_end = line;
             m_selection.end = index;
+            {
+                if (event.y < inner_rect.y && m_vertical_scrollbar->m_slider->m_value > 0.0) {
+                    if (m_y_scroll_direction != -(m_virtual_size.h / 1000)) {
+                        if (m_mouse_scroll_callback) {
+                            Application::get()->removeTimer(m_mouse_scroll_callback.value);
+                        }
+                        m_y_scroll_direction = -(m_virtual_size.h / 1000);
+                        u32 current_window = SDL_GetWindowID(Application::get()->currentWindow()->m_win);
+                        // TODO remember about x too
+                        m_mouse_scroll_callback = Application::get()->addTimer(0, [=](u32 interval) -> u32 {
+                            SDL_Event event = {};
+                            i32 x, y;
+                            u32 state = SDL_GetMouseState(&x, &y);
+                            SDL_MouseMotionEvent scroll_event = {
+                                SDL_MOUSEMOTION,
+                                SDL_GetTicks(),
+                                current_window,
+                                0, // mouseid
+                                state,
+                                x,
+                                y,
+                                0, // xrel
+                                m_y_scroll_direction // yrel
+                            };
+                            event.type = SDL_MOUSEMOTION;
+                            event.motion = scroll_event;
+                            SDL_PushEvent(&event);
+                            return 16;
+                        });
+                    }
+                    if (event.yrel < 0) {
+                        m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
+                        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+                    }
+                } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
+                    if (m_y_scroll_direction != m_virtual_size.h / 1000) {
+                        if (m_mouse_scroll_callback) {
+                            Application::get()->removeTimer(m_mouse_scroll_callback.value);
+                        }
+                        m_y_scroll_direction = m_virtual_size.h / 1000;
+                        u32 current_window = SDL_GetWindowID(Application::get()->currentWindow()->m_win);
+                        // TODO remember about x too
+                        m_mouse_scroll_callback = Application::get()->addTimer(0, [=](u32 interval) -> u32 {
+                            SDL_Event event = {};
+                            i32 x, y;
+                            u32 state = SDL_GetMouseState(&x, &y);
+                            SDL_MouseMotionEvent scroll_event = {
+                                SDL_MOUSEMOTION,
+                                SDL_GetTicks(),
+                                current_window,
+                                0, // mouseid
+                                state,
+                                x,
+                                y,
+                                0, // xrel
+                                m_y_scroll_direction // yrel
+                            };
+                            event.type = SDL_MOUSEMOTION;
+                            event.motion = scroll_event;
+                            SDL_PushEvent(&event);
+                            return 16;
+                        });
+                    }
+                    if (event.yrel > 0) {
+                        m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
+                        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+                    }
+                } else {
+                    if (m_mouse_scroll_callback) {
+                        // TODO probably need extra invocations for focus lost button up and so on
+                        Application::get()->removeTimer(m_mouse_scroll_callback.value);
+                        m_mouse_scroll_callback = Option<Timer>();
+                        m_y_scroll_direction = 0;
+                    }
+                }
+            }
             update();
         }
     });
     onMouseUp.addEventListener([&](Widget *widget, MouseEvent event) {
         m_selection.mouse_selection = false;
+        if (m_mouse_scroll_callback) {
+            Application::get()->removeTimer(m_mouse_scroll_callback.value);
+            m_mouse_scroll_callback = Option<Timer>();
+            m_y_scroll_direction = 0;
+        }
     });
     onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
         Application::get()->setMouseCursor(Cursor::IBeam);
@@ -110,6 +180,11 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
         Application::get()->setMouseCursor(Cursor::Default);
         m_selection.mouse_selection = false; // TODO maybe dont do that
+        if (m_mouse_scroll_callback) {
+            Application::get()->removeTimer(m_mouse_scroll_callback.value);
+            m_mouse_scroll_callback = Option<Timer>();
+            m_y_scroll_direction = 0;
+        }
     });
     auto left = [&]{
         moveCursorLeft();
