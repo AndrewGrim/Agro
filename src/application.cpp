@@ -224,11 +224,16 @@ Window* Application::mainWindow() {
 Timer Application::addTimer(u32 after, std::function<u32(u32 interval)> callback) {
     Timer t = Timer(after, callback);
     m_timers.push_back(t);
-    t.index = m_timers.size() - 1;
     return t;
 }
 
 void Application::removeTimer(Timer timer) {
     SDL_RemoveTimer(timer.id);
-    m_timers.erase(m_timers.begin() + timer.index);
+    for (u64 i = 0; i < m_timers.size(); i++) {
+        const Timer &t = m_timers[i];
+        if (t.id == timer.id) {
+            m_timers.erase(m_timers.begin() + i);
+            break;
+        }
+    }
 }

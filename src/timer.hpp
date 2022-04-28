@@ -12,9 +12,9 @@
 
     struct Timer {
         SDL_TimerID id = -1;
-        uint64_t index = 0;
         std::shared_ptr<std::function<u32(u32 interval)>> real_callback;
 
+        Timer();
         Timer(u32 after, std::function<u32(u32 interval)> callback);
     };
 #endif
