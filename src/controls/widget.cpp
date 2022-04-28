@@ -225,6 +225,8 @@ void Widget::setHardFocus(State *state) {
         // that soft and hard focus are currently the same widget.
         if (state->soft_focused && state->soft_focused != state->hard_focused) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
         if (state->hard_focused && state->soft_focused != state->hard_focused) { state->hard_focused->onFocusLost.notify(state->hard_focused, FocusEvent::Activate); }
+        // TODO WTF? this triggers over and over for the same widget if we just click it with a mouse
+        // also we dont handle focus event callback properly accross different windows
         if ((state->soft_focused && state->hard_focused) && (state->soft_focused == state->hard_focused)) { state->soft_focused->onFocusLost.notify(state->soft_focused, FocusEvent::Activate); }
         state->soft_focused = this;
         state->hard_focused = this;
