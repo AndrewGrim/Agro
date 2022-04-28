@@ -104,7 +104,6 @@
         // void undo();
         // void redo();
         i32 isFocusable() override;
-        // bool isLayout() override { return false; }
 
         std::vector<String> m_buffer;
         std::vector<u64> m_buffer_length;
@@ -119,6 +118,8 @@
         Mode m_mode = Mode::SingleLine;
         u64 m_last_codepoint_index = 0;
         Option<Timer> m_mouse_scroll_callback;
-        i32 m_y_scroll_direction = 0;
+        SDL_MouseMotionEvent m_mouse_scroll_event = { SDL_MOUSEMOTION, 0, 0, 0, 0, 0, 0, 0, 0 };
+        i32 m_mouse_x_scroll = 0;
+        i32 m_mouse_y_scroll = 0;
     };
 #endif

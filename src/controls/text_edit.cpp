@@ -108,31 +108,22 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             m_selection.line_end = line;
             m_selection.end = index;
             {
+                m_mouse_scroll_event.timestamp = SDL_GetTicks();
+                m_mouse_scroll_event.windowID = SDL_GetWindowID(Application::get()->currentWindow()->m_win);
+                m_mouse_scroll_event.state = SDL_GetMouseState(&m_mouse_scroll_event.x, &m_mouse_scroll_event.y);
+
                 if (event.y < inner_rect.y && m_vertical_scrollbar->m_slider->m_value > 0.0) {
-                    if (m_y_scroll_direction != -(m_virtual_size.h / 1000)) {
+                    if (m_mouse_y_scroll != -(m_virtual_size.h / 1000)) {
                         if (m_mouse_scroll_callback) {
                             Application::get()->removeTimer(m_mouse_scroll_callback.value);
                         }
-                        m_y_scroll_direction = -(m_virtual_size.h / 1000);
-                        u32 current_window = SDL_GetWindowID(Application::get()->currentWindow()->m_win);
-                        // TODO remember about x too
+                        m_mouse_y_scroll = -(m_virtual_size.h / 1000);
+                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
+                        m_mouse_scroll_event.yrel = m_mouse_y_scroll;
                         m_mouse_scroll_callback = Application::get()->addTimer(0, [=](u32 interval) -> u32 {
                             SDL_Event event = {};
-                            i32 x, y;
-                            u32 state = SDL_GetMouseState(&x, &y);
-                            SDL_MouseMotionEvent scroll_event = {
-                                SDL_MOUSEMOTION,
-                                SDL_GetTicks(),
-                                current_window,
-                                0, // mouseid
-                                state,
-                                x,
-                                y,
-                                0, // xrel
-                                m_y_scroll_direction // yrel
-                            };
                             event.type = SDL_MOUSEMOTION;
-                            event.motion = scroll_event;
+                            event.motion = m_mouse_scroll_event;
                             SDL_PushEvent(&event);
                             return 16;
                         });
@@ -142,30 +133,17 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
                     }
                 } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
-                    if (m_y_scroll_direction != m_virtual_size.h / 1000) {
+                    if (m_mouse_y_scroll != m_virtual_size.h / 1000) {
                         if (m_mouse_scroll_callback) {
                             Application::get()->removeTimer(m_mouse_scroll_callback.value);
                         }
-                        m_y_scroll_direction = m_virtual_size.h / 1000;
-                        u32 current_window = SDL_GetWindowID(Application::get()->currentWindow()->m_win);
-                        // TODO remember about x too
+                        m_mouse_y_scroll = m_virtual_size.h / 1000;
+                        m_mouse_scroll_event.xrel = m_mouse_x_scroll;
+                        m_mouse_scroll_event.yrel = m_mouse_y_scroll;
                         m_mouse_scroll_callback = Application::get()->addTimer(0, [=](u32 interval) -> u32 {
                             SDL_Event event = {};
-                            i32 x, y;
-                            u32 state = SDL_GetMouseState(&x, &y);
-                            SDL_MouseMotionEvent scroll_event = {
-                                SDL_MOUSEMOTION,
-                                SDL_GetTicks(),
-                                current_window,
-                                0, // mouseid
-                                state,
-                                x,
-                                y,
-                                0, // xrel
-                                m_y_scroll_direction // yrel
-                            };
                             event.type = SDL_MOUSEMOTION;
-                            event.motion = scroll_event;
+                            event.motion = m_mouse_scroll_event;
                             SDL_PushEvent(&event);
                             return 16;
                         });
@@ -179,7 +157,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         // TODO probably need extra invocations for focus lost button up and so on
                         Application::get()->removeTimer(m_mouse_scroll_callback.value);
                         m_mouse_scroll_callback = Option<Timer>();
-                        m_y_scroll_direction = 0;
+                        m_mouse_y_scroll = 0;
                     }
                 }
             }
@@ -191,7 +169,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
-            m_y_scroll_direction = 0;
+            m_mouse_y_scroll = 0;
         }
     });
     onMouseEntered.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -203,7 +181,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         if (m_mouse_scroll_callback) {
             Application::get()->removeTimer(m_mouse_scroll_callback.value);
             m_mouse_scroll_callback = Option<Timer>();
-            m_y_scroll_direction = 0;
+            m_mouse_y_scroll = 0;
         }
     });
     auto left = [&]{
@@ -295,7 +273,10 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
 }
 
 TextEdit::~TextEdit() {
-
+    if (m_mouse_scroll_callback) {
+        Application::get()->removeTimer(m_mouse_scroll_callback.value);
+        m_mouse_scroll_callback = Option<Timer>();
+    }
 }
 
 const char* TextEdit::name() {
