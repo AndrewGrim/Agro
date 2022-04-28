@@ -41,12 +41,32 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 }
             }
             if (line >= m_buffer.size()) { line = m_buffer.size() - 1; } // This accounts for clicking outside text on y axis.
-            m_selection.x_begin = x;
-            m_selection.line_begin = line;
-            m_selection.begin = index;
-            m_selection.x_end = m_selection.x_begin;
-            m_selection.line_end = m_selection.line_begin;
-            m_selection.end = m_selection.begin;
+
+            if (isShiftPressed()) {
+                if (line < m_selection.line_begin && line < m_selection.line_end) {
+                    if (
+                        (m_selection.line_begin < m_selection.line_end) ||
+                        ((m_selection.line_begin == m_selection.line_end) && (m_selection.begin < m_selection.end))
+                    ) {
+                        _noSelection();
+                    }
+                } else if (line > m_selection.line_begin && line > m_selection.line_end) {
+                    if (
+                        (m_selection.line_begin > m_selection.line_end) ||
+                        ((m_selection.line_begin == m_selection.line_end) && (m_selection.begin > m_selection.end))
+                    ) {
+                        _noSelection();
+                    }
+                }
+                m_selection.x_end = x;
+                m_selection.line_end = line;
+                m_selection.end = index;
+            } else {
+                m_selection.x_end = x;
+                m_selection.line_end = line;
+                m_selection.end = index;
+                _noSelection();
+            }
         }
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
