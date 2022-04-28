@@ -26,7 +26,7 @@
         enum class Click {
             None,
             Single,
-            f64,
+            Double,
         };
 
         enum class Button {
@@ -50,7 +50,7 @@
         MouseEvent(SDL_MouseButtonEvent event) {
             this->type = event.type == SDL_MOUSEBUTTONDOWN ? Type::Down : Type::Up;
             this->state = event.state == SDL_PRESSED ? State::Pressed : State::Released;
-            this->click = event.clicks == 1 ? Click::Single : Click::f64; // Note: this only cover single and f64 click
+            this->click = event.clicks == 1 ? Click::Single : Click::Double; // Note: this only cover single and double click
             this->button = this->handleButton(event.button);
             this->x = event.x;
             this->y = event.y;
