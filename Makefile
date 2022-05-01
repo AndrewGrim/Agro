@@ -2,11 +2,11 @@
 debug:
 	cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_EXAMPLE_WIDGET_GALLERY=ON
 	cp build/compile_commands.json .
-	cmake --build build
+	cmake --build build --parallel
 release:
 	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DBUILD_ALL_TESTS=ON -DBUILD_ALL_EXAMPLES=ON
 	cp build/compile_commands.json .
-	cmake --build build
+	cmake --build build --parallel
 install:
 	sudo cmake --install build
 clean:
