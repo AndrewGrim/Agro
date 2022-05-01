@@ -216,7 +216,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     glActiveTexture(gl_texture_begin + current_texture_slot);
     glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
     i32 x = point.x;
-    i32 base_bearing = font->get((u32)'H').bearing.y;
+    i32 base_bearing = font->max_bearing;
     i32 space_advance = font->get((u32)' ').advance;
     for (u64 i = 0; i < text.length;) {
         u8 c = text.data[i];

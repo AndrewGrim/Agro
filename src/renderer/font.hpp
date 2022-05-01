@@ -44,6 +44,7 @@
         u32 atlas_width = 0;
         u32 atlas_height = 0;
         u32 atlas_ID; // Set by opengl when creating font atlas texture.
+        i32 max_bearing = 0;
 
         Font(FT_Library ft, std::string file_path, u32 pixel_size, Type type);
         Font(FT_Library ft, const unsigned char *data, i64 length, u32 pixel_size, Type type);

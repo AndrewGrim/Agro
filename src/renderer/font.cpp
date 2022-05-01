@@ -142,5 +142,6 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
             next_slot / (f32)atlas_width
         )
     );
+    if (g->bitmap_top > max_bearing) { max_bearing = g->bitmap_top; }
     next_slot += g->bitmap.width;
 }
