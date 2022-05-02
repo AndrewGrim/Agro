@@ -58,11 +58,11 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         _noSelection();
                     }
                 }
-                m_selection.x_end = x;
+                m_selection.x_end = x + X_SCROLL_OFFSET;
                 m_selection.line_end = line;
                 m_selection.end = index;
             } else {
-                m_selection.x_end = x;
+                m_selection.x_end = x + X_SCROLL_OFFSET;
                 m_selection.line_end = line;
                 m_selection.end = index;
                 _noSelection();
@@ -104,7 +104,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 line = m_buffer.size() - 1;
             }
 
-            m_selection.x_end = x;
+            m_selection.x_end = x + X_SCROLL_OFFSET;
             m_selection.line_end = line;
             m_selection.end = index;
             {

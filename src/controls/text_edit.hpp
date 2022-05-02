@@ -11,8 +11,16 @@
             u64 end = 0;
             u64 line_begin = 0;
             u64 line_end = 0;
+
+            // Note: These variables work based on absolute text length and
+            // are not relative to anything such as the scroll position.
+            // Therefore when using them horizontal scroll needs to be accounted for.
+            // And in the case of mouse event handlers it needs to be accounted for
+            // when comparing text extents against the event but then removed when setting
+            // the actual x_begin or x_end members.
             i32 x_begin = 0;
             i32 x_end = 0;
+
             bool mouse_selection = false;
 
             bool hasSelection() {
