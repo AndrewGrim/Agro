@@ -434,6 +434,7 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
             if (size.w > m_virtual_size.w) { m_virtual_size.w = size.w; }
             index++;
         }
+        m_virtual_size.w += m_cursor_width;
         if (m_buffer.size() == 1) { m_virtual_size.h -= m_line_spacing; }
     }
     if (m_size_changed) {
