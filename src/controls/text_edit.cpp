@@ -871,7 +871,18 @@ void TextEdit::deleteSelection(bool skip) {
         if (m_selection.line_begin != m_selection.line_end) {
             // multiline selection
         } else {
-            // same line selection
+            // Same line selection
+            swapSelection(); // TODO We will need to make sure thats fine in terms of history
+            String &line = m_buffer[m_selection.line_end];
+            u64 &line_length = m_buffer_length[m_selection.line_end];
+            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin));
+            if (line_length + m_cursor_width == m_virtual_size.w) {
+                m_virtual_size.w -= text_size.w;
+            }
+            line_length -= text_size.w;
+            line.erase(m_selection.begin, m_selection.end - m_selection.begin);
+            m_selection.end = m_selection.begin;
+            m_selection.x_end = m_selection.x_begin;
         }
     // Delete one codepoint
     } else {
