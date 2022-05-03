@@ -343,15 +343,14 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
 
             // Draw selection background
             dc.fillRect(
-                dc.fillRect(
-                    Rect(
-                        x_scroll_offset + bg_start,
-                        text_region.y - (m_line_spacing / 2),
-                        (bg_end - bg_start) + m_cursor_width,
-                        TEXT_HEIGHT
-                    ),
-                    dc.accentWidgetBackground(style)
-                );
+                Rect(
+                    x_scroll_offset + bg_start,
+                    text_region.y,
+                    (bg_end - bg_start) + m_cursor_width,
+                    TEXT_HEIGHT
+                ),
+                dc.accentWidgetBackground(style)
+            );
 
             // Draw the text buffer.
             dc.fillTextAligned(
@@ -397,7 +396,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         dc.fillRect(
             Rect(
                 x_scroll_offset + m_selection.x_end,
-                y  - (m_line_spacing / 2) + (TEXT_HEIGHT * m_selection.line_end),
+                y + (TEXT_HEIGHT * m_selection.line_end),
                 m_cursor_width,
                 TEXT_HEIGHT
             ),
