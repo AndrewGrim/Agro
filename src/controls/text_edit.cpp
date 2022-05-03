@@ -388,7 +388,6 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         }
     }
 
-
     // Draw the text insertion cursor.
     if (state & STATE_HARD_FOCUSED) {
         i32 y = inner_rect.y;
@@ -564,7 +563,7 @@ void TextEdit::_moveRight(DrawingContext &dc) {
     // end of the line
     if (m_selection.end == m_buffer[m_selection.line_end].size()) {
         // move to line below if one exists
-        if (m_selection.line_end < m_buffer.size()) {
+        if (m_selection.line_end + 1 < m_buffer.size()) {
             m_selection.line_end += 1;
             m_selection.end = 0;
             m_selection.x_end = inner_rect.x;
