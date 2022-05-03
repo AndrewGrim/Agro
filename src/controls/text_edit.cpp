@@ -889,14 +889,13 @@ void TextEdit::deleteSelection(bool skip) {
             line.erase(m_selection.end, 1);
         // Delete newline between this and the nextline if one exists
         } else {
-            if (m_selection.line_end < m_buffer.size()) {
-                // TODO since i think we want to move away from storing the newlines the following
-                // code might have to change to account for that
-                line += m_buffer[m_selection.line_end + 1].data() + 1; // Step over the newline
+            if (m_selection.line_end + 1 < m_buffer.size()) {
+                line += m_buffer[m_selection.line_end + 1].data();
                 line_length += m_buffer_length[m_selection.line_end + 1];
                 if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
                 m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
                 m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                m_virtual_size.h -= TEXT_HEIGHT;
             }
         }
     }
