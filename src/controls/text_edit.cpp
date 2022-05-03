@@ -236,14 +236,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     //     }
     //     updateView();
     // });
-    // bind(SDLK_DELETE, Mod::None, [&]{
-    //     if (m_selection.hasSelection()) {
-    //         deleteSelection();
-    //     } else {
-    //         deleteAt(m_selection.begin);
-    //     }
-    //     updateView();
-    // });
+    bind(SDLK_DELETE, Mod::None, [&]{
+        deleteSelection();
+    });
     auto jump_left = [&]{
         jumpWordLeft();
     };
@@ -873,21 +868,56 @@ bool TextEdit::isShiftPressed() {
     return false;
 }
 
-// void TextEdit::deleteSelection(bool skip) {
-//     // Swap selection when the begin index is higher than the end index.
-//     swapSelection();
-//     if (!skip) {
-//         m_history.append(HistoryItem(HistoryItem::Action::Delete, m_text.substring(m_selection.begin, m_selection.end - m_selection.begin), m_selection));
-//     }
-//     // Remove selected text.
-//     m_text.erase(m_selection.begin, m_selection.end - m_selection.begin);
-//     setText(text());
+// TODO maybe extra parameter to indicate if we want it to behave like backspace
+// for single deletions so we record history properly?
+void TextEdit::deleteSelection(bool skip) {
+    DrawingContext &dc = DC;
 
-//     // Reset selection after deletion.
-//     m_selection.x_end = m_selection.x_begin;
-//     m_selection.end = m_selection.begin;
-//     onTextChanged.notify();
-// }
+    if (m_selection.hasSelection()) {
+        if (m_selection.line_begin != m_selection.line_end) {
+            // multiline selection
+        } else {
+            // same line selection
+        }
+    // Delete one codepoint
+    } else {
+        String &line = m_buffer[m_selection.line_end];
+        u64 &line_length = m_buffer_length[m_selection.line_end];
+        if (m_selection.end < line.size()) {
+            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, utf8::length(line.data() + m_selection.end)));
+            if (line_length + m_cursor_width == m_virtual_size.w) {
+                m_virtual_size.w -= text_size.w;
+            }
+            line_length -= text_size.w;
+            line.erase(m_selection.end, 1);
+        // Delete newline between this and the nextline if one exists
+        } else {
+            if (m_selection.line_end < m_buffer.size()) {
+                // TODO since i think we want to move away from storing the newlines the following
+                // code might have to change to account for that
+                line += m_buffer[m_selection.line_end + 1].data() + 1; // Step over the newline
+                line_length += m_buffer_length[m_selection.line_end + 1];
+                if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
+                m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
+                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+            }
+        }
+    }
+    // 1. determine whether the selection is single line or not or no selection
+    // 2. for no selection delete character to the right of the cursor
+    // 3. for single line selection measure the text to be deleted
+    //  erase it from the line string and subtract it from line length
+    // 4. for multiline
+    //  grab all the lines in between the first and last (if any!) and erase them from both buffers
+    //  see if the last line is selected in full and delete it if it is, otherwise measure it and erase from buffers as appropriate (you can use the next index from selection begin for this)
+    //  erase selection from the first line and adjust line length
+    // 5. also make sure to update virtual size (we should be able to do it incrementally so its fast)
+    // 6. eventually record the deletion in history
+
+    _updateView(dc);
+    update();
+    onTextChanged.notify();
+}
 
 void TextEdit::selectAll() {
     m_selection.x_begin = inner_rect.x;
