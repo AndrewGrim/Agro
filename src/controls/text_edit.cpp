@@ -342,7 +342,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             } else { selection = Renderer::Selection(); }
 
             // Draw selection background
-            if (m_selection.mouse_selection || (state & STATE_HARD_FOCUSED && selection.begin != selection.end)) {
+            dc.fillRect(
                 dc.fillRect(
                     Rect(
                         x_scroll_offset + bg_start,
@@ -352,7 +352,6 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                     ),
                     dc.accentWidgetBackground(style)
                 );
-            }
 
             // Draw the text buffer.
             dc.fillTextAligned(
