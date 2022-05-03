@@ -71,11 +71,6 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
         if (isPressed()) {
-            // TODO figure out how we want to handle selecting newlines
-            // because atm i believe they affect things to a certain extent
-            // and in terms of buffer do we want to store them at the beginning of next line
-            // or at the end of previous one?
-            // and in singleline mode we need to skip over them as well
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             i32 x = inner_rect.x;
             x -= X_SCROLL_OFFSET;
@@ -468,10 +463,12 @@ TextEdit* TextEdit::setText(String text) {
         m_buffer_length.push_back(0);
     } else {
         for (char c : text) {
+            // TODO ideally we would account for \r as well
+            // and ideally we would strip both out of singleline buffer
             if (c == '\n') {
                 m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
                 m_buffer_length.push_back(0);
-                last_line_index = index;
+                last_line_index = index + 1;
             }
             index++;
         }
