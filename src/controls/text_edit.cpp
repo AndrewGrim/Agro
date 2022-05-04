@@ -939,6 +939,14 @@ bool TextEdit::swapSelection() {
         m_selection.line_begin = temp_line;
         m_selection.begin = temp;
         return true;
+    } else if (m_selection.line_begin == m_selection.line_end && m_selection.begin > m_selection.end) {
+        i32 temp_x = m_selection.x_end;
+        u64 temp = m_selection.end;
+        m_selection.x_end = m_selection.x_begin;
+        m_selection.end = m_selection.begin;
+        m_selection.x_begin = temp_x;
+        m_selection.begin = temp;
+        return true;
     }
     return false;
 }
