@@ -77,7 +77,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             i32 y = inner_rect.y;
             y -= Y_SCROLL_OFFSET;
             u64 index = 0;
-            i32 line = NORMALIZE(0, m_buffer.size() - 1, (event.y - y) / TEXT_HEIGHT);
+            i32 line = NORMALIZE(0, (i32)m_buffer.size() - 1, (event.y - y) / TEXT_HEIGHT);
 
             // TODO we could optimise it for single line by doing what we did previously
             // and check if lines are the same
@@ -871,7 +871,7 @@ bool TextEdit::isShiftPressed() {
 
 void TextEdit::_updateVirtualWidth() {
     for (u64 length : m_buffer_length) {
-        if (length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = length + m_cursor_width; }
+        if ((i32)length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = length + m_cursor_width; }
     }
 }
 
@@ -893,7 +893,6 @@ void TextEdit::deleteSelection(bool skip) {
             first_line.erase(m_selection.begin, first_line.size() - m_selection.begin);
 
             String &last_line = m_buffer[m_selection.line_end];
-            u64 &last_line_length = m_buffer_length[m_selection.line_end];
             Size last_text_size = dc.measureText(font(), Slice<const char>(last_line.data(), m_selection.end));
             first_line += last_line.substring(m_selection.end, last_line.size()).data();
             first_line_length += last_text_size.w;
@@ -911,7 +910,7 @@ void TextEdit::deleteSelection(bool skip) {
             m_selection.x_end = m_selection.x_begin;
             m_selection.line_end = m_selection.line_begin;
 
-            if (first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
+            if ((i32)first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
             else { _updateVirtualWidth(); }
         } else {
             // Same line selection
@@ -920,7 +919,7 @@ void TextEdit::deleteSelection(bool skip) {
             u64 &line_length = m_buffer_length[m_selection.line_end];
             Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin));
             line_length -= text_size.w;
-            if (line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+            if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
             line.erase(m_selection.begin, m_selection.end - m_selection.begin);
             m_selection.end = m_selection.begin;
             m_selection.x_end = m_selection.x_begin;
@@ -933,14 +932,14 @@ void TextEdit::deleteSelection(bool skip) {
             u64 codepoint_length = utf8::length(line.data() + m_selection.end);
             Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length));
             line_length -= text_size.w;
-            if (line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+            if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
             line.erase(m_selection.end, codepoint_length);
         // Delete newline between this and the nextline if one exists
         } else {
             if (m_selection.line_end + 1 < m_buffer.size()) {
                 line += m_buffer[m_selection.line_end + 1].data();
                 line_length += m_buffer_length[m_selection.line_end + 1];
-                if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
+                if ((i32)line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
                 m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
                 m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
                 m_virtual_size.h -= TEXT_HEIGHT;
