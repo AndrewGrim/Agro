@@ -882,10 +882,8 @@ void TextEdit::deleteSelection(bool skip) {
             String &line = m_buffer[m_selection.line_end];
             u64 &line_length = m_buffer_length[m_selection.line_end];
             Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin));
-            if (line_length + m_cursor_width == m_virtual_size.w) {
-                m_virtual_size.w -= text_size.w;
-            }
             line_length -= text_size.w;
+            if (line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
             line.erase(m_selection.begin, m_selection.end - m_selection.begin);
             m_selection.end = m_selection.begin;
             m_selection.x_end = m_selection.x_begin;
@@ -896,10 +894,8 @@ void TextEdit::deleteSelection(bool skip) {
         u64 &line_length = m_buffer_length[m_selection.line_end];
         if (m_selection.end < line.size()) {
             Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, utf8::length(line.data() + m_selection.end)));
-            if (line_length + m_cursor_width == m_virtual_size.w) {
-                m_virtual_size.w -= text_size.w;
-            }
             line_length -= text_size.w;
+            if (line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
             line.erase(m_selection.end, 1);
         // Delete newline between this and the nextline if one exists
         } else {
