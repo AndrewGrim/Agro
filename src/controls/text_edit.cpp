@@ -498,7 +498,7 @@ void TextEdit::_endSelection() {
 
 void TextEdit::_updateView(DrawingContext &dc) {
     u64 viewport_start_x = X_SCROLL_OFFSET + inner_rect.x;
-    u64 viewport_start_y = Y_SCROLL_OFFSET + inner_rect.y;
+    u64 viewport_start_y = Y_SCROLL_OFFSET;
     u64 next_x_pos = m_selection.x_end;
     u64 next_y_pos = m_selection.line_end * TEXT_HEIGHT;
 
