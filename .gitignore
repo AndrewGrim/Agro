@@ -3,8 +3,8 @@
 *.out
 *.exe
 *.json
+*.txt
 
-/.vscode
 /build
 /Agro
-/.clangd
+/.*
