@@ -362,7 +362,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 0,
                 dc.textForeground(style),
                 m_tab_width,
-                state & STATE_HARD_FOCUSED ? selection : Renderer::Selection(),
+                selection,
                 dc.textSelected(style)
             );
             text_region.y += TEXT_HEIGHT;
