@@ -14,7 +14,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     setPlaceholderText(placeholder);
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         m_selection.mouse_selection = true;
-        if (m_buffer.size() && m_buffer[0].size()) {
+        if (!(m_buffer.size() == 1 && !m_buffer[0].size())) {
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             u64 index = 0;
             i32 x = inner_rect.x;
@@ -304,7 +304,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     u64 line_index = -((pos.y - inner_rect.y) / TEXT_HEIGHT);
     text_region.y += TEXT_HEIGHT * line_index;
     i32 x_scroll_offset = (pos.x - inner_rect.x);
-    if (m_buffer.size() && m_buffer[0].size()) {
+    if (!(m_buffer.size() == 1 && !m_buffer[0].size())) {
         Selection before_swap = m_selection;
         bool did_swap = swapSelection();
         Renderer::Selection selection;
