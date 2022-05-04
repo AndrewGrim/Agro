@@ -85,7 +85,8 @@
         virtual void handleTextEvent(DrawingContext &dc, const char *text) override;
         TextEdit* setText(String text);
         String text();
-        void _noSelection();
+        void _beginSelection();
+        void _endSelection();
         void _updateView(DrawingContext &dc);
         void _moveLeft(DrawingContext &dc);
         TextEdit* moveCursorLeft();

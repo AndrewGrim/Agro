@@ -48,14 +48,14 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         (m_selection.line_begin < m_selection.line_end) ||
                         ((m_selection.line_begin == m_selection.line_end) && (m_selection.begin < m_selection.end))
                     ) {
-                        _noSelection();
+                        _endSelection();
                     }
                 } else if (line > m_selection.line_begin && line > m_selection.line_end) {
                     if (
                         (m_selection.line_begin > m_selection.line_end) ||
                         ((m_selection.line_begin == m_selection.line_end) && (m_selection.begin > m_selection.end))
                     ) {
-                        _noSelection();
+                        _endSelection();
                     }
                 }
                 m_selection.x_end = x + X_SCROLL_OFFSET;
@@ -65,7 +65,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 m_selection.x_end = x + X_SCROLL_OFFSET;
                 m_selection.line_end = line;
                 m_selection.end = index;
-                _noSelection();
+                _endSelection();
             }
         }
     });
@@ -484,7 +484,13 @@ void TextEdit::handleTextEvent(DrawingContext &dc, const char *text) {
     // insert(m_selection.end, text);
 }
 
-void TextEdit::_noSelection() {
+void TextEdit::_beginSelection() {
+    m_selection.end = m_selection.begin;
+    m_selection.x_end = m_selection.x_begin;
+    m_selection.line_end = m_selection.line_begin;
+}
+
+void TextEdit::_endSelection() {
     m_selection.x_begin = m_selection.x_end;
     m_selection.line_begin = m_selection.line_end;
     m_selection.begin = m_selection.end;
@@ -545,11 +551,12 @@ TextEdit* TextEdit::moveCursorLeft() {
     } else {
         if (m_selection.hasSelection()) {
             // go to the edge of the selection
-            _noSelection();
+            swapSelection();
+            _beginSelection();
         } else {
             // move cursor by one
             _moveLeft(dc);
-            _noSelection();
+            _endSelection();
         }
     }
 
@@ -589,11 +596,12 @@ TextEdit* TextEdit::moveCursorRight() {
     } else {
         if (m_selection.hasSelection()) {
             // go to the edge of the selection
-            _noSelection();
+            swapSelection();
+            _endSelection();
         } else {
             // move cursor by one
             _moveRight(dc);
-            _noSelection();
+            _endSelection();
         }
     }
 
@@ -655,11 +663,11 @@ TextEdit* TextEdit::moveCursorUp() {
                 for (u64 codepoint_byte_offset = 0; codepoint_byte_offset != m_selection.end ; iter = iter.next(), codepoint_byte_offset += iter.length, m_last_codepoint_index++);
             }
             _moveUp(dc);
-            _noSelection();
+            _endSelection();
         } else {
             // move cursor by one
             _moveUp(dc);
-            _noSelection();
+            _endSelection();
         }
     }
 
@@ -720,11 +728,11 @@ TextEdit* TextEdit::moveCursorDown() {
                 for (u64 codepoint_byte_offset = 0; codepoint_byte_offset != m_selection.end ; iter = iter.next(), codepoint_byte_offset += iter.length, m_last_codepoint_index++);
             }
             _moveDown(dc);
-            _noSelection();
+            _endSelection();
         } else {
             // move cursor by one
             _moveDown(dc);
-            _noSelection();
+            _endSelection();
         }
     }
 
