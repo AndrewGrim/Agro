@@ -909,16 +909,8 @@ void TextEdit::deleteSelection(bool skip) {
             }
         }
     }
-    // 1. determine whether the selection is single line or not or no selection
-    // 2. for no selection delete character to the right of the cursor
-    // 3. for single line selection measure the text to be deleted
-    //  erase it from the line string and subtract it from line length
-    // 4. for multiline
-    //  grab all the lines in between the first and last (if any!) and erase them from both buffers
-    //  see if the last line is selected in full and delete it if it is, otherwise measure it and erase from buffers as appropriate (you can use the next index from selection begin for this)
-    //  erase selection from the first line and adjust line length
-    // 5. also make sure to update virtual size (we should be able to do it incrementally so its fast)
-    // 6. eventually record the deletion in history
+
+    // TODO eventually record the deletion in history
 
     _updateView(dc);
     update();
