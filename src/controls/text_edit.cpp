@@ -428,7 +428,7 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
         Scrollable::sizeHint(dc);
         Size size;
         if (m_mode == Mode::MultiLine) { size = m_viewport; }
-        else { size = Size(m_viewport.w, font() ? font()->maxHeight() : dc.default_font->maxHeight()); }
+        else { size = Size(m_viewport.w, TEXT_HEIGHT); }
         dc.sizeHintMargin(size, style);
         dc.sizeHintBorder(size, style);
         dc.sizeHintPadding(size, style);
