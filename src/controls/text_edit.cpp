@@ -875,7 +875,37 @@ void TextEdit::deleteSelection(bool skip) {
 
     if (m_selection.hasSelection()) {
         if (m_selection.line_begin != m_selection.line_end) {
-            // multiline selection
+            // Multiline selection
+            swapSelection(); // TODO We will need to make sure thats fine in terms of history
+            u64 lines_to_delete = m_selection.line_end - m_selection.line_begin;
+
+            String &first_line = m_buffer[m_selection.line_begin];
+            u64 &first_line_length = m_buffer_length[m_selection.line_begin];
+            Size first_text_size = dc.measureText(font(), Slice<const char>(first_line.data() + m_selection.begin, first_line.size() - m_selection.begin));
+            first_line_length -= first_text_size.w;
+            first_line.erase(m_selection.begin, first_line.size() - m_selection.begin);
+
+            String &last_line = m_buffer[m_selection.line_end];
+            u64 &last_line_length = m_buffer_length[m_selection.line_end];
+            Size last_text_size = dc.measureText(font(), Slice<const char>(last_line.data(), m_selection.end));
+            first_line += last_line.substring(m_selection.end, last_line.size()).data();
+            first_line_length += last_text_size.w;
+
+            if (lines_to_delete == 1) {
+                m_buffer.erase(m_buffer.begin() + m_selection.line_end);
+                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end);
+            } else if (lines_to_delete > 1) {
+                m_buffer.erase(m_buffer.begin() + m_selection.line_begin + 1, m_buffer.begin() + m_selection.line_end + 1);
+                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_begin + 1, m_buffer_length.begin() + m_selection.line_end + 1);
+            }
+            m_virtual_size.h -= TEXT_HEIGHT * lines_to_delete;
+
+            m_selection.end = m_selection.begin;
+            m_selection.x_end = m_selection.x_begin;
+            m_selection.line_end = m_selection.line_begin;
+
+            if (first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
+            else { _updateVirtualWidth(); }
         } else {
             // Same line selection
             swapSelection(); // TODO We will need to make sure thats fine in terms of history
