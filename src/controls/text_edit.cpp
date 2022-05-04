@@ -77,26 +77,20 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             i32 y = inner_rect.y;
             y -= Y_SCROLL_OFFSET;
             u64 index = 0;
-            i32 line = (event.y - y) / TEXT_HEIGHT;
+            i32 line = NORMALIZE(0, m_buffer.size() - 1, (event.y - y) / TEXT_HEIGHT);
 
-            if (line < 0) {
-                line = 0;
-            } else if ((u32)line < m_buffer.size()) {
-                // TODO we could optimise it for single line by doing what we did previously
-                // and check if lines are the same
-                m_last_codepoint_index = 0;
-                utf8::Iterator iter = utf8::Iterator(m_buffer[line].data());
-                while ((iter = iter.next())) {
-                    i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
-                    if (x + w > event.x) {
-                        break;
-                    }
-                    x += w;
-                    index += iter.length;
-                    m_last_codepoint_index++;
+            // TODO we could optimise it for single line by doing what we did previously
+            // and check if lines are the same
+            m_last_codepoint_index = 0;
+            utf8::Iterator iter = utf8::Iterator(m_buffer[line].data());
+            while ((iter = iter.next())) {
+                i32 w = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length)).w;
+                if (x + w > event.x) {
+                    break;
                 }
-            } else {
-                line = m_buffer.size() - 1;
+                x += w;
+                index += iter.length;
+                m_last_codepoint_index++;
             }
 
             m_selection.x_end = x + X_SCROLL_OFFSET;
