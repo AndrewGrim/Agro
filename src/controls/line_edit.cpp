@@ -258,6 +258,7 @@ Size LineEdit::sizeHint(DrawingContext &dc) {
     if (m_text_changed) {
         m_virtual_size = dc.measureText(font(), text(), m_tab_width);
         m_text_height = m_virtual_size.h;
+        m_text_changed = false;
     }
     if (m_size_changed) {
         Size size = Size(m_min_length, font() ? font()->maxHeight() : dc.default_font->maxHeight());
