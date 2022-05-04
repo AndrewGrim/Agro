@@ -132,26 +132,28 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     can_remove_callback = false;
                 }
 
-                if (event.y < inner_rect.y && m_vertical_scrollbar->m_slider->m_value > 0.0) {
-                    m_mouse_scroll_event.yrel = event.y - inner_rect.y;
-                    if (!m_mouse_scroll_callback) {
-                        m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                if (m_mode == Mode::MultiLine) {
+                    if (event.y < inner_rect.y && m_vertical_scrollbar->m_slider->m_value > 0.0) {
+                        m_mouse_scroll_event.yrel = event.y - inner_rect.y;
+                        if (!m_mouse_scroll_callback) {
+                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                        }
+                        if (event.yrel < 0) {
+                            m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
+                            m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+                        }
+                        can_remove_callback = false;
+                    } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
+                        m_mouse_scroll_event.yrel = event.y - (inner_rect.y + inner_rect.h);
+                        if (!m_mouse_scroll_callback) {
+                            m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
+                        }
+                        if (event.yrel > 0) {
+                            m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
+                            m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+                        }
+                        can_remove_callback = false;
                     }
-                    if (event.yrel < 0) {
-                        m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
-                        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
-                    }
-                    can_remove_callback = false;
-                } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
-                    m_mouse_scroll_event.yrel = event.y - (inner_rect.y + inner_rect.h);
-                    if (!m_mouse_scroll_callback) {
-                        m_mouse_scroll_callback = Application::get()->addTimer(0, _mouseScrollCallback);
-                    }
-                    if (event.yrel > 0) {
-                        m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
-                        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
-                    }
-                    can_remove_callback = false;
                 }
 
                 if (can_remove_callback && m_mouse_scroll_callback) {
@@ -397,7 +399,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         );
     }
 
-    drawScrollBars(dc, rect, m_virtual_size);
+    if (m_mode == Mode::MultiLine) { drawScrollBars(dc, rect, m_virtual_size); }
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style, state);
     dc.setClip(previous_clip);
@@ -504,12 +506,14 @@ void TextEdit::_updateView(DrawingContext &dc) {
         m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
     }
 
-    if (next_y_pos < viewport_start_y) {
-        m_vertical_scrollbar->m_slider->m_value = next_y_pos / (f64)(m_virtual_size.h - inner_rect.h);
-        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
-    } else if (next_y_pos > viewport_start_y + inner_rect.h) {
-        m_vertical_scrollbar->m_slider->m_value = (next_y_pos - inner_rect.h) / (f64)(m_virtual_size.h - inner_rect.h);
-        m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+    if (m_mode == Mode::MultiLine) {
+        if (next_y_pos < viewport_start_y) {
+            m_vertical_scrollbar->m_slider->m_value = next_y_pos / (f64)(m_virtual_size.h - inner_rect.h);
+            m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+        } else if (next_y_pos > viewport_start_y + inner_rect.h) {
+            m_vertical_scrollbar->m_slider->m_value = (next_y_pos - inner_rect.h) / (f64)(m_virtual_size.h - inner_rect.h);
+            m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+        }
     }
 }
 
@@ -1099,4 +1103,65 @@ bool TextEdit::swapSelection() {
 
 i32 TextEdit::isFocusable() {
     return (i32)FocusType::Focusable;
+}
+
+Widget* TextEdit::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
+    if (m_mode == Mode::MultiLine) {
+        if (m_vertical_scrollbar->isVisible()) {
+            if ((event.x >= m_vertical_scrollbar->rect.x && event.x <= m_vertical_scrollbar->rect.x + m_vertical_scrollbar->rect.w) &&
+                (event.y >= m_vertical_scrollbar->rect.y && event.y <= m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+                return m_vertical_scrollbar->propagateMouseEvent(window, state, event);
+            }
+        }
+        if (m_horizontal_scrollbar->isVisible()) {
+            if ((event.x >= m_horizontal_scrollbar->rect.x && event.x <= m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+                (event.y >= m_horizontal_scrollbar->rect.y && event.y <= m_horizontal_scrollbar->rect.y + m_horizontal_scrollbar->rect.h)) {
+                return m_horizontal_scrollbar->propagateMouseEvent(window, state, event);
+            }
+        }
+        if (m_vertical_scrollbar->isVisible() && m_horizontal_scrollbar->isVisible()) {
+            if ((event.x > m_horizontal_scrollbar->rect.x + m_horizontal_scrollbar->rect.w) &&
+                (event.y > m_vertical_scrollbar->rect.y + m_vertical_scrollbar->rect.h)) {
+                if (state->hovered) {
+                    state->hovered->onMouseLeft.notify(this, event);
+                }
+                state->hovered = nullptr;
+                update();
+                return nullptr;
+            }
+        }
+    }
+
+    for (Widget *child : children) {
+        if (child->isVisible()) {
+            if ((event.x >= child->rect.x && event.x <= child->rect.x + child->rect.w) &&
+                (event.y >= child->rect.y && event.y <= child->rect.y + child->rect.h)) {
+                Widget *last = nullptr;
+                if (child->isLayout()) {
+                    last = child->propagateMouseEvent(window, state, event);
+                } else {
+                    child->handleMouseEvent(window, state, event);
+                    last = child;
+                }
+                return last;
+            }
+        }
+    }
+
+    handleMouseEvent(window, state, event);
+    return this;
+}
+
+bool TextEdit::handleScrollEvent(ScrollEvent event) {
+    SDL_Keymod mod = SDL_GetModState();
+    if (mod & Mod::Shift) {
+        if (m_horizontal_scrollbar->isVisible()) {
+            return m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    } else {
+        if (m_mode == Mode::MultiLine && m_vertical_scrollbar->isVisible()) {
+            return m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    }
+    return false;
 }

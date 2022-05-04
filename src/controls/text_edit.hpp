@@ -114,6 +114,8 @@
         // void undo();
         // void redo();
         i32 isFocusable() override;
+        Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
+        bool handleScrollEvent(ScrollEvent event) override;
 
         std::vector<String> m_buffer;
         std::vector<u64> m_buffer_length;
