@@ -870,6 +870,7 @@ bool TextEdit::isShiftPressed() {
 }
 
 void TextEdit::_updateVirtualWidth() {
+    m_virtual_size.w = 0;
     for (u64 length : m_buffer_length) {
         if ((i32)length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = length + m_cursor_width; }
     }
