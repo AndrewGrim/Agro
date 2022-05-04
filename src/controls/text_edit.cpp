@@ -923,10 +923,11 @@ void TextEdit::deleteSelection(bool skip) {
         String &line = m_buffer[m_selection.line_end];
         u64 &line_length = m_buffer_length[m_selection.line_end];
         if (m_selection.end < line.size()) {
-            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, utf8::length(line.data() + m_selection.end)));
+            u64 codepoint_length = utf8::length(line.data() + m_selection.end);
+            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length));
             line_length -= text_size.w;
             if (line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
-            line.erase(m_selection.end, 1);
+            line.erase(m_selection.end, codepoint_length);
         // Delete newline between this and the nextline if one exists
         } else {
             if (m_selection.line_end + 1 < m_buffer.size()) {
