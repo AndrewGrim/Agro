@@ -104,6 +104,7 @@
         TextEdit* jumpWordLeft();
         TextEdit* jumpWordRight();
         bool isShiftPressed();
+        void _updateVirtualWidth();
         void deleteSelection(bool skip = false);
         void selectAll();
         bool swapSelection();

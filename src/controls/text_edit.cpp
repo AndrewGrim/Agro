@@ -862,6 +862,12 @@ bool TextEdit::isShiftPressed() {
     return false;
 }
 
+void TextEdit::_updateVirtualWidth() {
+    for (u64 length : m_buffer_length) {
+        if (length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = length + m_cursor_width; }
+    }
+}
+
 // TODO maybe extra parameter to indicate if we want it to behave like backspace
 // for single deletions so we record history properly?
 void TextEdit::deleteSelection(bool skip) {
