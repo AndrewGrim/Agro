@@ -904,6 +904,8 @@ void TextEdit::deleteSelection(bool skip) {
                 m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
                 m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
                 m_virtual_size.h -= TEXT_HEIGHT;
+            } else {
+                return;
             }
         }
     }
