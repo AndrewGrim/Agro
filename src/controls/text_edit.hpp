@@ -109,7 +109,7 @@
         void deleteSelection(bool is_backspace = false, bool skip = false);
         void selectAll();
         bool swapSelection();
-        // void insert(u64 index, const char *text, bool skip = false);
+        void insert(const char *text, bool skip = false);
         // void setCursor(u64 index);
         // void undo();
         // void redo();

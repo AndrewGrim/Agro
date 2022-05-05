@@ -472,7 +472,7 @@ TextEdit* TextEdit::setText(String text) {
 }
 
 void TextEdit::handleTextEvent(DrawingContext &dc, const char *text) {
-    // insert(m_selection.end, text);
+    insert(text);
 }
 
 void TextEdit::_beginSelection() {
@@ -1019,32 +1019,28 @@ bool TextEdit::swapSelection() {
     return false;
 }
 
-// void TextEdit::insert(u64 index, const char *text, bool skip) {
-//     DrawingContext &dc = *Application::get()->currentWindow()->dc;
+void TextEdit::insert(const char *text, bool skip) {
+    DrawingContext &dc = DC;
 
-//     if (m_selection.hasSelection()) {
-//         deleteSelection(skip);
-//     }
+    if (m_selection.hasSelection()) { deleteSelection(false, skip); }
 
-//     if (!skip) {
-//         m_history.append(HistoryItem(HistoryItem::Action::Insert, String(text), m_selection));
-//     }
-//     m_text.insert(m_selection.begin, text);
-//     m_text_changed = true;
+    u64 length = strlen(text);
+    i32 text_size = dc.measureText(font(), Slice<const char>(text, length), m_tab_width).w;
 
-//     m_selection.x_end += dc.measureText(font(), text).w;
-//     m_selection.end += strlen(text);
-//     m_selection.x_begin = m_selection.x_end;
-//     m_selection.begin = m_selection.end;
+    u64 &line_length = m_buffer_length[m_selection.line_end];
+    m_buffer[m_selection.line_end].insert(m_selection.end, text);
+    line_length += text_size;
+    if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
 
-//     if (m_selection.end == this->text().size()) {
-//         m_current_view = m_max_view;
-//     } else {
-//         m_current_view = m_selection.x_end / m_virtual_size.w;
-//     }
-//     update();
-//     onTextChanged.notify();
-// }
+    m_selection.x_end += text_size;
+    m_selection.end += length;
+    m_last_codepoint_index++;
+    _endSelection();
+
+    _updateView(dc);
+    update();
+    onTextChanged.notify();
+}
 
 // void TextEdit::setCursor(u64 index) {
 //     if (!index) {
