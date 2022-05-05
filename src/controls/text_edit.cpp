@@ -259,10 +259,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     // bind(SDLK_y, Mod::Ctrl, [&]{
     //     redo();
     // });
-    // bind(SDLK_TAB, Mod::None, [&]() {
-    //     const char *tab = "\t";
-    //     insert(m_selection.end, tab);
-    // });
+    bind(SDLK_TAB, Mod::None, [&]() {
+        insert("\t");
+    });
 }
 
 TextEdit::~TextEdit() {
