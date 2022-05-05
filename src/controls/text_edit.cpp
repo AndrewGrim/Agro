@@ -218,15 +218,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     };
     bind(SDLK_END, Mod::None, end);
     bind(SDLK_END, Mod::Shift, end);
-    // bind(SDLK_BACKSPACE, Mod::None, [&]{
-    //     if (m_selection.hasSelection()) {
-    //         deleteSelection();
-    //     } else if (m_selection.begin) {
-    //         moveCursorLeft();
-    //         deleteAt(m_selection.begin);
-    //     }
-    //     updateView();
-    // });
+    bind(SDLK_BACKSPACE, Mod::None, [&]{
+        deleteSelection(true);
+    });
     bind(SDLK_DELETE, Mod::None, [&]{
         deleteSelection();
     });
@@ -876,9 +870,7 @@ void TextEdit::_updateVirtualWidth() {
     }
 }
 
-// TODO maybe extra parameter to indicate if we want it to behave like backspace
-// for single deletions so we record history properly?
-void TextEdit::deleteSelection(bool skip) {
+void TextEdit::deleteSelection(bool is_backspace, bool skip) {
     DrawingContext &dc = DC;
 
     if (m_selection.hasSelection()) {
@@ -929,23 +921,59 @@ void TextEdit::deleteSelection(bool skip) {
     } else {
         String &line = m_buffer[m_selection.line_end];
         u64 &line_length = m_buffer_length[m_selection.line_end];
-        if (m_selection.end < line.size()) {
-            u64 codepoint_length = utf8::length(line.data() + m_selection.end);
-            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length));
-            line_length -= text_size.w;
-            if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
-            line.erase(m_selection.end, codepoint_length);
-        // Delete newline between this and the nextline if one exists
-        } else {
-            if (m_selection.line_end + 1 < m_buffer.size()) {
-                line += m_buffer[m_selection.line_end + 1].data();
-                line_length += m_buffer_length[m_selection.line_end + 1];
-                if ((i32)line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
-                m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
-                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
-                m_virtual_size.h -= TEXT_HEIGHT;
+        if (is_backspace) {
+            if (m_selection.end) {
+                utf8::Iterator iter = utf8::Iterator(line.data(), m_selection.end).prev();
+                assert(iter && "There should be a valid codepoint here since we already checked that we are not at the beginning of the line!");
+                Size text_size = dc.measureText(font(), Slice<const char>(iter.data, iter.length));
+                line_length -= text_size.w;
+                if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+                line.erase(m_selection.end - iter.length, iter.length);
+                m_selection.end -= iter.length;
+                m_selection.x_end -= text_size.w;
+                m_last_codepoint_index--;
+                _endSelection();
+            // Delete newline between this and the previous line if one exists
             } else {
-                return;
+                if (m_selection.line_end) {
+                    String &previous_line = m_buffer[m_selection.line_end - 1];
+                    u64 &previous_line_length = m_buffer_length[m_selection.line_end - 1];
+                    m_selection.end = previous_line.size();
+                    m_selection.x_end = previous_line_length + inner_rect.x;
+                    utf8::Iterator iter = previous_line.utf8Begin();
+                    m_last_codepoint_index = 0;
+                    for (; ((iter = iter.next())); m_last_codepoint_index++);
+                    m_selection.line_end--;
+                    _endSelection();
+                    previous_line += line.data();
+                    previous_line_length += line_length;
+                    if ((i32)previous_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = previous_line_length + m_cursor_width; }
+                    m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
+                    m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                    m_virtual_size.h -= TEXT_HEIGHT;
+                } else {
+                    return;
+                }
+            }
+        } else {
+            if (m_selection.end < line.size()) {
+                u64 codepoint_length = utf8::length(line.data() + m_selection.end);
+                Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length));
+                line_length -= text_size.w;
+                if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+                line.erase(m_selection.end, codepoint_length);
+            // Delete newline between this and the next line if one exists
+            } else {
+                if (m_selection.line_end + 1 < m_buffer.size()) {
+                    line += m_buffer[m_selection.line_end + 1].data();
+                    line_length += m_buffer_length[m_selection.line_end + 1];
+                    if ((i32)line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
+                    m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
+                    m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                    m_virtual_size.h -= TEXT_HEIGHT;
+                } else {
+                    return;
+                }
             }
         }
     }
