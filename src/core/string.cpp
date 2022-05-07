@@ -250,10 +250,17 @@ utf8::Iterator String::utf8End() const {
 }
 
 void String::insert(u64 index, const char *text) {
+    insert(index, text, strlen(text));
+}
+
+void String::insert(u64 index, Slice<const char> text) {
+    insert(index, text.data, text.length);
+}
+
+void String::insert(u64 index, const char *text, u64 length) {
     // TODO change to result
     assert(index <= size());
     assert(utf8::length(data() + index));
-    u64 length = strlen(text);
     u64 new_size = size() + length;
     if (new_size <= capacity()) {
         memcpy(data() + index + length, data() + index, size() - index);

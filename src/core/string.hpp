@@ -97,6 +97,8 @@
         utf8::Iterator utf8Begin() const;
         utf8::Iterator utf8End() const;
         void insert(u64 index, const char *text);
+        void insert(u64 index, Slice<const char> text);
+        void insert(u64 index, const char *text, u64 length);
         void erase(u64 index, u64 count);
         void clear();
         Slice<const char> slice() const;
