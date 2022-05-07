@@ -899,11 +899,6 @@ void TextEdit::deleteSelection(bool is_backspace, bool skip) {
                 m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_begin + 1, m_buffer_length.begin() + m_selection.line_end + 1);
             }
             m_virtual_size.h -= TEXT_HEIGHT * lines_to_delete;
-
-            m_selection.end = m_selection.begin;
-            m_selection.x_end = m_selection.x_begin;
-            m_selection.line_end = m_selection.line_begin;
-
             if ((i32)first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
             else { _updateVirtualWidth(); }
         } else {
@@ -915,9 +910,8 @@ void TextEdit::deleteSelection(bool is_backspace, bool skip) {
             line_length -= text_size.w;
             if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
             line.erase(m_selection.begin, m_selection.end - m_selection.begin);
-            m_selection.end = m_selection.begin;
-            m_selection.x_end = m_selection.x_begin;
         }
+        _beginSelection();
     // Delete one codepoint
     } else {
         String &line = m_buffer[m_selection.line_end];
