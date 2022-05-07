@@ -880,14 +880,16 @@ void TextEdit::deleteSelection(bool is_backspace, bool skip) {
 
             String &first_line = m_buffer[m_selection.line_begin];
             u64 &first_line_length = m_buffer_length[m_selection.line_begin];
-            Size first_text_size = dc.measureText(font(), Slice<const char>(first_line.data() + m_selection.begin, first_line.size() - m_selection.begin), m_tab_width);
-            first_line_length -= first_text_size.w;
+            i32 first_text_size = dc.measureText(font(), Slice<const char>(first_line.data() + m_selection.begin, first_line.size() - m_selection.begin), m_tab_width).w;
+            first_line_length -= first_text_size;
             first_line.erase(m_selection.begin, first_line.size() - m_selection.begin);
 
             String &last_line = m_buffer[m_selection.line_end];
-            Size last_text_size = dc.measureText(font(), Slice<const char>(last_line.data(), m_selection.end), m_tab_width);
-            first_line += last_line.substring(m_selection.end, last_line.size()).data();
-            first_line_length += last_text_size.w;
+            i32 last_text_size = dc.measureText(font(), Slice<const char>(last_line.data() + m_selection.end, last_line.size() - m_selection.end), m_tab_width).w;
+            if (last_text_size) {
+                first_line += last_line.substring(m_selection.end, last_line.size()).data();
+                first_line_length += last_text_size;
+            }
 
             if (lines_to_delete == 1) {
                 m_buffer.erase(m_buffer.begin() + m_selection.line_end);
