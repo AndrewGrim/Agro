@@ -433,10 +433,35 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
 }
 
 String TextEdit::text() {
-    String s = "";
-    for (const String &line : m_buffer) {
-        s += line.data();
+    u64 length = 0;
+    for (u64 i = m_selection.line_begin; i <= m_selection.line_end; i++) {
+        const String &line = m_buffer[i];
+        if (i == m_selection.line_begin) {
+            length += line.size() - m_selection.begin + 1; // +1 to account for newline
+        } else if (i == m_selection.line_end) {
+            length += m_selection.end;
+        } else {
+            length += line.size() + 1; // +1 to account for newline
+        }
     }
+    String s = String(length);
+    u64 offset = 0;
+    for (u64 i = m_selection.line_begin; i <= m_selection.line_end; i++) {
+        const String &line = m_buffer[i];
+        if (i == m_selection.line_begin) {
+            memcpy(s.data() + offset, line.data() + m_selection.begin, line.size() - m_selection.begin);
+            offset += line.size() - m_selection.begin + 1; // +1 to account for newline
+            s.data()[offset - 1] = '\n';
+        } else if (i == m_selection.line_end) {
+            memcpy(s.data() + offset, line.data(), m_selection.end);
+            offset += m_selection.end;
+        } else {
+            memcpy(s.data() + offset, line.data(), line.size());
+            offset += line.size() + 1; // +1 to account for newline
+            s.data()[offset - 1] = '\n';
+        }
+    }
+    s.data()[s.size()] = '\0';
     return s;
 }
 
