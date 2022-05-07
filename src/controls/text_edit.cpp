@@ -525,8 +525,8 @@ void TextEdit::_updateView(DrawingContext &dc) {
         if (next_y_pos < viewport_start_y) {
             m_vertical_scrollbar->m_slider->m_value = next_y_pos / (f64)(m_virtual_size.h - inner_rect.h);
             m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
-        } else if (next_y_pos > viewport_start_y + inner_rect.h) {
-            m_vertical_scrollbar->m_slider->m_value = (next_y_pos - inner_rect.h) / (f64)(m_virtual_size.h - inner_rect.h);
+        } else if (next_y_pos + TEXT_HEIGHT > viewport_start_y + inner_rect.h) {
+            m_vertical_scrollbar->m_slider->m_value = (next_y_pos + TEXT_HEIGHT - inner_rect.h) / (f64)(m_virtual_size.h - inner_rect.h);
             m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
         }
     }
