@@ -1019,17 +1019,57 @@ void TextEdit::insert(const char *text, bool skip) {
 
     if (m_selection.hasSelection()) { deleteSelection(false, skip); }
 
-    u64 length = strlen(text);
-    i32 text_size = dc.measureText(font(), Slice<const char>(text, length), m_tab_width).w;
-
-    u64 &line_length = m_buffer_length[m_selection.line_end];
-    m_buffer[m_selection.line_end].insert(m_selection.end, text);
-    line_length += text_size;
-    if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
-
-    m_selection.x_end += text_size;
-    m_selection.end += length;
-    m_last_codepoint_index++;
+    utf8::Iterator iter = utf8::Iterator(text);
+    u64 length = 0;
+    i32 text_size = 0;
+    bool is_first_line = true;
+    u64 last_line_index = 0;
+    while ((iter = iter.next())) {
+        // TODO we should get rid of newlines for singleline mode also \r
+        if (iter.codepoint == '\n' && m_mode == Mode::MultiLine) {
+            if (is_first_line) {
+                u64 &line_length = m_buffer_length[m_selection.line_end];
+                m_buffer[m_selection.line_end].insert(m_selection.end, text, length);
+                line_length += text_size;
+                if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
+                is_first_line = false;
+            } else {
+                m_buffer.emplace(m_buffer.begin() + m_selection.line_end, text + last_line_index, length);
+                m_buffer_length.insert(m_buffer_length.begin() + m_selection.line_end, text_size);
+                if (text_size + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = text_size + m_cursor_width; }
+            }
+            m_selection.line_end++;
+            m_virtual_size.h += TEXT_HEIGHT;
+            last_line_index += length + 1; // +1 to step over the newline.
+            m_selection.x_end = inner_rect.x;
+            m_selection.end = 0;
+            text_size = 0;
+            length = 0;
+            m_last_codepoint_index = 0;
+        } else {
+            i32 codepoint_width = dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length), m_tab_width).w;
+            text_size += codepoint_width;
+            length += iter.length;
+            m_last_codepoint_index++;
+        }
+    }
+    // If the text being inserted spans multiple lines then insert another line into the buffer for the last text range
+    if (!is_first_line) {
+        m_buffer.emplace(m_buffer.begin() + m_selection.line_end, text + last_line_index, length);
+        m_buffer_length.insert(m_buffer_length.begin() + m_selection.line_end, text_size);
+        if (text_size + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = text_size + m_cursor_width; }
+        m_selection.x_end += text_size;
+        m_selection.end += length;
+        m_virtual_size.h += TEXT_HEIGHT;
+    // otherwise add the text to the current line from selection
+    } else {
+        u64 &line_length = m_buffer_length[m_selection.line_end];
+        m_buffer[m_selection.line_end].insert(m_selection.end, text + last_line_index, length);
+        line_length += text_size;
+        m_selection.x_end += text_size;
+        m_selection.end += length;
+        if (line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
+    }
     _endSelection();
 
     _updateView(dc);
