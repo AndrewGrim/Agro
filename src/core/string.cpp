@@ -42,12 +42,12 @@ namespace utf8 {
     }
 
     // Initialise iterator at data address.
-    Iterator::Iterator(char *data) : begin{data}, data{data} {}
+    Iterator::Iterator(const char *data) : begin{data}, data{data} {}
 
     // Initialise iterator at data address with size offset.
     // This way you can start iterating from the end and use prev()
     // to iterate in reverse without having to iterate forward first.
-    Iterator::Iterator(char *data, u64 size) : begin{data}, data{data + size} {}
+    Iterator::Iterator(const char *data, u64 size) : begin{data}, data{data + size} {}
 
     Iterator Iterator::next() {
         length = utf8::length(data);

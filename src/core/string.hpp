@@ -20,17 +20,20 @@
         // Note: That neither constructor guarantees a valid starting point.
         // It is up to the callee to construct the Iterator using a valid sequence.
         struct Iterator {
-            char *begin = nullptr;
-            char *data = nullptr;
+            const char *begin = nullptr;
+            // Note: That if you are using next() for iteration in order
+            // to get the char* to the last codepoint you need to access it like so:
+            // iter.data - iter.length
+            const char *data = nullptr;
             u8 length = 0;
             u32 codepoint = 0;
 
             // Initialise iterator at data address.
-            Iterator(char *data);
+            Iterator(const char *data);
             // Initialise iterator at data address with size offset.
             // This way you can start iterating from the end and use prev()
             // to iterate in reverse without having to iterate forward first.
-            Iterator(char *data, u64 size);
+            Iterator(const char *data, u64 size);
             Iterator next();
             Iterator prev();
             operator bool();
