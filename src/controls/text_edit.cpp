@@ -258,6 +258,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     bind(SDLK_TAB, Mod::None, [&]() {
         insert("\t");
     });
+    bind(SDLK_RETURN, Mod::None, [&]() {
+        insert("\n");
+    });
 }
 
 TextEdit::~TextEdit() {
