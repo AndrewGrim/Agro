@@ -246,13 +246,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             }
         }
     });
-    // bind(SDLK_c, Mod::Ctrl, [&]{
-    //     if (m_selection.hasSelection()) {
-    //         swapSelection();
-    //         String s = this->text().substring(m_selection.begin, m_selection.end);
-    //         SDL_SetClipboardText(s.data());
-    //     }
-    // });
+    bind(SDLK_c, Mod::Ctrl, [&]{
+        SDL_SetClipboardText(selection().data());
+    });
     // bind(SDLK_z, Mod::Ctrl, [&]{
     //     undo();
     // });
