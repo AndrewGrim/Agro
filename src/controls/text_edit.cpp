@@ -237,15 +237,15 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     bind(SDLK_a, Mod::Ctrl, [&]{
         selectAll();
     });
-    // bind(SDLK_v, Mod::Ctrl, [&]{
-    //     if (SDL_HasClipboardText()) {
-    //         char *s = SDL_GetClipboardText();
-    //         if (s) {
-    //             insert(m_selection.end, s);
-    //             SDL_free(s);
-    //         }
-    //     }
-    // });
+    bind(SDLK_v, Mod::Ctrl, [&]{
+        if (SDL_HasClipboardText()) {
+            char *s = SDL_GetClipboardText();
+            if (s) {
+                insert(s);
+                SDL_free(s);
+            }
+        }
+    });
     // bind(SDLK_c, Mod::Ctrl, [&]{
     //     if (m_selection.hasSelection()) {
     //         swapSelection();
