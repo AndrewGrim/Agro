@@ -98,7 +98,6 @@
         TextEdit* moveCursorDown();
         TextEdit* moveCursorBegin();
         TextEdit* moveCursorEnd();
-        // TextEdit* deleteAt(u64 index, bool skip = false);
         TextEdit* clear();
         TextEdit* setPlaceholderText(String text);
         String placeholderText();
@@ -106,11 +105,14 @@
         TextEdit* jumpWordRight();
         bool isShiftPressed();
         void _updateVirtualWidth();
-        void deleteSelection(bool is_backspace = false, bool skip = false);
+        // Returns true to indicate that there was a deletion performed, otherwise false.
+        bool deleteOne(bool is_backspace = false, bool skip = false);
+        // Returns true to indicate that there was a deletion performed, otherwise false.
+        bool deleteSelection(bool skip = false);
         void selectAll();
         bool swapSelection();
         void insert(const char *text, bool skip = false);
-        // Returns true to indicate that it was able to set the cursor to the specified position otherwise false.
+        // Returns true to indicate that it was able to set the cursor to the specified position, otherwise false.
         bool setCursor(u64 line, u64 codepoint);
         // void undo();
         // void redo();

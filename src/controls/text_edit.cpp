@@ -219,10 +219,10 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     bind(SDLK_END, Mod::None, end);
     bind(SDLK_END, Mod::Shift, end);
     bind(SDLK_BACKSPACE, Mod::None, [&]{
-        deleteSelection(true);
+        if (!deleteSelection()) { deleteOne(true); }
     });
     bind(SDLK_DELETE, Mod::None, [&]{
-        deleteSelection();
+        if (!deleteSelection()) { deleteOne(); }
     });
     auto jump_left = [&]{
         jumpWordLeft();
@@ -795,20 +795,6 @@ TextEdit* TextEdit::moveCursorEnd() {
     return this;
 }
 
-// TextEdit* TextEdit::deleteAt(u64 index, bool skip) {
-//     if (index < text().size()) {
-//         if (!skip) {
-//             m_history.append(HistoryItem(HistoryItem::Action::Delete, String(m_text.data() + index, 1), m_selection));
-//         }
-//         m_text.erase(index, 1);
-//         m_text_changed = true;
-//         update();
-//         onTextChanged.notify();
-//     }
-
-//     return this;
-// }
-
 TextEdit* TextEdit::clear() {
     m_buffer.clear();
     m_buffer.push_back(String());
@@ -896,115 +882,125 @@ void TextEdit::_updateVirtualWidth() {
     }
 }
 
-void TextEdit::deleteSelection(bool is_backspace, bool skip) {
+bool TextEdit::deleteOne(bool is_backspace, bool skip) {
     DrawingContext &dc = DC;
 
-    if (m_selection.hasSelection()) {
-        if (m_selection.line_begin != m_selection.line_end) {
-            // Multiline selection
-            swapSelection(); // TODO We will need to make sure thats fine in terms of history
-            u64 lines_to_delete = m_selection.line_end - m_selection.line_begin;
+    if (m_selection.hasSelection()) { return false; }
 
-            String &first_line = m_buffer[m_selection.line_begin];
-            u64 &first_line_length = m_buffer_length[m_selection.line_begin];
-            i32 first_text_size = dc.measureText(font(), Slice<const char>(first_line.data() + m_selection.begin, first_line.size() - m_selection.begin), m_tab_width).w;
-            first_line_length -= first_text_size;
-            first_line.erase(m_selection.begin, first_line.size() - m_selection.begin);
-
-            String &last_line = m_buffer[m_selection.line_end];
-            i32 last_text_size = dc.measureText(font(), Slice<const char>(last_line.data() + m_selection.end, last_line.size() - m_selection.end), m_tab_width).w;
-            if (last_text_size) {
-                first_line += last_line.substring(m_selection.end, last_line.size()).data();
-                first_line_length += last_text_size;
-            }
-
-            if (lines_to_delete == 1) {
-                m_buffer.erase(m_buffer.begin() + m_selection.line_end);
-                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end);
-            } else if (lines_to_delete > 1) {
-                m_buffer.erase(m_buffer.begin() + m_selection.line_begin + 1, m_buffer.begin() + m_selection.line_end + 1);
-                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_begin + 1, m_buffer_length.begin() + m_selection.line_end + 1);
-            }
-            m_virtual_size.h -= TEXT_HEIGHT * lines_to_delete;
-            if ((i32)first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
-            else { _updateVirtualWidth(); }
-        } else {
-            // Same line selection
-            swapSelection(); // TODO We will need to make sure thats fine in terms of history
-            String &line = m_buffer[m_selection.line_end];
-            u64 &line_length = m_buffer_length[m_selection.line_end];
-            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin), m_tab_width);
+    String &line = m_buffer[m_selection.line_end];
+    u64 &line_length = m_buffer_length[m_selection.line_end];
+    if (is_backspace) {
+        if (m_selection.end) {
+            utf8::Iterator iter = utf8::Iterator(line.data(), m_selection.end).prev();
+            assert(iter && "There should be a valid codepoint here since we already checked that we are not at the beginning of the line!");
+            Size text_size = dc.measureText(font(), Slice<const char>(iter.data, iter.length), m_tab_width);
             line_length -= text_size.w;
             if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
-            line.erase(m_selection.begin, m_selection.end - m_selection.begin);
-        }
-        _beginSelection();
-    // Delete one codepoint
-    } else {
-        String &line = m_buffer[m_selection.line_end];
-        u64 &line_length = m_buffer_length[m_selection.line_end];
-        if (is_backspace) {
-            if (m_selection.end) {
-                utf8::Iterator iter = utf8::Iterator(line.data(), m_selection.end).prev();
-                assert(iter && "There should be a valid codepoint here since we already checked that we are not at the beginning of the line!");
-                Size text_size = dc.measureText(font(), Slice<const char>(iter.data, iter.length), m_tab_width);
-                line_length -= text_size.w;
-                if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
-                line.erase(m_selection.end - iter.length, iter.length);
-                m_selection.end -= iter.length;
-                m_selection.x_end -= text_size.w;
-                m_last_codepoint_index--;
-                _endSelection();
-            // Delete newline between this and the previous line if one exists
-            } else {
-                if (m_selection.line_end) {
-                    String &previous_line = m_buffer[m_selection.line_end - 1];
-                    u64 &previous_line_length = m_buffer_length[m_selection.line_end - 1];
-                    m_selection.end = previous_line.size();
-                    m_selection.x_end = previous_line_length + inner_rect.x;
-                    utf8::Iterator iter = previous_line.utf8Begin();
-                    m_last_codepoint_index = 0;
-                    for (; ((iter = iter.next())); m_last_codepoint_index++);
-                    m_selection.line_end--;
-                    _endSelection();
-                    previous_line += line.data();
-                    previous_line_length += line_length;
-                    if ((i32)previous_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = previous_line_length + m_cursor_width; }
-                    m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
-                    m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
-                    m_virtual_size.h -= TEXT_HEIGHT;
-                } else {
-                    return;
-                }
-            }
+            line.erase(m_selection.end - iter.length, iter.length);
+            m_selection.end -= iter.length;
+            m_selection.x_end -= text_size.w;
+            m_last_codepoint_index--;
+            _endSelection();
+        // Delete newline between this and the previous line if one exists
         } else {
-            if (m_selection.end < line.size()) {
-                u64 codepoint_length = utf8::length(line.data() + m_selection.end);
-                Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length), m_tab_width);
-                line_length -= text_size.w;
-                if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
-                line.erase(m_selection.end, codepoint_length);
-            // Delete newline between this and the next line if one exists
+            if (m_selection.line_end) {
+                String &previous_line = m_buffer[m_selection.line_end - 1];
+                u64 &previous_line_length = m_buffer_length[m_selection.line_end - 1];
+                m_selection.end = previous_line.size();
+                m_selection.x_end = previous_line_length + inner_rect.x;
+                utf8::Iterator iter = previous_line.utf8Begin();
+                m_last_codepoint_index = 0;
+                for (; ((iter = iter.next())); m_last_codepoint_index++);
+                m_selection.line_end--;
+                _endSelection();
+                previous_line += line.data();
+                previous_line_length += line_length;
+                if ((i32)previous_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = previous_line_length + m_cursor_width; }
+                m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
+                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                m_virtual_size.h -= TEXT_HEIGHT;
             } else {
-                if (m_selection.line_end + 1 < m_buffer.size()) {
-                    line += m_buffer[m_selection.line_end + 1].data();
-                    line_length += m_buffer_length[m_selection.line_end + 1];
-                    if ((i32)line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
-                    m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
-                    m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
-                    m_virtual_size.h -= TEXT_HEIGHT;
-                } else {
-                    return;
-                }
+                return false;
+            }
+        }
+    } else {
+        if (m_selection.end < line.size()) {
+            u64 codepoint_length = utf8::length(line.data() + m_selection.end);
+            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length), m_tab_width);
+            line_length -= text_size.w;
+            if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+            line.erase(m_selection.end, codepoint_length);
+        // Delete newline between this and the next line if one exists
+        } else {
+            if (m_selection.line_end + 1 < m_buffer.size()) {
+                line += m_buffer[m_selection.line_end + 1].data();
+                line_length += m_buffer_length[m_selection.line_end + 1];
+                if ((i32)line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
+                m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
+                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                m_virtual_size.h -= TEXT_HEIGHT;
+            } else {
+                return false;
             }
         }
     }
+
+    _updateView(dc);
+    update();
+    onTextChanged.notify();
+    return true;
+}
+
+bool TextEdit::deleteSelection(bool skip) {
+    DrawingContext &dc = DC;
+
+    if (!m_selection.hasSelection()) { return false; }
+    if (m_selection.line_begin != m_selection.line_end) {
+        // Multiline selection
+        swapSelection(); // TODO We will need to make sure thats fine in terms of history
+        u64 lines_to_delete = m_selection.line_end - m_selection.line_begin;
+
+        String &first_line = m_buffer[m_selection.line_begin];
+        u64 &first_line_length = m_buffer_length[m_selection.line_begin];
+        i32 first_text_size = dc.measureText(font(), Slice<const char>(first_line.data() + m_selection.begin, first_line.size() - m_selection.begin), m_tab_width).w;
+        first_line_length -= first_text_size;
+        first_line.erase(m_selection.begin, first_line.size() - m_selection.begin);
+
+        String &last_line = m_buffer[m_selection.line_end];
+        i32 last_text_size = dc.measureText(font(), Slice<const char>(last_line.data() + m_selection.end, last_line.size() - m_selection.end), m_tab_width).w;
+        if (last_text_size) {
+            first_line += last_line.substring(m_selection.end, last_line.size()).data();
+            first_line_length += last_text_size;
+        }
+
+        if (lines_to_delete == 1) {
+            m_buffer.erase(m_buffer.begin() + m_selection.line_end);
+            m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end);
+        } else if (lines_to_delete > 1) {
+            m_buffer.erase(m_buffer.begin() + m_selection.line_begin + 1, m_buffer.begin() + m_selection.line_end + 1);
+            m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_begin + 1, m_buffer_length.begin() + m_selection.line_end + 1);
+        }
+        m_virtual_size.h -= TEXT_HEIGHT * lines_to_delete;
+        if ((i32)first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
+        else { _updateVirtualWidth(); }
+    } else {
+        // Same line selection
+        swapSelection(); // TODO We will need to make sure thats fine in terms of history
+        String &line = m_buffer[m_selection.line_end];
+        u64 &line_length = m_buffer_length[m_selection.line_end];
+        Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin), m_tab_width);
+        line_length -= text_size.w;
+        if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+        line.erase(m_selection.begin, m_selection.end - m_selection.begin);
+    }
+    _beginSelection();
 
     // TODO eventually record the deletion in history
 
     _updateView(dc);
     update();
     onTextChanged.notify();
+    return true;
 }
 
 void TextEdit::selectAll() {
@@ -1044,7 +1040,7 @@ bool TextEdit::swapSelection() {
 void TextEdit::insert(const char *text, bool skip) {
     DrawingContext &dc = DC;
 
-    if (m_selection.hasSelection()) { deleteSelection(false, skip); }
+    deleteSelection(skip);
 
     if (m_mode == Mode::MultiLine) {
         utf8::Iterator iter = utf8::Iterator(text);
