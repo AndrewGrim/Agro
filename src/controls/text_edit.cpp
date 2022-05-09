@@ -1114,35 +1114,34 @@ void TextEdit::insert(const char *text, bool skip) {
     onTextChanged.notify();
 }
 
-// void TextEdit::setCursor(u64 index) {
-//     if (!index) {
-//         m_selection.x_begin = 0;
-//         m_selection.begin = 0;
-//         m_selection.x_end = m_selection.x_begin;
-//         m_selection.end = m_selection.begin;
-//     } else {
-//         if (!(m_virtual_size.w < inner_rect.w)) {
-//             inner_rect.x -= m_current_view * (m_virtual_size.w - inner_rect.w);
-//         }
-//         DrawingContext &dc = *Application::get()->currentWindow()->dc;
-//         u64 local_index = 0;
-//         u8 length = 0;
-//         for (u64 i = 0; i < text().size(); i += length) {
-//             length = utf8SequenceLength(text().data() + i);
-//             i32 w = dc.measureText(font(), Slice<const char>(text().data() + i, length), m_tab_width).w;
-//             inner_rect.x += w;
-//             local_index++;
-//             if (index == local_index) {
-//                 break;
-//             }
-//         }
-//         m_selection.x_begin = inner_rect.x;
-//         m_selection.begin = local_index;
-//         m_selection.x_end = m_selection.x_begin;
-//         m_selection.end = m_selection.begin;
-//     }
-//     update();
-// }
+bool TextEdit::setCursor(u64 line, u64 codepoint) {
+    DrawingContext &dc = DC;
+    // TODO the sizehint is necessary since the scrollbars may not have been initialized :(
+    sizeHint(dc);
+    if (line < m_buffer.size()) {
+        const String &text = m_buffer[line];
+        utf8::Iterator iter = text.utf8Begin();
+        m_last_codepoint_index = 0;
+        m_selection.line_end = line;
+        m_selection.x_end = inner_rect.x;
+        m_selection.end = 0;
+        while ((iter = iter.next())) {
+            m_selection.x_end += dc.measureText(font(), Slice<const char>(iter.data - iter.length, iter.length), m_tab_width).w;
+            m_selection.end += iter.length;
+            m_last_codepoint_index++;
+            if (m_last_codepoint_index == codepoint) {
+                _endSelection();
+                _updateView(dc);
+                update();
+                return true;
+            }
+        }
+    }
+    _endSelection();
+    _updateView(dc);
+    update();
+    return false;
+}
 
 // void TextEdit::undo() {
 //     if (!m_history.undo_end) {

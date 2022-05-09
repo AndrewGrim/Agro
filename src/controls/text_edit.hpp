@@ -110,7 +110,8 @@
         void selectAll();
         bool swapSelection();
         void insert(const char *text, bool skip = false);
-        // void setCursor(u64 index);
+        // Returns true to indicate that it was able to set the cursor to the specified position otherwise false.
+        bool setCursor(u64 line, u64 codepoint);
         // void undo();
         // void redo();
         i32 isFocusable() override;
