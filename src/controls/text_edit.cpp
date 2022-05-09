@@ -811,13 +811,16 @@ TextEdit* TextEdit::moveCursorEnd() {
 
 TextEdit* TextEdit::clear() {
     m_buffer.clear();
+    m_buffer.push_back(String());
     m_buffer_length.clear();
+    m_buffer_length.push_back(0);
     m_text_changed = true;
-    m_selection.x_begin = inner_rect.x;
-    m_selection.begin = 0;
-    m_selection.x_end = m_selection.x_begin;
-    m_selection.end = m_selection.begin;
+    m_selection.line_end = 0;
+    m_selection.x_end = inner_rect.x;
+    m_selection.end = 0;
+    _endSelection();
     m_history = History();
+    _updateView(DC);
     update();
     onTextChanged.notify();
 
