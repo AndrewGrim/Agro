@@ -77,7 +77,7 @@
 
         EventListener<> onTextChanged = EventListener<>();
 
-        TextEdit(String text = "", String placeholder = "", Mode mode = Mode::SingleLine,Size min_size = Size(100, 100));
+        TextEdit(String text = "", String placeholder = "", Mode mode = Mode::SingleLine, Size min_size = Size(100, 100));
         ~TextEdit();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
