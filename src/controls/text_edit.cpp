@@ -249,12 +249,12 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     bind(SDLK_c, Mod::Ctrl, [&]{
         SDL_SetClipboardText(selection().data());
     });
-    // bind(SDLK_z, Mod::Ctrl, [&]{
-    //     undo();
-    // });
-    // bind(SDLK_y, Mod::Ctrl, [&]{
-    //     redo();
-    // });
+    bind(SDLK_z, Mod::Ctrl, [&]{
+        undo();
+    });
+    bind(SDLK_y, Mod::Ctrl, [&]{
+        redo();
+    });
     bind(SDLK_TAB, Mod::None, [&]() {
         insert("\t");
     });
@@ -893,7 +893,8 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
         if (m_selection.end) {
             utf8::Iterator iter = utf8::Iterator(line.data(), m_selection.end).prev();
             assert(iter && "There should be a valid codepoint here since we already checked that we are not at the beginning of the line!");
-            Size text_size = dc.measureText(font(), Slice<const char>(iter.data, iter.length), m_tab_width);
+            String text = String(iter.data, iter.length);
+            Size text_size = dc.measureText(font(), text.slice(), m_tab_width);
             line_length -= text_size.w;
             if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
             line.erase(m_selection.end - iter.length, iter.length);
@@ -901,6 +902,9 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
             m_selection.x_end -= text_size.w;
             m_last_codepoint_index--;
             _endSelection();
+            if (!skip) {
+                m_history.append(HistoryItem(HistoryItem::Action::Backspace, text, m_selection));
+            }
         // Delete newline between this and the previous line if one exists
         } else {
             if (m_selection.line_end) {
@@ -919,6 +923,9 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
                 m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
                 m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
                 m_virtual_size.h -= TEXT_HEIGHT;
+                if (!skip) {
+                    m_history.append(HistoryItem(HistoryItem::Action::Backspace, "\n", m_selection));
+                }
             } else {
                 return false;
             }
@@ -926,9 +933,13 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
     } else {
         if (m_selection.end < line.size()) {
             u64 codepoint_length = utf8::length(line.data() + m_selection.end);
-            Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.end, codepoint_length), m_tab_width);
+            Slice<const char> text = Slice<const char>(line.data() + m_selection.end, codepoint_length);
+            Size text_size = dc.measureText(font(), text, m_tab_width);
             line_length -= text_size.w;
             if ((i32)line_length + text_size.w + m_cursor_width == m_virtual_size.w) { _updateVirtualWidth(); }
+            if (!skip) {
+                m_history.append(HistoryItem(HistoryItem::Action::Delete, String(text.data, text.length), m_selection));
+            }
             line.erase(m_selection.end, codepoint_length);
         // Delete newline between this and the next line if one exists
         } else {
@@ -939,6 +950,9 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
                 m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
                 m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
                 m_virtual_size.h -= TEXT_HEIGHT;
+                if (!skip) {
+                    m_history.append(HistoryItem(HistoryItem::Action::Delete, "\n", m_selection));
+                }
             } else {
                 return false;
             }
@@ -955,9 +969,16 @@ bool TextEdit::deleteSelection(bool skip) {
     DrawingContext &dc = DC;
 
     if (!m_selection.hasSelection()) { return false; }
+
+    Selection backup = m_selection; // This is needed because call to selection() can swap.
+    if (!skip) {
+        m_history.append(HistoryItem(HistoryItem::Action::Delete, selection(), backup));
+    }
+    m_selection = backup;
+
     if (m_selection.line_begin != m_selection.line_end) {
         // Multiline selection
-        swapSelection(); // TODO We will need to make sure thats fine in terms of history
+        swapSelection();
         u64 lines_to_delete = m_selection.line_end - m_selection.line_begin;
 
         String &first_line = m_buffer[m_selection.line_begin];
@@ -985,7 +1006,7 @@ bool TextEdit::deleteSelection(bool skip) {
         else { _updateVirtualWidth(); }
     } else {
         // Same line selection
-        swapSelection(); // TODO We will need to make sure thats fine in terms of history
+        swapSelection();
         String &line = m_buffer[m_selection.line_end];
         u64 &line_length = m_buffer_length[m_selection.line_end];
         Size text_size = dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin), m_tab_width);
@@ -994,8 +1015,6 @@ bool TextEdit::deleteSelection(bool skip) {
         line.erase(m_selection.begin, m_selection.end - m_selection.begin);
     }
     _beginSelection();
-
-    // TODO eventually record the deletion in history
 
     _updateView(dc);
     update();
@@ -1041,6 +1060,10 @@ void TextEdit::insert(const char *text, bool skip) {
     DrawingContext &dc = DC;
 
     deleteSelection(skip);
+
+    if (!skip) {
+        m_history.append(HistoryItem(HistoryItem::Action::Insert, text, m_selection));
+    }
 
     if (m_mode == Mode::MultiLine) {
         utf8::Iterator iter = utf8::Iterator(text);
@@ -1139,59 +1162,69 @@ bool TextEdit::setCursor(u64 line, u64 codepoint) {
     return false;
 }
 
-// void TextEdit::undo() {
-//     if (!m_history.undo_end) {
-//         HistoryItem item = m_history.get(m_history.index);
-//         if (item.action == HistoryItem::Action::Delete) {
-//             insert(m_selection.begin, item.text.data(), true);
-//             m_selection = item.selection;
-//         } else {
-//             m_selection = item.selection;
-//             if (m_selection.hasSelection()) {
-//                 deleteSelection(true);
-//             } else if (item.text.size() > 1) {
-//                 for (u64 i = 0; i < item.text.size(); i++) {
-//                     deleteAt(m_selection.begin, true);
-//                 }
-//             } else {
-//                 deleteAt(m_selection.begin, true);
-//             }
-//         }
-//         if (!m_history.index) {
-//             m_history.undo_end = true;
-//         } else {
-//             m_history.index--;
-//         }
-//         m_history.redo_end = false;
-//     }
-// }
+bool TextEdit::undo() {
+    if (!m_history.undo_end) {
+        HistoryItem item = m_history.get(m_history.index);
+        switch (item.action) {
+            case HistoryItem::Action::Delete:
+                m_selection = item.selection;
+                swapSelection();
+                _beginSelection();
+                insert(item.text.data(), true);
+                m_selection = item.selection;
+                break;
+            case HistoryItem::Action::Backspace:
+                m_selection = item.selection;
+                insert(item.text.data(), true);
+                m_selection = item.selection;
+                moveCursorRight();
+                break;
+            case HistoryItem::Action::Insert: {
+                m_selection = item.selection;
+                utf8::Iterator iter = item.text.utf8Begin();
+                while ((iter = iter.next())) {
+                    deleteOne(false, true);
+                }
+                break;
+            }
+            default: assert(false && "Not a valid HistoryItem!");
+        }
+        if (!m_history.index) {
+            m_history.undo_end = true;
+        } else {
+            m_history.index--;
+        }
+        m_history.redo_end = false;
+        return true;
+    }
+    return false;
+}
 
-// void TextEdit::redo() {
-//     if (m_history.index < m_history.items.size() && !m_history.redo_end) {
-//         HistoryItem item = m_history.get(m_history.undo_end ? 0 : ++m_history.index);
-//         if (item.action == HistoryItem::Action::Delete) {
-//             m_selection = item.selection;
-//             if (m_selection.hasSelection()) {
-//                 deleteSelection(true);
-//             } else if (item.text.size() > 1) {
-//                 for (u64 i = 0; i < item.text.size(); i++) {
-//                     deleteAt(m_selection.begin, true);
-//                 }
-//             } else {
-//                 deleteAt(m_selection.begin, true);
-//             }
-//         } else {
-//             m_selection = item.selection;
-//             insert(m_selection.begin, item.text.data(), true);
-//         }
-//         if (!m_history.index) {
-//             m_history.undo_end = false;
-//         }
-//         if (m_history.index == m_history.items.size() - 1) {
-//             m_history.redo_end = true;
-//         }
-//     }
-// }
+bool TextEdit::redo() {
+    if (m_history.index < m_history.items.size() && !m_history.redo_end) {
+        HistoryItem item = m_history.get(m_history.undo_end ? 0 : ++m_history.index);
+        switch (item.action) {
+            case HistoryItem::Action::Delete:
+            case HistoryItem::Action::Backspace:
+                m_selection = item.selection;
+                if (!deleteSelection(true)) { deleteOne(false, true); }
+                break;
+            case HistoryItem::Action::Insert:
+                m_selection = item.selection;
+                insert(item.text.data(), true);
+                break;
+            default: assert(false && "Not a valid HistoryItem!");
+        }
+        if (!m_history.index) {
+            m_history.undo_end = false;
+        }
+        if (m_history.index == m_history.items.size() - 1) {
+            m_history.redo_end = true;
+        }
+        return true;
+    }
+    return false;
+}
 
 i32 TextEdit::isFocusable() {
     return (i32)FocusType::Focusable;

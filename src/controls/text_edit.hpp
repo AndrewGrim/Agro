@@ -31,6 +31,7 @@
         struct HistoryItem {
             enum class Action {
                 Delete,
+                Backspace,
                 Insert,
             };
 
@@ -114,8 +115,10 @@
         void insert(const char *text, bool skip = false);
         // Returns true to indicate that it was able to set the cursor to the specified position, otherwise false.
         bool setCursor(u64 line, u64 codepoint);
-        // void undo();
-        // void redo();
+        // Returns true to indicate that the action was successful, otherwise false.
+        bool undo();
+        // Returns true to indicate that the action was successful, otherwise false.
+        bool redo();
         i32 isFocusable() override;
         Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
         bool handleScrollEvent(ScrollEvent event) override;
