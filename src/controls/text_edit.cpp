@@ -335,7 +335,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             } else { selection = Renderer::Selection(); }
 
             // Draw selection background
-            i32 selection_extra = state & STATE_HARD_FOCUSED ? m_cursor_width : 0;
+            i32 selection_extra = state & STATE_HARD_FOCUSED && selection.begin != selection.end ? m_cursor_width : 0;
             dc.fillRect(
                 Rect(
                     x_scroll_offset + bg_start,
