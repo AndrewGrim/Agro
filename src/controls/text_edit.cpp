@@ -433,11 +433,9 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
 
 String TextEdit::text() {
     u64 length = 0;
-    for (u64 i = m_selection.line_begin; i <= m_selection.line_end; i++) {
+    for (u64 i = 0; i < m_buffer.size(); i++) {
         const String &line = m_buffer[i];
-        if (i == m_selection.line_begin) {
-            length += line.size() - m_selection.begin + 1; // +1 to account for newline
-        } else if (i == m_selection.line_end) {
+        if (i == m_buffer.size() - 1) {
             length += m_selection.end;
         } else {
             length += line.size() + 1; // +1 to account for newline
@@ -445,13 +443,9 @@ String TextEdit::text() {
     }
     String s = String(length);
     u64 offset = 0;
-    for (u64 i = m_selection.line_begin; i <= m_selection.line_end; i++) {
+    for (u64 i = 0; i < m_buffer.size(); i++) {
         const String &line = m_buffer[i];
-        if (i == m_selection.line_begin) {
-            memcpy(s.data() + offset, line.data() + m_selection.begin, line.size() - m_selection.begin);
-            offset += line.size() - m_selection.begin + 1; // +1 to account for newline
-            s.data()[offset - 1] = '\n';
-        } else if (i == m_selection.line_end) {
+        if (i == m_buffer.size() - 1) {
             memcpy(s.data() + offset, line.data(), m_selection.end);
             offset += m_selection.end;
         } else {
