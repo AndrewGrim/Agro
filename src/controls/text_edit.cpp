@@ -21,7 +21,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             x -= X_SCROLL_OFFSET;
             i32 y = inner_rect.y;
             y -= Y_SCROLL_OFFSET;
-            u64 line = (event.y - y) / TEXT_HEIGHT;
+            u64 line = NORMALIZE(0, (i32)m_buffer.size() - 1, (event.y - y) / TEXT_HEIGHT);
             m_last_codepoint_index = 0;
             if (line < m_buffer.size()) {
                 utf8::Iterator iter = m_buffer[line].utf8Begin();
