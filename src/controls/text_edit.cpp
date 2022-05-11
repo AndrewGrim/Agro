@@ -442,7 +442,7 @@ String TextEdit::text() {
     for (u64 i = 0; i < m_buffer.size(); i++) {
         const String &line = m_buffer[i];
         if (i == m_buffer.size() - 1) {
-            length += m_selection.end;
+            length += line.size();
         } else {
             length += line.size() + 1; // +1 to account for newline
         }
@@ -452,8 +452,8 @@ String TextEdit::text() {
     for (u64 i = 0; i < m_buffer.size(); i++) {
         const String &line = m_buffer[i];
         if (i == m_buffer.size() - 1) {
-            memcpy(s.data() + offset, line.data(), m_selection.end);
-            offset += m_selection.end;
+            memcpy(s.data() + offset, line.data(), line.size());
+            offset += line.size();
         } else {
             memcpy(s.data() + offset, line.data(), line.size());
             offset += line.size() + 1; // +1 to account for newline
