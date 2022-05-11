@@ -1338,3 +1338,7 @@ String TextEdit::selection() {
         return s;
     }
 }
+
+Widget* TextEdit::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
+    return Widget::handleFocusEvent(event, state, data);
+}
