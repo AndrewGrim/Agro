@@ -2,7 +2,7 @@
 
 #include "../src/util.hpp"
 #include "../src/application.hpp"
-#include "../src/controls/line_edit.hpp"
+#include "../src/controls/text_edit.hpp"
 #include "../src/controls/scrolled_box.hpp"
 #include "../src/controls/label.hpp"
 
@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
                 }
             }
         };
-        app->mainWindow()->setTitle("LineEdit");
+        app->mainWindow()->setTitle("TextEdit");
         std::vector<std::string> monster_names = {
             "Great Jagras", "Kulu-Ya-Ku", "Pukei-Pukei", "Barroth",
             "Jyuratodus", "Tobi-Kadachi", "Anjanath", "Rathian",
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         };
         sort(monster_names.begin(), monster_names.end());
         ScrolledBox *results_view;
-        LineEdit *edit = new LineEdit();
+        TextEdit *edit = new TextEdit();
             edit->setPlaceholderText("Search by name");
             edit->onTextChanged.addEventListener([&]{
                 while (results_view->children.size()) {
@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
                     std::transform(monster.begin(), monster.end(), monster.begin(), [](u8 c){
                         return std::tolower(c);
                     });
-                    auto search_phrase = edit->text();
+                    std::string search_phrase = edit->text().data();
                     std::transform(search_phrase.begin(), search_phrase.end(), search_phrase.begin(), [](u8 c){
                         return std::tolower(c);
                     });

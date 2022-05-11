@@ -1,6 +1,6 @@
 #include "../src/application.hpp"
 #include "../src/controls/tree_view.hpp"
-#include "../src/controls/line_edit.hpp"
+#include "../src/controls/text_edit.hpp"
 
 struct Hidden {
     i32 id = -1;
@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
                         new TextCellRenderer("Row: " + std::to_string(i) + "\nColumn: 0"),
                         new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 1"),
                         new ImageTextCellRenderer((new Image(app->icons["close"]))->setForeground(COLOR_BLACK), "Row: " + std::to_string(i) + "\nColumn: 2"),
-                        i % 2 == 0 ? new Button("Button") : ((Widget*)(new LineEdit())->setPlaceholderText("Row: " + std::to_string(i) + ", Col: 3")),
+                        i % 2 == 0 ? new Button("Button") : ((Widget*)(new TextEdit())->setPlaceholderText(String() + "Row: " + std::to_string(i).data() + ", Col: 3")),
                     };
                     ((TextCellRenderer*)columns[0])->h_align = HorizontalAlignment::Left;
                     ((TextCellRenderer*)columns[1])->h_align = HorizontalAlignment::Right;

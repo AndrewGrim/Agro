@@ -6,7 +6,6 @@
 #include "../src/controls/label.hpp"
 #include "../src/controls/tooltip.hpp"
 #include "../src/controls/button.hpp"
-#include "../src/controls/line_edit.hpp"
 #include "../src/controls/text_edit.hpp"
 #include "../src/controls/spin_box.hpp"
 #include "../src/controls/drop_down.hpp"
@@ -54,74 +53,68 @@ String loadFileToString(const char *path) {
 
 Widget* basic1(Application &app) {
     Box *box = new Box(Align::Vertical);
-        // TODO test this with "some text\ntest" because i think that we need to handle skipping newlines when in singleline mode
-        // TextEdit *text_edit_single = new TextEdit("some text\ntest", "Single line", TextEdit::Mode::SingleLine, Size(100, 100));
-        // box->append(text_edit_single);
-        TextEdit *text_edit_multi = new TextEdit(loadFileToString("examples/widget_gallery.cpp"), loadFileToString("examples/widget_gallery.cpp"), TextEdit::Mode::MultiLine, Size(200, 200));
-        box->append(text_edit_multi, Fill::Both, 5);
-        // Box *labels_and_buttons = new Box(Align::Horizontal);
-        //     GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
-        //         Label *lr = new Label("Right");
-        //             lr->setHorizontalAlignment(HorizontalAlignment::Right);
-        //         Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
-        //             lc->setHorizontalAlignment(HorizontalAlignment::Center);
-        //             GroupBox *l_menu = new GroupBox(Align::Vertical, "");
-        //                 l_menu->append(new LineEdit("", "Context Menu", 100), Fill::Horizontal);
-        //             lc->context_menu = l_menu;
-        //         labels->append(new Label("Left"), Fill::Both);
-        //         labels->append(lr, Fill::Both);
-        //         labels->append(lc, Fill::Both);
-        //     labels_and_buttons->append(labels, Fill::Both);
+        Box *labels_and_buttons = new Box(Align::Horizontal);
+            GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
+                Label *lr = new Label("Right");
+                    lr->setHorizontalAlignment(HorizontalAlignment::Right);
+                Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
+                    lc->setHorizontalAlignment(HorizontalAlignment::Center);
+                    GroupBox *l_menu = new GroupBox(Align::Vertical, "");
+                        l_menu->append(new TextEdit("", "Context Menu", TextEdit::Mode::SingleLine, Size(100, 100)), Fill::Horizontal);
+                    lc->context_menu = l_menu;
+                labels->append(new Label("Left"), Fill::Both);
+                labels->append(lr, Fill::Both);
+                labels->append(lc, Fill::Both);
+            labels_and_buttons->append(labels, Fill::Both);
 
-        //     GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
-        //         buttons->append(new Button("Button"));
-        //         buttons->append(new Button(new Image(notes_png, notes_png_length)));
-        //         Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
-        //             image_and_text->setText("Button");
-        //             image_and_text->tooltip = new Tooltip("Tooltip");
-        //             GroupBox *b_menu = new GroupBox(Align::Vertical, "");
-        //                 Button *mb = new Button("Menu Button");
-        //                     mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
-        //                         println("context menu event");
-        //                     });
-        //                     mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
-        //                 b_menu->append(mb, Fill::Horizontal);
-        //                 b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
-        //             image_and_text->context_menu = b_menu;
-        //         buttons->append(image_and_text, Fill::Both);
-        //     labels_and_buttons->append(buttons, Fill::Both);
-        // box->append(labels_and_buttons, Fill::Both);
+            GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
+                buttons->append(new Button("Button"));
+                buttons->append(new Button(new Image(notes_png, notes_png_length)));
+                Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
+                    image_and_text->setText("Button");
+                    image_and_text->tooltip = new Tooltip("Tooltip");
+                    GroupBox *b_menu = new GroupBox(Align::Vertical, "");
+                        Button *mb = new Button("Menu Button");
+                            mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
+                                println("context menu event");
+                            });
+                            mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
+                        b_menu->append(mb, Fill::Horizontal);
+                        b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
+                    image_and_text->context_menu = b_menu;
+                buttons->append(image_and_text, Fill::Both);
+            labels_and_buttons->append(buttons, Fill::Both);
+        box->append(labels_and_buttons, Fill::Both);
 
-        // Box *check_and_radio = new Box(Align::Horizontal);
-        //     GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
-        //         checks->append(new CheckButton("Unchecked", false));
-        //         checks->append(new CheckButton("Checked", true));
-        //         checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
-        //     check_and_radio->append(checks, Fill::Both);
+        Box *check_and_radio = new Box(Align::Horizontal);
+            GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
+                checks->append(new CheckButton("Unchecked", false));
+                checks->append(new CheckButton("Checked", true));
+                checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
+            check_and_radio->append(checks, Fill::Both);
 
-        //     GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
-        //         std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
-        //         radios->append(new RadioButton(radio_group, "Radio 1"));
-        //         radio_group->buttons[0]->m_is_checked = true;
-        //         radios->append(new RadioButton(radio_group, "Radio 2"));
-        //         radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
-        //     check_and_radio->append(radios, Fill::Both);
-        // box->append(check_and_radio, Fill::Both);
+            GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
+                std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
+                radios->append(new RadioButton(radio_group, "Radio 1"));
+                radio_group->buttons[0]->m_is_checked = true;
+                radios->append(new RadioButton(radio_group, "Radio 2"));
+                radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
+            check_and_radio->append(radios, Fill::Both);
+        box->append(check_and_radio, Fill::Both);
 
-        // GroupBox *line_edits = new GroupBox(Align::Vertical, "LineEdits");
-        //     line_edits->append(new LineEdit("", "Placeholder text", 200));
-        //     line_edits->append(new LineEdit("Default text", "", 300));
-        //     line_edits->append(new LineEdit("", ""), Fill::Horizontal);
-        // box->append(line_edits, Fill::Horizontal);
+        GroupBox *text_edits = new GroupBox(Align::Vertical, "TextEdits");
+            text_edits->append(new TextEdit("", "Placeholder text", TextEdit::Mode::SingleLine, Size(200, 100)));
+            text_edits->append(new TextEdit("Default text", "", TextEdit::Mode::SingleLine, Size(300, 100)));
+            text_edits->append(new TextEdit("", "", TextEdit::Mode::MultiLine), Fill::Both);
+        box->append(text_edits, Fill::Horizontal);
 
-        // GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
-        //     // TODO look at off and use a thread to continously update one the progressbars
-        //     progress->append(new ProgressBar(200));
-        //     progress->append(new ProgressBar(300));
-        //     ((ProgressBar*)progress->children[1])->m_value = 0.50;
-        //     progress->append(new ProgressBar(), Fill::Horizontal);
-        //     ((ProgressBar*)progress->children[2])->m_value = 1.0;
-        // box->append(progress, Fill::Horizontal);
+        GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
+            progress->append(new ProgressBar(200));
+            progress->append(new ProgressBar(300));
+            ((ProgressBar*)progress->children[1])->m_value = 0.50;
+            progress->append(new ProgressBar(), Fill::Horizontal);
+            ((ProgressBar*)progress->children[2])->m_value = 1.0;
+        box->append(progress, Fill::Horizontal);
 
     return box;
 }
@@ -264,7 +257,7 @@ Widget* treeView(Application &app) {
                             {
                                 new TextCellRenderer("Row " + std::to_string(i)),
                                 new Button("TreeView"),
-                                new LineEdit("", "TreeView"),
+                                new TextEdit("", "TreeView"),
                             },
                             new Hidden(i)
                         ));
@@ -343,24 +336,22 @@ int main(int argc, char **argv) {
             notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
             // notebook->setCurrentTab(1);
         app->mainWindow()->append(notebook, Fill::Both);
-        // app->addTimer(100, timerCallback, app);
-        // app->addTimer(
-        //     100,
-        //     [=](u32 interval) -> u32 {
-        //         // TODO change back from 5 to 3 after removing the test lineeditv2
-        //         ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[5]->children[0]);
-        //         f64 value = bar->m_value;
-        //         if (value < 1.0) {
-        //             bar->m_value += 0.01;
-        //         } else {
-        //             bar->m_value = 0.0;
-        //         }
-        //         app->mainWindow()->update();
-        //         app->mainWindow()->pulse();
+        app->addTimer(
+            100,
+            [=](u32 interval) -> u32 {
+                ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
+                f64 value = bar->m_value;
+                if (value < 1.0) {
+                    bar->m_value += 0.01;
+                } else {
+                    bar->m_value = 0.0;
+                }
+                app->mainWindow()->update();
+                app->mainWindow()->pulse();
 
-        //         return 50;
-        //     }
-        // );
+                return 50;
+            }
+        );
         // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
     app->run();
 

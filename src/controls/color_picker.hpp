@@ -2,7 +2,7 @@
 
 #include "widget.hpp"
 #include "label.hpp"
-#include "line_edit.hpp"
+#include "text_edit.hpp"
 
 #define COLOR_PICKER_WIDTH 300
 #define COLOR_PICKER_HEIGHT 200
@@ -25,7 +25,7 @@ class ColorPicker : public Widget {
         Color m_color = COLOR_NONE;
         Point m_position = Point(0, 0);
         TextureCoordinates m_coords;
-        LineEdit *m_color_edit = nullptr;
+        TextEdit *m_color_edit = nullptr;
         Label *m_color_label = nullptr;
         f32 *m_texture_data = new f32[COLOR_PICKER_HEIGHT * COLOR_PICKER_WIDTH * 4];
 };

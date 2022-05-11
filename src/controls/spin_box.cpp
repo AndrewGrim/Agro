@@ -32,12 +32,12 @@ void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     );
 }
 
-SpinBox::SpinBox(f64 value, i32 min_length) : LineEdit(std::to_string(value), "", min_length) {
+SpinBox::SpinBox(f64 value, i32 min_length) : TextEdit(std::to_string(value).data(), "", TextEdit::Mode::SingleLine, Size(min_length, 100)) {
     append(m_up_arrow);
     append(m_down_arrow);
     m_up_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
         try {
-            this->setText(std::to_string(std::stod(text()) + 1));
+            this->setText(std::to_string(std::stod(text().data()) + 1).data());
         } catch (std::invalid_argument &e) {
             onParsingError.notify(this, SpinBox::Error::InvalidArgument);
         } catch (std::out_of_range &e) {
@@ -47,7 +47,7 @@ SpinBox::SpinBox(f64 value, i32 min_length) : LineEdit(std::to_string(value), ""
     });
     m_down_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
         try {
-            this->setText(std::to_string(std::stod(text()) - 1));
+            this->setText(std::to_string(std::stod(text().data()) - 1).data());
         } catch (std::invalid_argument &e) {
             onParsingError.notify(this, SpinBox::Error::InvalidArgument);
         } catch (std::out_of_range &e) {
@@ -71,8 +71,8 @@ void SpinBox::draw(DrawingContext &dc, Rect rect, i32 state) {
     Size arrow_button_size = m_up_arrow->sizeHint(dc);
 
     rect.w -= arrow_button_size.w;
-    LineEdit::draw(dc, rect, state);
-    // We need to set rect here because LineEdit overwrites it otherwise.
+    TextEdit::draw(dc, rect, state);
+    // We need to set rect here because TextEdit overwrites it otherwise.
     this->rect = Rect(rect.x, rect.y, rect.w + arrow_button_size.w, rect.h);
 
     rect.x += rect.w;
@@ -83,11 +83,10 @@ void SpinBox::draw(DrawingContext &dc, Rect rect, i32 state) {
 
 Size SpinBox::sizeHint(DrawingContext &dc) {
     if (m_text_changed) {
-        m_virtual_size = dc.measureText(font(), text());
-        m_text_height = m_virtual_size.h;
+        m_virtual_size = dc.measureText(font(), text().slice());
     }
     if (m_size_changed) {
-        Size size = Size(m_min_length, font() ? font()->maxHeight() : dc.default_font->maxHeight());
+        Size size = Size(m_viewport.w, font() ? font()->maxHeight() : dc.default_font->maxHeight());
         Size arrow_button_size = m_up_arrow->sizeHint(dc);
 
         dc.sizeHintMargin(size, style);
@@ -114,7 +113,7 @@ bool SpinBox::isLayout() {
 
 Result<SpinBox::Error, f64> SpinBox::value() {
     try {
-       return Result<SpinBox::Error, f64>(std::stod(text()));
+       return Result<SpinBox::Error, f64>(std::stod(text().data()));
     } catch (std::invalid_argument &e) {
         return Result<SpinBox::Error, f64>(SpinBox::Error::InvalidArgument);
     } catch (std::out_of_range &e) {

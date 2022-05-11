@@ -1,5 +1,5 @@
 #include "style_editor.hpp"
-#include "line_edit.hpp"
+#include "text_edit.hpp"
 #include "group_box.hpp"
 
 
@@ -51,11 +51,11 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
     Box *size_box = new Box(Align::Horizontal);
         for (i32 i = 0; i < 3; i++) {
             GroupBox *gb = new GroupBox(Align::Vertical, size_options_names[i]);
-                auto line = new LineEdit("", "All", 100);
+                auto line = new TextEdit("", "All", TextEdit::Mode::SingleLine, Size(100, 100));
                 line->onTextChanged.addEventListener([=]() {
-                    if (line->text().length()) {
+                    if (line->text().size()) {
                         try {
-                            i32 value = std::stoi(line->text().c_str());
+                            i32 value = std::stoi(line->text().data());
                             *size_options[i*4+0] = value;
                             *size_options[i*4+1] = value;
                             *size_options[i*4+2] = value;
@@ -84,11 +84,11 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                 });
                 gb->append(line);
                 for (i32 j = 0; j < 4; j++) {
-                    auto line = new LineEdit("", size_options_sides_names[j], 100);
+                    auto line = new TextEdit("", size_options_sides_names[j].data(), TextEdit::Mode::SingleLine, Size(100, 100));
                     line->onTextChanged.addEventListener([=]() {
-                        if (line->text().length()) {
+                        if (line->text().size()) {
                             try {
-                                *size_options[i*4+j] = std::stoi(line->text().c_str());
+                                *size_options[i*4+j] = std::stoi(line->text().data());
                                 for (Window *window : Application::get()->m_windows) {
                                     window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                     window->layout();
@@ -116,9 +116,9 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
             &s.border.color_top, &s.border.color_bottom, &s.border.color_left, &s.border.color_right
         };
         GroupBox *gb = new GroupBox(Align::Vertical, "Border Color");
-            LineEdit *line = new LineEdit("", "All", 100);
+            TextEdit *line = new TextEdit("", "All", TextEdit::Mode::SingleLine, Size(100, 100));
                 line->onTextChanged.addEventListener([=]() {
-                    Color value = Color(line->text().c_str());
+                    Color value = Color(line->text().data());
                     *border_color[0] = value;
                     *border_color[1] = value;
                     *border_color[2] = value;
@@ -129,9 +129,9 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                 });
         gb->append(line, Fill::Horizontal);
             for (i32 i = 0; i < 4; i++) {
-                LineEdit *line = new LineEdit("", size_options_sides_names[i], 100);
+                TextEdit *line = new TextEdit("", size_options_sides_names[i].data(), TextEdit::Mode::SingleLine, Size(100, 100));
                     line->onTextChanged.addEventListener([=]() {
-                        *border_color[i] = Color(line->text().c_str());
+                        *border_color[i] = Color(line->text().data());
                         for (Window *window : Application::get()->m_windows) {
                             window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                         }
@@ -157,9 +157,9 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         Label *l = new Label(color_option_names[i]);
         append(l);
 
-        LineEdit *e = new LineEdit("", color_options[i]->toString(), 150);
+        TextEdit *e = new TextEdit("", color_options[i]->toString().data(), TextEdit::Mode::SingleLine, Size(150, 100));
             e->onTextChanged.addEventListener([=]() {
-                *color_options[i] = Color(e->text().c_str());
+                *color_options[i] = Color(e->text().data());
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                 }

@@ -1,6 +1,6 @@
 #include "../src/application.hpp"
 #include "../src/controls/tree_view.hpp"
-#include "../src/controls/line_edit.hpp"
+#include "../src/controls/text_edit.hpp"
 
 struct Hidden {
     i32 id = -1;

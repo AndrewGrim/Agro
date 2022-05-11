@@ -1,7 +1,7 @@
 #include "../src/application.hpp"
 #include "../src/controls/tree_view.hpp"
 #include "../src/controls/splitter.hpp"
-#include "../src/controls/line_edit.hpp"
+#include "../src/controls/text_edit.hpp"
 
 int main(int argc, char **argv) {
     Application *app = Application::get();
@@ -18,10 +18,10 @@ int main(int argc, char **argv) {
         auto h_split = new Splitter(Align::Horizontal);
             ScrolledBox *left = new ScrolledBox(Align::Vertical, Size(800, 400));
                 for (u8 i = 'a'; i <= 'z'; i++) {
-                    left->append(new LineEdit(std::string(30, i)), Fill::Both);
+                    left->append(new TextEdit(std::string(30, i).data()), Fill::Both);
                 }
                 for (u8 i = 'A'; i <= 'Z'; i++) {
-                    left->append(new LineEdit(std::string(30, i)), Fill::Both);
+                    left->append(new TextEdit(std::string(30, i).data()), Fill::Both);
                 }
             h_split->left(left);
             ScrolledBox *right = new ScrolledBox(Align::Vertical, Size(800, 400));

@@ -1,7 +1,7 @@
 #ifndef SPIN_BOX_HPP
     #define SPIN_BOX_HPP
 
-    #include "line_edit.hpp"
+    #include "text_edit.hpp"
     #include "icon_button.hpp"
     #include "../application.hpp"
     #include "../result.hpp"
@@ -16,7 +16,7 @@
 
     };
 
-    class SpinBox : public LineEdit {
+    class SpinBox : public TextEdit {
         public:
             enum class Error {
                 InvalidArgument,

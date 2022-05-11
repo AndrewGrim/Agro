@@ -21,7 +21,7 @@ void updateColor(ColorPicker *color_picker) {
 ColorPicker::ColorPicker() {
     glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, m_texture_data);
-    m_color_edit = new LineEdit(COLOR_NONE.toString());
+    m_color_edit = new TextEdit(COLOR_NONE.toString().data());
     append(m_color_edit, Fill::Horizontal);
     m_color_label = new Label("    ");
     append(m_color_label, Fill::Vertical);
@@ -35,7 +35,7 @@ ColorPicker::ColorPicker() {
         }
     });
     onColorChanged.addEventListener([&](Widget *widget, Color color) {
-        m_color_edit->setText(color.toString());
+        m_color_edit->setText(color.toString().data());
         m_color_label->style.widget_background = color;
     });
     // TODO ATM these are mutally exclusive because of how keybindings work which is not ideal
