@@ -488,6 +488,13 @@ TextEdit* TextEdit::setText(String text) {
     }
 
     m_text_changed = true;
+    m_selection.line_end = 0;
+    m_selection.x_end = inner_rect.x;
+    m_selection.end = 0;
+    m_last_codepoint_index = 0;
+    _endSelection();
+    m_history = History();
+    _updateView(DC);
     update();
     onTextChanged.notify();
 
@@ -804,6 +811,7 @@ TextEdit* TextEdit::clear() {
     m_selection.line_end = 0;
     m_selection.x_end = inner_rect.x;
     m_selection.end = 0;
+    m_last_codepoint_index = 0;
     _endSelection();
     m_history = History();
     _updateView(DC);
