@@ -67,6 +67,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 m_selection.end = index;
                 _endSelection();
             }
+            _updateView(dc);
         } else {
             m_selection.x_end = 0;
             m_selection.line_end = 0;
