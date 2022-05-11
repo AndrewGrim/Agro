@@ -335,11 +335,12 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             } else { selection = Renderer::Selection(); }
 
             // Draw selection background
+            i32 selection_extra = state & STATE_HARD_FOCUSED ? m_cursor_width : 0;
             dc.fillRect(
                 Rect(
                     x_scroll_offset + bg_start,
                     text_region.y,
-                    (bg_end - bg_start) + m_cursor_width,
+                    (bg_end - bg_start) + selection_extra,
                     TEXT_HEIGHT
                 ),
                 dc.accentWidgetBackground(style)
