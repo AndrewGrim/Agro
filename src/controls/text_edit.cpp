@@ -67,6 +67,11 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                 m_selection.end = index;
                 _endSelection();
             }
+        } else {
+            m_selection.x_end = inner_rect.x;
+            m_selection.line_end = 0;
+            m_selection.end = 0;
+            _endSelection();
         }
     });
     onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
