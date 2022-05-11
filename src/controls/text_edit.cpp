@@ -494,6 +494,7 @@ TextEdit* TextEdit::setText(String text) {
     m_last_codepoint_index = 0;
     _endSelection();
     m_history = History();
+    sizeHint(DC); // This is necessary for now because we need to make sure the scrollbars are initialized.
     _updateView(DC);
     update();
     onTextChanged.notify();
