@@ -83,7 +83,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
             i32 y = inner_rect.y;
             y -= Y_SCROLL_OFFSET;
             u64 index = 0;
-            i32 line = NORMALIZE(0, (i32)m_buffer.size() - 1, (event.y - y) / TEXT_HEIGHT);
+            u64 line = NORMALIZE(0, (i32)m_buffer.size() - 1, (event.y - y) / TEXT_HEIGHT);
 
             // TODO we could optimise it for single line by doing what we did previously
             // and check if lines are the same
