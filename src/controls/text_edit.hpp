@@ -131,7 +131,7 @@
         bool m_text_changed = false;
         i32 m_cursor_width = 2;
         i32 m_tab_width = 4;
-        i32 m_line_spacing = 5;
+        i32 m_line_spacing = 0;
         Selection m_selection;
         History m_history;
         Mode m_mode = Mode::SingleLine;
