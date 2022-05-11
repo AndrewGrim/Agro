@@ -10,6 +10,19 @@
 
 TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : Scrollable(min_size) {
     m_mode = mode;
+    {
+        // A little hack that allows the widget to correctly
+        // reason about its view and dimensions before being laid out.
+        // This prevents wrong viewport position for setText() or setCursor()
+        // calls that were made before the application was ready.
+        // This also allows us to call Scrollable::sizeHint() only here in order to initialise the scrollbars.
+        DrawingContext &dc = DC;
+        Scrollable::sizeHint(dc);
+        Size s = sizeHint(dc);
+        rect = Rect(0, 0, s.w, s.h);
+        dc.sizeHintPadding(s, style);
+        inner_rect = Rect(rect.w - s.w, rect.h - s.h, s.w, s.h);
+    }
     setText(text);
     setPlaceholderText(placeholder);
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
@@ -421,7 +434,6 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
         m_text_changed = false;
     }
     if (m_size_changed) {
-        Scrollable::sizeHint(dc);
         Size size;
         if (m_mode == Mode::MultiLine) { size = m_viewport; }
         else { size = Size(m_viewport.w, TEXT_HEIGHT); }
@@ -495,7 +507,6 @@ TextEdit* TextEdit::setText(String text) {
     m_last_codepoint_index = 0;
     _endSelection();
     m_history = History();
-    sizeHint(DC); // This is necessary for now because we need to make sure the scrollbars are initialized.
     _updateView(DC);
     update();
     onTextChanged.notify();
@@ -1145,8 +1156,6 @@ void TextEdit::insert(const char *text, bool skip) {
 
 bool TextEdit::setCursor(u64 line, u64 codepoint) {
     DrawingContext &dc = DC;
-    // TODO the sizehint is necessary since the scrollbars may not have been initialized :(
-    sizeHint(dc);
     if (line < m_buffer.size()) {
         const String &text = m_buffer[line];
         utf8::Iterator iter = text.utf8Begin();
