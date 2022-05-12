@@ -344,7 +344,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 } else {
                     selection = Renderer::Selection(0, line.size());
                     bg_start = 0;
-                    bg_end = m_buffer_length[line_index];
+                    bg_end = m_buffer_length[line_index] + 10; // TODO figure out a good value for this '10', indicates that we have selected the line in such a way that the newline character will be delete
                 }
             } else { selection = Renderer::Selection(); }
 
