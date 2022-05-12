@@ -1,5 +1,7 @@
 #include "spin_box.hpp"
 
+#define TEXT_HEIGHT ((i32)((font() ? font()->maxHeight() : dc.default_font->maxHeight()) + m_line_spacing))
+
 SpinBoxIconButton::SpinBoxIconButton(Image *image) : IconButton(image) {}
 
 SpinBoxIconButton::~SpinBoxIconButton() {}
@@ -83,12 +85,25 @@ void SpinBox::draw(DrawingContext &dc, Rect rect, i32 state) {
 
 Size SpinBox::sizeHint(DrawingContext &dc) {
     if (m_text_changed) {
-        m_virtual_size = dc.measureText(font(), text().slice());
+        m_virtual_size = Size();
+        u64 index = 0;
+        for (const String &line : m_buffer) {
+            Size size = dc.measureText(font(), line.slice(), m_tab_width);
+            m_buffer_length[index] = size.w;
+            size.h += m_line_spacing;
+            m_virtual_size.h += size.h;
+            if (size.w > m_virtual_size.w) { m_virtual_size.w = size.w; }
+            index++;
+        }
+        m_virtual_size.w += m_cursor_width;
+        if (m_buffer.size() == 1) { m_virtual_size.h -= m_line_spacing; }
+        m_text_changed = false;
     }
     if (m_size_changed) {
-        Size size = Size(m_viewport.w, font() ? font()->maxHeight() : dc.default_font->maxHeight());
+        Size size;
         Size arrow_button_size = m_up_arrow->sizeHint(dc);
-
+        if (m_mode == Mode::MultiLine) { size = m_viewport; }
+        else { size = Size(m_viewport.w, TEXT_HEIGHT); }
         dc.sizeHintMargin(size, style);
         dc.sizeHintBorder(size, style);
         dc.sizeHintPadding(size, style);
