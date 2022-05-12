@@ -84,7 +84,7 @@ Widget* basic1(Application &app) {
                     image_and_text->context_menu = b_menu;
                 buttons->append(image_and_text, Fill::Both);
             labels_and_buttons->append(buttons, Fill::Both);
-        box->append(labels_and_buttons, Fill::Both);
+        box->append(labels_and_buttons, Fill::Horizontal);
 
         Box *check_and_radio = new Box(Align::Horizontal);
             GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
@@ -100,13 +100,13 @@ Widget* basic1(Application &app) {
                 radios->append(new RadioButton(radio_group, "Radio 2"));
                 radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
             check_and_radio->append(radios, Fill::Both);
-        box->append(check_and_radio, Fill::Both);
+        box->append(check_and_radio, Fill::Horizontal);
 
         GroupBox *text_edits = new GroupBox(Align::Vertical, "TextEdits");
             text_edits->append(new TextEdit("", "Placeholder text", TextEdit::Mode::SingleLine, Size(200, 100)));
             text_edits->append(new TextEdit("Default text", "", TextEdit::Mode::SingleLine, Size(300, 100)));
-            text_edits->append(new TextEdit("", "", TextEdit::Mode::MultiLine), Fill::Both);
-        box->append(text_edits, Fill::Horizontal);
+            text_edits->append(new TextEdit(String((const char*)utf8_test_txt, utf8_test_txt_length), "", TextEdit::Mode::MultiLine), Fill::Both);
+        box->append(text_edits, Fill::Both);
 
         GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
             progress->append(new ProgressBar(200));
@@ -325,7 +325,7 @@ int main(int argc, char **argv) {
                 }
             }
         };
-        app->mainWindow()->resize(800, 700);
+        app->mainWindow()->resize(800, 800);
         app->mainWindow()->center();
         app->mainWindow()->setTitle("Widget Gallery");
         NoteBook *notebook = new NoteBook();
