@@ -320,6 +320,8 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             // Determine the selection to pass in to the renderer and dimensions to use for selection background.
             i32 bg_start = 0;
             i32 bg_end = 0;
+             // TODO figure out a good value for this
+            i32 newline_indicator = 10;
             if (line_index >= m_selection.line_begin && line_index <= m_selection.line_end) {
                 if (line_index == m_selection.line_begin) {
                     if (m_selection.line_begin == m_selection.line_end) {
@@ -329,7 +331,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                     } else {
                         selection = Renderer::Selection(m_selection.begin, line.size());
                         bg_start = m_selection.x_begin;
-                        bg_end = m_buffer_length[line_index];
+                        bg_end = m_buffer_length[line_index] + newline_indicator;
                     }
                 } else if (line_index == m_selection.line_end) {
                     if (m_selection.line_begin == m_selection.line_end) {
@@ -344,7 +346,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 } else {
                     selection = Renderer::Selection(0, line.size());
                     bg_start = 0;
-                    bg_end = m_buffer_length[line_index] + 10; // TODO figure out a good value for this '10', indicates that we have selected the line in such a way that the newline character will be delete
+                    bg_end = m_buffer_length[line_index] + newline_indicator;
                 }
             } else { selection = Renderer::Selection(); }
 
