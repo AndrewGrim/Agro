@@ -176,6 +176,17 @@ void Application::run() {
                     else { info("Couldn't find Window for event 'SDL_TEXTINPUT', perhaps it was deleted?"); }
                     break;
                 }
+                case SDL_USEREVENT:
+                    switch (event.user.code) {
+                        case AGRO_FONT_HEIGHT_CHANGED:
+                            for (Window *window : m_windows) {
+                                window->layout();
+                                window->show();
+                            }
+                            break;
+                        default:; // Right now the only other event is AGRO_PULSE which we don't need to explicitly handle.
+                    }
+                    break;
                 case SDL_QUIT:
                     mainWindow()->quit();
                     break;

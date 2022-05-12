@@ -1,4 +1,5 @@
 #include "font.hpp"
+#include "../application.hpp"
 
 Font::Font(FT_Library ft, std::string file_path, u32 pixel_size, Font::Type type)
 : file_path{file_path}, pixel_size{pixel_size}, type{type} {
@@ -113,13 +114,33 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
         // TODO would be helpful to print what the codepoint should translate to
         fail("FAILED_TO_LOAD_CHAR", std::to_string(codepoint));
     }
+    bool should_grow = false;
+    u32 new_atlas_width = atlas_width;
+    u32 new_atlas_height = atlas_height;
     if (next_slot + g->bitmap.width > atlas_width) {
-        warn("grow w");
-        grow(atlas_width * 2, atlas_height);
+        info("Font grow width:", file_path);
+        new_atlas_width *= 2;
+        should_grow = true;
     }
     if (g->bitmap.rows > atlas_height) {
-        warn("grow h");
-        grow(atlas_width, g->bitmap.rows);
+        info("Font grow height:", file_path);
+        new_atlas_height = g->bitmap.rows;
+        should_grow = true;
+        {
+            SDL_Event event;
+            SDL_UserEvent userevent;
+            userevent.type = SDL_USEREVENT;
+            userevent.code = AGRO_FONT_HEIGHT_CHANGED;
+            userevent.data1 = this;
+            userevent.data2 = NULL;
+            event.type = SDL_USEREVENT;
+            event.user = userevent;
+            SDL_PushEvent(&event);
+        }
+    }
+    if (should_grow) {
+        grow(new_atlas_width, new_atlas_height);
+        should_grow = false;
     }
 
     glTexSubImage2D(

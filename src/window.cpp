@@ -408,7 +408,7 @@ void Window::pulse() {
     SDL_Event event;
     SDL_UserEvent userevent;
     userevent.type = SDL_USEREVENT;
-    userevent.code = 0;
+    userevent.code = AGRO_PULSE;
     userevent.data1 = NULL;
     userevent.data2 = NULL;
     event.type = SDL_USEREVENT;
@@ -443,6 +443,7 @@ void Window::layout() {
     // TODO this doesnt update widgets like scrollbars which are part of scrollable
     m_main_widget->forEachWidget([](Widget *widget) {
         widget->m_size_changed = true;
+        widget->m_text_changed = true;
     });
     m_main_widget->sizeHint(*dc);
 }

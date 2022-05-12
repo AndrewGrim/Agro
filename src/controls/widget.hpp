@@ -316,6 +316,7 @@
             /// Stores whether the sizeHint() calculation
             /// needs to be recomputed.
             bool m_size_changed = true;
+            bool m_text_changed = true;
 
             // TODO font should probably be moved to style
             Font *m_font = nullptr;

@@ -5,6 +5,11 @@
 
     #include "common/number_types.h"
 
+    enum {
+        AGRO_PULSE = 0,
+        AGRO_FONT_HEIGHT_CHANGED = 1
+    };
+
     // TODO rework event
     // base event class?? im not sure what the benefits would be yet
     // but definitely split mousebutton and mousemotion events to
