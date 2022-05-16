@@ -354,9 +354,6 @@ Rect DrawingContext::drawBorder3D(Rect rect, i32 border_width, Color rect_color)
 }
 
 void DrawingContext::drawBorder(Rect &rect, Style &style, i32 state) {
-    // TODO if the widget is focused draw the border using the accent color
-    // we will probably pass the whole state and check for focus
-    // which means all the call sites will need to change
     if (style.border.type != STYLE_NONE) {
         const i32 border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
