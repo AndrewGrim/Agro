@@ -18,7 +18,7 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
     renderer = new Renderer(window, indices);
 
     default_light_style = {
-        Style::Margin{
+        Style::Margin {
             STYLE_ALL,
             1,
             1,
@@ -26,25 +26,30 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
             1
         },
 
-        Style::Border{
+        Style::Border {
             STYLE_ALL,
             1,
             1,
             1,
-            1,
-            Color("#777777"),
-            Color("#777777"),
-            Color("#777777"),
-            Color("#777777")
+            1
         },
 
-        Style::Padding{
+        Style::BorderColor {
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT
+        },
+
+        Style::Padding {
             STYLE_ALL,
             5,
             5,
             5,
             5
         },
+
+        default_font,
 
         Color("#f0f0f0"),
         Color("#e1e1e1"),
@@ -64,7 +69,7 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
         Color("#777777")
     };
     default_dark_style = {
-        Style::Margin{
+        Style::Margin {
             STYLE_ALL,
             1,
             1,
@@ -72,25 +77,30 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
             1
         },
 
-        Style::Border{
+        Style::Border {
             STYLE_ALL,
             1,
             1,
             1,
-            1,
-            Color("#dddddd"),
-            Color("#dddddd"),
-            Color("#dddddd"),
-            Color("#dddddd")
+            1
         },
 
-        Style::Padding{
+        Style::BorderColor {
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT
+        },
+
+        Style::Padding {
             STYLE_ALL,
             5,
             5,
             5,
             5
         },
+
+        default_font,
 
         Color("#282828"),
         Color("#757575"),
@@ -597,19 +607,43 @@ Color DrawingContext::borderBackground(Style &style) {
 }
 
 Color DrawingContext::borderTopBackground(Style &style) {
-    return !style.border.color_top ? this->default_style.border.color_top : style.border.color_top;
+    return !style.border_color.top ?
+                !default_style.border_color.top ?
+                    !style.border_background_color ?
+                        default_style.border_background_color
+                    : style.border_background_color
+                : default_style.border_color.top
+            : style.border_color.top;
 }
 
 Color DrawingContext::borderBottomBackground(Style &style) {
-    return !style.border.color_bottom ? this->default_style.border.color_bottom : style.border.color_bottom;
+    return !style.border_color.bottom ?
+                !default_style.border_color.bottom ?
+                    !style.border_background_color ?
+                        default_style.border_background_color
+                    : style.border_background_color
+                : default_style.border_color.bottom
+            : style.border_color.bottom;
 }
 
 Color DrawingContext::borderLeftBackground(Style &style) {
-    return !style.border.color_left ? this->default_style.border.color_left : style.border.color_left;
+    return !style.border_color.left ?
+                !default_style.border_color.left ?
+                    !style.border_background_color ?
+                        default_style.border_background_color
+                    : style.border_background_color
+                : default_style.border_color.left
+            : style.border_color.left;
 }
 
 Color DrawingContext::borderRightBackground(Style &style) {
-    return !style.border.color_right ? this->default_style.border.color_right : style.border.color_right;
+    return !style.border_color.right ?
+                !default_style.border_color.right ?
+                    !style.border_background_color ?
+                        default_style.border_background_color
+                    : style.border_background_color
+                : default_style.border_color.right
+            : style.border_color.right;
 }
 
 Color DrawingContext::getColor(Point point) {
