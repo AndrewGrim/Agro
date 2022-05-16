@@ -124,6 +124,7 @@
         bool handleScrollEvent(ScrollEvent event) override;
         String selection();
         Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
+        bool handleLayoutEvent(LayoutEvent event) override;
 
         std::vector<String> m_buffer;
         std::vector<u64> m_buffer_length;
@@ -138,5 +139,6 @@
         u64 m_last_codepoint_index = 0;
         Option<Timer> m_mouse_scroll_callback;
         SDL_MouseMotionEvent m_mouse_scroll_event = { SDL_MOUSEMOTION, 0, 0, 0, 0, 0, 0, 0, 0 };
+        bool m_text_changed = true;
     };
 #endif

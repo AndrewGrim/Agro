@@ -1353,3 +1353,21 @@ String TextEdit::selection() {
 Widget* TextEdit::handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) {
     return Widget::handleFocusEvent(event, state, data);
 }
+
+bool TextEdit::handleLayoutEvent(LayoutEvent event) {
+    if (event) {
+        if (event & LAYOUT_FONT) {
+            // If the font or font size have changed we need to recalculate the text extents.
+            m_text_changed = true;
+            // If no other bits are set and the TextEdit is NOT operating in SingleLine mode
+            // then we can return early since the viewport doesnt change.
+            // For SingleLine mode we need to keep going since the text height affects the returned size from sizeHint.
+            if (!(event^LAYOUT_FONT) && m_mode == Mode::MultiLine) { return true; }
+        }
+        // Since we already know the layout needs to be redone
+        // we return true to avoid having to traverse the entire widget graph to the top.
+        if (m_size_changed) { return true; }
+        m_size_changed = true;
+    }
+    return false;
+}
