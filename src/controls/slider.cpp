@@ -20,16 +20,16 @@ void SliderButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Color color;
     if (state & STATE_PRESSED) {
-        color = dc.accentPressedBackground(style);
+        color = dc.accentPressedBackground(style());
     } else if (state & STATE_HOVERED) {
-        color = dc.accentHoveredBackground(style);
+        color = dc.accentHoveredBackground(style());
     } else {
-        color = dc.accentWidgetBackground(style);
+        color = dc.accentWidgetBackground(style());
     }
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     Rect focus_rect = rect;
     dc.fillRect(rect, color);
-    dc.drawKeyboardFocus(focus_rect, style, state);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
 }
 
 Size SliderButton::sizeHint(DrawingContext &dc) {
@@ -38,8 +38,8 @@ Size SliderButton::sizeHint(DrawingContext &dc) {
 
 SliderButton* SliderButton::setMinSize(Size size) {
     m_size = size;
-    Application::get()->currentWindow()->dc->sizeHintBorder(m_size, style);
-    layout();
+    Application::get()->currentWindow()->dc->sizeHintBorder(m_size, style());
+    layout(LAYOUT_STYLE);
     return this;
 }
 
@@ -136,9 +136,9 @@ void Slider::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     // Draw the "rail" for the slider button.
     if (m_align_policy == Align::Horizontal) {
-        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), dc.textForeground(style));
+        dc.fillRect(Rect(rect.x + (size / 2), rect.y + rect.h / 2, rect.w - size, 2), dc.textForeground(style()));
     } else {
-        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), dc.textForeground(style));
+        dc.fillRect(Rect(rect.x + rect.w / 2, rect.y + (size / 2), 2, rect.h - size), dc.textForeground(style()));
     }
 
     // Determine and draw the location of the slider button.

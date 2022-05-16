@@ -239,15 +239,15 @@
                 this->rect = rect;
                 Color color;
                 if (m_dragging) {
-                    color = dc.widgetBackground(style);
+                    color = dc.widgetBackground(style());
                 } else if (state & STATE_PRESSED && state & STATE_HOVERED) {
-                    color = dc.pressedBackground(style);
+                    color = dc.pressedBackground(style());
                 } else if (state & STATE_HOVERED) {
-                    color = dc.hoveredBackground(style);
+                    color = dc.hoveredBackground(style());
                 } else {
-                    color = dc.widgetBackground(style);
+                    color = dc.widgetBackground(style());
                 }
-                dc.drawBorder(rect, style, state);
+                dc.drawBorder(rect, style(), state);
 
                 dc.fillRect(rect, color);
                 layoutChildren(dc, rect);
@@ -306,7 +306,7 @@
                     }
                     m_widgets_only = size;
 
-                    dc.sizeHintBorder(size, style);
+                    dc.sizeHintBorder(size, style());
 
                     m_horizontal_non_expandable = horizontal_non_expandable;
                     m_visible_children = visible;
@@ -339,7 +339,7 @@
                 m_custom_size = true;
                 m_custom_width = width;
                 rect.w = width;
-                layout();
+                layout(LAYOUT_STYLE);
             }
 
             void setColumnStyle(Style column, Style button) {
@@ -513,13 +513,13 @@
                     }
                 });
                 m_column_style = Style();
-                m_column_style.border.type = STYLE_BOTTOM | STYLE_RIGHT;
+                m_column_style.border.type = STYLE_BOTTOM|STYLE_RIGHT;
                 m_column_style.border.bottom = 1;
                 m_column_style.border.right = 1;
                 m_column_style.margin.type = STYLE_NONE;
 
                 m_column_button_style = Style();
-                m_column_button_style.widget_background = COLOR_NONE;
+                m_column_button_style.widget_background_color = COLOR_NONE;
                 m_column_button_style.border.type = STYLE_NONE;
                 m_column_button_style.margin.type = STYLE_NONE;
             }
@@ -538,10 +538,10 @@
                 assert(m_model && "A TreeView needs a model to work!");
                 this->rect = rect;
 
-                dc.margin(rect, style);
-                dc.drawBorder(rect, style, state);
+                dc.margin(rect, style());
+                dc.drawBorder(rect, style(), state);
                 this->inner_rect = rect;
-                dc.fillRect(rect, dc.textBackground(style));
+                dc.fillRect(rect, dc.textBackground(style()));
 
                 Size virtual_size = m_virtual_size;
                 if (areColumnHeadersHidden()) {
@@ -660,7 +660,7 @@
                     if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
                         dc.setClip(Rect(rect.x, rect.y + local_column_header, rect.w, rect.h - local_column_header).clipTo(tv_clip));
                         for (i32 width : m_column_widths) {
-                            dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), dc.textDisabled(style));
+                            dc.fillRect(Rect(pos.x + width - m_grid_line_width, rect.y + local_column_header, m_grid_line_width, virtual_size.h - local_column_header), dc.textDisabled(style()));
                             pos.x += width;
                         }
                     }
@@ -670,7 +670,7 @@
                 if (m_mode == Mode::Scroll) {
                     drawScrollBars(dc, rect, virtual_size);
                 }
-                dc.drawKeyboardFocus(this->rect, style, state);
+                dc.drawKeyboardFocus(this->rect, style(), state);
             }
 
             void setModel(Tree<T> *model) {
@@ -831,7 +831,7 @@
                 });
                 children.push_back(column);
                 column->parent_index = children.size() - 1;
-                layout();
+                layout(LAYOUT_CHILD);
 
                 return this;
             }
@@ -863,19 +863,19 @@
                 }
                 if (m_mode == Mode::Scroll) {
                     Size viewport_and_style = m_viewport;
-                        dc.sizeHintMargin(viewport_and_style, style);
-                        dc.sizeHintBorder(viewport_and_style, style);
+                        dc.sizeHintMargin(viewport_and_style, style());
+                        dc.sizeHintBorder(viewport_and_style, style());
                     return viewport_and_style;
                 }
                 if (areColumnHeadersHidden()) {
                     Size virtual_size_and_style = Size(m_virtual_size.w, m_virtual_size.h - m_children_size.h);
-                        dc.sizeHintMargin(virtual_size_and_style, style);
-                        dc.sizeHintBorder(virtual_size_and_style, style);
+                        dc.sizeHintMargin(virtual_size_and_style, style());
+                        dc.sizeHintBorder(virtual_size_and_style, style());
                     return virtual_size_and_style;
                 }
                 Size virtual_size_and_style = m_virtual_size;
-                    dc.sizeHintMargin(virtual_size_and_style, style);
-                    dc.sizeHintBorder(virtual_size_and_style, style);
+                    dc.sizeHintMargin(virtual_size_and_style, style());
+                    dc.sizeHintBorder(virtual_size_and_style, style());
                 return virtual_size_and_style;
             }
 
@@ -890,7 +890,7 @@
 
             void setMode(Mode mode) {
                 m_mode = mode;
-                layout();
+                layout(LAYOUT_STYLE);
             }
 
             Mode mode() {
@@ -1215,7 +1215,7 @@
                 }
                 if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
                     dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
-                    dc.fillRect(Rect(rect.x, pos.y + node->max_cell_height - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style));
+                    dc.fillRect(Rect(rect.x, pos.y + node->max_cell_height - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style()));
                 }
                 drawTreeLine(dc, pos, rect, tv_clip, column_header, node);
                 pos.y += node->max_cell_height;
@@ -1253,7 +1253,7 @@
                                 m_treeline_size,
                                 node->max_cell_height / 2
                             ),
-                            dc.borderBackground(style)
+                            dc.borderBackground(style())
                         );
                     }
 
@@ -1273,7 +1273,7 @@
                                         m_treeline_size,
                                         (rect.y + rect.h) - pos.y
                                     ),
-                                    dc.borderBackground(style)
+                                    dc.borderBackground(style())
                                 );
                             }
                         // Higher sibling or no sibling
@@ -1312,7 +1312,7 @@
                                             m_treeline_size,
                                             _node->bs_data.position - _parent->bs_data.position
                                         ),
-                                        dc.borderBackground(style)
+                                        dc.borderBackground(style())
                                     );
                                 }
                             }
@@ -1323,9 +1323,9 @@
                     }
 
                     Image *img = !node->is_collapsed ? m_expanded : m_collapsed;
-                    Color fg = dc.iconForeground(style);
+                    Color fg = dc.iconForeground(style());
                     if (m_tree_collapser && m_tree_collapser == node) {
-                        fg = dc.textSelected(style);
+                        fg = dc.textSelected(style());
                     }
                     dc.drawTextureAligned(
                         Rect(x - m_indent, y - (node->max_cell_height / 2), m_indent, node->max_cell_height),
@@ -1354,7 +1354,7 @@
                         m_indent,
                         m_treeline_size
                     ),
-                    dc.borderBackground(style)
+                    dc.borderBackground(style())
                 );
             }
 
@@ -1367,7 +1367,7 @@
                         m_treeline_size,
                         (i32)distance - node->parent->bs_data.length + (node->bs_data.length / 2) + m_grid_line_width
                     ),
-                    dc.borderBackground(style)
+                    dc.borderBackground(style())
                 );
             }
 
@@ -1379,7 +1379,7 @@
                         m_indent / 4,
                         m_indent / 4
                     ),
-                    dc.iconForeground(style)
+                    dc.iconForeground(style())
                 );
             }
 

@@ -130,7 +130,7 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
             SDL_Event event;
             SDL_UserEvent userevent;
             userevent.type = SDL_USEREVENT;
-            userevent.code = AGRO_FONT_HEIGHT_CHANGED;
+            userevent.code = LAYOUT_FONT;
             userevent.data1 = this;
             userevent.data2 = NULL;
             event.type = SDL_USEREVENT;

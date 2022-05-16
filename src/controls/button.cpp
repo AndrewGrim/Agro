@@ -24,19 +24,19 @@ const char* Button::name() {
 void Button::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
-        color = dc.pressedBackground(style);
+        color = dc.pressedBackground(style());
     } else if (state & STATE_HOVERED) {
-        color = dc.hoveredBackground(style);
+        color = dc.hoveredBackground(style());
     } else {
-        color = dc.widgetBackground(style);
+        color = dc.widgetBackground(style());
     }
 
-    dc.margin(rect, style);
+    dc.margin(rect, style());
     this->rect = rect;
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     Rect focus_rect = rect;
     dc.fillRect(rect, color);
-    dc.padding(rect, style);
+    dc.padding(rect, style());
 
     Size text_size = dc.measureText(font(), text());
     if (text().length()) { text_size.w += 5; } // Padding between image and text
@@ -70,10 +70,10 @@ void Button::draw(DrawingContext &dc, Rect rect, i32 state) {
             v_text_align,
             rect,
             0,
-            dc.textForeground(style)
+            dc.textForeground(style())
         );
     }
-    dc.drawKeyboardFocus(focus_rect, style, state);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
 }
 
 Size Button::sizeHint(DrawingContext &dc) {
@@ -88,9 +88,9 @@ Size Button::sizeHint(DrawingContext &dc) {
             }
         }
 
-        dc.sizeHintMargin(size, style);
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style());
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
 
         m_size = size;
         m_size_changed = false;
@@ -107,7 +107,7 @@ std::string Button::text() {
 
 Button* Button::setText(std::string text) {
     m_text = text;
-    layout();
+    layout(LAYOUT_STYLE);
 
     return this;
 }
@@ -147,7 +147,7 @@ Button* Button::setImage(Image *image) {
         delete m_image;
     }
     m_image = image;
-    layout();
+    layout(LAYOUT_STYLE);
 
     return this;
 }

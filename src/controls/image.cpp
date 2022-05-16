@@ -3,19 +3,19 @@
 Image::Image(std::string file_path) : Widget() {
     m_texture = std::make_shared<Texture>(file_path);
     m_size = originalSize();
-    style.widget_background = COLOR_NONE;
+    setWidgetBackgroundColor(COLOR_NONE);
 }
 
 Image::Image(const unsigned char *image_data, i32 length) : Widget() {
     m_texture = std::make_shared<Texture>(image_data, length);
     m_size = originalSize();
-    style.widget_background = COLOR_NONE;
+    setWidgetBackgroundColor(COLOR_NONE);
 }
 
 Image::Image(std::shared_ptr<Texture> texture) : Widget() {
     m_texture = texture;
     m_size = originalSize();
-    style.widget_background = COLOR_NONE;
+    setWidgetBackgroundColor(COLOR_NONE);
 }
 
 Image::~Image() {
@@ -29,7 +29,7 @@ const char* Image::name() {
 void Image::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
-    dc.fillRect(rect, dc.widgetBackground(style));
+    dc.fillRect(rect, dc.widgetBackground(style()));
     if (m_expand) {
         if (m_maintain_aspect_ratio) {
             Size size = Size();
@@ -86,7 +86,7 @@ Size Image::sizeHint(DrawingContext &dc) {
 
 Image* Image::setMinSize(Size min_size) {
     m_size = min_size;
-    layout();
+    layout(LAYOUT_STYLE);
     return this;
 }
 

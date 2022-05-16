@@ -1,9 +1,7 @@
 #include "widget.hpp"
 #include "../application.hpp"
 
-Widget::Widget() {
-
-}
+Widget::Widget() {}
 
 Widget::~Widget() {
     Application::get()->currentWindow()->removeFromState(this);
@@ -23,7 +21,7 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, u32 proportion) {
     widget->setProportion(proportion);
     this->children.push_back(widget);
     widget->parent_index = this->children.size() - 1;
-    this->layout();
+    this->layout(LAYOUT_CHILD);
 
     return this;
 }
@@ -37,7 +35,7 @@ Widget* Widget::remove(u64 parent_index) {
         child->parent_index = i;
         i++;
     }
-    this->layout();
+    this->layout(LAYOUT_CHILD);
 
     return child;
 }
@@ -52,11 +50,13 @@ void Widget::destroy() {
 Widget* Widget::setFillPolicy(Fill fill_policy) {
     if (this->m_fill_policy != fill_policy) {
         this->m_fill_policy = fill_policy;
-        this->layout();
+        this->layout(LAYOUT_CHILD);
         // TODO maybe we could manually change only the exapndable/non-expandable widgets
         // so we dont have to redo the whole sizehint calculation
         // but this would probably require a base class for all layouts
         // which wouldnt necessarily be bad
+        // update: we could submit more granular layout events such as
+        // child added, child removed, child fill policy changed etc and ideally a widget*
     }
 
     return this;
@@ -69,7 +69,7 @@ Fill Widget::fillPolicy() {
 Widget* Widget::show() {
     if (!this->m_is_visible) {
         this->m_is_visible = true;
-        this->layout();
+        this->layout(LAYOUT_CHILD);
     }
 
     return this;
@@ -78,7 +78,7 @@ Widget* Widget::show() {
 Widget* Widget::hide() {
     if (this->m_is_visible) {
         this->m_is_visible = false;
-        this->layout();
+        this->layout(LAYOUT_CHILD);
     }
 
     return this;
@@ -113,27 +113,6 @@ i32 Widget::state() {
     if (app_state->hard_focused == this) { widget_state |= STATE_HARD_FOCUSED; }
 
     return widget_state;
-}
-
-Widget* Widget::update() {
-    Application::get()->currentWindow()->update();
-
-    return this;
-}
-
-Widget* Widget::layout() {
-    m_size_changed = true;
-    Widget *parent = this->parent;
-    while (parent) {
-        if (parent->m_size_changed) {
-            break;
-        }
-        parent->m_size_changed = true;
-        parent = parent->parent;
-    }
-    update();
-
-    return this;
 }
 
 Widget* Widget::propagateMouseEvent(Window *window, State *state, MouseEvent event) {
@@ -258,26 +237,16 @@ bool Widget::isScrollable() {
 }
 
 u32 Widget::proportion() {
-    return this->m_proportion;
+    return m_proportion;
 }
 
 Widget* Widget::setProportion(u32 proportion) {
-    if (this->m_proportion != proportion) {
-        this->m_proportion = proportion ? proportion : 1;
-        this->layout();
-    }
-
-    return this;
-}
-
-Font* Widget::font() {
-    return this->m_font;
-}
-
-Widget* Widget::setFont(Font *font) {
-    if (this->m_font != font) {
-        this->m_font = font;
-        this->layout();
+    if (m_proportion != proportion) {
+        m_proportion = proportion ? proportion : 1;
+        // TODO this one along with fill policy should be changed such that
+        // they can be updated individually and only require and update rather
+        // than a layout
+        layout(LAYOUT_CHILD);
     }
 
     return this;
@@ -299,7 +268,7 @@ i32 Widget::bind(i32 key, i32 modifiers, std::function<void()> callback) {
         mods[3] = Mod::Gui;
     }
 
-    this->m_keyboard_shortcuts.insert(
+    m_keyboard_shortcuts.insert(
         std::make_pair(
             m_binding_id,
             KeyboardShortcut(
@@ -318,20 +287,15 @@ i32 Widget::bind(i32 key, Mod modifier, std::function<void()> callback) {
 }
 
 void Widget::unbind(i32 key) {
-    this->m_keyboard_shortcuts.erase(key);
+    m_keyboard_shortcuts.erase(key);
 }
 
 const std::unordered_map<i32, KeyboardShortcut> Widget::keyboardShortcuts() {
-    return this->m_keyboard_shortcuts;
+    return m_keyboard_shortcuts;
 }
 
 Size Widget::size() {
     return m_size;
-}
-
-void Widget::setStyle(Style style) {
-    this->style = style;
-    layout();
 }
 
 bool Widget::isWidget() {

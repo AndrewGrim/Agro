@@ -65,14 +65,14 @@
 
         Renderer(Window *window, u32 *indices);
         ~Renderer();
-        void fillText(Font *font, Slice<const char> text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
-        Size measureText(Font *font, Slice<const char> text, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5);
+        void fillText(std::shared_ptr<Font> font, Slice<const char> text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
+        Size measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5);
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void drawDashedRect(Rect rect, Color color);
         void check();
-        void textCheck(Font *font);
+        void textCheck(std::shared_ptr<Font> font);
         void render();
 
         private:

@@ -55,19 +55,19 @@ const char* DropDown::name() {
 void DropDown::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
-        color = dc.pressedBackground(style);
+        color = dc.pressedBackground(style());
     } else if (state & STATE_HOVERED) {
-        color = dc.hoveredBackground(style);
+        color = dc.hoveredBackground(style());
     } else {
-        color = dc.widgetBackground(style);
+        color = dc.widgetBackground(style());
     }
 
-    dc.margin(rect, style);
+    dc.margin(rect, style());
     this->rect = rect;
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     Rect focus_rect = rect;
     dc.fillRect(rect, color);
-    dc.padding(rect, style);
+    dc.padding(rect, style());
 
     Size size = m_open_close->sizeHint(dc);
     rect.w -= size.w;
@@ -85,10 +85,10 @@ void DropDown::draw(DrawingContext &dc, Rect rect, i32 state) {
         m_open_close->coords(),
         HorizontalAlignment::Right,
         VerticalAlignment::Center,
-        dc.iconForeground(style)
+        dc.iconForeground(style())
     );
 
-    dc.drawKeyboardFocus(focus_rect, style, state);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
 }
 
 Size DropDown::sizeHint(DrawingContext &dc) {
@@ -97,9 +97,9 @@ Size DropDown::sizeHint(DrawingContext &dc) {
         size.w += m_open_close->m_size.w;
         if (m_open_close->m_size.h > size.h) { size.h = m_open_close->m_size.h; }
 
-        dc.sizeHintMargin(size, style);
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style());
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
 
         m_size = size;
         m_size_changed = false;
@@ -138,7 +138,7 @@ i32 DropDown::appendItem(CellRenderer *cell) {
         m_biggest_item.h = new_item_size.h;
         should_layout = true;
     }
-    if (should_layout) { layout(); } else { update(); }
+    if (should_layout) { layout(LAYOUT_CHILD); } else { update(); }
     return m_list->m_items.size() - 1;
 }
 

@@ -1,10 +1,10 @@
 #include "group_box.hpp"
 
 GroupBox::GroupBox(Align align_policy, std::string label) : Box(align_policy), label{label} {
-    style.margin.top = 5;
-    style.margin.bottom = 5;
-    style.margin.left = 5;
-    style.margin.right = 5;
+    setMarginTop(5);
+    setMarginBottom(5);
+    setMarginLeft(5);
+    setMarginRight(5);
 }
 
 GroupBox::~GroupBox() {}
@@ -14,7 +14,7 @@ const char* GroupBox::name() {
 }
 
 void GroupBox::draw(DrawingContext &dc, Rect rect, i32 state) {
-    dc.margin(rect, style);
+    dc.margin(rect, style());
     this->rect = rect;
     Point point;
     Size text_size;
@@ -26,14 +26,14 @@ void GroupBox::draw(DrawingContext &dc, Rect rect, i32 state) {
         rect.y += text_size_half;
         rect.h -= text_size_half;
     }
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     rect.y += text_size_half;
     rect.h -= text_size_half;
-    dc.fillRect(rect, dc.windowBackground(style));
-    dc.padding(rect, style);
+    dc.fillRect(rect, dc.windowBackground(style()));
+    dc.padding(rect, style());
     if (label.length()) {
-        dc.fillRect(Rect(point.x, point.y + text_size_half, text_size.w + 2, text_size_half), dc.windowBackground(style)); // 2 padding on the right so the text doesnt touch the border
-        dc.fillText(font(), label, point, dc.textForeground(style));
+        dc.fillRect(Rect(point.x, point.y + text_size_half, text_size.w + 2, text_size_half), dc.windowBackground(style())); // 2 padding on the right so the text doesnt touch the border
+        dc.fillText(font(), label, point, dc.textForeground(style()));
     }
     layoutChildren(dc, rect);
 }
@@ -75,9 +75,9 @@ Size GroupBox::sizeHint(DrawingContext &dc) {
         }
         m_widgets_only = size;
 
-        dc.sizeHintMargin(size, style);
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style());
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
 
         Size text_size = dc.measureText(font(), label);
         text_size.w += 12; // 10 padding on the left, 2 padding on the right

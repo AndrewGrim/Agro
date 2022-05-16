@@ -28,7 +28,7 @@
         // all other imports so we could access it anywhere
         u32 indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer = nullptr;
-        Font *default_font = nullptr;
+        std::shared_ptr<Font> default_font = nullptr;
         Style default_light_style;
         Style default_dark_style;
         Style default_style;
@@ -39,17 +39,17 @@
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void drawDashedRect(Rect rect, Color color);
-        void fillText(Font *font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultiline(Font *font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextAligned(Font *font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultilineAligned(Font *font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        Size measureText(Font *font, Slice<const char> text, i32 tab_width = 4);
-        Size measureText(Font *font, std::string text, i32 tab_width = 4);
-        Size measureText(Font *font, char c, i32 tab_width = 4);
-        Size measureTextMultiline(Font *font, std::string text, i32 tab_width = 4, i32 line_spacing = 5);
-        Size measureTextMultiline(Font *font, Slice<const char> text, i32 tab_width = 4, i32 line_spacing = 5);
+        void fillText(std::shared_ptr<Font> font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultiline(std::shared_ptr<Font> font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextAligned(std::shared_ptr<Font> font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultilineAligned(std::shared_ptr<Font> font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultilineAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        Size measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4);
+        Size measureText(std::shared_ptr<Font> font, std::string text, i32 tab_width = 4);
+        Size measureText(std::shared_ptr<Font> font, char c, i32 tab_width = 4);
+        Size measureTextMultiline(std::shared_ptr<Font> font, std::string text, i32 tab_width = 4, i32 line_spacing = 5);
+        Size measureTextMultiline(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4, i32 line_spacing = 5);
         void render();
         Rect drawBorder3D(Rect rect, i32 border_width, Color rect_color);
         void drawBorder(Rect &rect, Style &style, i32 state);

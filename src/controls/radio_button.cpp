@@ -31,15 +31,15 @@ const char* RadioButton::name() {
 }
 
 void RadioButton::draw(DrawingContext &dc, Rect rect, i32 state) {
-    dc.margin(rect, style);
-    dc.padding(rect, style);
+    dc.margin(rect, style());
+    dc.padding(rect, style());
     // Set rect only to the area where we actually draw the widget.
     this->rect = Rect(rect.x, rect.y + (rect.h / 2) - (m_size.h / 2), m_size.w, m_size.h);
 
     Image *image = m_is_checked ? m_checked_image : m_unchecked_image;
-    Color check_image_bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.borderBackground(style);
+    Color check_image_bg = m_is_checked ? dc.accentWidgetBackground(style()) : dc.borderBackground(style());
     if (state & STATE_HOVERED) {
-        check_image_bg = m_is_checked ? check_image_bg : dc.accentHoveredBackground(style);
+        check_image_bg = m_is_checked ? check_image_bg : dc.accentHoveredBackground(style());
     }
     dc.drawTextureAligned(
         Rect(rect.x, rect.y, m_size.h, rect.h),
@@ -48,7 +48,7 @@ void RadioButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         m_background_image->coords(),
         HorizontalAlignment::Left,
         VerticalAlignment::Center,
-        dc.textBackground(style)
+        dc.textBackground(style())
     );
     dc.drawTextureAligned(
         Rect(rect.x, rect.y, m_size.h, rect.h),
@@ -68,8 +68,8 @@ void RadioButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         VerticalAlignment::Center,
         rect,
         0,
-        dc.textForeground(style),
+        dc.textForeground(style()),
         m_tab_width
     );
-    dc.drawKeyboardFocus(this->rect, style, state);
+    dc.drawKeyboardFocus(this->rect, style(), state);
 }

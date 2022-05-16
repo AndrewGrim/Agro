@@ -79,9 +79,6 @@
             /// but without the margins, border and padding.
             Rect inner_rect = Rect(0, 0, 0, 0);
 
-            /// The parent* is mostly used by compound Widgets.
-            Widget *parent = nullptr;
-
             i32 parent_index = -1; // TODO Have another look at parent and parent_index for some widgets
             // when there is a parent but the widget its not part of the children
             // like in Splitter
@@ -95,12 +92,6 @@
             /// Its not meant to be interacted with directly but
             /// rather through methods like append().
             std::vector<Widget*> children;
-
-            /// Describes the style according to which the Widget should be
-            /// drawn. Note that for most Widget this will contain default
-            /// values that specify that the drawee should use the default
-            /// style from DrawingContext.
-            Style style;
 
             Widget *tooltip = nullptr;
             Widget *context_menu = nullptr;
@@ -235,13 +226,6 @@
             bool isSoftFocused();
             bool isHardFocused();
 
-            /// Tells the Application that it needs to redraw.
-            Widget* update();
-
-            /// Recursively tells the parent that m_size_changed so only
-            /// the affected Widgets recalculate their sizeHints.
-            Widget* layout();
-
             /// Passes the event further down the Widget tree until
             /// it finds a Widget that matches the x and y of the event.
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event);
@@ -261,12 +245,6 @@
 
             Widget* setProportion(u32 proportion);
 
-            // TODO font should probably be moved to style
-            Font* font();
-
-            // TODO font should probably be moved to style
-            Widget* setFont(Font *font);
-
             /// Returns the Widget state bit flag consisting of:
             /// focus, hover and pressed states.
             i32 state();
@@ -276,10 +254,10 @@
             void unbind(i32 map_key);
             const std::unordered_map<i32, KeyboardShortcut> keyboardShortcuts();
             Size size();
-            void setStyle(Style style);
-
             bool isWidget();
 
+            // TODO forEachDrawable?
+            // also we shouldnt be passing layoutevent into this callback
             void forEachWidget(std::function<void(Widget *widget)> action);
 
             /// Occurs when a widget is clicked on or when the user presses space on it (only when soft?)
@@ -308,20 +286,8 @@
             /// Widget expands this one will expand 5 pixels.
             u32 m_proportion = 1;
 
-            /// The precomputed sizeHint of the Widget.
-            /// Returned when nothing changed that would
-            /// invalidate the sizeHint() calculation.
-            Size m_size = Size();
-
-            /// Stores whether the sizeHint() calculation
-            /// needs to be recomputed.
-            bool m_size_changed = true;
-            bool m_text_changed = true;
-
-            // TODO font should probably be moved to style
-            Font *m_font = nullptr;
-
-            // TODO wtf is this for?
+            /// The id return when binding a keyboard shortcut thats individual to the widget.
+            /// So first keybinding for this widget has an id of 0, then next one 1 and so on.
             i32 m_binding_id = 0;
             std::unordered_map<i32, KeyboardShortcut> m_keyboard_shortcuts;
     };

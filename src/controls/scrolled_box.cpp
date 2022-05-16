@@ -19,7 +19,7 @@ void ScrolledBox::draw(DrawingContext &dc, Rect rect, i32 state) {
     // TODO clips before scrollbars which means that
     // some scrolled content can get drawn underneath when horizontall scrolling for example
     clip();
-    dc.fillRect(rect, dc.windowBackground(style));
+    dc.fillRect(rect, dc.windowBackground(style()));
     layoutChildren(dc, rect);
     dc.setClip(previous_clip);
 }
@@ -184,7 +184,7 @@ bool ScrolledBox::handleScrollEvent(ScrollEvent event) {
 void ScrolledBox::setAlignPolicy(Align align_policy) {
     if (m_align_policy != align_policy) {
         m_align_policy = align_policy;
-        layout();
+        layout(LAYOUT_CHILD);
     }
 }
 

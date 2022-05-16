@@ -124,8 +124,6 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
 
 DrawingContext::~DrawingContext() {
     delete renderer;
-    if (default_font != Application::get()->mainWindow()->dc->default_font) { delete default_font; }
-    else if (window == Application::get()->mainWindow()) { delete default_font; }
 }
 
 void DrawingContext::fillRect(Rect rect, Color color) {
@@ -144,15 +142,15 @@ void DrawingContext::render() {
     renderer->render();
 }
 
-void DrawingContext::fillText(Font *font, std::string text, Point point, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillText(std::shared_ptr<Font> font, std::string text, Point point, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
     renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, false, 0, selection, selection_color);
 }
 
-void DrawingContext::fillTextMultiline(Font *font, std::string text, Point point, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextMultiline(std::shared_ptr<Font> font, std::string text, Point point, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
     renderer->fillText(font ? font : default_font, Slice<const char>(text.c_str(), text.length()), point, color, tab_width, true, line_spacing, selection, selection_color);
 }
 
-void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextAligned(std::shared_ptr<Font> font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
     Point pos = Point();
     Size text_size = measureText(font, text, tab_width);
     switch (h_align) {
@@ -188,11 +186,11 @@ void DrawingContext::fillTextAligned(Font *font, std::string text, HorizontalAli
     );
 }
 
-void DrawingContext::fillTextAligned(Font *font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
     fillTextAligned(font, std::string(text.data), h_align, v_align, rect, padding, color, tab_width, selection, selection_color);
 }
 
-void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextMultilineAligned(std::shared_ptr<Font> font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
     font = font ? font : default_font;
     Point pos = Point(rect.x, rect.y);
     Size text_size = measureTextMultiline(font, text, tab_width, line_spacing);
@@ -250,27 +248,27 @@ void DrawingContext::fillTextMultilineAligned(Font *font, std::string text, Hori
     renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false, 0, selection, selection_color);
 }
 
-void DrawingContext::fillTextMultilineAligned(Font *font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
+void DrawingContext::fillTextMultilineAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
     fillTextMultilineAligned(font, std::string(text.data), h_align, v_align, rect, padding, color, tab_width, line_spacing, selection, selection_color);
 }
 
-Size DrawingContext::measureText(Font *font, Slice<const char> text, i32 tab_width) {
+Size DrawingContext::measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width) {
     return renderer->measureText(font ? font : default_font, text, tab_width);
 }
 
-Size DrawingContext::measureText(Font *font, std::string text, i32 tab_width) {
+Size DrawingContext::measureText(std::shared_ptr<Font> font, std::string text, i32 tab_width) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.length()), tab_width);
 }
 
-Size DrawingContext::measureText(Font *font, char c, i32 tab_width) {
+Size DrawingContext::measureText(std::shared_ptr<Font> font, char c, i32 tab_width) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(&c, 1), tab_width);
 }
 
-Size DrawingContext::measureTextMultiline(Font *font, std::string text, i32 tab_width, i32 line_spacing) {
+Size DrawingContext::measureTextMultiline(std::shared_ptr<Font> font, std::string text, i32 tab_width, i32 line_spacing) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.length()), tab_width, true, line_spacing);
 }
 
-Size DrawingContext::measureTextMultiline(Font *font, Slice<const char> text, i32 tab_width, i32 line_spacing) {
+Size DrawingContext::measureTextMultiline(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width, i32 line_spacing) {
     return renderer->measureText(font ? font : default_font, text, tab_width, true, line_spacing);
 }
 
@@ -358,32 +356,32 @@ void DrawingContext::drawBorder(Rect &rect, Style &style, i32 state) {
         const i32 border = style.border.type == STYLE_DEFAULT ? default_style.border.type : style.border.type;
         if (border & STYLE_TOP) {
             const i32 size = style.border.top < 0 ? default_style.border.top : style.border.top;
-            fillRect(Rect(rect.x, rect.y, rect.w, size), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderTopBackground(style));
+            fillRect(Rect(rect.x, rect.y, rect.w, size), state & STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderTopBackground(style));
             rect.y += size;
             rect.h -= size;
         }
         if (border & STYLE_BOTTOM) {
             const i32 size = style.border.bottom < 0 ? default_style.border.bottom : style.border.bottom;
             rect.h -= size;
-            fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderBottomBackground(style));
+            fillRect(Rect(rect.x, rect.y + rect.h, rect.w, size), state & STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderBottomBackground(style));
         }
         if (border & STYLE_LEFT) {
             const i32 size = style.border.left < 0 ? default_style.border.left : style.border.left;
-            fillRect(Rect(rect.x, rect.y, size, rect.h), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderLeftBackground(style));
+            fillRect(Rect(rect.x, rect.y, size, rect.h), state & STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderLeftBackground(style));
             rect.x += size;
             rect.w -= size;
         }
         if (border & STYLE_RIGHT) {
             const i32 size = style.border.right < 0 ? default_style.border.right : style.border.right;
             rect.w -= size;
-            fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), state & Drawable::DrawableState::STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderRightBackground(style));
+            fillRect(Rect(rect.x + rect.w, rect.y, size, rect.h), state & STATE_HARD_FOCUSED ? accentWidgetBackground(style) : borderRightBackground(style));
         }
     }
 }
 
 void DrawingContext::drawKeyboardFocus(Rect &rect, Style &style, i32 state) {
-    if (state & Drawable::DrawableState::STATE_SOFT_FOCUSED) {
-        if (state & Drawable::DrawableState::STATE_HARD_FOCUSED) {
+    if (state & STATE_SOFT_FOCUSED) {
+        if (state & STATE_HARD_FOCUSED) {
             drawDashedRect(rect, accentWidgetBackground(style));
         } else {
             drawDashedRect(rect, borderBackground(style));
@@ -552,55 +550,55 @@ Rect DrawingContext::clip() {
 }
 
 Color DrawingContext::windowBackground(Style &style) {
-    return !style.window_background ? this->default_style.window_background : style.window_background;
+    return !style.window_background_color ? this->default_style.window_background_color : style.window_background_color;
 }
 
 Color DrawingContext::widgetBackground(Style &style) {
-    return !style.widget_background ? this->default_style.widget_background : style.widget_background;
+    return !style.widget_background_color ? this->default_style.widget_background_color : style.widget_background_color;
 }
 
 Color DrawingContext::accentWidgetBackground(Style &style) {
-    return !style.accent_widget_background ? this->default_style.accent_widget_background : style.accent_widget_background;
+    return !style.accent_widget_background_color ? this->default_style.accent_widget_background_color : style.accent_widget_background_color;
 }
 
 Color DrawingContext::hoveredBackground(Style &style) {
-    return !style.hovered_background ? this->default_style.hovered_background : style.hovered_background;
+    return !style.hovered_background_color ? this->default_style.hovered_background_color : style.hovered_background_color;
 }
 
 Color DrawingContext::pressedBackground(Style &style) {
-    return !style.pressed_background ? this->default_style.pressed_background : style.pressed_background;
+    return !style.pressed_background_color ? this->default_style.pressed_background_color : style.pressed_background_color;
 }
 
 Color DrawingContext::accentHoveredBackground(Style &style) {
-    return !style.accent_hovered_background ? this->default_style.accent_hovered_background : style.accent_hovered_background;
+    return !style.accent_hovered_background_color ? this->default_style.accent_hovered_background_color : style.accent_hovered_background_color;
 }
 
 Color DrawingContext::accentPressedBackground(Style &style) {
-    return !style.accent_pressed_background ? this->default_style.accent_pressed_background : style.accent_pressed_background;
+    return !style.accent_pressed_background_color ? this->default_style.accent_pressed_background_color : style.accent_pressed_background_color;
 }
 
 Color DrawingContext::textForeground(Style &style) {
-    return !style.text_foreground ? this->default_style.text_foreground : style.text_foreground;
+    return !style.text_foreground_color ? this->default_style.text_foreground_color : style.text_foreground_color;
 }
 
 Color DrawingContext::textBackground(Style &style) {
-    return !style.text_background ? this->default_style.text_background : style.text_background;
+    return !style.text_background_color ? this->default_style.text_background_color : style.text_background_color;
 }
 
 Color DrawingContext::textSelected(Style &style) {
-    return !style.text_selected ? this->default_style.text_selected : style.text_selected;
+    return !style.text_selected_color ? this->default_style.text_selected_color : style.text_selected_color;
 }
 
 Color DrawingContext::textDisabled(Style &style) {
-    return !style.text_disabled ? this->default_style.text_disabled : style.text_disabled;
+    return !style.text_disabled_color ? this->default_style.text_disabled_color : style.text_disabled_color;
 }
 
 Color DrawingContext::iconForeground(Style &style) {
-    return !style.icon_foreground ? this->default_style.icon_foreground : style.icon_foreground;
+    return !style.icon_foreground_color ? this->default_style.icon_foreground_color : style.icon_foreground_color;
 }
 
 Color DrawingContext::borderBackground(Style &style) {
-    return !style.border_background ? this->default_style.border_background : style.border_background;
+    return !style.border_background_color ? this->default_style.border_background_color : style.border_background_color;
 }
 
 Color DrawingContext::borderTopBackground(Style &style) {

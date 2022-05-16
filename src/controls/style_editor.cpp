@@ -11,7 +11,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
             light->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_light_style;
-                    window->layout();
+                    window->layout(LAYOUT_STYLE);
                     window->update();
                 }
             });
@@ -20,17 +20,17 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
             dark->onMouseClick.addEventListener([&](Widget *widget, MouseEvent event) {
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_dark_style;
-                    window->layout();
+                    window->layout(LAYOUT_STYLE);
                     window->update();
                 }
             });
         h_box->append(dark);
         Button *reset = new Button("Reset");
-            reset->style.widget_background = Color("#ff5555");
+            reset->style().widget_background_color = Color("#ff5555");
             reset->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_light_style;
-                    window->layout();
+                    window->layout(LAYOUT_STYLE);
                     window->update();
                 }
             });
@@ -62,7 +62,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                             *size_options[i*4+3] = value;
                             for (Window *window : Application::get()->m_windows) {
                                 window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
-                                window->layout();
+                                window->layout(LAYOUT_STYLE);
                                 window->update();
                             }
                         } catch (std::invalid_argument &e) {
@@ -77,7 +77,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                         *size_options[i*4+3] = 0;
                         for (Window *window : Application::get()->m_windows) {
                             window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
-                            window->layout();
+                            window->layout(LAYOUT_STYLE);
                             window->update();
                         }
                     }
@@ -91,7 +91,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                                 *size_options[i*4+j] = std::stoi(line->text().data());
                                 for (Window *window : Application::get()->m_windows) {
                                     window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
-                                    window->layout();
+                                    window->layout(LAYOUT_STYLE);
                                     window->update();
                                 }
                             } catch (std::invalid_argument &e) {
@@ -103,7 +103,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                             *size_options[i*4+j] = 0;
                             for (Window *window : Application::get()->m_windows) {
                                 window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
-                                window->layout();
+                                window->layout(LAYOUT_STYLE);
                                 window->update();
                             }
                         }
@@ -112,17 +112,15 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                 }
             size_box->append(gb);
         }
+        Color *border_color_all = &s.border_background_color;
         Color *border_color[4] = {
-            &s.border.color_top, &s.border.color_bottom, &s.border.color_left, &s.border.color_right
+            &s.border_color.top, &s.border_color.bottom, &s.border_color.left, &s.border_color.right
         };
         GroupBox *gb = new GroupBox(Align::Vertical, "Border Color");
             TextEdit *line = new TextEdit("", "All", TextEdit::Mode::SingleLine, Size(100, 100));
                 line->onTextChanged.addEventListener([=]() {
                     Color value = Color(line->text().data());
-                    *border_color[0] = value;
-                    *border_color[1] = value;
-                    *border_color[2] = value;
-                    *border_color[3] = value;
+                    *border_color_all = value;
                     for (Window *window : Application::get()->m_windows) {
                         window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                     }
@@ -142,16 +140,16 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
     append(size_box, Fill::Horizontal);
 
     Color *color_options[13] = {
-        &s.window_background, &s.widget_background, &s.accent_widget_background,
-        &s.text_foreground, &s.text_background, &s.text_selected, &s.text_disabled,
-        &s.hovered_background, &s.pressed_background, &s.accent_hovered_background,
-        &s.accent_pressed_background, &s.icon_foreground, &s.border_background
+        &s.window_background_color, &s.widget_background_color, &s.accent_widget_background_color,
+        &s.text_foreground_color, &s.text_background_color, &s.text_selected_color, &s.text_disabled_color,
+        &s.hovered_background_color, &s.pressed_background_color, &s.accent_hovered_background_color,
+        &s.accent_pressed_background_color, &s.icon_foreground_color, &s.border_background_color
     };
     std::string color_option_names[13] = {
-        "window_background", "widget_background", "accent_widget_background",
-        "text_foreground", "text_background", "text_selected", "text_disabled",
-        "hovered_background", "pressed_background", "accent_hovered_background",
-        "accent_pressed_background", "icon_foreground", "border_background"
+        "window_background_color", "widget_background_color", "accent_widget_background_color",
+        "text_foreground_color", "text_background_color", "text_selected_color", "text_disabled_color",
+        "hovered_background_color", "pressed_background_color", "accent_hovered_background_color",
+        "accent_pressed_background_color", "icon_foreground_color", "border_background_color"
     };
     for (i32 i = 0; i < 13; i++) {
         Label *l = new Label(color_option_names[i]);

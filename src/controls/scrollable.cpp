@@ -114,7 +114,7 @@ void Scrollable::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
             rect.y + rect.h,
             m_vertical_scrollbar->sizeHint(dc).w,
             m_horizontal_scrollbar->sizeHint(dc).h),
-            dc.widgetBackground(m_vertical_scrollbar->style)
+            dc.widgetBackground(m_vertical_scrollbar->style())
         );
     }
 }
@@ -196,7 +196,7 @@ Size Scrollable::minSize() {
 
 void Scrollable::setMinSize(Size min_size) {
     m_viewport = min_size;
-    layout();
+    layout(LAYOUT_STYLE);
 }
 
 Rect Scrollable::clip() {

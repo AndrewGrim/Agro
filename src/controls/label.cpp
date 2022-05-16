@@ -2,8 +2,8 @@
 
 Label::Label(std::string text) {
     setText(text);
-    style.widget_background = COLOR_NONE;
-    style.border.type = STYLE_NONE;
+    setWidgetBackgroundColor(COLOR_NONE);
+    setBorderType(STYLE_NONE);
 }
 
 Label::~Label() {
@@ -16,10 +16,10 @@ const char* Label::name() {
 void Label::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
-    dc.margin(rect, style);
-    dc.drawBorder(rect, style, state);
-    dc.fillRect(rect, dc.widgetBackground(style));
-    dc.padding(rect, style);
+    dc.margin(rect, style());
+    dc.drawBorder(rect, style(), state);
+    dc.fillRect(rect, dc.widgetBackground(style()));
+    dc.padding(rect, style());
     dc.fillTextMultilineAligned(
         font(),
         m_text,
@@ -27,7 +27,7 @@ void Label::draw(DrawingContext &dc, Rect rect, i32 state) {
         m_vertical_align,
         rect,
         0,
-        dc.textForeground(style),
+        dc.textForeground(style()),
         m_line_spacing
     );
 }
@@ -35,9 +35,9 @@ void Label::draw(DrawingContext &dc, Rect rect, i32 state) {
 Size Label::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = dc.measureTextMultiline(font(), text(), m_line_spacing);
-        dc.sizeHintMargin(size, style);
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style());
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
         m_size = size;
         m_size_changed = false;
 
@@ -58,7 +58,7 @@ Label* Label::setText(std::string text) {
     // assume that if someone is setting the text
     // its going to be different.
     m_text = text;
-    layout();
+    layout(LAYOUT_STYLE);
 
     return this;
 }

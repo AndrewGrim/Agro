@@ -1,20 +1,16 @@
 #include "cell_renderer.hpp"
 
 CellRenderer::CellRenderer() {
-    style.widget_background = COLOR_NONE;
+    setWidgetBackgroundColor(COLOR_NONE);
 }
 
 CellRenderer::~CellRenderer() {}
-
-bool CellRenderer::isWidget() {
-    return false;
-}
 
 EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}
 
 void EmptyCell::draw(DrawingContext &dc, Rect rect, i32 state) {
-    Color bg = dc.accentWidgetBackground(style);
+    Color bg = dc.accentWidgetBackground(style());
     if (state & STATE_HARD_FOCUSED) {
         dc.fillRect(rect, bg);
     }
@@ -32,16 +28,16 @@ TextCellRenderer::TextCellRenderer(std::string text, i32 padding) : text{text}, 
 TextCellRenderer::~TextCellRenderer() {}
 
 void TextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
-    Color fg = dc.textForeground(style);
-    Color bg = dc.widgetBackground(style); // TODO should be text_background most likely
+    Color fg = dc.textForeground(style());
+    Color bg = dc.widgetBackground(style()); // TODO should be text_background most likely
     if (state & STATE_HARD_FOCUSED) {
-        fg = dc.textSelected(style);
-        bg = dc.accentWidgetBackground(style);
+        fg = dc.textSelected(style());
+        bg = dc.accentWidgetBackground(style());
     }
 
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
-        bg = dc.accentWidgetBackground(style);
+        bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
     dc.fillTextMultilineAligned(
@@ -74,13 +70,13 @@ ImageCellRenderer::~ImageCellRenderer() {
 }
 
 void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
-    Color bg = dc.widgetBackground(image->style);
+    Color bg = dc.widgetBackground(image->style());
     if (state & STATE_HARD_FOCUSED) {
-        bg = dc.accentWidgetBackground(style);
+        bg = dc.accentWidgetBackground(style());
     }
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
-        bg = dc.accentWidgetBackground(style);
+        bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
     dc.drawTextureAligned(
@@ -102,13 +98,13 @@ MultipleImagesCellRenderer::MultipleImagesCellRenderer(std::vector<Image> &&imag
 MultipleImagesCellRenderer::~MultipleImagesCellRenderer() {}
 
 void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
-    Color bg = dc.widgetBackground(style);
+    Color bg = dc.widgetBackground(style());
     if (state & STATE_HARD_FOCUSED) {
-        bg = dc.accentWidgetBackground(style);
+        bg = dc.accentWidgetBackground(style());
     }
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
-        bg = dc.accentWidgetBackground(style);
+        bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
     Rect drawing_rect = rect;
@@ -153,16 +149,16 @@ ImageTextCellRenderer::~ImageTextCellRenderer() {
 }
 
 void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
-    Color fg = dc.textForeground(style);
-    Color bg = dc.widgetBackground(style);
+    Color fg = dc.textForeground(style());
+    Color bg = dc.widgetBackground(style());
     if (state & STATE_HARD_FOCUSED) {
-        fg = dc.textSelected(style);
-        bg = dc.accentWidgetBackground(style);
+        fg = dc.textSelected(style());
+        bg = dc.accentWidgetBackground(style());
     }
 
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
-        bg = dc.accentWidgetBackground(style);
+        bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
     Size text_size = dc.measureTextMultiline(font, text);

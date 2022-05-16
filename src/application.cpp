@@ -1,4 +1,5 @@
 #include "application.hpp"
+#include "drawable.hpp"
 
 Cursors::Cursors() {
 
@@ -71,7 +72,7 @@ Application::Application(const char *title, Size size) {
     m_cursors = new Cursors();
     current_window = win;
     m_windows.push_back(win);
-    win->dc->default_font = new Font(ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans);
+    win->dc->default_font = std::shared_ptr<Font>(new Font(ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans));
     win->is_owned = true;
 }
 
@@ -178,13 +179,13 @@ void Application::run() {
                 }
                 case SDL_USEREVENT:
                     switch (event.user.code) {
-                        case AGRO_FONT_HEIGHT_CHANGED:
+                        case LAYOUT_FONT:
                             for (Window *window : m_windows) {
-                                window->layout();
+                                window->layout(LAYOUT_FONT);
                                 window->show();
                             }
                             break;
-                        default:; // Right now the only other event is AGRO_PULSE which we don't need to explicitly handle.
+                        default:; // Right now the only other event is LAYOUT_NONE which we don't need to explicitly handle.
                     }
                     break;
                 case SDL_QUIT:
@@ -192,6 +193,7 @@ void Application::run() {
                     break;
             }
         }
+        // TODO surely this should be application specific rather than window
         if (!status) { frame_start = SDL_GetTicks(); }
         if (mainWindow()->delay_till) {
             if (SDL_GetTicks() < mainWindow()->delay_till) {

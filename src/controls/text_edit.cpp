@@ -20,7 +20,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
         Scrollable::sizeHint(dc);
         Size s = sizeHint(dc);
         rect = Rect(0, 0, s.w, s.h);
-        dc.sizeHintPadding(s, style);
+        dc.sizeHintPadding(s, style());
         inner_rect = Rect(rect.w - s.w, rect.h - s.h, s.w, s.h);
     }
     setText(text);
@@ -294,14 +294,14 @@ const char* TextEdit::name() {
 }
 
 void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
-    dc.margin(rect, style);
+    dc.margin(rect, style());
     this->rect = rect;
     Rect previous_clip = dc.clip();
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     dc.setClip(rect.clipTo(previous_clip));
     Rect focus_rect = rect;
-    dc.fillRect(rect, dc.textBackground(style));
-    dc.padding(rect, style);
+    dc.fillRect(rect, dc.textBackground(style()));
+    dc.padding(rect, style());
 
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     inner_rect = rect;
@@ -359,7 +359,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                     (bg_end - bg_start) + selection_extra,
                     TEXT_HEIGHT
                 ),
-                dc.accentWidgetBackground(style)
+                dc.accentWidgetBackground(style())
             );
 
             // Draw the text buffer.
@@ -370,10 +370,10 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 VerticalAlignment::Top,
                 text_region,
                 0,
-                dc.textForeground(style),
+                dc.textForeground(style()),
                 m_tab_width,
                 selection,
-                dc.textSelected(style)
+                dc.textSelected(style())
             );
             text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
@@ -390,7 +390,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 VerticalAlignment::Top,
                 text_region,
                 0,
-                dc.textDisabled(style),
+                dc.textDisabled(style()),
                 m_tab_width
             );
             text_region.y += TEXT_HEIGHT;
@@ -409,13 +409,13 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 m_cursor_width,
                 TEXT_HEIGHT
             ),
-            dc.textForeground(style) // TODO should be a separate color setting
+            dc.textForeground(style()) // TODO should be a separate color setting
         );
     }
 
     if (m_mode == Mode::MultiLine) { drawScrollBars(dc, rect, m_virtual_size); }
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
-    dc.drawKeyboardFocus(focus_rect, style, state);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
     dc.setClip(previous_clip);
 }
 
@@ -439,9 +439,9 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
         Size size;
         if (m_mode == Mode::MultiLine) { size = m_viewport; }
         else { size = Size(m_viewport.w, TEXT_HEIGHT); }
-        dc.sizeHintMargin(size, style);
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style());
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
 
         m_size = size;
         m_size_changed = false;

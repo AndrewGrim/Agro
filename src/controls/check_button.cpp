@@ -25,17 +25,17 @@ const char* CheckButton::name() {
 }
 
 void CheckButton::draw(DrawingContext &dc, Rect rect, i32 state) {
-    dc.margin(rect, style);
-    dc.padding(rect, style);
+    dc.margin(rect, style());
+    dc.padding(rect, style());
     // Set rect only to the area where we actually draw the widget.
     this->rect = Rect(rect.x, rect.y + (rect.h / 2) - (m_size.h / 2), m_size.w, m_size.h);
 
     Image *image = m_is_checked ? m_checked_image : m_unchecked_image;
-    Color bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.textBackground(style);
-    Color check_image_bg = m_is_checked ? dc.textSelected(style) : dc.borderBackground(style);
+    Color bg = m_is_checked ? dc.accentWidgetBackground(style()) : dc.textBackground(style());
+    Color check_image_bg = m_is_checked ? dc.textSelected(style()) : dc.borderBackground(style());
     if (state & STATE_HOVERED) {
-        bg = m_is_checked ? dc.textBackground(style) : bg;
-        check_image_bg = m_is_checked ? dc.accentWidgetBackground(style) : dc.accentHoveredBackground(style);
+        bg = m_is_checked ? dc.textBackground(style()) : bg;
+        check_image_bg = m_is_checked ? dc.accentWidgetBackground(style()) : dc.accentHoveredBackground(style());
     }
     dc.fillRect(Rect(rect.x, rect.y + (rect.h / 2) - (m_size.h / 2), m_size.h, m_size.h), bg);
     dc.drawTextureAligned(
@@ -56,10 +56,10 @@ void CheckButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         VerticalAlignment::Center,
         rect,
         0,
-        dc.textForeground(style),
+        dc.textForeground(style()),
         m_tab_width
     );
-    dc.drawKeyboardFocus(this->rect, style, state);
+    dc.drawKeyboardFocus(this->rect, style(), state);
 }
 
 Size CheckButton::sizeHint(DrawingContext &dc) {
@@ -71,8 +71,8 @@ Size CheckButton::sizeHint(DrawingContext &dc) {
         s.w += s.h; // The image size will be the square of the height.
         m_size = s;
 
-        dc.sizeHintPadding(s, style);
-        dc.sizeHintMargin(s, style);
+        dc.sizeHintPadding(s, style());
+        dc.sizeHintMargin(s, style());
 
         return s;
     }

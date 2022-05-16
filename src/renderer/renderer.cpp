@@ -194,7 +194,7 @@ void Renderer::check() {
     if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) render();
 }
 
-void Renderer::textCheck(Font *font) {
+void Renderer::textCheck(std::shared_ptr<Font> font) {
     if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) {
         render();
         glActiveTexture(gl_texture_begin + current_texture_slot);
@@ -202,7 +202,7 @@ void Renderer::textCheck(Font *font) {
     }
 }
 
-void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color color, i32 tab_width, bool is_multiline, i32 line_spacing, Selection selection, Color selection_color) {
+void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Point point, Color color, i32 tab_width, bool is_multiline, i32 line_spacing, Selection selection, Color selection_color) {
     Size window_size = window->size;
     if (selection.begin > selection.end) {
         auto temp = selection.end;
@@ -294,7 +294,7 @@ void Renderer::fillText(Font *font, Slice<const char> text, Point point, Color c
     current_texture_slot++;
 }
 
-Size Renderer::measureText(Font *font, Slice<const char> text, i32 tab_width, bool is_multiline, i32 line_spacing) {
+Size Renderer::measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width, bool is_multiline, i32 line_spacing) {
     Size size = Size(0, font->maxHeight());
     i32 line_width = 0;
     i32 space_advance = font->get((u32)' ').advance;

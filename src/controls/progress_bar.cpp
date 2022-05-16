@@ -9,12 +9,12 @@ const char* ProgressBar::name() {
 }
 
 void ProgressBar::draw(DrawingContext &dc, Rect rect, i32 state) {
-    dc.margin(rect, style);
+    dc.margin(rect, style());
     this->rect = rect;
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     i32 fill_end = rect.w * m_value;
-    dc.fillRect(Rect(rect.x, rect.y, fill_end, rect.h), dc.accentWidgetBackground(style));
-    dc.padding(rect, style);
+    dc.fillRect(Rect(rect.x, rect.y, fill_end, rect.h), dc.accentWidgetBackground(style()));
+    dc.padding(rect, style());
     fill_end = rect.w * m_value; // We have to recalculate the value again since we don't want to take the padding into account.
 
     std::string percent_text = std::to_string((i32)(m_value * 100)) + "%";
@@ -39,19 +39,19 @@ void ProgressBar::draw(DrawingContext &dc, Rect rect, i32 state) {
         VerticalAlignment::Center,
         rect,
         0,
-        dc.textForeground(style),
+        dc.textForeground(style()),
         0,
         Renderer::Selection(begin, end),
-        dc.textSelected(style)
+        dc.textSelected(style())
     );
 }
 
 Size ProgressBar::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size s = dc.measureText(font(), "100%");
-        dc.sizeHintMargin(s, style);
-        dc.sizeHintBorder(s, style);
-        dc.sizeHintPadding(s, style);
+        dc.sizeHintMargin(s, style());
+        dc.sizeHintBorder(s, style());
+        dc.sizeHintPadding(s, style());
         if (m_custom_width > 0 && s.w < m_custom_width) { s.w = m_custom_width; }
         m_size = s;
         return s;

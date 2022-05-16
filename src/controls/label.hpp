@@ -4,7 +4,6 @@
     #include <string>
 
     #include "widget.hpp"
-    #include "../renderer/font.hpp"
 
     class Label : public Widget {
         public:

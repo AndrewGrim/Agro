@@ -5,13 +5,10 @@
 
 class CellRenderer : public Drawable {
     public:
-        Style style;
-
         CellRenderer();
         virtual ~CellRenderer();
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override = 0;
         virtual Size sizeHint(DrawingContext &dc) override = 0;
-        virtual bool isWidget() override;
 };
 
 class EmptyCell : public CellRenderer {
@@ -29,7 +26,7 @@ class TextCellRenderer : public CellRenderer {
         // the virtual_size for treeview? but maybe im missing something
         std::string text;
         i32 padding;
-        Font *font = nullptr;
+        std::shared_ptr<Font> font = nullptr;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
         VerticalAlignment v_align = VerticalAlignment::Center;
 
@@ -43,7 +40,6 @@ class TextCellRenderer : public CellRenderer {
 
     protected:
         Size m_size;
-        bool m_size_changed = true;
 };
 
 class ImageCellRenderer : public CellRenderer {
@@ -67,14 +63,13 @@ class MultipleImagesCellRenderer : public CellRenderer {
 
     protected:
         Size m_size;
-        bool m_size_changed = true;
 };
 
 class ImageTextCellRenderer : public CellRenderer {
     public:
         // TODO account for alignment, especially important for the first col
         Image *image = nullptr;
-        Font *font = nullptr;
+        std::shared_ptr<Font> font = nullptr;
         std::string text;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
         i32 padding;
@@ -91,5 +86,4 @@ class ImageTextCellRenderer : public CellRenderer {
 
     protected:
         Size m_size;
-        bool m_size_changed = true;
 };

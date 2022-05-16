@@ -8,7 +8,7 @@ Box::~Box() {}
 
 void Box::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
-    dc.fillRect(rect, dc.windowBackground(style));
+    dc.fillRect(rect, dc.windowBackground(style()));
     layoutChildren(dc, rect);
 }
 
@@ -207,7 +207,7 @@ const char* Box::name() {
 void Box::setAlignPolicy(Align align_policy) {
     if (m_align_policy != align_policy) {
         m_align_policy = align_policy;
-        layout();
+        layout(LAYOUT_CHILD);
     }
 }
 

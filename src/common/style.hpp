@@ -2,77 +2,72 @@
     #define STYLE_HPP
 
     #include "color.hpp"
-
-    #define TOP_PADDING(widget) (widget->style.padding.top == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.top : widget->style.padding.top)
-    #define BOTTOM_PADDING(widget) (widget->style.padding.bottom == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.bottom : widget->style.padding.bottom)
-    #define LEFT_PADDING(widget) (widget->style.padding.left == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.left : widget->style.padding.left)
-    #define RIGHT_PADDING(widget) (widget->style.padding.right == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.padding.right : widget->style.padding.right)
-
-    #define TOP_BORDER(widget) (widget->style.border.top == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.top : widget->style.border.top)
-    #define BOTTOM_BORDER(widget) (widget->style.border.bottom == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.bottom : widget->style.border.bottom)
-    #define LEFT_BORDER(widget) (widget->style.border.left == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.left : widget->style.border.left)
-    #define RIGHT_BORDER(widget) (widget->style.border.right == STYLE_DEFAULT ? Application::get()->mainWindow()->dc->default_style.border.right : widget->style.border.right)
-
+    #include "../renderer/font.hpp"
 
     enum StyleOptions {
-        STYLE_DEFAULT = -1,
-        STYLE_NONE = 0x0000,
-        STYLE_TOP = 0x0001,
-        STYLE_BOTTOM = 0x0010,
-        STYLE_LEFT = 0x0100,
-        STYLE_RIGHT = 0x1000,
-        STYLE_ALL = 0x1111,
+        STYLE_DEFAULT =     -1,
+        STYLE_NONE    = 0x0000,
+        STYLE_TOP     = 0x0001,
+        STYLE_BOTTOM  = 0x0010,
+        STYLE_LEFT    = 0x0100,
+        STYLE_RIGHT   = 0x1000,
+        STYLE_ALL     = 0x1111,
     };
 
     struct Style {
         struct Margin {
-            i32 type = STYLE_DEFAULT;
-            i32 top = STYLE_DEFAULT;
+            i32 type   = STYLE_DEFAULT;
+            i32 top    = STYLE_DEFAULT;
             i32 bottom = STYLE_DEFAULT;
-            i32 left = STYLE_DEFAULT;
-            i32 right = STYLE_DEFAULT;
+            i32 left   = STYLE_DEFAULT;
+            i32 right  = STYLE_DEFAULT;
         };
 
         struct Border {
-            i32 type = STYLE_DEFAULT;
-            i32 top = STYLE_DEFAULT;
+            i32 type   = STYLE_DEFAULT;
+            i32 top    = STYLE_DEFAULT;
             i32 bottom = STYLE_DEFAULT;
-            i32 left = STYLE_DEFAULT;
-            i32 right = STYLE_DEFAULT;
+            i32 left   = STYLE_DEFAULT;
+            i32 right  = STYLE_DEFAULT;
+        };
 
-            Color color_top = COLOR_DEFAULT;
-            Color color_bottom = COLOR_DEFAULT;
-            Color color_left = COLOR_DEFAULT;
-            Color color_right = COLOR_DEFAULT;
+        struct BorderColor {
+            Color type   = COLOR_DEFAULT;
+            Color top    = COLOR_DEFAULT;
+            Color bottom = COLOR_DEFAULT;
+            Color left   = COLOR_DEFAULT;
+            Color right  = COLOR_DEFAULT;
         };
 
         struct Padding {
-            i32 type = STYLE_DEFAULT;
-            i32 top = STYLE_DEFAULT;
+            i32 type   = STYLE_DEFAULT;
+            i32 top    = STYLE_DEFAULT;
             i32 bottom = STYLE_DEFAULT;
-            i32 left = STYLE_DEFAULT;
-            i32 right = STYLE_DEFAULT;
+            i32 left   = STYLE_DEFAULT;
+            i32 right  = STYLE_DEFAULT;
         };
 
         Margin margin;
         Border border;
+        BorderColor border_color;
         Padding padding;
+        std::shared_ptr<Font> font = nullptr;
 
-        Color window_background = COLOR_DEFAULT;
-        Color widget_background = COLOR_DEFAULT;
-        Color accent_widget_background = COLOR_DEFAULT;
+        Color window_background_color = COLOR_DEFAULT;
+        Color widget_background_color = COLOR_DEFAULT;
+        Color accent_widget_background_color = COLOR_DEFAULT;
 
-        Color text_foreground = COLOR_DEFAULT;
-        Color text_background = COLOR_DEFAULT;
-        Color text_selected = COLOR_DEFAULT;
-        Color text_disabled = COLOR_DEFAULT;
+        Color text_foreground_color = COLOR_DEFAULT;
+        Color text_background_color = COLOR_DEFAULT;
+        Color text_selected_color = COLOR_DEFAULT;
+        Color text_disabled_color = COLOR_DEFAULT;
 
-        Color hovered_background = COLOR_DEFAULT;
-        Color pressed_background = COLOR_DEFAULT;
-        Color accent_hovered_background = COLOR_DEFAULT;
-        Color accent_pressed_background = COLOR_DEFAULT;
+        Color hovered_background_color = COLOR_DEFAULT;
+        Color pressed_background_color = COLOR_DEFAULT;
+        Color accent_hovered_background_color = COLOR_DEFAULT;
+        Color accent_pressed_background_color = COLOR_DEFAULT;
 
-        Color icon_foreground = COLOR_DEFAULT;
-        Color border_background = COLOR_DEFAULT;
+        Color icon_foreground_color = COLOR_DEFAULT;
+        Color border_background_color = COLOR_DEFAULT;
     };
 #endif

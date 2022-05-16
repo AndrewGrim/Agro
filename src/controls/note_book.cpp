@@ -3,7 +3,7 @@
 #include "widget.hpp"
 
 NoteBookTabBar::NoteBookTabBar(Widget *notebook_parent) : Widget(), m_notebook_parent{notebook_parent} {
-    style.border.type = STYLE_BOTTOM;
+    setBorderType(STYLE_BOTTOM);
 }
 
 NoteBookTabBar::~NoteBookTabBar() {
@@ -13,7 +13,7 @@ NoteBookTabBar::~NoteBookTabBar() {
 void NoteBookTabBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
 
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     rect.x += 5; // account for the 5 pixels on the left to give the first tab some breathing room
     rect.w -= 5; // account for the 5 pixels on the left to give the first tab some breathing room
     i32 x = rect.x;
@@ -73,7 +73,7 @@ const char* NoteBookTabBar::name() {
 Size NoteBookTabBar::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = Size(5, 0); // 5 extra pixels so the first tab button doesnt look weird
-        dc.sizeHintBorder(size, style);
+        dc.sizeHintBorder(size, style());
         for (Widget *child : children) {
             Size s = child->sizeHint(dc);
             size.w += s.w;
@@ -150,22 +150,22 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image
     m_close_image->onMouseClick.addEventListener([=](Widget *widget,MouseEvent event) {
         notebook->destroyTab(m_close_image->parent->parent_index);
     });
-    m_close_image->style.border.type = STYLE_NONE;
-    m_close_image->style.margin.type = STYLE_NONE;
-    m_close_image->style.padding.type = STYLE_NONE;
-    m_close_image->style.widget_background = COLOR_NONE;
+    m_close_image->setBorderType(STYLE_NONE);
+    m_close_image->setMarginType(STYLE_NONE);
+    m_close_image->setPaddingType(STYLE_NONE);
+    m_close_image->setWidgetBackgroundColor(COLOR_NONE);
     append(m_close_image);
-    style.padding.type = STYLE_ALL;
-    style.padding.top = 5;
-    style.padding.bottom = 5;
-    style.padding.left = 10;
-    style.padding.right = 20;
+    setPaddingType(STYLE_ALL);
+    setPaddingTop(5);
+    setPaddingBottom(5);
+    setPaddingLeft(10);
+    setPaddingRight(20);
 
     // Setup the border to get the correct sizeHint.
-    style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-    style.border.top = 4;
-    style.border.left = 1;
-    style.border.right = 1;
+    setBorderType(STYLE_TOP|STYLE_LEFT|STYLE_RIGHT);
+    setBorderTop(4);
+    setBorderLeft(1);
+    setBorderRight(1);
 
     bind(SDLK_LEFT, Mod::None, [&]{
         if (parent->children.size()) {
@@ -199,24 +199,24 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Color color;
 
-    style.border.type = STYLE_NONE;
+    setBorderType(STYLE_NONE);
     if (isActive()) {
-        style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-        style.border.color_top = Application::get()->currentWindow()->dc->accentWidgetBackground(style);
-        rect.h += BOTTOM_BORDER(this->parent);
-        color = dc.windowBackground(style);
+        setBorderType(STYLE_TOP|STYLE_LEFT|STYLE_RIGHT);
+        setBorderColorTop(Application::get()->currentWindow()->dc->accentWidgetBackground(style()));
+        rect.h += parent->borderBottom();
+        color = dc.windowBackground(style());
     } else if (state & STATE_PRESSED && state & STATE_HOVERED) {
-        color = dc.pressedBackground(style);
+        color = dc.pressedBackground(style());
     } else if (state & STATE_HOVERED) {
-        color = dc.hoveredBackground(style);
+        color = dc.hoveredBackground(style());
     } else {
-        color = dc.windowBackground(style);
+        color = dc.windowBackground(style());
     }
 
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     Rect focus_rect = rect;
     dc.fillRect(rect, color);
-    dc.padding(rect, style);
+    dc.padding(rect, style());
 
     Size text_size = dc.measureText(font(), text());
     if (this->m_image) {
@@ -259,19 +259,19 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
             v_text_align,
             rect,
             0,
-            dc.textForeground(style)
+            dc.textForeground(style())
         );
         rect.x += text_size.w;
     }
 
     if (m_close_button) {
         // 12 being the size of the icon in pixels
-        m_close_image->draw(dc, Rect(rect.x + 10 + (RIGHT_PADDING(this) / 2), rect.y + (rect.h / 2) - (12 / 2), 12, 12), m_close_image->state());
+        m_close_image->draw(dc, Rect(rect.x + 10 + (paddingRight() / 2), rect.y + (rect.h / 2) - (12 / 2), 12, 12), m_close_image->state());
     }
 
     // Reset the border after drawing for correct sizeHint.
-    style.border.type = STYLE_TOP | STYLE_LEFT | STYLE_RIGHT;
-    dc.drawKeyboardFocus(focus_rect, style, state);
+    setBorderType(STYLE_TOP|STYLE_LEFT|STYLE_RIGHT);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
 }
 
 Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
@@ -285,8 +285,8 @@ Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
             }
         }
 
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
 
         // Account for the close button if present;
         if (m_close_button) {
@@ -356,7 +356,7 @@ bool NoteBookTabButton::hasCloseButton() {
 void NoteBookTabButton::setCloseButton(bool close_button) {
     if (m_close_button != close_button) {
         m_close_button = close_button;
-        layout();
+        layout(LAYOUT_CHILD);
     }
 }
 
@@ -414,7 +414,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
     m_tabs->append(tab_button, Fill::Both);
     if (this->children.size() == 1) {
         setCurrentTab(0);
-        layout();
+        layout(LAYOUT_STYLE);
     } else {
         update();
     }
@@ -466,7 +466,7 @@ NoteBook* NoteBook::setCurrentTab(u64 index) {
         m_tabs->children[index]->setHardFocus(Application::get()->currentWindow()->m_state);
     }
     m_tab_index = index;
-    layout();
+    layout(LAYOUT_STYLE);
 
     return this;
 }

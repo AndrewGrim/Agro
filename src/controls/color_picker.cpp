@@ -36,7 +36,7 @@ ColorPicker::ColorPicker() {
     });
     onColorChanged.addEventListener([&](Widget *widget, Color color) {
         m_color_edit->setText(color.toString().data());
-        m_color_label->style.widget_background = color;
+        m_color_label->setWidgetBackgroundColor(color);
     });
     // TODO ATM these are mutally exclusive because of how keybindings work which is not ideal
     bind(SDLK_LEFT, Mod::None, [&]() {
@@ -70,7 +70,7 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, i32 state) {
     Rect old_clip = dc.clip();
     dc.setClip(rect.clipTo(old_clip));
 
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     Rect focus_rect = rect;
 
     dc.drawTexture(
@@ -97,13 +97,13 @@ void ColorPicker::draw(DrawingContext &dc, Rect rect, i32 state) {
     rect.w = m_color_label->sizeHint(dc).w;
     m_color_label->draw(dc, rect, m_color_label->state());
 
-    dc.drawKeyboardFocus(focus_rect, style, state);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
     dc.setClip(old_clip);
 }
 
 Size ColorPicker::sizeHint(DrawingContext &dc) {
     Size s = Size(COLOR_PICKER_WIDTH, COLOR_PICKER_HEIGHT);
-    dc.sizeHintBorder(s, style);
+    dc.sizeHintBorder(s, style());
     i32 line = m_color_edit->sizeHint(dc).h;
     i32 label = m_color_label->sizeHint(dc).h;
     if (label > line) { s.h += label; }

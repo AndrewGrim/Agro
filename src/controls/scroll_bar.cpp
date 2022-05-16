@@ -30,7 +30,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, i32 state) {
     }
 
     // Draw the background.
-    dc.fillRect(rect, dc.windowBackground(style));
+    dc.fillRect(rect, dc.windowBackground(style()));
 
     // Determine and draw the location of the slider button.
     if (m_align_policy == Align::Horizontal) {
@@ -51,7 +51,7 @@ void ScrollBarSlider::draw(DrawingContext &dc, Rect rect, i32 state) {
 SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Box(alignment) {
     m_slider = new ScrollBarSlider(alignment);
     m_slider->m_slider_button->setMinSize(min_size);
-    m_slider->style.window_background = COLOR_NONE;
+    m_slider->setWindowBackgroundColor(COLOR_NONE);
     append(m_slider, Fill::Both);
 }
 
@@ -106,12 +106,12 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     IconButton *buttons[2] = { m_begin_button, m_end_button };
     for (i32 i = 0; i < 2; i++) {
         auto b = buttons[i];
-        b->style.padding.type = STYLE_ALL;
-        b->style.padding.top = 2;
-        b->style.padding.bottom = 2;
-        b->style.padding.left = 2;
-        b->style.padding.right = 2;
-        b->style.margin.type = STYLE_NONE;
+        b->setPaddingType(STYLE_ALL);
+        b->setPaddingTop(2);
+        b->setPaddingBottom(2);
+        b->setPaddingLeft(2);
+        b->setPaddingRight(2);
+        b->setMarginType(STYLE_NONE);
     }
 }
 

@@ -13,24 +13,24 @@ const char* SpinBoxIconButton::name() {
 void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     Color color;
     if (state & STATE_PRESSED && state & STATE_HOVERED) {
-        color = dc.accentPressedBackground(style);
+        color = dc.accentPressedBackground(style());
     } else if (state & STATE_HOVERED) {
-        color = dc.accentHoveredBackground(style);
+        color = dc.accentHoveredBackground(style());
     } else {
-        color = dc.accentWidgetBackground(style);
+        color = dc.accentWidgetBackground(style());
     }
 
-    dc.margin(rect, style);
+    dc.margin(rect, style());
     this->rect = rect;
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     dc.fillRect(rect, color);
-    dc.padding(rect, style);
+    dc.padding(rect, style());
 
     dc.drawTextureAligned(
         rect, m_image->size(),
         m_image->_texture(), m_image->coords(),
         HorizontalAlignment::Center, VerticalAlignment::Center,
-        dc.textSelected(style)
+        dc.textSelected(style())
     );
 }
 
@@ -56,11 +56,11 @@ SpinBox::SpinBox(f64 value, i32 min_length) : TextEdit(std::to_string(value).dat
             onParsingError.notify(this, SpinBox::Error::OutOfRange);
         }
     });
-    m_up_arrow->style.margin.type = STYLE_NONE;
-    m_up_arrow->style.border.type = STYLE_TOP|STYLE_RIGHT;
-    m_down_arrow->style.margin.type = STYLE_NONE;
-    m_down_arrow->style.border.type = STYLE_BOTTOM|STYLE_RIGHT;
-    style.margin.type = STYLE_NONE;
+    m_up_arrow->setMarginType(STYLE_NONE);
+    m_up_arrow->setBorderType(STYLE_TOP|STYLE_RIGHT);
+    m_down_arrow->setMarginType(STYLE_NONE);
+    m_down_arrow->setBorderType(STYLE_BOTTOM|STYLE_RIGHT);
+    setMarginType(STYLE_NONE);
 }
 
 SpinBox::~SpinBox() {}
@@ -104,9 +104,9 @@ Size SpinBox::sizeHint(DrawingContext &dc) {
         Size arrow_button_size = m_up_arrow->sizeHint(dc);
         if (m_mode == Mode::MultiLine) { size = m_viewport; }
         else { size = Size(m_viewport.w, TEXT_HEIGHT); }
-        dc.sizeHintMargin(size, style);
-        dc.sizeHintBorder(size, style);
-        dc.sizeHintPadding(size, style);
+        dc.sizeHintMargin(size, style());
+        dc.sizeHintBorder(size, style());
+        dc.sizeHintPadding(size, style());
 
         if (size.h <= arrow_button_size.h) {
             size.h = arrow_button_size.h * 2;

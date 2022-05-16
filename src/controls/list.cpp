@@ -53,10 +53,10 @@ void List::draw(DrawingContext &dc, Rect rect, i32 state) {
     Rect previous_clip = dc.clip();
     clip();
 
-    dc.drawBorder(rect, style, state);
+    dc.drawBorder(rect, style(), state);
     dc.setClip(rect.clipTo(previous_clip));
     Point pos;
-    dc.fillRect(rect, dc.textBackground(style));
+    dc.fillRect(rect, dc.textBackground(style()));
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
     i32 index = 0;
     for (Drawable *item : m_items) {
@@ -88,11 +88,11 @@ Size List::sizeHint(DrawingContext &dc) {
         m_size = virtual_size;
 
         Size viewport_and_style = m_viewport;
-            dc.sizeHintBorder(viewport_and_style, style);
+            dc.sizeHintBorder(viewport_and_style, style());
         return viewport_and_style;
     } else {
         Size viewport_and_style = m_viewport;
-            dc.sizeHintBorder(viewport_and_style, style);
+            dc.sizeHintBorder(viewport_and_style, style());
         return viewport_and_style;
     }
 }

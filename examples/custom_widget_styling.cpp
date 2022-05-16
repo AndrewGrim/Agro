@@ -6,31 +6,31 @@
 class CustomStyle : public Widget {
     public:
         CustomStyle() {
-            style.margin.type = STYLE_ALL;
-            style.border.type = STYLE_ALL;
-            style.padding.type = STYLE_ALL;
+            setMarginType(STYLE_ALL);
+            setBorderType(STYLE_ALL);
+            setPaddingType(STYLE_ALL);
 
-            style.margin.top = 10;
-            style.margin.bottom = 20;
-            style.margin.left = 30;
-            style.margin.right = 40;
+            setMarginTop(10);
+            setMarginBottom(20);
+            setMarginLeft(30);
+            setMarginRight(40);
 
-            style.border.top = 10;
-            style.border.bottom = 20;
-            style.border.left = 30;
-            style.border.right = 40;
+            setBorderTop(10);
+            setBorderBottom(20);
+            setBorderLeft(30);
+            setBorderRight(40);
 
             // // Changes the color of the border to resemble the
             // // windows logo.
-            // style.border.color_top = Color("#dc3e00");
-            // style.border.color_bottom = Color("#6aa413");
-            // style.border.color_left = Color("#009fb8");
-            // style.border.color_right = Color("#d7a120");
+            // setBorderColorTop(Color("#dc3e00"));
+            // setBorderColorBottom(Color("#6aa413"));
+            // setBorderColorLeft(Color("#009fb8"));
+            // setBorderColorRight(Color("#d7a120"));
 
-            style.padding.top = 10;
-            style.padding.bottom = 20;
-            style.padding.left = 30;
-            style.padding.right = 40;
+            setPaddingTop(10);
+            setPaddingBottom(20);
+            setPaddingLeft(30);
+            setPaddingRight(40);
         }
 
         ~CustomStyle() {
@@ -45,10 +45,10 @@ class CustomStyle : public Widget {
             this->rect = rect;
 
             dc.fillRect(rect, Color(1.0f, 0.0f, 0.0f, 0.5f));
-            dc.margin(rect, style);
-            dc.drawBorder(rect, style, state);
+            dc.margin(rect, style());
+            dc.drawBorder(rect, style(), state);
             dc.fillRect(rect, Color(0.0f, 1.0f, 0.0f, 0.5f));
-            dc.padding(rect, style);
+            dc.padding(rect, style());
             this->inner_rect = rect;
 
             dc.fillRect(rect, Color(0.0f, 0.0f, 1.0f, 0.5f));
@@ -56,9 +56,9 @@ class CustomStyle : public Widget {
 
         Size sizeHint(DrawingContext &dc) override {
             Size s = Size(96, 96);
-            dc.sizeHintMargin(s, style);
-            dc.sizeHintBorder(s, style);
-            dc.sizeHintPadding(s, style);
+            dc.sizeHintMargin(s, style());
+            dc.sizeHintBorder(s, style());
+            dc.sizeHintPadding(s, style());
             return s;
         }
 };
@@ -89,26 +89,26 @@ int main(int argc, char **argv) {
             right->append(csr, Fill::Horizontal);
                 Button *margin = new Button(
                         "Margin: "
-                        + std::to_string(custom->style.margin.top) + ", "
-                        + std::to_string(custom->style.margin.bottom) + ", "
-                        + std::to_string(custom->style.margin.left) + ", "
-                        + std::to_string(custom->style.margin.right)
+                        + std::to_string(custom->style().margin.top) + ", "
+                        + std::to_string(custom->style().margin.bottom) + ", "
+                        + std::to_string(custom->style().margin.left) + ", "
+                        + std::to_string(custom->style().margin.right)
                     );
                 right->append(margin, Fill::Horizontal);
                 Button *border = new Button(
                         "Border: "
-                        + std::to_string(custom->style.border.top) + ", "
-                        + std::to_string(custom->style.border.bottom) + ", "
-                        + std::to_string(custom->style.border.left) + ", "
-                        + std::to_string(custom->style.border.right)
+                        + std::to_string(custom->style().border.top) + ", "
+                        + std::to_string(custom->style().border.bottom) + ", "
+                        + std::to_string(custom->style().border.left) + ", "
+                        + std::to_string(custom->style().border.right)
                     );
                 right->append(border, Fill::Horizontal);
                 Button *padding = new Button(
                         "Padding: "
-                        + std::to_string(custom->style.padding.top) + ", "
-                        + std::to_string(custom->style.padding.bottom) + ", "
-                        + std::to_string(custom->style.padding.left) + ", "
-                        + std::to_string(custom->style.padding.right)
+                        + std::to_string(custom->style().padding.top) + ", "
+                        + std::to_string(custom->style().padding.bottom) + ", "
+                        + std::to_string(custom->style().padding.left) + ", "
+                        + std::to_string(custom->style().padding.right)
                     );
                 right->append(padding, Fill::Horizontal);
             Button *csir = new Button("Content Rect: ");

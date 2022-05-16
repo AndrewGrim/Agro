@@ -105,7 +105,7 @@
             ContextEventResult propagateMouseEvent(MouseEvent event);
             void propagateFocusEvent(FocusEvent event, Widget *widget);
 
-            void layout();
+            void layout(LayoutEvent event);
 
             SDL_Window *m_win = nullptr;
             SDL_GLContext m_sdl_context = nullptr;
