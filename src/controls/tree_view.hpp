@@ -1390,5 +1390,31 @@
             i32 isFocusable() override {
                 return (i32)FocusType::Focusable;
             }
+
+            bool handleLayoutEvent(LayoutEvent event) override {
+                if (event) {
+                    m_virtual_size_changed = true;
+                    // Since we already know the layout needs to be redone
+                    // we return true to avoid having to traverse the entire widget graph to the top.
+                    if (m_size_changed) { return true; }
+                    m_size_changed = true;
+                }
+                return false;
+            }
+
+            void forEachDrawable(std::function<void(Drawable *drawable)> action) override {
+                assert(m_model && "Model needs to be set for forEachDrawable!");
+                action(this);
+                for (Widget *child : children) {
+                    child->forEachDrawable(action);
+                }
+                m_model->forEachNode(m_model->roots, [&](TreeNode<T> *node) -> Traversal {
+                    if (node->is_collapsed) { return Traversal::Break; }
+                    for (Drawable *cell : node->columns) {
+                        action(cell);
+                    }
+                    return Traversal::Continue;
+                });
+            }
     };
 #endif
