@@ -145,21 +145,21 @@ Widget* basic2(Application &app) {
         Box *dropdowns_and_list = new Box(Align::Horizontal);
             GroupBox *dropdown_boxes = new GroupBox(Align::Vertical, "DropDowns");
                 DropDown *dropdown_cellrenderers = new DropDown();
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 0", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 1", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 2", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 3", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 4", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 5", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 6", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 7", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 8", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 9", 5));
-                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 10", 5));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 0"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 1"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 2"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 3"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 4"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 5"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 6"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 7"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 8"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 9"));
+                    dropdown_cellrenderers->appendItem(new TextCellRenderer("Testing 10"));
                     dropdown_cellrenderers->onItemSelected.addEventListener([](Widget *widget, CellRenderer *item, i32 index) {
                         println(widget);
                         println(item);
-                        println(((TextCellRenderer*)item)->text);
+                        println(((TextCellRenderer*)item)->text.data());
                         println(index);
                     });
                     dropdown_cellrenderers->setCurrent(0);
@@ -255,7 +255,7 @@ Widget* treeView(Application &app) {
                     for (i32 i = 1; i < 101; i++) {
                         model->append(nullptr, new TreeNode<Hidden>(
                             {
-                                new TextCellRenderer("Row " + std::to_string(i)),
+                                new TextCellRenderer(String() + "Row " + std::to_string(i).data()),
                                 new Button("TreeView"),
                                 new TextEdit("", "TreeView"),
                             },
@@ -289,7 +289,7 @@ Widget* treeView(Application &app) {
                         for (i32 j = 1; j < 21; j++) {
                             auto n = model->append(parent, new TreeNode<Hidden>(
                                 {
-                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + std::to_string(count)),
+                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), String() + "Row " + std::to_string(count).data()),
                                     new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
                                     new MultipleImagesCellRenderer({
                                         *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),

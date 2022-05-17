@@ -1,89 +1,70 @@
-#pragma once
+#ifndef CELL_RENDERER_HPP
+    #define CELL_RENDERER_HPP
 
-#include "../renderer/drawing_context.hpp"
-#include "../controls/image.hpp"
+    #include "../renderer/drawing_context.hpp"
+    #include "../controls/image.hpp"
+    #include "../core/string.hpp"
 
-class CellRenderer : public Drawable {
-    public:
+    struct CellRenderer : public Drawable {
         CellRenderer();
         virtual ~CellRenderer();
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override = 0;
         virtual Size sizeHint(DrawingContext &dc) override = 0;
-};
+    };
 
-class EmptyCell : public CellRenderer {
-    public:
+    struct EmptyCell : public CellRenderer {
         EmptyCell();
         ~EmptyCell();
         void draw(DrawingContext &dc, Rect rect, i32 state);
         Size sizeHint(DrawingContext &dc);
-};
+    };
 
-class TextCellRenderer : public CellRenderer {
-    public:
-        // TODO setters for text, alignment, padding, font to set m_size_changed
+    struct TextCellRenderer : public CellRenderer {
+        // TODO setters for text, alignment to set m_size_changed
         // ^ i could see this being a problem because we dont recalculate
         // the virtual_size for treeview? but maybe im missing something
-        std::string text;
-        i32 padding;
-        std::shared_ptr<Font> font = nullptr;
+        String text;
         HorizontalAlignment h_align = HorizontalAlignment::Left;
         VerticalAlignment v_align = VerticalAlignment::Center;
 
-        TextCellRenderer(
-            std::string text,
-            i32 padding = 5
-        );
+        TextCellRenderer(String text);
         ~TextCellRenderer();
         void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
+    };
 
-    protected:
-        Size m_size;
-};
-
-class ImageCellRenderer : public CellRenderer {
-    public:
+    struct ImageCellRenderer : public CellRenderer {
         Image *image = nullptr;
 
         ImageCellRenderer(Image *image);
         ~ImageCellRenderer();
         void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
-};
+    };
 
-class MultipleImagesCellRenderer : public CellRenderer {
-    public:
+    struct MultipleImagesCellRenderer : public CellRenderer {
         std::vector<Image> images;
 
         MultipleImagesCellRenderer(std::vector<Image> &&images);
         ~MultipleImagesCellRenderer();
         void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
+    };
 
-    protected:
-        Size m_size;
-};
-
-class ImageTextCellRenderer : public CellRenderer {
-    public:
+    struct ImageTextCellRenderer : public CellRenderer {
         // TODO account for alignment, especially important for the first col
         Image *image = nullptr;
-        std::shared_ptr<Font> font = nullptr;
-        std::string text;
+        String text;
+        // TODO maybe we want to move alignment into style? at least for text
         HorizontalAlignment h_align = HorizontalAlignment::Left;
-        i32 padding;
 
         ImageTextCellRenderer(
             Image *image,
-            std::string text,
-            HorizontalAlignment h_align = HorizontalAlignment::Left,
-            i32 padding = 5
+            String text,
+            HorizontalAlignment h_align = HorizontalAlignment::Left
         );
         ~ImageTextCellRenderer();
         void draw(DrawingContext &dc, Rect rect, i32 state) override;
         Size sizeHint(DrawingContext &dc) override;
-
-    protected:
-        Size m_size;
-};
+    };
+#endif

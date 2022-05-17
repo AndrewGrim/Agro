@@ -23,7 +23,7 @@ Size EmptyCell::sizeHint(DrawingContext &dc) {
     return Size();
 }
 
-TextCellRenderer::TextCellRenderer(std::string text, i32 padding) : text{text}, padding{padding} {}
+TextCellRenderer::TextCellRenderer(String text) : text{text} {}
 
 TextCellRenderer::~TextCellRenderer() {}
 
@@ -40,22 +40,22 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
         bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
+    dc.padding(rect, style());
     dc.fillTextMultilineAligned(
-        font,
-        text,
+        font(),
+        text.slice(),
         h_align,
         v_align,
         rect,
-        padding,
+        0,
         fg
     );
 }
 
 Size TextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc.measureTextMultiline(font, text);
-            s.w += padding * 2;
-            s.h += padding * 2;
+        Size s = dc.measureTextMultiline(font(), text.slice());
+        dc.sizeHintPadding(s, style());
         m_size = s;
         return s;
     } else {
@@ -79,6 +79,7 @@ void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
         bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
+    dc.padding(rect, style());
     dc.drawTextureAligned(
         rect,
         image->size(),
@@ -91,7 +92,9 @@ void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
 }
 
 Size ImageCellRenderer::sizeHint(DrawingContext &dc) {
-    return image->size();
+    Size s = image->size();
+    dc.sizeHintPadding(s, style());
+    return s;
 }
 
 MultipleImagesCellRenderer::MultipleImagesCellRenderer(std::vector<Image> &&images) : images{images} {}
@@ -107,6 +110,7 @@ void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) 
         bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
+    dc.padding(rect, style());
     Rect drawing_rect = rect;
     Size size = sizeHint(dc);
     drawing_rect.x = drawing_rect.x + (drawing_rect.w / 2) - (size.w / 2);
@@ -132,6 +136,7 @@ Size MultipleImagesCellRenderer::sizeHint(DrawingContext &dc) {
             size.w += s.w;
             if (s.h > size.h) { size.h = s.h; }
         }
+        dc.sizeHintPadding(size, style());
         m_size = size;
     }
     return m_size;
@@ -139,10 +144,9 @@ Size MultipleImagesCellRenderer::sizeHint(DrawingContext &dc) {
 
 ImageTextCellRenderer::ImageTextCellRenderer(
     Image *image,
-    std::string text,
-    HorizontalAlignment h_align,
-    i32 padding
-) : image{image}, text{text}, h_align{h_align}, padding{padding} {}
+    String text,
+    HorizontalAlignment h_align
+) : image{image}, text{text}, h_align{h_align} {}
 
 ImageTextCellRenderer::~ImageTextCellRenderer() {
     delete image;
@@ -161,13 +165,14 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
         bg = dc.accentWidgetBackground(style());
         dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
     }
-    Size text_size = dc.measureTextMultiline(font, text);
+    dc.padding(rect, style());
+    Size text_size = dc.measureTextMultiline(font(), text.slice());
     Rect local_rect = rect;
     Size image_size = image->size();
     i32 x = rect.x;
     switch (h_align) {
-        case HorizontalAlignment::Right: x = rect.x + rect.w - (image_size.w + text_size.w + (padding * 2)); break;
-        case HorizontalAlignment::Center: x = rect.x + (rect.w / 2) - ((image_size.w + text_size.w + (padding * 2)) / 2); break;
+        case HorizontalAlignment::Right: x = rect.x + rect.w - (image_size.w + text_size.w); break;
+        case HorizontalAlignment::Center: x = rect.x + (rect.w / 2) - ((image_size.w + text_size.w) / 2); break;
         default: break;
     }
     dc.drawTexture(
@@ -184,25 +189,24 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     local_rect.x += image_size.w;
     local_rect.w -= image_size.w;
     dc.fillTextMultilineAligned(
-        font,
-        text,
+        font(),
+        text.slice(),
         h_align,
         VerticalAlignment::Center,
         local_rect,
-        padding,
+        0,
         fg
     );
 }
 
 Size ImageTextCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
-        Size s = dc.measureTextMultiline(font, text);
+        Size s = dc.measureTextMultiline(font(), text.slice());
             s.w += image->size().w;
             if (image->size().h > s.h) {
                 s.h = image->size().h;
             }
-            s.w += padding * 2;
-            s.h += padding * 2;
+            dc.sizeHintPadding(s, style());
         m_size = s;
         return s;
     } else {
