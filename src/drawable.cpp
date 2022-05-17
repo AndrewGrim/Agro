@@ -27,9 +27,7 @@ void Drawable::layout(LayoutEvent event) {
     Widget *_parent = this->parent;
     while (_parent) {
         // Early break to avoid having to go to the top of the widget tree.
-        if (_parent->handleLayoutEvent(LAYOUT_CHILD)) {
-            break;
-        }
+        if (_parent->handleLayoutEvent(LAYOUT_CHILD)) { break; }
         _parent = _parent->parent;
     }
     update();
