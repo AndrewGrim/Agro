@@ -441,8 +441,8 @@ Window::ContextEventResult Window::propagateMouseEvent(MouseEvent event) {
 
 void Window::layout(LayoutEvent event) {
     // TODO this doesnt update widgets like scrollbars which are part of scrollable
-    m_main_widget->forEachWidget([=](Widget *widget) {
-        widget->handleLayoutEvent(event);
+    m_main_widget->forEachDrawable([=](Drawable *drawable) {
+        drawable->handleLayoutEvent(event);
     });
     update();
 }

@@ -256,9 +256,7 @@
             Size size();
             bool isWidget();
 
-            // TODO forEachDrawable?
-            // also we shouldnt be passing layoutevent into this callback
-            void forEachWidget(std::function<void(Widget *widget)> action);
+            virtual void forEachDrawable(std::function<void(Drawable *drawable)> action);
 
             /// Occurs when a widget is clicked on or when the user presses space on it (only when soft?)
             /// but unlike callbacks it is a dedicated method on widget which also changes window state to reflect the press

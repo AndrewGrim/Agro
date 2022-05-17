@@ -302,10 +302,10 @@ bool Widget::isWidget() {
     return true;
 }
 
-void Widget::forEachWidget(std::function<void(Widget *widget)> action) {
+void Widget::forEachDrawable(std::function<void(Drawable *drawable)> action) {
     action(this);
     for (Widget *child : children) {
-        child->forEachWidget(action);
+        child->forEachDrawable(action);
     }
 }
 
