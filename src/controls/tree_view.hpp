@@ -1103,8 +1103,7 @@
                                     // because we already update the values manually.
                                     m_size_changed = false;
                                 }
-                                if (s.h > node->max_cell_height) {
-                                    // TODO doesnt this mean that if all the columns have the same height then we dont account for grid line?
+                                if (s.h + m_grid_line_width > node->max_cell_height) {
                                     node->max_cell_height = s.h + m_grid_line_width;
                                 }
                                 index++;
