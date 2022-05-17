@@ -1092,7 +1092,7 @@
 
                                 // Automatically set the columns to be wide
                                 // enough for their contents.
-                                if (m_auto_size_columns && s.w > col->width()) {
+                                if ((m_auto_size_columns || m_mode == Mode::Unroll) && s.w > col->width()) {
                                     s.w += m_grid_line_width;
                                     col->setWidth(s.w);
                                     // The below is necessary because sizeHint won't run
