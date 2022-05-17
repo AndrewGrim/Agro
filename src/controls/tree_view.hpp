@@ -1080,6 +1080,7 @@
                         }
                         if (!collapsed) {
                             // Check and set the max height of the node.
+                            node->max_cell_height = m_grid_line_width;
                             i32 index = 0;
                             assert(node->columns.size() == children.size() && "The amount of Column<T>s and Drawables should be the same!");
                             for (Drawable *drawable : node->columns) {
