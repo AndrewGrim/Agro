@@ -243,7 +243,7 @@ Widget* treeView(Application &app) {
                     tv->hideColumnHeaders();
                     for (i32 i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
-                            "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
+                            String("Column ") + std::to_string(i).data(), nullptr, HorizontalAlignment::Center,
                             [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
                                 return lhs->hidden->id > rhs->hidden->id;
                             }
@@ -273,7 +273,7 @@ Widget* treeView(Application &app) {
                 TreeView<Hidden> *tv = new TreeView<Hidden>(Size(400, 400));
                     for (i32 i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
-                            "Column " + std::to_string(i), nullptr, HorizontalAlignment::Center,
+                            String("Column ") + std::to_string(i).data(), nullptr, HorizontalAlignment::Center,
                             [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
                                 return lhs->hidden->id > rhs->hidden->id;
                             }

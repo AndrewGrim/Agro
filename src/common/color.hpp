@@ -2,7 +2,7 @@
     #define COLOR_HPP
 
     #include <cassert>
-    #include <string>
+    #include "../core/string.hpp"
 
     #include "number_types.h"
 
@@ -71,10 +71,10 @@
             }
         }
 
-        std::string toString() {
+        String toString() {
             char buffer[10] = {};
             sprintf(buffer, "#%.02X%.02X%.02X%.02X", (i32)(r * 255), (i32)(g * 255), (i32)(b * 255), (i32)(a * 255));
-            return std::string(buffer);
+            return String(buffer);
         }
 
         static Color fromInt(u8 r, u8 g = 0, u8 b = 0, u8 a = 255) {

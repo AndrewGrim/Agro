@@ -1,6 +1,6 @@
 #include "label.hpp"
 
-Label::Label(std::string text) {
+Label::Label(String text) {
     setText(text);
     setWidgetBackgroundColor(COLOR_NONE);
     setBorderType(STYLE_NONE);
@@ -47,11 +47,11 @@ Size Label::sizeHint(DrawingContext &dc) {
     }
 }
 
-std::string Label::text() {
+String Label::text() {
     return m_text;
 }
 
-Label* Label::setText(std::string text) {
+Label* Label::setText(String text) {
     // Unlike everywhere else I don't think we
     // should compare the m_text to text since
     // that can be pretty expensive and we can

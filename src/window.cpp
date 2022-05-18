@@ -1,3 +1,5 @@
+#include <string>
+
 #include "application.hpp"
 #include "window.hpp"
 #include "resources.hpp"
@@ -357,12 +359,12 @@ void Window::resize(i32 width, i32 height) {
     handleResizeEvent(width, height);
 }
 
-std::string Window::title() {
+String Window::title() {
     return m_title;
 }
 
-void Window::setTitle(std::string title) {
-    SDL_SetWindowTitle(m_win, title.c_str());
+void Window::setTitle(String title) {
+    SDL_SetWindowTitle(m_win, title.data());
 }
 
 void Window::setTooltip(Widget *widget) {

@@ -1,7 +1,7 @@
 #include "check_button.hpp"
 #include "../application.hpp"
 
-CheckButton::CheckButton(std::string text, bool is_checked) : Widget(), m_text{text}, m_is_checked{is_checked} {
+CheckButton::CheckButton(String text, bool is_checked) : Widget(), m_text{text}, m_is_checked{is_checked} {
     m_checked_image = new Image(Application::get()->icons["check_button_checked"]);
     m_unchecked_image = new Image(Application::get()->icons["check_button_unchecked"]);
 

@@ -1,6 +1,6 @@
 #include "button.hpp"
 
-Button::Button(std::string text) {
+Button::Button(String text) {
     setText(text);
     bind(SDLK_SPACE, Mod::None, [&](){
         activate();
@@ -39,7 +39,7 @@ void Button::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.padding(rect, style());
 
     Size text_size = dc.measureText(font(), text());
-    if (text().length()) { text_size.w += 5; } // Padding between image and text
+    if (text().size()) { text_size.w += 5; } // Padding between image and text
     if (m_image) {
         Size image_size = m_image->sizeHint(dc);
         dc.drawTexture(
@@ -62,7 +62,7 @@ void Button::draw(DrawingContext &dc, Rect rect, i32 state) {
         h_text_align = HorizontalAlignment::Center;
         v_text_align = VerticalAlignment::Center;
     }
-    if (m_text.length()) {
+    if (m_text.size()) {
         dc.fillTextAligned(
             font(),
             m_text,
@@ -82,7 +82,7 @@ Size Button::sizeHint(DrawingContext &dc) {
         if (m_image) {
             Size i = m_image->sizeHint(dc);
             size.w += i.w;
-            if (text().length()) { size.w += 5; } // Padding between image and text
+            if (text().size()) { size.w += 5; } // Padding between image and text
             if (i.h > size.h) {
                 size.h = i.h;
             }
@@ -101,11 +101,11 @@ Size Button::sizeHint(DrawingContext &dc) {
     }
 }
 
-std::string Button::text() {
+String Button::text() {
     return m_text;
 }
 
-Button* Button::setText(std::string text) {
+Button* Button::setText(String text) {
     m_text = text;
     layout(LAYOUT_STYLE);
 

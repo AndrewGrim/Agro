@@ -21,11 +21,6 @@
     class Window;
 
     struct DrawingContext {
-        // TODO dc will need to be modified so that
-        // dc is window agnostic and only switches between the
-        // renderer instances that refer to different windows/glcontexts
-        // finally it will need to be made static and initialized before
-        // all other imports so we could access it anywhere
         u32 indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer = nullptr;
         std::shared_ptr<Font> default_font = nullptr;
@@ -39,16 +34,16 @@
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void drawDashedRect(Rect rect, Color color);
-        void fillText(std::shared_ptr<Font> font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultiline(std::shared_ptr<Font> font, std::string text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextAligned(std::shared_ptr<Font> font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillText(std::shared_ptr<Font> font, String text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultiline(std::shared_ptr<Font> font, String text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextAligned(std::shared_ptr<Font> font, String text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
         void fillTextAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
-        void fillTextMultilineAligned(std::shared_ptr<Font> font, std::string text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
+        void fillTextMultilineAligned(std::shared_ptr<Font> font, String text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
         void fillTextMultilineAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
         Size measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4);
-        Size measureText(std::shared_ptr<Font> font, std::string text, i32 tab_width = 4);
+        Size measureText(std::shared_ptr<Font> font, String text, i32 tab_width = 4);
         Size measureText(std::shared_ptr<Font> font, char c, i32 tab_width = 4);
-        Size measureTextMultiline(std::shared_ptr<Font> font, std::string text, i32 tab_width = 4, i32 line_spacing = 5);
+        Size measureTextMultiline(std::shared_ptr<Font> font, String text, i32 tab_width = 4, i32 line_spacing = 5);
         Size measureTextMultiline(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4, i32 line_spacing = 5);
         void render();
         Rect drawBorder3D(Rect rect, i32 border_width, Color rect_color);
@@ -71,6 +66,10 @@
         // this way the user could easily query the color of the widget
         // without having to access the style directly and possibly
         // also checking the default style???? eh im not sure
+        // UPDATE: We added accessors for all style members
+        // into drawable so in theory they could fullfil this purpose
+        // of querying the colors but i do like having them in drawingcontext
+        // since thats what the user will be using for drawing anyway.
         Color windowBackground(Style &style);
         Color widgetBackground(Style &style);
         Color accentWidgetBackground(Style &style);

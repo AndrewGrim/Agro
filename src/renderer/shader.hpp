@@ -1,13 +1,13 @@
 #ifndef SHADER_HPP
     #define SHADER_HPP
 
-    #include <string>
     #include <fstream>
     #include <sstream>
     #include <iostream>
 
     #include "glad.h"
     #include "../util.hpp"
+    #include "../core/string.hpp"
 
     class Shader {
         public:
@@ -48,16 +48,16 @@
                 glUseProgram(ID);
             };
 
-            void setBool(const std::string &name, bool value) const {
-                glUniform1i(glGetUniformLocation(ID, name.c_str()), (i32)value);
+            void setBool(const String &name, bool value) const {
+                glUniform1i(glGetUniformLocation(ID, name.data()), (i32)value);
             };
 
-            void setInt(const std::string &name, i32 value) const {
-                glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+            void setInt(const String &name, i32 value) const {
+                glUniform1i(glGetUniformLocation(ID, name.data()), value);
             };
 
-            void setFloat(const std::string &name, f32 value) const {
-                glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+            void setFloat(const String &name, f32 value) const {
+                glUniform1f(glGetUniformLocation(ID, name.data()), value);
             };
 
             void setVector2f(const char *name, f32 x, f32 y) {
@@ -80,16 +80,16 @@
                 glUniformMatrix4fv(glGetUniformLocation(this->ID, name), 1, false, matrix);
             }
 
-            void checkCompileErrors(u32 shader, std::string type) {
+            void checkCompileErrors(u32 shader, String type) {
                 i32 success;
                 char infoLog[1024];
-                if (type != "PROGRAM")
+                if (!(type == "PROGRAM"))
                 {
                     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
                     if (!success)
                     {
                         glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-                        std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                        std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type.data() << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
                     }
                 }
                 else
@@ -98,7 +98,7 @@
                     if (!success)
                     {
                         glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-                        std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
+                        std::cout << "ERROR::PROGRAM_LINKING_ERROR of type: " << type.data() << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
                     }
                 }
             }

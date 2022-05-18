@@ -1,23 +1,23 @@
 #include "font.hpp"
 #include "../application.hpp"
 
-Font::Font(FT_Library ft, std::string file_path, u32 pixel_size, Font::Type type)
+Font::Font(FT_Library ft, String file_path, u32 pixel_size, Font::Type type)
 : file_path{file_path}, pixel_size{pixel_size}, type{type} {
-    if (FT_New_Face(ft, file_path.c_str(), 0, &face)) {
-        fail("FAILED_TO_LOAD_FONT", file_path);
+    if (FT_New_Face(ft, file_path.data(), 0, &face)) {
+        fail("FAILED_TO_LOAD_FONT", file_path.data());
         if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
-            fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path);
+            fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path.data());
         }
     }
     load(face);
 }
 
-Font::Font(FT_Library ft, const unsigned char *data, i64 length, u32 pixel_size, Font::Type type)
+Font::Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Font::Type type)
 : file_path{":memory:"}, pixel_size{pixel_size}, type{type} {
     if (FT_New_Memory_Face(ft, data, length, 0, &face)) {
-        fail("FAILED_TO_LOAD_FONT", file_path);
+        fail("FAILED_TO_LOAD_FONT", file_path.data());
         if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
-            fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path);
+            fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path.data());
         }
     }
     load(face);
@@ -118,12 +118,12 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
     u32 new_atlas_width = atlas_width;
     u32 new_atlas_height = atlas_height;
     if (next_slot + g->bitmap.width > atlas_width) {
-        info("Font grow width:", file_path);
+        info("Font grow width:", file_path.data());
         new_atlas_width *= 2;
         should_grow = true;
     }
     if (g->bitmap.rows > atlas_height) {
-        info("Font grow height:", file_path);
+        info("Font grow height:", file_path.data());
         new_atlas_height = g->bitmap.rows;
         should_grow = true;
         {

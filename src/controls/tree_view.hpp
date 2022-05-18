@@ -152,7 +152,7 @@
             std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_fn = nullptr;
 
             Column(
-                std::string text, Image *image = nullptr,
+                String text, Image *image = nullptr,
                 HorizontalAlignment alignment = HorizontalAlignment::Center,
                 std::function<bool(TreeNode<T> *lhs, TreeNode<T> *rhs)> sort_function = nullptr) : Box(Align::Horizontal) {
                 if (alignment == HorizontalAlignment::Right) {

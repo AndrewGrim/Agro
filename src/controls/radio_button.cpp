@@ -1,7 +1,7 @@
 #include "radio_button.hpp"
 #include "../application.hpp"
 
-RadioButton::RadioButton(std::shared_ptr<RadioGroup> group, std::string text) : CheckButton(text, false) {
+RadioButton::RadioButton(std::shared_ptr<RadioGroup> group, String text) : CheckButton(text, false) {
     assert(group && "RadioGroup cannot be null!");
     m_group = group;
     group->buttons.push_back(this);

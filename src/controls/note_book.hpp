@@ -35,8 +35,8 @@
             virtual i32 isFocusable() override;
             Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
             virtual Widget* propagateMouseEvent(Window *window, State *state, MouseEvent event) override;
-            NoteBook* appendTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
-            // NoteBook* insertTab(Widget *root, std::string text, Image *icon = nullptr, bool close_button = false);
+            NoteBook* appendTab(Widget *root, String text, Image *icon = nullptr, bool close_button = false);
+            // NoteBook* insertTab(Widget *root, String text, Image *icon = nullptr, bool close_button = false);
             NoteBook* destroyTab(u64 index);
             // NoteBook* setTabWidget(Widget *root);
             u64 currentTab();
@@ -49,7 +49,7 @@
 
     class NoteBookTabButton : public Button {
         public:
-            NoteBookTabButton(NoteBook *notebook, std::string text, Image *image = nullptr, bool close_button = false);
+            NoteBookTabButton(NoteBook *notebook, String text, Image *image = nullptr, bool close_button = false);
             ~NoteBookTabButton();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;

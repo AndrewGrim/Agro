@@ -62,6 +62,6 @@
         Cursors *m_cursors = nullptr;
         FT_Library ft = NULL;
 
-        std::unordered_map<std::string, std::shared_ptr<Texture>> icons;
+        std::unordered_map<const char*, std::shared_ptr<Texture>> icons;
     };
 #endif

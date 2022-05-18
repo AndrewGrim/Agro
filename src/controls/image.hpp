@@ -1,16 +1,16 @@
 #ifndef IMAGE_HPP
     #define IMAGE_HPP
 
-    #include <string>
     #include <memory>
 
     #include "widget.hpp"
     #include "../renderer/texture.hpp"
+    #include "../core/string.hpp"
 
     class Image : public Widget {
         public:
-            Image(std::string file_path);
-            Image(const unsigned char *image_data, i32 length);
+            Image(String file_path);
+            Image(const u8 *image_data, i32 length);
             Image(std::shared_ptr<Texture> texture);
             ~Image();
             virtual const char* name() override;

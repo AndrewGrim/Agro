@@ -1,6 +1,6 @@
 #include "tooltip.hpp"
 
-Tooltip::Tooltip(std::string text) : Label(text) {
+Tooltip::Tooltip(String text) : Label(text) {
     setWidgetBackgroundColor(Color("#ffff88"));
     setTextForegroundColor(COLOR_BLACK);
     setBorderType(STYLE_ALL);

@@ -140,7 +140,7 @@ bool NoteBookTabBar::handleScrollEvent(ScrollEvent event) {
     return false;
 }
 
-NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, std::string text, Image *image,  bool close_button) : Button(text) {
+NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, String text, Image *image,  bool close_button) : Button(text) {
     // TODO holy shit this is some bad and brittle code!
     if (image) {
         setImage(image);
@@ -248,7 +248,7 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         h_text_align = HorizontalAlignment::Center;
         v_text_align = VerticalAlignment::Center;
     }
-    if (m_text.length()) {
+    if (m_text.size()) {
         if (m_close_button && !m_image) {
             rect.w -= 22; // 12 icon size + 10 padding
         }
@@ -404,7 +404,7 @@ Size NoteBook::sizeHint(DrawingContext &dc) {
 
 // TODO maybe overwrite append just like TreeView
 // internally we could still use Widget::append
-NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool close_button) {
+NoteBook* NoteBook::appendTab(Widget *root, String text, Image *icon, bool close_button) {
     this->append(root, Fill::Both);
     NoteBookTabButton *tab_button = new NoteBookTabButton(this, text, icon, close_button);
     tab_button->onMouseDown.addEventListener([=](Widget *widget, MouseEvent event) {
@@ -421,7 +421,7 @@ NoteBook* NoteBook::appendTab(Widget *root, std::string text, Image *icon, bool 
     return this;
 }
 
-// NoteBook* NoteBook::insertTab(Widget *root, std::string text, Image *icon) {
+// NoteBook* NoteBook::insertTab(Widget *root, String text, Image *icon) {
 //     // TODO implement
 //     return this;
 // }

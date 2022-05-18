@@ -2,7 +2,6 @@
 #include "text_edit.hpp"
 #include "group_box.hpp"
 
-
 StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
     Style &s = Application::get()->mainWindow()->dc->default_style;
 
@@ -42,10 +41,10 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         &s.border.top, &s.border.bottom, &s.border.left, &s.border.right,
         &s.padding.top, &s.padding.bottom, &s.padding.left, &s.padding.right
     };
-    std::string size_options_names[3] = {
+    String size_options_names[3] = {
         "Margin", "Border", "Padding"
     };
-    std::string size_options_sides_names[4] = {
+    String size_options_sides_names[4] = {
         "Top", "Bottom", "Left", "Right"
     };
     Box *size_box = new Box(Align::Horizontal);
@@ -145,7 +144,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         &s.hovered_background_color, &s.pressed_background_color, &s.accent_hovered_background_color,
         &s.accent_pressed_background_color, &s.icon_foreground_color, &s.border_background_color
     };
-    std::string color_option_names[13] = {
+    String color_option_names[13] = {
         "window_background_color", "widget_background_color", "accent_widget_background_color",
         "text_foreground_color", "text_background_color", "text_selected_color", "text_disabled_color",
         "hovered_background_color", "pressed_background_color", "accent_hovered_background_color",

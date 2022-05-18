@@ -2,11 +2,11 @@
     #define FONT_HPP
 
     #include <unordered_map>
-    #include <string>
 
     #include <ft2build.h>
     #include FT_FREETYPE_H
 
+    #include "../core/string.hpp"
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
@@ -36,7 +36,7 @@
             bearing{bearing}, size{size}, advance{advance}, texture_x{texture_x} {}
         };
 
-        std::string file_path;
+        String file_path;
         u32 pixel_size = 0;
         Type type;
 
@@ -46,8 +46,8 @@
         u32 atlas_ID; // Set by opengl when creating font atlas texture.
         i32 max_bearing = 0;
 
-        Font(FT_Library ft, std::string file_path, u32 pixel_size, Type type);
-        Font(FT_Library ft, const unsigned char *data, i64 length, u32 pixel_size, Type type);
+        Font(FT_Library ft, String file_path, u32 pixel_size, Type type);
+        Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Type type);
         ~Font();
         u32 maxHeight();
         Character get(u32 codepoint);

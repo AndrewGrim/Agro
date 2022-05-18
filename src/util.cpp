@@ -7,10 +7,9 @@ static void printLog(std::string message_type, std::string message, std::string 
         ((i32)(color.r * 255)),
         ((i32)(color.g * 255)),
         ((i32)(color.b * 255)),
-        message_type.c_str(),
-        message.c_str(),
-        text.c_str()
-    );
+        message_type.data(),
+        message.data(),
+        text.data());
 }
 
 void info(std::string message, std::string text) {

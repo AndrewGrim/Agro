@@ -1,6 +1,6 @@
 #include "image.hpp"
 
-Image::Image(std::string file_path) : Widget() {
+Image::Image(String file_path) : Widget() {
     m_texture = std::make_shared<Texture>(file_path);
     m_size = originalSize();
     setWidgetBackgroundColor(COLOR_NONE);

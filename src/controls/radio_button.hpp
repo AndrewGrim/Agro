@@ -1,9 +1,8 @@
 #ifndef RADIO_BUTTON_HPP
     #define RADIO_BUTTON_HPP
 
-    #include <string>
-
     #include "check_button.hpp"
+    #include "../core/string.hpp"
 
     class RadioButton;
 
@@ -15,7 +14,7 @@
 
     class RadioButton : public CheckButton {
         public:
-            RadioButton(std::shared_ptr<RadioGroup> group, std::string text);
+            RadioButton(std::shared_ptr<RadioGroup> group, String text);
             ~RadioButton();
             virtual const char* name() override;
             void draw(DrawingContext &dc, Rect rect, i32 state) override;

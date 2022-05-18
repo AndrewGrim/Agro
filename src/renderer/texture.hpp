@@ -1,13 +1,13 @@
 #ifndef TEXTURE_HPP
     #define TEXTURE_HPP
 
-    #include <string>
     #include <cassert>
 
     #include "glad.h"
     #include "stb_image.h"
     #include "../util.hpp"
     #include "../common/point.hpp"
+    #include "../core/string.hpp"
 
     struct TextureCoordinates {
         // Default
@@ -78,9 +78,9 @@
         i32 nr_channels = -1;
         u32 ID;
 
-        Texture(std::string file_path) {
+        Texture(String file_path) {
             unsigned char *data = stbi_load(
-                file_path.c_str(),
+                file_path.data(),
                 &width,
                 &height,
                 &nr_channels,
@@ -106,7 +106,7 @@
             glDeleteTextures(1, &this->ID);
         }
 
-        void makeGLTexture(unsigned char *data, i32 width, i32 height, i32 nr_channels, std::string file_path) {
+        void makeGLTexture(unsigned char *data, i32 width, i32 height, i32 nr_channels, String file_path) {
             if (data) {
                 glActiveTexture(GL_TEXTURE0);
                 glGenTextures(1, &ID);
@@ -127,7 +127,7 @@
                 glGenerateMipmap(GL_TEXTURE_2D);
                 stbi_image_free(data);
             } else {
-                fail("FAILED_TO_LOAD_TEXTURE", file_path);
+                fail("FAILED_TO_LOAD_TEXTURE", file_path.data());
             }
         }
     };

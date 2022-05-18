@@ -1,52 +1,6 @@
 #include "renderer.hpp"
 #include "../application.hpp"
 
-static const u32 UTF8_TWO_BYTES    = 0b00011111;
-static const u32 UTF8_THREE_BYTES  = 0b00001111;
-static const u32 UTF8_FOUR_BYTES   = 0b00000111;
-static const u32 UTF8_CONTINUATION = 0b00111111;
-
-u8 utf8SequenceLength(const char *_first_byte) {
-    u8 first_byte = *_first_byte;
-    if (first_byte <= 0b01111111) { return 1; }
-    if (first_byte >= 0b11000000 && first_byte <= 0b11011111) { return 2; }
-    if (first_byte >= 0b11100000 && first_byte <= 0b11101111) { return 3; }
-    if (first_byte >= 0b11110000 && first_byte <= 0b11110111) { return 4; }
-    return 0; // Invalid first byte.
-}
-
-u32 utf8Decode(const char *first_byte) {
-    u32 codepoint = first_byte[0];
-    switch (utf8SequenceLength(first_byte)) {
-        case 1:
-            return codepoint;
-        case 2:
-            codepoint &= UTF8_TWO_BYTES;
-            codepoint <<= 6;
-            codepoint |= first_byte[1] & UTF8_CONTINUATION;
-            return codepoint;
-        case 3:
-            codepoint &= UTF8_THREE_BYTES;
-            codepoint <<= 6;
-            codepoint |= first_byte[1] & UTF8_CONTINUATION;
-            codepoint <<= 6;
-            codepoint |= first_byte[2] & UTF8_CONTINUATION;
-            return codepoint;
-        case 4:
-            codepoint &= UTF8_FOUR_BYTES;
-            codepoint <<= 6;
-            codepoint |= first_byte[1] & UTF8_CONTINUATION;
-            codepoint <<= 6;
-            codepoint |= first_byte[2] & UTF8_CONTINUATION;
-            codepoint <<= 6;
-            codepoint |= first_byte[3] & UTF8_CONTINUATION;
-            return codepoint;
-        default:
-            assert(false && "Invalid utf8 sequence start byte");
-            return 0;
-    }
-}
-
 Renderer::Renderer(Window *window, u32 *indices) : window{window} {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -81,7 +35,7 @@ Renderer::Renderer(Window *window, u32 *indices) : window{window} {
 
     glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_texture_slots);
 
-    std::string fragment_shader = "#version 330 core\n";
+    String fragment_shader = "#version 330 core\n";
         fragment_shader += "layout (origin_upper_left) in vec4 gl_FragCoord;\n";
         fragment_shader += "in vec2 v_texture_uv;\n";
         fragment_shader += "in vec4 v_color;\n";
@@ -92,7 +46,7 @@ Renderer::Renderer(Window *window, u32 *indices) : window{window} {
         fragment_shader += "\n";
         fragment_shader += "out vec4 f_color;\n";
         fragment_shader += "\n";
-        fragment_shader += "uniform sampler2D textures[" + std::to_string(max_texture_slots) + "];\n";
+        fragment_shader += (String() + "uniform sampler2D textures[" + std::to_string(max_texture_slots).data() + "];\n").data();
         fragment_shader += "\n";
         fragment_shader += "void main()\n";
         fragment_shader += "{\n";
@@ -103,16 +57,16 @@ Renderer::Renderer(Window *window, u32 *indices) : window{window} {
         fragment_shader += "vec4 sampled;\n";
         fragment_shader += "switch (int(v_texture_slot_index)) {\n";
         for (int i = 0; i < max_texture_slots; i++) {
-            fragment_shader += "case " + std::to_string(i) + ":\n";
+            fragment_shader += (String() + "case " + std::to_string(i).data() + ":\n").data();
                 fragment_shader += "switch (int(v_sampler_type)) {\n";
                     fragment_shader += "case 0: ";
                         fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 1: ";
-                        fragment_shader += "sampled = vec4(texture(textures[" + std::to_string(i) + "], v_texture_uv));\n";
+                        fragment_shader += (String() + "sampled = vec4(texture(textures[" + std::to_string(i).data() + "], v_texture_uv));\n").data();
                         fragment_shader += "break;\n";
                     fragment_shader += "case 2: ";
-                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i) + "], v_texture_uv).r);\n";
+                        fragment_shader += (String() + "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i).data() + "], v_texture_uv).r);\n").data();
                         fragment_shader += "break;\n";
                     fragment_shader += "case 3: ";
                         // TODO this is acutally pretty good, however i feel like we might want it to be a bit thicker, and it would be nice if it could scale with border width
@@ -165,7 +119,7 @@ Renderer::Renderer(Window *window, u32 *indices) : window{window} {
             "v_rect = a_rect;\n"
             "v_clip_rect = a_clip_rect;\n"
         "}",
-        fragment_shader.c_str()
+        fragment_shader.data()
     );
 
     shader.use();
@@ -220,7 +174,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
     i32 space_advance = font->get((u32)' ').advance;
     for (u64 i = 0; i < text.length;) {
         u8 c = text.data[i];
-        u8 length = utf8SequenceLength(text.data + i);
+        u8 length = utf8::length(text.data + i);
         assert(length != 0 && "Invalid utf8 sequence start byte");
         textCheck(font);
         if (c == ' ') {
@@ -234,7 +188,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                 x = point.x;
             }
         } else {
-            Font::Character ch = font->get(utf8Decode(text.data + i));
+            Font::Character ch = font->get(utf8::decode(text.data + i, length));
             if (!is_multiline && x > window_size.w) { break; }
             auto _color = color;
             if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
@@ -300,7 +254,7 @@ Size Renderer::measureText(std::shared_ptr<Font> font, Slice<const char> text, i
     i32 space_advance = font->get((u32)' ').advance;
     for (u64 i = 0; i < text.length;) {
         u8 c = text.data[i];
-        u8 length = utf8SequenceLength(text.data + i);
+        u8 length = utf8::length(text.data + i);
         assert(length != 0 && "Invalid utf8 sequence start byte");
         if (c == '\t') {
             line_width += space_advance * tab_width;
@@ -313,7 +267,7 @@ Size Renderer::measureText(std::shared_ptr<Font> font, Slice<const char> text, i
                 }
             }
         } else {
-            line_width += font->get(utf8Decode(text.data + i)).advance;
+            line_width += font->get(utf8::decode(text.data + i, length)).advance;
         }
         i += length;
     }

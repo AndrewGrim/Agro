@@ -1,7 +1,7 @@
 #ifndef WINDOW_HPP
     #define WINDOW_HPP
 
-    #include <string>
+    #include "core/string.hpp"
     #include <vector>
     #include <utility>
     #include <functional>
@@ -94,8 +94,8 @@
             void handleResizeEvent(i32 width, i32 height);
             void resize(i32 width, i32 height);
 
-            std::string title();
-            void setTitle(std::string title);
+            String title();
+            void setTitle(String title);
 
             void setTooltip(Widget *widget);
 
@@ -118,7 +118,7 @@
             bool m_running = true;
             bool m_mouse_inside = true;
             bool m_is_mouse_captured = false;
-            std::string m_title;
+            String m_title;
 
             u32 m_tooltip_time = 500;
             SDL_TimerID m_tooltip_callback = -1;

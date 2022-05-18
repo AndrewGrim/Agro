@@ -17,7 +17,7 @@ void ProgressBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.padding(rect, style());
     fill_end = rect.w * m_value; // We have to recalculate the value again since we don't want to take the padding into account.
 
-    std::string percent_text = std::to_string((i32)(m_value * 100)) + "%";
+    String percent_text = (std::to_string((i32)(m_value * 100)) + "%").data();
     i32 text_width = dc.measureText(font(), percent_text).w;
     i32 text_start = (rect.w / 2) - (text_width / 2);
     u64 begin = 0;

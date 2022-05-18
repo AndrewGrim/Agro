@@ -5,7 +5,7 @@
 
     class Tooltip : public Label {
         public:
-            Tooltip(std::string text);
+            Tooltip(String text);
             ~Tooltip();
             virtual const char* name() override;
     };
