@@ -41,8 +41,8 @@
             // NoteBook* setTabWidget(Widget *root);
             u64 currentTab();
             NoteBook* setCurrentTab(u64 index);
+            void forEachDrawable(std::function<void(Drawable *drawable)> action) override;
 
-        protected:
             u64 m_tab_index = 0;
             NoteBookTabBar *m_tabs = new NoteBookTabBar(this);
     };
@@ -62,10 +62,11 @@
             void setActive(bool is_active);
             bool hasCloseButton();
             void setCloseButton(bool close_button);
+            bool handleLayoutEvent(LayoutEvent event) override;
 
-        protected:
             bool m_is_active = false;
             bool m_close_button = false;
             IconButton *m_close_image = nullptr;
+            i32 m_min_tab_accent_width = 5;
     };
 #endif

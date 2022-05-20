@@ -155,17 +155,11 @@ NoteBookTabButton::NoteBookTabButton(NoteBook *notebook, String text, Image *ima
     m_close_image->setPaddingType(STYLE_NONE);
     m_close_image->setWidgetBackgroundColor(COLOR_NONE);
     append(m_close_image);
-    setPaddingType(STYLE_ALL);
-    setPaddingTop(5);
-    setPaddingBottom(5);
-    setPaddingLeft(10);
-    setPaddingRight(20);
 
     // Setup the border to get the correct sizeHint.
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
     setBorderType(STYLE_TOP|STYLE_LEFT|STYLE_RIGHT);
-    setBorderTop(4);
-    setBorderLeft(1);
-    setBorderRight(1);
+    setBorderTop(dc.default_style.border.top * 2 > m_min_tab_accent_width ? dc.default_style.border.top * 2 : m_min_tab_accent_width);
 
     bind(SDLK_LEFT, Mod::None, [&]{
         if (parent->children.size()) {
@@ -199,10 +193,13 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Color color;
 
-    setBorderType(STYLE_NONE);
     if (isActive()) {
-        setBorderType(STYLE_TOP|STYLE_LEFT|STYLE_RIGHT);
-        setBorderColorTop(Application::get()->currentWindow()->dc->accentWidgetBackground(style()));
+        style().border_color.top = Application::get()->currentWindow()->dc->accentWidgetBackground(style());
+        // We draw over the border of the NoteBookTabBar to emulate
+        // whan an open page in a folder would look like
+        // so it looks like the first one
+        //   _____       _____
+        // __|   |__   __|___|__
         rect.h += parent->borderBottom();
         color = dc.windowBackground(style());
     } else if (state & STATE_PRESSED && state & STATE_HOVERED) {
@@ -213,7 +210,9 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         color = dc.windowBackground(style());
     }
 
-    dc.drawBorder(rect, style(), state);
+    if (isActive()) {
+        dc.drawBorder(rect, style(), state);
+    }
     Rect focus_rect = rect;
     dc.fillRect(rect, color);
     dc.padding(rect, style());
@@ -269,14 +268,12 @@ void NoteBookTabButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         m_close_image->draw(dc, Rect(rect.x + 10 + (paddingRight() / 2), rect.y + (rect.h / 2) - (12 / 2), 12, 12), m_close_image->state());
     }
 
-    // Reset the border after drawing for correct sizeHint.
-    setBorderType(STYLE_TOP|STYLE_LEFT|STYLE_RIGHT);
     dc.drawKeyboardFocus(focus_rect, style(), state);
 }
 
 Size NoteBookTabButton::sizeHint(DrawingContext &dc) {
     if (this->m_size_changed) {
-        Size size = dc.measureText(this->font() ? this->font() : dc.default_font, text());
+        Size size = dc.measureText(font(), text());
         if (m_image) {
             Size i = m_image->sizeHint(dc);
             size.w += i.w;
@@ -360,12 +357,24 @@ void NoteBookTabButton::setCloseButton(bool close_button) {
     }
 }
 
+bool NoteBookTabButton::handleLayoutEvent(LayoutEvent event) {
+    if (event) {
+        if (event & LAYOUT_BORDER) {
+            DrawingContext &dc = *Application::get()->currentWindow()->dc;
+            style().border.top = dc.default_style.border.top * 2 > m_min_tab_accent_width ? dc.default_style.border.top * 2 : m_min_tab_accent_width;
+        }
+        if (m_size_changed) { return true; }
+        m_size_changed = true;
+    }
+    return false;
+}
+
 NoteBook::NoteBook() {
 
 }
 
 NoteBook::~NoteBook() {
-    // TODO surely we should delete the notebooktabbar m_tabs?
+    delete m_tabs;
 }
 
 void NoteBook::draw(DrawingContext &dc, Rect rect, i32 state) {
@@ -521,4 +530,15 @@ Widget* NoteBook::propagateMouseEvent(Window *window, State *state, MouseEvent e
 
     this->handleMouseEvent(window, state, event);
     return this;
+}
+
+void NoteBook::forEachDrawable(std::function<void(Drawable *drawable)> action) {
+    action(this);
+    for (Widget *child : children) {
+        child->forEachDrawable(action);
+    }
+    action(m_tabs);
+    for (Widget *tab : m_tabs->children) {
+        tab->forEachDrawable(action);
+    }
 }
