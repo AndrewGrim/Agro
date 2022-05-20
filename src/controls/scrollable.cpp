@@ -245,3 +245,14 @@ Widget* Scrollable::handleFocusEvent(FocusEvent event, State *state, FocusPropag
         return nullptr;
     }
 }
+
+void Scrollable::forEachDrawable(std::function<void(Drawable *drawable)> action) {
+    action(this);
+    for (Widget *child : children) {
+        child->forEachDrawable(action);
+    }
+    if (m_horizontal_scrollbar && m_vertical_scrollbar) {
+        m_horizontal_scrollbar->forEachDrawable(action);
+        m_vertical_scrollbar->forEachDrawable(action);
+    }
+}

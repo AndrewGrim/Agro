@@ -36,6 +36,7 @@
             Size minSize();
             void setMinSize(Size min_size);
             Rect clip();
+            void forEachDrawable(std::function<void(Drawable *drawable)> action) override;
 
             Size m_viewport = Size();
     };
