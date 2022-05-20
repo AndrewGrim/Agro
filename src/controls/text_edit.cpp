@@ -304,6 +304,7 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.padding(rect, style());
 
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
+    Rect post_padding = rect;
     inner_rect = rect;
 
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
@@ -413,7 +414,14 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         );
     }
 
-    if (m_mode == Mode::MultiLine) { drawScrollBars(dc, rect, m_virtual_size); }
+    if (m_mode == Mode::MultiLine) {
+        // Here we do a little trick to draw the scrollbars as if we didnt have padding
+        // while still having it for text coordinates.
+        Size padding = Size();
+        dc.sizeHintPadding(padding, style());
+        Rect scrollbars = Rect(post_padding.x - paddingLeft(), post_padding.y - paddingTop(), post_padding.w + padding.w, post_padding.h + padding.h);
+        drawScrollBars(dc, scrollbars, m_virtual_size);
+    }
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style(), state);
     dc.setClip(previous_clip);
