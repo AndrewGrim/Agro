@@ -442,10 +442,13 @@ Window::ContextEventResult Window::propagateMouseEvent(MouseEvent event) {
 }
 
 void Window::layout(LayoutEvent event) {
+    Window *current = Application::get()->currentWindow();
+    Application::get()->setCurrentWindow(this);
     // TODO this doesnt update widgets like scrollbars which are part of scrollable
     m_main_widget->forEachDrawable([=](Drawable *drawable) {
         drawable->handleLayoutEvent(event);
     });
+    Application::get()->setCurrentWindow(current);
     update();
 }
 
