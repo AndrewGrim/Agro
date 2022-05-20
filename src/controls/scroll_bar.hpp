@@ -37,5 +37,8 @@
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
             virtual Size sizeHint(DrawingContext &dc) override;
+            bool handleLayoutEvent(LayoutEvent event) override;
+            i32 m_min_padding = 2;
+            i32 m_min_border_width = 1;
     };
 #endif

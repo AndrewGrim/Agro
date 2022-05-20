@@ -103,15 +103,21 @@ ScrollBar::ScrollBar(Align alignment) : Box(alignment) {
     });
     append(m_end_button, Fill::None);
 
-    IconButton *buttons[2] = { m_begin_button, m_end_button };
-    for (i32 i = 0; i < 2; i++) {
-        auto b = buttons[i];
-        b->setPaddingType(STYLE_ALL);
-        b->setPaddingTop(2);
-        b->setPaddingBottom(2);
-        b->setPaddingLeft(2);
-        b->setPaddingRight(2);
-        b->setMarginType(STYLE_NONE);
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
+    Widget *widgets[4] = { m_begin_button, m_end_button, m_slider, m_slider->m_slider_button };
+    for (i32 i = 0; i < 4; i++) {
+        Widget *w = widgets[i];
+        w->setPaddingType(STYLE_ALL);
+        w->setPaddingTop(dc.default_style.padding.top / 4 > m_min_padding ? dc.default_style.padding.top / 4 : m_min_padding);
+        w->setPaddingBottom(dc.default_style.padding.bottom / 4 > m_min_padding ? dc.default_style.padding.bottom / 4 : m_min_padding);
+        w->setPaddingLeft(dc.default_style.padding.left / 4 > m_min_padding ? dc.default_style.padding.left / 4 : m_min_padding);
+        w->setPaddingRight(dc.default_style.padding.right / 4 > m_min_padding ? dc.default_style.padding.right / 4 : m_min_padding);
+        w->setMarginType(STYLE_NONE);
+        w->setBorderType(STYLE_ALL);
+        w->setBorderTop(dc.default_style.border.top / 4 > m_min_border_width ? dc.default_style.border.top / 4 : m_min_border_width);
+        w->setBorderBottom(dc.default_style.border.bottom / 4 > m_min_border_width ? dc.default_style.border.bottom / 4 : m_min_border_width);
+        w->setBorderLeft(dc.default_style.border.left / 4 > m_min_border_width ? dc.default_style.border.left / 4 : m_min_border_width);
+        w->setBorderRight(dc.default_style.border.right / 4 > m_min_border_width ? dc.default_style.border.right / 4 : m_min_border_width);
     }
 }
 
@@ -153,4 +159,27 @@ Size ScrollBar::sizeHint(DrawingContext &dc) {
     }
 
     return size;
+}
+
+bool ScrollBar::handleLayoutEvent(LayoutEvent event) {
+    if (event) {
+        if (event & LAYOUT_BORDER) {
+            DrawingContext &dc = *Application::get()->currentWindow()->dc;
+            Widget *widgets[4] = { m_begin_button, m_end_button, m_slider, m_slider->m_slider_button };
+            for (i32 i = 0; i < 4; i++) {
+                Widget *w = widgets[i];
+                w->style().padding.top = dc.default_style.padding.top / 4 > m_min_padding ? dc.default_style.padding.top / 4 : m_min_padding;
+                w->style().padding.bottom = dc.default_style.padding.bottom / 4 > m_min_padding ? dc.default_style.padding.bottom / 4 : m_min_padding;
+                w->style().padding.left = dc.default_style.padding.left / 4 > m_min_padding ? dc.default_style.padding.left / 4 : m_min_padding;
+                w->style().padding.right = dc.default_style.padding.right / 4 > m_min_padding ? dc.default_style.padding.right / 4 : m_min_padding;
+                w->style().border.top = dc.default_style.border.top / 4 > m_min_border_width ? dc.default_style.border.top / 4 : m_min_border_width;
+                w->style().border.bottom = dc.default_style.border.bottom / 4 > m_min_border_width ? dc.default_style.border.bottom / 4 : m_min_border_width;
+                w->style().border.left = dc.default_style.border.left / 4 > m_min_border_width ? dc.default_style.border.left / 4 : m_min_border_width;
+                w->style().border.right = dc.default_style.border.right / 4 > m_min_border_width ? dc.default_style.border.right / 4 : m_min_border_width;
+            }
+        }
+        if (m_size_changed) { return true; }
+        m_size_changed = true;
+    }
+    return false;
 }
