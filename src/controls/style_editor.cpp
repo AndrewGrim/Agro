@@ -11,7 +11,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_light_style;
                     window->layout(LAYOUT_STYLE);
-                    window->update();
                 }
             });
         h_box->append(light);
@@ -20,7 +19,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_dark_style;
                     window->layout(LAYOUT_STYLE);
-                    window->update();
                 }
             });
         h_box->append(dark);
@@ -30,7 +28,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                 for (Window *window : Application::get()->m_windows) {
                     window->dc->default_style = Application::get()->mainWindow()->dc->default_light_style;
                     window->layout(LAYOUT_STYLE);
-                    window->update();
                 }
             });
         h_box->append(reset);
@@ -62,7 +59,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                             for (Window *window : Application::get()->m_windows) {
                                 window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                 window->layout(LAYOUT_STYLE);
-                                window->update();
                             }
                         } catch (std::invalid_argument &e) {
                             warn("Parsing error!");
@@ -77,7 +73,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                         for (Window *window : Application::get()->m_windows) {
                             window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                             window->layout(LAYOUT_STYLE);
-                            window->update();
                         }
                     }
                 });
@@ -91,7 +86,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                                 for (Window *window : Application::get()->m_windows) {
                                     window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                     window->layout(LAYOUT_STYLE);
-                                    window->update();
                                 }
                             } catch (std::invalid_argument &e) {
                                 warn("Parsing error!");
@@ -103,7 +97,6 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
                             for (Window *window : Application::get()->m_windows) {
                                 window->dc->default_style = Application::get()->mainWindow()->dc->default_style;
                                 window->layout(LAYOUT_STYLE);
-                                window->update();
                             }
                         }
                     });
