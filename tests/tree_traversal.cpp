@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         {
             i32 count = 0;
             tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<u8> *node) -> Traversal {
-                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
+                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text.data());
                 if (n == 3) {
                     count++;
                     return Traversal::Continue;
@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
         {
             i32 count = 0;
             tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<u8> *node) -> Traversal {
-                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
+                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text.data());
                 if (n == 3) {
                     return Traversal::Next;
                 }
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
         {
             i32 count = 0;
             tv->model()->forEachNode(tv->model()->roots, [&](TreeNode<u8> *node) -> Traversal {
-                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text);
+                i32 n = std::stoi(((TextCellRenderer*)node->columns[0])->text.data());
                 if (n == 3) {
                     return Traversal::Break;
                 }

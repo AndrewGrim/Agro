@@ -53,68 +53,69 @@ String loadFileToString(const char *path) {
 
 Widget* basic1(Application &app) {
     Box *box = new Box(Align::Vertical);
-        Box *labels_and_buttons = new Box(Align::Horizontal);
-            GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
-                Label *lr = new Label("Right");
-                    lr->setHorizontalAlignment(HorizontalAlignment::Right);
-                Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
-                    lc->setHorizontalAlignment(HorizontalAlignment::Center);
-                    GroupBox *l_menu = new GroupBox(Align::Vertical, "");
-                        l_menu->append(new TextEdit("", "Context Menu", TextEdit::Mode::SingleLine, Size(100, 100)), Fill::Horizontal);
-                    lc->context_menu = l_menu;
-                labels->append(new Label("Left"), Fill::Both);
-                labels->append(lr, Fill::Both);
-                labels->append(lc, Fill::Both);
-            labels_and_buttons->append(labels, Fill::Both);
+        box->append(new TextEdit(loadFileToString("/Users/grim/Desktop/sqlite3.c"), "", TextEdit::Mode::MultiLine), Fill::Both);
+        // Box *labels_and_buttons = new Box(Align::Horizontal);
+        //     GroupBox *labels = new GroupBox(Align::Vertical, "Labels");
+        //         Label *lr = new Label("Right");
+        //             lr->setHorizontalAlignment(HorizontalAlignment::Right);
+        //         Label *lc = new Label("This text\nspans\nmultiple lines,\nand is center aligned.\nÓreiða 😁 の ®");
+        //             lc->setHorizontalAlignment(HorizontalAlignment::Center);
+        //             GroupBox *l_menu = new GroupBox(Align::Vertical, "");
+        //                 l_menu->append(new TextEdit("", "Context Menu", TextEdit::Mode::SingleLine, Size(100, 100)), Fill::Horizontal);
+        //             lc->context_menu = l_menu;
+        //         labels->append(new Label("Left"), Fill::Both);
+        //         labels->append(lr, Fill::Both);
+        //         labels->append(lc, Fill::Both);
+        //     labels_and_buttons->append(labels, Fill::Both);
 
-            GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
-                buttons->append(new Button("Button"));
-                buttons->append(new Button(new Image(notes_png, notes_png_length)));
-                Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
-                    image_and_text->setText("Button");
-                    image_and_text->tooltip = new Tooltip("Tooltip");
-                    GroupBox *b_menu = new GroupBox(Align::Vertical, "");
-                        Button *mb = new Button("Menu Button");
-                            mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
-                                println("context menu event");
-                            });
-                            mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
-                        b_menu->append(mb, Fill::Horizontal);
-                        b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
-                    image_and_text->context_menu = b_menu;
-                buttons->append(image_and_text, Fill::Both);
-            labels_and_buttons->append(buttons, Fill::Both);
-        box->append(labels_and_buttons, Fill::Horizontal);
+        //     GroupBox *buttons = new GroupBox(Align::Vertical, "Buttons");
+        //         buttons->append(new Button("Button"));
+        //         buttons->append(new Button(new Image(notes_png, notes_png_length)));
+        //         Button *image_and_text = new Button(new Image(notes_png, notes_png_length));
+        //             image_and_text->setText("Button");
+        //             image_and_text->tooltip = new Tooltip("Tooltip");
+        //             GroupBox *b_menu = new GroupBox(Align::Vertical, "");
+        //                 Button *mb = new Button("Menu Button");
+        //                     mb->onMouseClick.addEventListener([](Widget *button, MouseEvent event) {
+        //                         println("context menu event");
+        //                     });
+        //                     mb->tooltip = (new Image(lena_png, lena_png_length))->setMinSize(Size(56, 56));
+        //                 b_menu->append(mb, Fill::Horizontal);
+        //                 b_menu->append(new CheckButton("Unchecked"), Fill::Horizontal);
+        //             image_and_text->context_menu = b_menu;
+        //         buttons->append(image_and_text, Fill::Both);
+        //     labels_and_buttons->append(buttons, Fill::Both);
+        // box->append(labels_and_buttons, Fill::Horizontal);
 
-        Box *check_and_radio = new Box(Align::Horizontal);
-            GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
-                checks->append(new CheckButton("Unchecked", false));
-                checks->append(new CheckButton("Checked", true));
-                checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
-            check_and_radio->append(checks, Fill::Both);
+        // Box *check_and_radio = new Box(Align::Horizontal);
+        //     GroupBox *checks = new GroupBox(Align::Vertical, "CheckButtons");
+        //         checks->append(new CheckButton("Unchecked", false));
+        //         checks->append(new CheckButton("Checked", true));
+        //         checks->append(new CheckButton("Checked, Expandable", true), Fill::Both);
+        //     check_and_radio->append(checks, Fill::Both);
 
-            GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
-                std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
-                radios->append(new RadioButton(radio_group, "Radio 1"));
-                radio_group->buttons[0]->m_is_checked = true;
-                radios->append(new RadioButton(radio_group, "Radio 2"));
-                radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
-            check_and_radio->append(radios, Fill::Both);
-        box->append(check_and_radio, Fill::Horizontal);
+        //     GroupBox *radios = new GroupBox(Align::Vertical, "RadioButtons");
+        //         std::shared_ptr<RadioGroup> radio_group = std::make_shared<RadioGroup>();
+        //         radios->append(new RadioButton(radio_group, "Radio 1"));
+        //         radio_group->buttons[0]->m_is_checked = true;
+        //         radios->append(new RadioButton(radio_group, "Radio 2"));
+        //         radios->append(new RadioButton(radio_group, "Radio 3, Expandable"), Fill::Both);
+        //     check_and_radio->append(radios, Fill::Both);
+        // box->append(check_and_radio, Fill::Horizontal);
 
-        GroupBox *text_edits = new GroupBox(Align::Vertical, "TextEdits");
-            text_edits->append(new TextEdit("", "Placeholder text", TextEdit::Mode::SingleLine, Size(200, 100)));
-            text_edits->append(new TextEdit("Default text", "", TextEdit::Mode::SingleLine, Size(300, 100)));
-            text_edits->append(new TextEdit(String((const char*)utf8_test_txt, utf8_test_txt_length), "", TextEdit::Mode::MultiLine), Fill::Both);
-        box->append(text_edits, Fill::Both);
+        // GroupBox *text_edits = new GroupBox(Align::Vertical, "TextEdits");
+        //     text_edits->append(new TextEdit("", "Placeholder text", TextEdit::Mode::SingleLine, Size(200, 100)));
+        //     text_edits->append(new TextEdit("Default text", "", TextEdit::Mode::SingleLine, Size(300, 100)));
+        //     text_edits->append(new TextEdit(String((const char*)utf8_test_txt, utf8_test_txt_length), "", TextEdit::Mode::MultiLine), Fill::Both);
+        // box->append(text_edits, Fill::Both);
 
-        GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
-            progress->append(new ProgressBar(200));
-            progress->append(new ProgressBar(300));
-            ((ProgressBar*)progress->children[1])->m_value = 0.50;
-            progress->append(new ProgressBar(), Fill::Horizontal);
-            ((ProgressBar*)progress->children[2])->m_value = 1.0;
-        box->append(progress, Fill::Horizontal);
+        // GroupBox *progress = new GroupBox(Align::Vertical, "ProgressBars");
+        //     progress->append(new ProgressBar(200));
+        //     progress->append(new ProgressBar(300));
+        //     ((ProgressBar*)progress->children[1])->m_value = 0.50;
+        //     progress->append(new ProgressBar(), Fill::Horizontal);
+        //     ((ProgressBar*)progress->children[2])->m_value = 1.0;
+        // box->append(progress, Fill::Horizontal);
 
     return box;
 }
@@ -330,29 +331,49 @@ int main(int argc, char **argv) {
         app->mainWindow()->setTitle("Widget Gallery");
         NoteBook *notebook = new NoteBook();
             notebook->appendTab(basic1(*app), "Basic 1", nullptr, false);
-            notebook->appendTab(basic2(*app), "Basic 2", nullptr, false);
-            notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
-            notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
-            notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
+            // notebook->appendTab(basic2(*app), "Basic 2", nullptr, false);
+            // notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
+            // notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
+            // notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
             // notebook->setCurrentTab(1);
         app->mainWindow()->append(notebook, Fill::Both);
-        app->addTimer(
-            100,
-            [=](u32 interval) -> u32 {
-                ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
-                f64 value = bar->m_value;
-                if (value < 1.0) {
-                    bar->m_value += 0.01;
-                } else {
-                    bar->m_value = 0.0;
-                }
-                app->mainWindow()->update();
-                app->mainWindow()->pulse();
+        // app->addTimer(
+        //     100,
+        //     [=](u32 interval) -> u32 {
+        //         ProgressBar *bar = (ProgressBar*)(app->mainWindow()->mainWidget()->children[0]->children[0]->children[3]->children[0]);
+        //         f64 value = bar->m_value;
+        //         if (value < 1.0) {
+        //             bar->m_value += 0.01;
+        //         } else {
+        //             bar->m_value = 0.0;
+        //         }
+        //         app->mainWindow()->update();
+        //         app->mainWindow()->pulse();
 
-                return 50;
+        //         return 50;
+        //     }
+        // );
+        StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
+        // TODO keybinds like shift + dont work because
+        // textediting events are intercepting them i think
+        // alternatively its because of how modifiers work
+        // and to input a plus sign you need to have shift pressed
+        // but ive tried it with both shift pressed and depressed and didnt make a difference
+        // app->mainWindow()->bind(SDLK_PLUS, Mod:Mod::Shift, [&]() {
+        // anywho after we check that out we could start work on trying to scale the UI by changing the default font
+        // and or possibly some padding and border values based on defaults
+        app->mainWindow()->bind(SDLK_f, Mod::Ctrl, [&]() {
+            for (Window *win : app->m_windows) {
+                win->dc->default_font = std::shared_ptr<Font>(new Font(app->ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 24, Font::Type::Sans));
+                win->layout(LAYOUT_FONT);
             }
-        );
-        // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
+        });
+        app->mainWindow()->bind(SDLK_MINUS, Mod::Ctrl, [&]() {
+            for (Window *win : app->m_windows) {
+                win->dc->default_font = std::shared_ptr<Font>(new Font(app->ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 10, Font::Type::Sans));
+                win->layout(LAYOUT_FONT);
+            }
+        });
     app->run();
 
     return 0;

@@ -63,13 +63,13 @@ class CustomStyle : public Widget {
         }
 };
 
-void update_rect_labels(std::string text, Button *button, Rect rect) {
+void update_rect_labels(String text, Button *button, Rect rect) {
     button->setText(
         text
-        + std::to_string((i32)rect.x) + ", "
-        + std::to_string((i32)rect.y) + ", "
-        + std::to_string((i32)rect.w) + ", "
-        + std::to_string((i32)rect.h)
+        + std::to_string((i32)rect.x).data() + ", "
+        + std::to_string((i32)rect.y).data() + ", "
+        + std::to_string((i32)rect.w).data() + ", "
+        + std::to_string((i32)rect.h).data()
     );
 }
 
@@ -88,27 +88,27 @@ int main(int argc, char **argv) {
             Button *csr = new Button("Rect: ");
             right->append(csr, Fill::Horizontal);
                 Button *margin = new Button(
-                        "Margin: "
-                        + std::to_string(custom->style().margin.top) + ", "
-                        + std::to_string(custom->style().margin.bottom) + ", "
-                        + std::to_string(custom->style().margin.left) + ", "
-                        + std::to_string(custom->style().margin.right)
+                        String() + "Margin: "
+                        + std::to_string(custom->style().margin.top).data() + ", "
+                        + std::to_string(custom->style().margin.bottom).data() + ", "
+                        + std::to_string(custom->style().margin.left).data() + ", "
+                        + std::to_string(custom->style().margin.right).data()
                     );
                 right->append(margin, Fill::Horizontal);
                 Button *border = new Button(
-                        "Border: "
-                        + std::to_string(custom->style().border.top) + ", "
-                        + std::to_string(custom->style().border.bottom) + ", "
-                        + std::to_string(custom->style().border.left) + ", "
-                        + std::to_string(custom->style().border.right)
+                        String() + "Border: "
+                        + std::to_string(custom->style().border.top).data() + ", "
+                        + std::to_string(custom->style().border.bottom).data() + ", "
+                        + std::to_string(custom->style().border.left).data() + ", "
+                        + std::to_string(custom->style().border.right).data()
                     );
                 right->append(border, Fill::Horizontal);
                 Button *padding = new Button(
-                        "Padding: "
-                        + std::to_string(custom->style().padding.top) + ", "
-                        + std::to_string(custom->style().padding.bottom) + ", "
-                        + std::to_string(custom->style().padding.left) + ", "
-                        + std::to_string(custom->style().padding.right)
+                        String() + "Padding: "
+                        + std::to_string(custom->style().padding.top).data() + ", "
+                        + std::to_string(custom->style().padding.bottom).data() + ", "
+                        + std::to_string(custom->style().padding.left).data() + ", "
+                        + std::to_string(custom->style().padding.right).data()
                     );
                 right->append(padding, Fill::Horizontal);
             Button *csir = new Button("Content Rect: ");

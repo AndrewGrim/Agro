@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
         tv = new TreeView<Hidden>();
             for (i32 i = 0; i < 4; i++) {
                 auto c = new Column<Hidden>(
-                    "Column: " + std::to_string(i),
+                    String() + "Column: " + std::to_string(i).data(),
                     nullptr,
                     HorizontalAlignment::Center,
                     [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
@@ -49,9 +49,9 @@ int main(int argc, char **argv) {
             Tree<Hidden> *model = new Tree<Hidden>();
                 for (i32 i = 0; i < 1000; i++) {
                     std::vector<Drawable*> columns = {
-                        new TextCellRenderer("Row: " + std::to_string(i) + "\nColumn: 0"),
-                        new TextCellRenderer("Row: " + std::to_string(i) + ", Column: 1"),
-                        new ImageTextCellRenderer((new Image(app->icons["close"]))->setForeground(COLOR_BLACK), "Row: " + std::to_string(i) + "\nColumn: 2"),
+                        new TextCellRenderer(String() + "Row: " + std::to_string(i).data() + "\nColumn: 0"),
+                        new TextCellRenderer(String() + "Row: " + std::to_string(i).data() + ", Column: 1"),
+                        new ImageTextCellRenderer((new Image(app->icons["close"]))->setForeground(COLOR_BLACK), String() + "Row: " + std::to_string(i).data() + "\nColumn: 2"),
                         i % 2 == 0 ? new Button("Button") : ((Widget*)(new TextEdit())->setPlaceholderText(String() + "Row: " + std::to_string(i).data() + ", Col: 3")),
                     };
                     ((TextCellRenderer*)columns[0])->h_align = HorizontalAlignment::Left;

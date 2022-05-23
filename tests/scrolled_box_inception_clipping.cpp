@@ -36,23 +36,23 @@ int main(int argc, char **argv) {
                 inner_top->setWindowBackgroundColor(Color("#ffaa55"));
                     {
                         for (i32 i = 0; i < 50; i++) {
-                            inner_top->append(new Label(std::to_string(i)));
+                            inner_top->append(new Label(std::to_string(i).data()));
                         }
                     }
                 left->append(inner_top, Fill::Both);
                 for (i32 i = 0; i < 50; i++) {
-                    left->append(new Label(std::to_string(i)));
+                    left->append(new Label(std::to_string(i).data()));
                 }
                 ScrolledBox *inner = new ScrolledBox(Align::Vertical, Size(200, 200));
                 inner->setWindowBackgroundColor(Color("#55ff55"));
                     {
                         for (i32 i = 0; i < 50; i++) {
-                            inner->append(new Label(std::to_string(i)));
+                            inner->append(new Label(std::to_string(i).data()));
                         }
                     }
                 left->append(inner, Fill::Both);
                 for (i32 i = 0; i < 50; i++) {
-                    left->append(new Label(std::to_string(i)));
+                    left->append(new Label(std::to_string(i).data()));
                 }
             }
             h_box->append(left, Fill::Both);
@@ -64,23 +64,23 @@ int main(int argc, char **argv) {
                 inner_top->setWindowBackgroundColor(Color("#55ffaa"));
                     {
                         for (i32 i = 0; i < 50; i++) {
-                            inner_top->append(new Label(std::to_string(i)));
+                            inner_top->append(new Label(std::to_string(i).data()));
                         }
                     }
                 right->append(inner_top, Fill::Both);
                 for (i32 i = 0; i < 50; i++) {
-                    right->append(new Label(std::to_string(i)));
+                    right->append(new Label(std::to_string(i).data()));
                 }
                 ScrolledBox *inner = new ScrolledBox(Align::Horizontal, Size(200, 200));
                 inner->setWindowBackgroundColor(Color("#55aaff"));
                     {
                         for (i32 i = 0; i < 50; i++) {
-                            inner->append(new Label(std::to_string(i)));
+                            inner->append(new Label(std::to_string(i).data()));
                         }
                     }
                 right->append(inner, Fill::Both);
                 for (i32 i = 0; i < 50; i++) {
-                    right->append(new Label(std::to_string(i)));
+                    right->append(new Label(std::to_string(i).data()));
                 }
             }
             h_box->append(right, Fill::Both);

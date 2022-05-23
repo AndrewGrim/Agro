@@ -44,14 +44,14 @@ int main(int argc, char **argv) {
                         return std::tolower(c);
                     });
                     if (monster.find(search_phrase) != std::string::npos || !search_phrase.size()) {
-                        results_view->append(new Label(m));
+                        results_view->append(new Label(String(m.data())));
                     }
                 }
             });
         app->mainWindow()->append(edit, Fill::Horizontal);
         results_view = new ScrolledBox(Align::Vertical);
             for (auto m : monster_names) {
-                results_view->append(new Label(m));
+                results_view->append(new Label(String(m.data())));
             }
         app->mainWindow()->append(results_view, Fill::Both);
     app->run();

@@ -21,12 +21,12 @@ int main(int argc, char **argv) {
         app->mainWindow()->resize(500, 500);
         ScrolledBox *top = new ScrolledBox(Align::Vertical, Size(200, 200));
             for (u8 i = 'a'; i <= 'z'; i++) {
-                top->append(new Button(std::string(100, i)), Fill::Both);
+                top->append(new Button(std::string(100, i).data()), Fill::Both);
             }
         app->mainWindow()->append(top, Fill::Both);
         ScrolledBox *bottom = new ScrolledBox(Align::Vertical, Size(200, 200));
             for (u8 i = 'A'; i < 'Z'; i++) {
-                bottom->append(new Button(std::string(100, i)), Fill::Both);
+                bottom->append(new Button(std::string(100, i).data()), Fill::Both);
             }
         app->mainWindow()->append(bottom, Fill::Both);
     app->run();

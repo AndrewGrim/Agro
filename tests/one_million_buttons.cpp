@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
         };
         app->mainWindow()->setTitle("One Million Buttons Test");
         for (i32 i = 0; i < 1000000; i++) {
-            app->mainWindow()->append(new Button(std::to_string(i)), Fill::Both);
+            app->mainWindow()->append(new Button(std::to_string(i).data()), Fill::Both);
         }
     app->run();
 

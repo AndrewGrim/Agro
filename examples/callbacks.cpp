@@ -51,9 +51,9 @@ int main(int argc, char **argv) {
         app->mainWindow()->append(disable_enable_quit, Fill::Both);
 
         app->mainWindow()->onResize = [&](Window *win) {
-            button->setText("Window Size:" + std::to_string((i32)win->size.w) + ", " + std::to_string((i32)win->size.h));
+            button->setText(String() + "Window Size:" + std::to_string((i32)win->size.w).data() + ", " + std::to_string((i32)win->size.h).data());
         };
     app->run();
 
-    return 0; 
+    return 0;
 }
