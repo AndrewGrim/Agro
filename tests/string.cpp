@@ -125,6 +125,12 @@ int main() {
         assert(s.size() == 13);
     }
     {
+        assert(String::format("%x", 255) == "0xff");
+        assert(String::format("%X", 255) == "0xFF");
+        assert(String::format("test %d", 123) == "test 123");
+        assert(String::format("%02f", 0.12345) == "0.12");
+    }
+    {
         String s = "";
 
         s = "a";
