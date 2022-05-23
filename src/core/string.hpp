@@ -102,7 +102,7 @@
         void erase(u64 index, u64 count);
         void clear();
         Slice<const char> slice() const;
-        template<typename... Args> String format(const char *format_string, Args... args) {
+        template<typename... Args> static String format(const char *format_string, Args... args) {
             ssize_t buffer_size = snprintf(NULL, 0, format_string, args...);
             // String takes just buffer_size because it will automatically account for null terminator.
             // While snprintf takes buffer_size + 1 to tell it it has that amount of space to write to.
