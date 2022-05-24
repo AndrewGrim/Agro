@@ -26,9 +26,9 @@
             this->value.error = error;
         }
 
-        Value unwrap() {
+        VALUE_T unwrap() {
             assert(this->type == Type::Ok);
-            return this->value;
+            return this->value.ok;
         }
 
         operator bool() {
