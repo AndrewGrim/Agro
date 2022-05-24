@@ -15,7 +15,7 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
         offset += 4;
     }
 
-    renderer = new Renderer(window, indices);
+    renderer = new Renderer(indices);
 
     default_light_style = {
         Style::Margin {
@@ -229,6 +229,7 @@ void DrawingContext::fillTextMultilineAligned(std::shared_ptr<Font> font, String
             renderer->fillText(font, Slice<const char>(start, count), pos, color, tab_width, false, 0, selection, selection_color);
             start += count;
             pos.y += font->maxHeight() + line_spacing;
+            if (pos.y >= renderer->clip_rect.y + renderer->clip_rect.h) { break; }
             pos.x = rect.x;
             line_width = 0;
             count = 0;

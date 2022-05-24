@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 #include "../application.hpp"
 
-Renderer::Renderer(Window *window, u32 *indices) : window{window} {
+Renderer::Renderer(u32 *indices) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -157,7 +157,6 @@ void Renderer::textCheck(std::shared_ptr<Font> font) {
 }
 
 void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Point point, Color color, i32 tab_width, bool is_multiline, i32 line_spacing, Selection selection, Color selection_color) {
-    Size window_size = window->size;
     if (selection.begin > selection.end) {
         auto temp = selection.end;
         selection.end = selection.begin;
@@ -184,15 +183,15 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
         } else if (c == '\n') {
             if (is_multiline) {
                 point.y += font->maxHeight() + line_spacing;
-                if (point.y >= window_size.h) { break; }
+                if (point.y >= clip_rect.y + clip_rect.h) { break; }
                 x = point.x;
             }
         } else {
             Font::Character ch = font->get(utf8::decode(text.data + i, length));
-            if (!is_multiline && x > window_size.w) { break; }
+            if (!is_multiline && x > clip_rect.x + clip_rect.w) { break; }
             auto _color = color;
             if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
-            if (x + ch.advance >= 0 && x <= window_size.w) {
+            if (x + ch.advance >= clip_rect.x && x <= clip_rect.x + clip_rect.w) {
                 f32 xpos = x + ch.bearing.x;
                 f32 ypos = point.y + (base_bearing - ch.bearing.y);
 

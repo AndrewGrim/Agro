@@ -20,11 +20,6 @@
     #include "texture.hpp"
     #include "font.hpp"
 
-    u8 utf8SequenceLength(const char *_first_byte);
-    u32 utf8Decode(const char *first_byte);
-
-    class Window;
-
     struct Renderer {
         enum class Sampler {
             Color,
@@ -59,9 +54,8 @@
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         u32 VAO, VBO, EBO;
         Rect clip_rect; // Gets set before each draw() in Application.
-        Window *window = nullptr;
 
-        Renderer(Window *window, u32 *indices);
+        Renderer(u32 *indices);
         ~Renderer();
         void fillText(std::shared_ptr<Font> font, Slice<const char> text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
         Size measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5);
