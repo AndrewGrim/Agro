@@ -43,7 +43,6 @@
         void fillTextMultilineAligned(std::shared_ptr<Font> font, Slice<const char> text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color = COLOR_BLACK, i32 tab_width = 4, i32 line_spacing = 5, Renderer::Selection selection = Renderer::Selection(), Color selection_color = COLOR_BLACK);
         Size measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4);
         Size measureText(std::shared_ptr<Font> font, String text, i32 tab_width = 4);
-        Size measureText(std::shared_ptr<Font> font, char c, i32 tab_width = 4);
         Size measureTextMultiline(std::shared_ptr<Font> font, String text, i32 tab_width = 4, i32 line_spacing = 5);
         Size measureTextMultiline(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4, i32 line_spacing = 5);
         void render();

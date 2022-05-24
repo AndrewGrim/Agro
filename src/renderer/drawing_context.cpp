@@ -260,10 +260,6 @@ Size DrawingContext::measureText(std::shared_ptr<Font> font, String text, i32 ta
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.size()), tab_width);
 }
 
-Size DrawingContext::measureText(std::shared_ptr<Font> font, char c, i32 tab_width) {
-    return renderer->measureText(font ? font : default_font, Slice<const char>(&c, 1), tab_width);
-}
-
 Size DrawingContext::measureTextMultiline(std::shared_ptr<Font> font, String text, i32 tab_width, i32 line_spacing) {
     return renderer->measureText(font ? font : default_font, Slice<const char>(text.data(), text.size()), tab_width, true, line_spacing);
 }
