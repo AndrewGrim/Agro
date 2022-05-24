@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include "../src/core/string.hpp"
 
 int main() {
@@ -129,6 +127,10 @@ int main() {
         assert(String::format("%X", 255) == "0xFF");
         assert(String::format("test %d", 123) == "test 123");
         assert(String::format("%.2f", 0.12345) == "0.12");
+    }
+    {
+        assert(toString(123) = "123");
+        assert(toString(0.123) = "0.123000");
     }
     {
         String s = "";

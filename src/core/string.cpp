@@ -298,3 +298,39 @@ void String::clear() {
 Slice<const char> String::slice() const {
     return Slice<const char>(data(), size());
 }
+
+String toString(int value) {
+    return String::format("%d", value);
+}
+
+String toString(long value) {
+    return String::format("%ld", value);
+}
+
+String toString(long long value) {
+    return String::format("%lld", value);
+}
+
+String toString(unsigned value) {
+    return String::format("%u", value);
+}
+
+String toString(unsigned long value) {
+    return String::format("%lu", value);
+}
+
+String toString(unsigned long long value) {
+    return String::format("%llu", value);
+}
+
+String toString(float value) {
+    return String::format("%f", value);
+}
+
+String toString(double value) {
+    return String::format("%f", value);
+}
+
+String toString(long double value) {
+    return String::format("%Lf", value);
+}
