@@ -46,7 +46,7 @@ Renderer::Renderer(Window *window, u32 *indices) : window{window} {
         fragment_shader += "\n";
         fragment_shader += "out vec4 f_color;\n";
         fragment_shader += "\n";
-        fragment_shader += (String() + "uniform sampler2D textures[" + std::to_string(max_texture_slots).data() + "];\n").data();
+        fragment_shader += "uniform sampler2D textures[" + toString(max_texture_slots) + "];\n";
         fragment_shader += "\n";
         fragment_shader += "void main()\n";
         fragment_shader += "{\n";
@@ -57,16 +57,16 @@ Renderer::Renderer(Window *window, u32 *indices) : window{window} {
         fragment_shader += "vec4 sampled;\n";
         fragment_shader += "switch (int(v_texture_slot_index)) {\n";
         for (int i = 0; i < max_texture_slots; i++) {
-            fragment_shader += (String() + "case " + std::to_string(i).data() + ":\n").data();
+            fragment_shader += "case " + toString(i) + ":\n";
                 fragment_shader += "switch (int(v_sampler_type)) {\n";
                     fragment_shader += "case 0: ";
                         fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 1: ";
-                        fragment_shader += (String() + "sampled = vec4(texture(textures[" + std::to_string(i).data() + "], v_texture_uv));\n").data();
+                        fragment_shader += "sampled = vec4(texture(textures[" + toString(i) + "], v_texture_uv));\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 2: ";
-                        fragment_shader += (String() + "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + std::to_string(i).data() + "], v_texture_uv).r);\n").data();
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + toString(i) + "], v_texture_uv).r);\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 3: ";
                         // TODO this is acutally pretty good, however i feel like we might want it to be a bit thicker, and it would be nice if it could scale with border width

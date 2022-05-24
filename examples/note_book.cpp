@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }
@@ -19,14 +19,14 @@ int main(int argc, char **argv) {
             for (i32 t = 1; t < 10; t++) {
                 Box *_b = new Box(Align::Vertical);
                     for (i32 i = 0; i < 10; i++) {
-                        _b->append(new Button(std::to_string(i).data()), Fill::Both);
+                        _b->append(new Button(toString(i)), Fill::Both);
                     }
                 if (t % 3 == 0) {
-                    nb->appendTab(_b, String() + "Tab " + std::to_string(t).data(), new Image(notes_png, notes_png_length), true);
+                    nb->appendTab(_b, "Tab " + toString(t), new Image(notes_png, notes_png_length), true);
                 } else if (t % 2 == 0) {
-                    nb->appendTab(_b, String() + "Tab " + std::to_string(t).data(), new Image(notes_png, notes_png_length), false);
+                    nb->appendTab(_b, "Tab " + toString(t), new Image(notes_png, notes_png_length), false);
                 } else {
-                    nb->appendTab(_b, String() + "Tab " + std::to_string(t).data(), nullptr, false);
+                    nb->appendTab(_b, "Tab " + toString(t), nullptr, false);
                 }
             }
         }

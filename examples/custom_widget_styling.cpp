@@ -66,10 +66,10 @@ class CustomStyle : public Widget {
 void update_rect_labels(String text, Button *button, Rect rect) {
     button->setText(
         text
-        + std::to_string((i32)rect.x).data() + ", "
-        + std::to_string((i32)rect.y).data() + ", "
-        + std::to_string((i32)rect.w).data() + ", "
-        + std::to_string((i32)rect.h).data()
+        + toString((i32)rect.x) + ", "
+        + toString((i32)rect.y) + ", "
+        + toString((i32)rect.w) + ", "
+        + toString((i32)rect.h)
     );
 }
 
@@ -88,27 +88,27 @@ int main(int argc, char **argv) {
             Button *csr = new Button("Rect: ");
             right->append(csr, Fill::Horizontal);
                 Button *margin = new Button(
-                        String() + "Margin: "
-                        + std::to_string(custom->style().margin.top).data() + ", "
-                        + std::to_string(custom->style().margin.bottom).data() + ", "
-                        + std::to_string(custom->style().margin.left).data() + ", "
-                        + std::to_string(custom->style().margin.right).data()
+                        "Margin: "
+                        + toString(custom->style().margin.top) + ", "
+                        + toString(custom->style().margin.bottom) + ", "
+                        + toString(custom->style().margin.left) + ", "
+                        + toString(custom->style().margin.right)
                     );
                 right->append(margin, Fill::Horizontal);
                 Button *border = new Button(
-                        String() + "Border: "
-                        + std::to_string(custom->style().border.top).data() + ", "
-                        + std::to_string(custom->style().border.bottom).data() + ", "
-                        + std::to_string(custom->style().border.left).data() + ", "
-                        + std::to_string(custom->style().border.right).data()
+                        "Border: "
+                        + toString(custom->style().border.top) + ", "
+                        + toString(custom->style().border.bottom) + ", "
+                        + toString(custom->style().border.left) + ", "
+                        + toString(custom->style().border.right)
                     );
                 right->append(border, Fill::Horizontal);
                 Button *padding = new Button(
-                        String() + "Padding: "
-                        + std::to_string(custom->style().padding.top).data() + ", "
-                        + std::to_string(custom->style().padding.bottom).data() + ", "
-                        + std::to_string(custom->style().padding.left).data() + ", "
-                        + std::to_string(custom->style().padding.right).data()
+                        "Padding: "
+                        + toString(custom->style().padding.top) + ", "
+                        + toString(custom->style().padding.bottom) + ", "
+                        + toString(custom->style().padding.left) + ", "
+                        + toString(custom->style().padding.right)
                     );
                 right->append(padding, Fill::Horizontal);
             Button *csir = new Button("Content Rect: ");
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
             update_rect_labels("Rect: ", csr, custom->rect);
             update_rect_labels("Content Rect: ", csir, custom->inner_rect);
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }

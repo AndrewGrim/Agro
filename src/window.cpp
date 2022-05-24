@@ -1,5 +1,3 @@
-#include <string>
-
 #include "application.hpp"
 #include "window.hpp"
 #include "resources.hpp"
@@ -452,6 +450,8 @@ void Window::layout(LayoutEvent event) {
 }
 
 void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
+    // TODO this can be null when the user hovers the mouse over the little square
+    // in between scrollbars when both of them are active at the same time
     assert(focused && "The passed in focused widget should never be null!");
     if (focused->isFocusable() && focused->isVisible()) {
         if (!focused->handleFocusEvent(event, m_state, FocusPropagationData(focused, Option<i32>()))) {
@@ -464,8 +464,8 @@ void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
         // TODO we might want to either put this behind debug options or remove it
         // once we go over all widgets and make sure they are keyboard navigable
         warn("propagateFocusEvent encountered a non-focusable widget");
-        warn(std::string("focused->name(): ") + focused->name());
-        if (focused->parent) { warn(std::string("focused->parent->name(): ") + focused->parent->name()); }
+        warn(String("focused->name(): ") + focused->name());
+        if (focused->parent) { warn(String("focused->parent->name(): ") + focused->parent->name()); }
         if (m_main_widget->isFocusable() && m_main_widget->isVisible()) {
             m_main_widget->handleFocusEvent(event, m_state, FocusPropagationData(m_main_widget, Option<i32>()));
         }

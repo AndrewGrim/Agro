@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
         app->mainWindow()->setMainWidget(new SplitBox());
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }

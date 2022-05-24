@@ -8,7 +8,7 @@ int main(int argc, char **argv) {
     app->mainWindow()->onReady = [&](Window *window) {
         println("READY");
         if (argc > 1) {
-            if (std::string(argv[1]) == std::string("quit")) {
+            if (String(argv[1]) == "quit") {
                 window->quit();
             }
         }
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
         app->mainWindow()->append(disable_enable_quit, Fill::Both);
 
         app->mainWindow()->onResize = [&](Window *win) {
-            button->setText(String() + "Window Size:" + std::to_string((i32)win->size.w).data() + ", " + std::to_string((i32)win->size.h).data());
+            button->setText("Window Size:" + toString((i32)win->size.w) + ", " + toString((i32)win->size.h));
         };
     app->run();
 

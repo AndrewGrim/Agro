@@ -6,17 +6,35 @@
 #include "../src/controls/scrolled_box.hpp"
 #include "../src/controls/label.hpp"
 
+// TODO we can pull that into string but ideally with option or result
+i64 string_find(const String &string, const String &query) {
+    u8 first = query.data()[0];
+    for (u64 i = 0; i < string.size(); i++) {
+        if (string.data()[i] == first) {
+            for (u64 j = 1; j < query.size(); j++) {
+                if (string.data()[i + j] != query.data()[j]) {
+                    goto NO_MATCH;
+                }
+            }
+            return (i64)i;
+        }
+        NO_MATCH:;
+    }
+    return -1;
+}
+
+
 int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }
         };
         app->mainWindow()->setTitle("TextEdit");
-        std::vector<std::string> monster_names = {
+        std::vector<String> monster_names = {
             "Great Jagras", "Kulu-Ya-Ku", "Pukei-Pukei", "Barroth",
             "Jyuratodus", "Tobi-Kadachi", "Anjanath", "Rathian",
             "Tzitzi-Ya-Ku", "Paolumu", "Great Girros", "Radobaan",
@@ -26,7 +44,7 @@ int main(int argc, char **argv) {
             "Nergigante", "Teostra", "Lunastra", "Kushala Daora", "Vaal Hazak",
             "Kulve Taroth", "Xeno'jiiva", "Behemoth", "Leshen", "Ancient Leshen",
         };
-        sort(monster_names.begin(), monster_names.end());
+        // sort(monster_names.begin(), monster_names.end());
         ScrolledBox *results_view;
         TextEdit *edit = new TextEdit();
             edit->setPlaceholderText("Search by name");
@@ -34,16 +52,11 @@ int main(int argc, char **argv) {
                 while (results_view->children.size()) {
                     results_view->children[0]->destroy();
                 }
-                for (auto m : monster_names) {
-                    auto monster = m;
-                    std::transform(monster.begin(), monster.end(), monster.begin(), [](u8 c){
-                        return std::tolower(c);
-                    });
-                    std::string search_phrase = edit->text().data();
-                    std::transform(search_phrase.begin(), search_phrase.end(), search_phrase.begin(), [](u8 c){
-                        return std::tolower(c);
-                    });
-                    if (monster.find(search_phrase) != std::string::npos || !search_phrase.size()) {
+                String search_phrase = edit->text().toLower();
+                for (String m : monster_names) {
+                    String monster = String(m).toLower();
+
+                    if (!search_phrase.size() || string_find(monster, search_phrase) != -1) {
                         results_view->append(new Label(String(m.data())));
                     }
                 }

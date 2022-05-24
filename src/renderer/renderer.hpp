@@ -1,8 +1,6 @@
 #ifndef RENDERER_HPP
     #define RENDERER_HPP
 
-    #include <map>
-    #include <string>
     #include <vector>
 
     #include <ft2build.h>

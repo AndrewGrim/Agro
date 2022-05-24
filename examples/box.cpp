@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 #include <vector>
 #include <memory>
 
@@ -12,7 +11,7 @@ int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }

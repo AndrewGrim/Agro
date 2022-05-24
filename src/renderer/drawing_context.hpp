@@ -23,6 +23,7 @@
     struct DrawingContext {
         u32 indices[MAX_BATCH_SIZE * QUAD_INDEX_COUNT];
         Renderer *renderer = nullptr;
+        // TODO default font should go into default style
         std::shared_ptr<Font> default_font = nullptr;
         Style default_light_style;
         Style default_dark_style;

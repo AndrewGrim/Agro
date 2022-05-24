@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }
@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
         app->mainWindow()->setTitle("Keybindings");
         i32 map_key = app->mainWindow()->bind(
             SDLK_q,
-            Mod::None, 
+            Mod::None,
             [&]{
                 println("Q");
             }
@@ -47,5 +47,5 @@ int main(int argc, char **argv) {
         app->mainWindow()->append(unbind_button, Fill::Both);
     app->run();
 
-    return 0; 
+    return 0;
 }

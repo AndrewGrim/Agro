@@ -244,7 +244,7 @@ Widget* treeView(Application &app) {
                     tv->hideColumnHeaders();
                     for (i32 i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
-                            String("Column ") + std::to_string(i).data(), nullptr, HorizontalAlignment::Center,
+                            "Column " + toString(i), nullptr, HorizontalAlignment::Center,
                             [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
                                 return lhs->hidden->id > rhs->hidden->id;
                             }
@@ -256,7 +256,7 @@ Widget* treeView(Application &app) {
                     for (i32 i = 1; i < 101; i++) {
                         model->append(nullptr, new TreeNode<Hidden>(
                             {
-                                new TextCellRenderer(String() + "Row " + std::to_string(i).data()),
+                                new TextCellRenderer("Row " + toString(i)),
                                 new Button("TreeView"),
                                 new TextEdit("", "TreeView"),
                             },
@@ -274,7 +274,7 @@ Widget* treeView(Application &app) {
                 TreeView<Hidden> *tv = new TreeView<Hidden>(Size(400, 400));
                     for (i32 i = 1; i < 4; i++) {
                         auto c = new Column<Hidden>(
-                            String("Column ") + std::to_string(i).data(), nullptr, HorizontalAlignment::Center,
+                            String("Column ") + toString(i), nullptr, HorizontalAlignment::Center,
                             [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
                                 return lhs->hidden->id > rhs->hidden->id;
                             }
@@ -290,7 +290,7 @@ Widget* treeView(Application &app) {
                         for (i32 j = 1; j < 21; j++) {
                             auto n = model->append(parent, new TreeNode<Hidden>(
                                 {
-                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), String() + "Row " + std::to_string(count).data()),
+                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + toString(count)),
                                     new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
                                     new MultipleImagesCellRenderer({
                                         *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
@@ -321,7 +321,7 @@ int main(int argc, char **argv) {
         app->mainWindow()->setMainWidget(new Box(Align::Vertical));
         app->mainWindow()->onReady = [&](Window *window) {
             if (argc > 1) {
-                if (std::string(argv[1]) == std::string("quit")) {
+                if (String(argv[1]) == "quit") {
                     window->quit();
                 }
             }
@@ -331,11 +331,11 @@ int main(int argc, char **argv) {
         app->mainWindow()->setTitle("Widget Gallery");
         NoteBook *notebook = new NoteBook();
             notebook->appendTab(basic1(*app), "Basic 1", nullptr, false);
-            // notebook->appendTab(basic2(*app), "Basic 2", nullptr, false);
-            // notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
-            // notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
-            // notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
-            // notebook->setCurrentTab(1);
+            notebook->appendTab(basic2(*app), "Basic 2", nullptr, false);
+            notebook->appendTab(slidersAndScrollbars(*app), "Sliders and ScrollBars", nullptr, false);
+            notebook->appendTab(splitter(*app), "Splitter", nullptr, false);
+            notebook->appendTab(treeView(*app), "TreeView", nullptr, false);
+            notebook->setCurrentTab(1);
         app->mainWindow()->append(notebook, Fill::Both);
         // app->addTimer(
         //     100,
@@ -353,7 +353,7 @@ int main(int argc, char **argv) {
         //         return 50;
         //     }
         // );
-        StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
+        // StyleEditor::asWindow("Style Editor", Size(600, 600))->run();
         // TODO keybinds like shift + dont work because
         // textediting events are intercepting them i think
         // alternatively its because of how modifiers work

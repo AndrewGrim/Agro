@@ -112,7 +112,7 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
     FT_GlyphSlot g = face->glyph;
     if (FT_Load_Char(face, codepoint, FT_LOAD_RENDER)) {
         // TODO would be helpful to print what the codepoint should translate to
-        fail("FAILED_TO_LOAD_CHAR", std::to_string(codepoint));
+        fail("FAILED_TO_LOAD_CHAR", toString(codepoint));
     }
     bool should_grow = false;
     u32 new_atlas_width = atlas_width;

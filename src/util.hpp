@@ -4,6 +4,7 @@
         #include <iostream>
         #include <ostream>
 
+        #include "core/string.hpp"
         #include "common/number_types.h"
 
         template <typename T> void pprint(i32 indent, T message, bool newline = true) {
@@ -24,7 +25,7 @@
             std::cout << message << std::endl;
         }
 
-        void info(std::string message, std::string text = "");
-        void warn(std::string message, std::string text = "");
-        void fail(std::string message, std::string text = "");
+        void info(String message, String text = "");
+        void warn(String message, String text = "");
+        void fail(String message, String text = "");
 #endif
