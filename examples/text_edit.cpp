@@ -6,24 +6,6 @@
 #include "../src/controls/scrolled_box.hpp"
 #include "../src/controls/label.hpp"
 
-// TODO we can pull that into string but ideally with option or result
-i64 string_find(const String &string, const String &query) {
-    u8 first = query.data()[0];
-    for (u64 i = 0; i < string.size(); i++) {
-        if (string.data()[i] == first) {
-            for (u64 j = 1; j < query.size(); j++) {
-                if (string.data()[i + j] != query.data()[j]) {
-                    goto NO_MATCH;
-                }
-            }
-            return (i64)i;
-        }
-        NO_MATCH:;
-    }
-    return -1;
-}
-
-
 int main(int argc, char **argv) {
     Application *app = Application::get();
         app->mainWindow()->onReady = [&](Window *window) {
@@ -56,7 +38,7 @@ int main(int argc, char **argv) {
                 for (String m : monster_names) {
                     String monster = String(m).toLower();
 
-                    if (!search_phrase.size() || string_find(monster, search_phrase) != -1) {
+                    if (!search_phrase.size() || monster.find(search_phrase)) {
                         results_view->append(new Label(String(m.data())));
                     }
                 }

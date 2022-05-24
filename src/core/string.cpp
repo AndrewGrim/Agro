@@ -325,6 +325,22 @@ Slice<const char> String::slice() const {
     return Slice<const char>(data(), size());
 }
 
+Option<u64> String::find(const String &query) const {
+    u8 first = query.data()[0];
+    for (u64 i = 0; i < this->size(); i++) {
+        if (this->data()[i] == first) {
+            for (u64 j = 1; j < query.size(); j++) {
+                if (this->data()[i + j] != query.data()[j]) {
+                    goto NO_MATCH;
+                }
+            }
+            return Option<u64>(i);
+        }
+        NO_MATCH:;
+    }
+    return Option<u64>();
+}
+
 String toString(int value) {
     return String::format("%d", value);
 }

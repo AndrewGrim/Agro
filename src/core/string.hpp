@@ -7,6 +7,7 @@
 
     #include "../common/number_types.h"
     #include "../slice.hpp"
+    #include "../option.hpp"
 
     namespace utf8 {
         static const u32 TWO_BYTES    = 0b00011111;
@@ -115,6 +116,7 @@
             snprintf(s.data(), buffer_size + 1, format_string, args...);
             return s;
         }
+        Option<u64> find(const String &query) const;
     };
 
     String toString(int value);

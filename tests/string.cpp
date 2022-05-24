@@ -134,6 +134,11 @@ int main() {
         assert(toString(0.123) = "0.123000");
     }
     {
+        assert(String("123abc456").find("abc").unwrap() == 3);
+        assert(String("123abc456").find("abc"));
+        assert(String("123abc456").find("efg").type == Option::Type::None);
+    }
+    {
         String s = "";
 
         s = "a";
