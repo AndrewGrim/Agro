@@ -124,19 +124,19 @@ int main() {
         assert(s.size() == 13);
     }
     {
-        assert(String::format("%x", 255) == "0xff");
-        assert(String::format("%X", 255) == "0xFF");
+        assert(String::format("0x%x", 255) == "0xff");
+        assert(String::format("0x%X", 255) == "0xFF");
         assert(String::format("test %d", 123) == "test 123");
         assert(String::format("%.2f", 0.12345) == "0.12");
     }
     {
-        assert(toString(123) = "123");
-        assert(toString(0.123) = "0.123000");
+        assert(toString(123) == "123");
+        assert(toString(0.123) == "0.123000");
     }
     {
         assert(String("123abc456").find("abc").unwrap() == 3);
         assert(String("123abc456").find("abc"));
-        assert(String("123abc456").find("efg").type == Option::Type::None);
+        assert(String("123abc456").find("efg").type == Option<u64>::Type::None);
     }
     {
         String s = "";
