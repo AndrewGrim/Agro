@@ -1,6 +1,6 @@
 #include "spin_box.hpp"
 
-#define TEXT_HEIGHT ((i32)((font() ? font()->maxHeight() : dc.default_font->maxHeight()) + m_line_spacing))
+#define TEXT_HEIGHT ((i32)((font() ? font()->maxHeight() : dc.default_style.font->maxHeight()) + m_line_spacing))
 
 SpinBoxIconButton::SpinBoxIconButton(Image *image) : IconButton(image) {}
 

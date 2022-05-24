@@ -62,7 +62,7 @@ Window::~Window() {
 
 void Window::run() {
     Application::get()->m_windows.push_back(this);
-    dc->default_font = Application::get()->mainWindow()->dc->default_font;
+    dc->default_style = Application::get()->mainWindow()->dc->default_style;
     show();
     if (onReady) {
         onReady(this);

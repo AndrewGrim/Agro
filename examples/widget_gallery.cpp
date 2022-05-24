@@ -364,13 +364,13 @@ int main(int argc, char **argv) {
         // and or possibly some padding and border values based on defaults
         app->mainWindow()->bind(SDLK_f, Mod::Ctrl, [&]() {
             for (Window *win : app->m_windows) {
-                win->dc->default_font = std::shared_ptr<Font>(new Font(app->ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 24, Font::Type::Sans));
+                win->dc->default_style.font = std::shared_ptr<Font>(new Font(app->ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 24, Font::Type::Sans));
                 win->layout(LAYOUT_FONT);
             }
         });
         app->mainWindow()->bind(SDLK_MINUS, Mod::Ctrl, [&]() {
             for (Window *win : app->m_windows) {
-                win->dc->default_font = std::shared_ptr<Font>(new Font(app->ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 10, Font::Type::Sans));
+                win->dc->default_style.font = std::shared_ptr<Font>(new Font(app->ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 10, Font::Type::Sans));
                 win->layout(LAYOUT_FONT);
             }
         });

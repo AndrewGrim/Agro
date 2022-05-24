@@ -72,7 +72,9 @@ Application::Application(const char *title, Size size) {
     m_cursors = new Cursors();
     current_window = win;
     m_windows.push_back(win);
-    win->dc->default_font = std::shared_ptr<Font>(new Font(ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans));
+    win->dc->default_style.font = std::shared_ptr<Font>(new Font(ft, DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans));
+    win->dc->default_light_style.font = win->dc->default_style.font;
+    win->dc->default_dark_style.font = win->dc->default_style.font;
     win->is_owned = true;
 }
 

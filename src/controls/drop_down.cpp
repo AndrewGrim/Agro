@@ -20,7 +20,6 @@ DropDown::DropDown() {
                 SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS
             );
             m_window->is_owned = true;
-            m_window->dc->default_font = current->dc->default_font;
             m_window->dc->default_style = current->dc->default_style;
             m_window->dc->default_light_style = current->dc->default_light_style;
             m_window->dc->default_dark_style = current->dc->default_dark_style;
