@@ -24,7 +24,7 @@ void ProgressBar::draw(DrawingContext &dc, Rect rect, i32 state) {
     u64 end = 0;
     if (fill_end > text_start) {
         for (u8 c : percent_text) {
-            i32 len = dc.measureText(font(), c).w;
+            i32 len = dc.measureText(font(), String::repeat(c, 1)).w;
             text_start += len;
             if (fill_end > text_start - len / 2) {
                 end++;
