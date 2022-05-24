@@ -2,6 +2,7 @@
     #define RENDERER_HPP
 
     #include <vector>
+    #include <memory>
 
     #include <ft2build.h>
     #include FT_FREETYPE_H

@@ -1,6 +1,8 @@
 #ifndef STYLE_HPP
     #define STYLE_HPP
 
+    #include <memory>
+
     #include "color.hpp"
     #include "../renderer/font.hpp"
 
