@@ -139,6 +139,10 @@ void operator+=(String &lhs, const char *rhs) {
     lhs.insert(lhs.size(), rhs);
 }
 
+void operator+=(String &lhs, const String &rhs) {
+    lhs.insert(lhs.size(), rhs.data());
+}
+
 String operator+(String &lhs, const char *rhs) {
     String new_string = lhs;
     new_string.insert(new_string.size(), rhs);
@@ -148,6 +152,18 @@ String operator+(String &lhs, const char *rhs) {
 String operator+(String &&lhs, const char *rhs) {
     String new_string = lhs;
     new_string.insert(new_string.size(), rhs);
+    return new_string;
+}
+
+String operator+(String &lhs, const String &rhs) {
+    String new_string = lhs;
+    new_string.insert(new_string.size(), rhs.data());
+    return new_string;
+}
+
+String operator+(String &&lhs, const String &rhs) {
+    String new_string = lhs;
+    new_string.insert(new_string.size(), rhs.data());
     return new_string;
 }
 
