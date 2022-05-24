@@ -18,16 +18,16 @@ int main(int argc, char **argv) {
         auto h_split = new Splitter(Align::Horizontal);
             ScrolledBox *left = new ScrolledBox(Align::Vertical, Size(800, 400));
                 for (u8 i = 'a'; i <= 'z'; i++) {
-                    left->append(new TextEdit(String::repeat(30, i)), Fill::Both);
+                    left->append(new TextEdit(String::repeat(i, 30)), Fill::Both);
                 }
                 for (u8 i = 'A'; i <= 'Z'; i++) {
-                    left->append(new TextEdit(String::repeat(30, i)), Fill::Both);
+                    left->append(new TextEdit(String::repeat(i, 30)), Fill::Both);
                 }
             h_split->left(left);
             ScrolledBox *right = new ScrolledBox(Align::Vertical, Size(800, 400));
                 ScrolledBox *inner_right = new ScrolledBox(Align::Vertical, Size(400, 400));
                     for (u8 i = 'A'; i < 'Z'; i++) {
-                        inner_right->append(new Button(String::repeat(100, i)), Fill::Both);
+                        inner_right->append(new Button(String::repeat(i, 100)), Fill::Both);
                     }
                 right->append(inner_right, Fill::Both);
                 auto tv = new TreeView<u8>(Size(400, 800));
