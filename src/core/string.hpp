@@ -1,6 +1,7 @@
 #ifndef STRING_HPP
     #define STRING_HPP
 
+    #include <stdio.h>
     #include <string.h>
     #include <assert.h>
 
