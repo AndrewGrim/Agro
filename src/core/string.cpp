@@ -228,6 +228,16 @@ String String::repeat(const char *text, u64 count) {
     return s;
 }
 
+String String::repeat(char text, u64 count) {
+    u64 length = 1;
+    String s = String(length * count);
+    for (u64 i = 0; i < count; i++) {
+        s.data()[i] = text;
+    }
+    s.data()[s.size()] = '\0';
+    return s;
+}
+
 bool String::startsWith(const char *text) const {
     u64 length = strlen(text);
     if (size() < length) { return false; }

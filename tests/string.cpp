@@ -30,6 +30,7 @@ int main() {
         String s2 = String("abcabcabc");
         assert(s1 == "abcabcabc");
         assert(s1 == s2);
+        assert(String::repeat('A', 5) == "AAAAA");
     }
     {
         String s = "abc123";

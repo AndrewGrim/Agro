@@ -93,6 +93,7 @@
         // Note: this method only works on ascii.
         String toUpper();
         static String repeat(const char *text, u64 count);
+        static String repeat(char text, u64 count);
         bool startsWith(const char *text) const;
         bool endsWith(const char *text) const;
         String substring(u64 begin, u64 end) const;
