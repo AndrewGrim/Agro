@@ -34,27 +34,26 @@ void SpinBoxIconButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     );
 }
 
-SpinBox::SpinBox(f64 value, i32 min_length) : TextEdit(std::to_string(value).data(), "", TextEdit::Mode::SingleLine, Size(min_length, 100)) {
+SpinBox::SpinBox(f64 value, i32 min_length) : TextEdit("", "", TextEdit::Mode::SingleLine, Size(min_length, 100)) {
+    setText(String::format(m_number_format.data(), value));
     append(m_up_arrow);
     append(m_down_arrow);
     m_up_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
-        try {
-            this->setText(std::to_string(std::stod(text().data()) + 1).data());
-        } catch (std::invalid_argument &e) {
+        Result<SpinBox::Error, f64> val = this->value();
+        if (!val) {
             onParsingError.notify(this, SpinBox::Error::InvalidArgument);
-        } catch (std::out_of_range &e) {
-            onParsingError.notify(this, SpinBox::Error::OutOfRange);
+            return;
         }
+        this->setText(String::format(m_number_format.data(), val.unwrap() + m_step));
 
     });
     m_down_arrow->onMouseClick.addEventListener([&](Widget *button, MouseEvent event) {
-        try {
-            this->setText(std::to_string(std::stod(text().data()) - 1).data());
-        } catch (std::invalid_argument &e) {
+        Result<SpinBox::Error, f64> val = this->value();
+        if (!val) {
             onParsingError.notify(this, SpinBox::Error::InvalidArgument);
-        } catch (std::out_of_range &e) {
-            onParsingError.notify(this, SpinBox::Error::OutOfRange);
+            return;
         }
+        this->setText(String::format(m_number_format.data(), val.unwrap() - m_step));
     });
     m_up_arrow->setMarginType(STYLE_NONE);
     m_up_arrow->setBorderType(STYLE_TOP|STYLE_RIGHT);
@@ -127,11 +126,29 @@ bool SpinBox::isLayout() {
 }
 
 Result<SpinBox::Error, f64> SpinBox::value() {
-    try {
-       return Result<SpinBox::Error, f64>(std::stod(text().data()));
-    } catch (std::invalid_argument &e) {
-        return Result<SpinBox::Error, f64>(SpinBox::Error::InvalidArgument);
-    } catch (std::out_of_range &e) {
-        return Result<SpinBox::Error, f64>(SpinBox::Error::OutOfRange);
+    i32 dot_count = 0;
+    bool non_zero_number = false;
+    bool invalid = false;
+    for (u8 c : text()) {
+        if (c != '0') {
+            if (c == '.') {
+                if (dot_count) {
+                    invalid = true;
+                    break; // Non-zero number
+                }
+                dot_count++;
+            } else {
+                non_zero_number = true;
+                break; // Non-zero number
+            }
+        }
     }
+    if (invalid) {
+        return Result<SpinBox::Error, f64>(SpinBox::Error::InvalidArgument);
+    }
+    f64 value = atof(text().data());
+    if (value == 0.0 && non_zero_number) {
+        return Result<SpinBox::Error, f64>(SpinBox::Error::InvalidArgument);
+    }
+    return Result<SpinBox::Error, f64>(value);
 }

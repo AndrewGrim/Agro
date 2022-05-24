@@ -20,7 +20,6 @@
         public:
             enum class Error {
                 InvalidArgument,
-                OutOfRange,
             };
 
             EventListener<Widget*, Error> onParsingError = EventListener<Widget*, Error>();
@@ -35,5 +34,7 @@
 
             SpinBoxIconButton *m_up_arrow = new SpinBoxIconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8)));
             SpinBoxIconButton *m_down_arrow = new SpinBoxIconButton((new Image(Application::get()->icons["up_arrow"]))->setMinSize(Size(8, 8))->flipVertically());
+            String m_number_format = "%.0f";
+            f64 m_step = 1.0;
     };
 #endif
