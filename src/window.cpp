@@ -346,7 +346,11 @@ void Window::handleResizeEvent(i32 width, i32 height) {
     i32 w, h;
     SDL_GL_GetDrawableSize(m_win, &w, &h);
     glViewport(0, 0, w, h);
-    show();
+    if (SDL_GetTicks() >= delay_till) {
+        // TODO frame time ie custom fps
+        delay_till = SDL_GetTicks() + (1000 / 60);
+        show();
+    }
     if (onResize) {
         onResize(this);
     }
