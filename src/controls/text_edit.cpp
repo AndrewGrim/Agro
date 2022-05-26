@@ -318,6 +318,8 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         Renderer::Selection selection;
         // TODO font scaling issue here where sometimes the math makes it such
         // that line_index falls outside of m_buffer and text does not render
+        // update: the below workaround does work but i would like it to be more "precise"
+        if (line_index >= m_buffer.size()) { line_index = m_buffer.size() - 2; }
         for (; line_index < m_buffer.size(); line_index++) {
             const String &line = m_buffer[line_index];
             // Determine the selection to pass in to the renderer and dimensions to use for selection background.
