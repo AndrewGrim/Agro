@@ -40,6 +40,9 @@
         };
 
         String file_path;
+        bool loaded_from_file = false;
+        const u8 *data = nullptr;
+        i64 data_size = 0;
         u32 pixel_size = 0;
         Type type;
 
@@ -52,6 +55,7 @@
         i32 max_bearing = 0;
 
         Font(Application *app, String file_path, u32 pixel_size, Type type);
+        // Note for UI zoom / scaling we assume that we can use the same data pointer to load the font at a different size.
         Font(Application *app, const u8 *data, i64 length, u32 pixel_size, Type type);
         ~Font();
         u32 maxHeight();
@@ -59,6 +63,7 @@
 
         private:
             Application *app;
+
             FT_Face face = NULL;
             std::unordered_map<u32, Font::Character> characters;
 
