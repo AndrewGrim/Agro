@@ -359,6 +359,9 @@ void NoteBookTabButton::setCloseButton(bool close_button) {
 
 bool NoteBookTabButton::handleLayoutEvent(LayoutEvent event) {
     if (event) {
+        if (event & LAYOUT_SCALE) {
+            if (_style.font.get()) { setFont(std::shared_ptr<Font>(_style.font.get()->reload(Application::get()->currentWindow()->dc->default_style.font->pixel_size))); }
+        }
         if (event & LAYOUT_BORDER) {
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             style().border.top = dc.default_style.border.top * 2 > m_min_tab_accent_width ? dc.default_style.border.top * 2 : m_min_tab_accent_width;

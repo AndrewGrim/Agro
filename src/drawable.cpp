@@ -39,6 +39,9 @@ bool Drawable::handleLayoutEvent(LayoutEvent event) {
     // For other widget you might want to handle them at a more granular level.
     // Such as TextEdit only recalculating its text size when the font changes.
     if (event) {
+        if (event & LAYOUT_SCALE) {
+            if (_style.font.get()) { setFont(std::shared_ptr<Font>(_style.font.get()->reload(Application::get()->currentWindow()->dc->default_style.font->pixel_size))); }
+        }
         // Since we already know the layout needs to be redone
         // we return true to avoid having to traverse the entire widget graph to the top.
         if (m_size_changed) { return true; }

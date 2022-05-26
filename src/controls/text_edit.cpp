@@ -316,6 +316,8 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         Selection before_swap = m_selection;
         bool did_swap = swapSelection();
         Renderer::Selection selection;
+        // TODO font scaling issue here where sometimes the math makes it such
+        // that line_index falls outside of m_buffer and text does not render
         for (; line_index < m_buffer.size(); line_index++) {
             const String &line = m_buffer[line_index];
             // Determine the selection to pass in to the renderer and dimensions to use for selection background.
@@ -1371,6 +1373,12 @@ bool TextEdit::handleLayoutEvent(LayoutEvent event) {
             // then we can return early since the viewport doesnt change.
             // For SingleLine mode we need to keep going since the text height affects the returned size from sizeHint.
             if (!(event^LAYOUT_FONT) && m_mode == Mode::MultiLine) { return true; }
+        }
+        if (event & LAYOUT_SCALE) {
+            if (_style.font.get()) {
+                m_text_changed = true;
+                setFont(std::shared_ptr<Font>(_style.font.get()->reload(Application::get()->currentWindow()->dc->default_style.font->pixel_size)));
+            }
         }
         // Since we already know the layout needs to be redone
         // we return true to avoid having to traverse the entire widget graph to the top.

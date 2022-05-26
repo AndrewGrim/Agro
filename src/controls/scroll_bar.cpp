@@ -163,6 +163,9 @@ Size ScrollBar::sizeHint(DrawingContext &dc) {
 
 bool ScrollBar::handleLayoutEvent(LayoutEvent event) {
     if (event) {
+        if (event & LAYOUT_SCALE) {
+            if (_style.font.get()) { setFont(std::shared_ptr<Font>(_style.font.get()->reload(Application::get()->currentWindow()->dc->default_style.font->pixel_size))); }
+        }
         if (event & LAYOUT_BORDER) {
             DrawingContext &dc = *Application::get()->currentWindow()->dc;
             Widget *widgets[4] = { m_begin_button, m_end_button, m_slider, m_slider->m_slider_button };

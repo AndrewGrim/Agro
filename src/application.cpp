@@ -76,6 +76,24 @@ Application::Application(const char *title, Size size) {
     win->dc->default_light_style.font = win->dc->default_style.font;
     win->dc->default_dark_style.font = win->dc->default_style.font;
     win->is_owned = true;
+
+    // TODO these are not global anymore hmm...
+    mainWindow()->bind(SDLK_EQUALS, Mod::Ctrl, [&]() {
+        scale += 10;
+        if (scale > 500) { scale = 500; }
+        for (Window *win : m_windows) {
+            win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
+            win->layout(LAYOUT_SCALE);
+        }
+    });
+    mainWindow()->bind(SDLK_MINUS, Mod::Ctrl, [&]() {
+        scale -= 10;
+        if (scale < 50) { scale = 50; }
+        for (Window *win : m_windows) {
+            win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
+            win->layout(LAYOUT_SCALE);
+        }
+    });
 }
 
 Application::~Application() {

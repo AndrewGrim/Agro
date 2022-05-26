@@ -40,6 +40,9 @@
     };
 
     struct Application {
+        u32 scale = 100;
+        u32 default_scale_font_size = 14;
+
         i32 scroll_amount = 50;
 
         void setMouseCursor(Cursor cursor);
