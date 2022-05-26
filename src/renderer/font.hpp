@@ -60,6 +60,9 @@
         ~Font();
         u32 maxHeight();
         Character get(u32 codepoint);
+        // Note that this returns a new font at the specified size
+        // nothing happens to the original.
+        Font* reload(i64 new_pixel_size);
 
         private:
             Application *app;

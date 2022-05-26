@@ -186,3 +186,10 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
     if (g->bitmap_top > max_bearing) { max_bearing = g->bitmap_top; }
     next_slot += g->bitmap.width;
 }
+
+Font* Font::reload(i64 new_pixel_size) {
+    if (this->loaded_from_file) {
+        return new Font(this->app, this->file_path, new_pixel_size, this->type);
+    }
+    return new Font(this->app, this->data, this->data_size, new_pixel_size, this->type);
+}
