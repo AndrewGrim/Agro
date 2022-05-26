@@ -128,7 +128,6 @@ void Application::run() {
     mainWindow()->m_state->hovered = mainWindow()->m_main_widget;
     u32 fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
     u32 frame_time = 1000 / fps;
-    SDL_StartTextInput();
     while (mainWindow()->m_running) {
         DELAY:;
         u32 frame_start;
@@ -217,7 +216,6 @@ void Application::run() {
             mainWindow()->delay_till = 0;
         }
     }
-    SDL_StopTextInput();
 
     delete this;
 }
