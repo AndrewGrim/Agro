@@ -143,11 +143,11 @@ void DrawingContext::render() {
 }
 
 void DrawingContext::fillText(std::shared_ptr<Font> font, String text, Point point, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
-    renderer->fillText(font ? font : default_style.font, Slice<const char>(text.data(), text.size()), point, color, tab_width, false, 0, selection, selection_color);
+    renderer->fillText(font, Slice<const char>(text.data(), text.size()), point, color, tab_width, false, 0, selection, selection_color);
 }
 
 void DrawingContext::fillTextMultiline(std::shared_ptr<Font> font, String text, Point point, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
-    renderer->fillText(font ? font : default_style.font, Slice<const char>(text.data(), text.size()), point, color, tab_width, true, line_spacing, selection, selection_color);
+    renderer->fillText(font, Slice<const char>(text.data(), text.size()), point, color, tab_width, true, line_spacing, selection, selection_color);
 }
 
 void DrawingContext::fillTextAligned(std::shared_ptr<Font> font, String text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, Renderer::Selection selection, Color selection_color) {
@@ -191,7 +191,7 @@ void DrawingContext::fillTextAligned(std::shared_ptr<Font> font, Slice<const cha
 }
 
 void DrawingContext::fillTextMultilineAligned(std::shared_ptr<Font> font, String text, HorizontalAlignment h_align, VerticalAlignment v_align, Rect rect, i32 padding, Color color, i32 tab_width, i32 line_spacing, Renderer::Selection selection, Color selection_color) {
-    font = font ? font : default_style.font;
+    font = font;
     Point pos = Point(rect.x, rect.y);
     Size text_size = measureTextMultiline(font, text, tab_width, line_spacing);
     switch (v_align) {
@@ -254,19 +254,19 @@ void DrawingContext::fillTextMultilineAligned(std::shared_ptr<Font> font, Slice<
 }
 
 Size DrawingContext::measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width) {
-    return renderer->measureText(font ? font : default_style.font, text, tab_width);
+    return renderer->measureText(font, text, tab_width);
 }
 
 Size DrawingContext::measureText(std::shared_ptr<Font> font, String text, i32 tab_width) {
-    return renderer->measureText(font ? font : default_style.font, Slice<const char>(text.data(), text.size()), tab_width);
+    return renderer->measureText(font, Slice<const char>(text.data(), text.size()), tab_width);
 }
 
 Size DrawingContext::measureTextMultiline(std::shared_ptr<Font> font, String text, i32 tab_width, i32 line_spacing) {
-    return renderer->measureText(font ? font : default_style.font, Slice<const char>(text.data(), text.size()), tab_width, true, line_spacing);
+    return renderer->measureText(font, Slice<const char>(text.data(), text.size()), tab_width, true, line_spacing);
 }
 
 Size DrawingContext::measureTextMultiline(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width, i32 line_spacing) {
-    return renderer->measureText(font ? font : default_style.font, text, tab_width, true, line_spacing);
+    return renderer->measureText(font, text, tab_width, true, line_spacing);
 }
 
 Rect DrawingContext::drawBorder3D(Rect rect, i32 border_width, Color rect_color) {
