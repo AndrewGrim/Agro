@@ -41,6 +41,7 @@
 
     struct Application {
         i32 scroll_amount = 50;
+
         void setMouseCursor(Cursor cursor);
         static Application* get();
 
