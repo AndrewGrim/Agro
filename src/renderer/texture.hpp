@@ -16,9 +16,7 @@
         Point bottom_right = Point(1.0, 0.0);
         Point top_right = Point(1.0, 1.0);
 
-        TextureCoordinates() {
-
-        }
+        TextureCoordinates() {}
 
         void flipHorizontally() {
             // if flipped reset to default
