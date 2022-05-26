@@ -3,9 +3,9 @@
 
 class CustomWidget : public Widget {
     public:
-        std::shared_ptr<Font> small = std::shared_ptr<Font>(new Font(Application::get()->ft, Karla_Regular_ttf, Karla_Regular_ttf_length, 12, Font::Type::Sans));
-        std::shared_ptr<Font> big = std::shared_ptr<Font>(new Font(Application::get()->ft, Karla_Bold_ttf, Karla_Bold_ttf_length, 22, Font::Type::Sans));
-        std::shared_ptr<Font> italic = std::shared_ptr<Font>(new Font(Application::get()->ft, Karla_Italic_ttf, Karla_Italic_ttf_length, 16, Font::Type::Sans));
+        std::shared_ptr<Font> small = std::shared_ptr<Font>(new Font(Application::get(), Karla_Regular_ttf, Karla_Regular_ttf_length, 12, Font::Type::Sans));
+        std::shared_ptr<Font> big = std::shared_ptr<Font>(new Font(Application::get(), Karla_Bold_ttf, Karla_Bold_ttf_length, 22, Font::Type::Sans));
+        std::shared_ptr<Font> italic = std::shared_ptr<Font>(new Font(Application::get(), Karla_Italic_ttf, Karla_Italic_ttf_length, 16, Font::Type::Sans));
         std::shared_ptr<Texture> lena = std::make_shared<Texture>(lena_png, lena_png_length);
         Image *normal = new Image(lena);
         Image *flipped_h = (new Image(lena))->flipHorizontally();
