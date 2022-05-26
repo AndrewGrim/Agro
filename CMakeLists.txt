@@ -49,7 +49,8 @@ if (APPLE)
 	target_link_libraries(${PROJECT_NAME}
 		freetype
 		SDL2main
-		SDL2
+		$<$<CONFIG:DEBUG>:SDL2d>
+		$<$<CONFIG:RELEASE>:SDL2>
 		"-framework OpenGL"
 		"-lm"
 		"-liconv"
