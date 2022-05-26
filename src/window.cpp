@@ -164,6 +164,8 @@ void Window::handleSDLEvent(SDL_Event &event) {
             }
             break;
         case SDL_KEYDOWN: {
+                // BTW it seems its impossible to trigger SDLK_PLUS as an event
+                // it always comes through as SDLK_EQUALS
                 SDL_Keycode key = event.key.keysym.sym;
                 Uint16 mod = event.key.keysym.mod;
                 Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
