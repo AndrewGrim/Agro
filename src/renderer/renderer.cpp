@@ -24,29 +24,42 @@ Renderer::Renderer(u32 *indices) {
     glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_index));
     glEnableVertexAttribArray(3);
 
-    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, is_text));
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, texture_array_index));
     glEnableVertexAttribArray(4);
 
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, rect));
+    glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, is_text));
     glEnableVertexAttribArray(5);
 
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, clip_rect));
+    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, rect));
     glEnableVertexAttribArray(6);
 
-    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_texture_slots);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, clip_rect));
+    glEnableVertexAttribArray(7);
 
+    glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &max_texture_slots);
+    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &max_texture_depth);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+
+    /*
+    Note that because we reserve two texture slots for loading and a texture array
+    the texture indices that we submit in the renderer have to be offset to index
+    into the texture sampler in this fragment shader (textures[index]).
+    So while we still generate cases for all texture slots the first 2 will not be hit.
+    */
     String fragment_shader = "#version 330 core\n";
         fragment_shader += "layout (origin_upper_left) in vec4 gl_FragCoord;\n";
         fragment_shader += "in vec2 v_texture_uv;\n";
         fragment_shader += "in vec4 v_color;\n";
         fragment_shader += "in float v_texture_slot_index;\n";
+        fragment_shader += "in float v_texture_array_index;\n";
         fragment_shader += "in float v_sampler_type;\n";
         fragment_shader += "in vec4 v_rect;\n";
         fragment_shader += "in vec4 v_clip_rect;\n";
         fragment_shader += "\n";
         fragment_shader += "out vec4 f_color;\n";
         fragment_shader += "\n";
-        fragment_shader += "uniform sampler2D textures[" + toString(max_texture_slots) + "];\n";
+        fragment_shader += "uniform sampler2D textures[" + toString(max_texture_slots - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS) + "];\n";
+        fragment_shader += "uniform sampler2DArray texture_array;\n";
         fragment_shader += "\n";
         fragment_shader += "void main()\n";
         fragment_shader += "{\n";
@@ -63,10 +76,10 @@ Renderer::Renderer(u32 *indices) {
                         fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 1: ";
-                        fragment_shader += "sampled = vec4(texture(textures[" + toString(i) + "], v_texture_uv));\n";
+                        fragment_shader += "sampled = vec4(texture(textures[" + toString(i > AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY ? i - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS : i) + "], v_texture_uv));\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 2: ";
-                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(textures[" + toString(i) + "], v_texture_uv).r);\n";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(texture_array, vec3(v_texture_uv.xy, v_texture_array_index)).r);\n";
                         fragment_shader += "break;\n";
                     fragment_shader += "case 3: ";
                         // TODO this is acutally pretty good, however i feel like we might want it to be a bit thicker, and it would be nice if it could scale with border width
@@ -90,13 +103,15 @@ Renderer::Renderer(u32 *indices) {
         "layout (location = 1) in vec2 a_texture_uv;\n"
         "layout (location = 2) in vec4 a_color;\n"
         "layout (location = 3) in float a_texture_slot_index;\n"
-        "layout (location = 4) in float a_sampler_type;\n"
-        "layout (location = 5) in vec4 a_rect;\n"
-        "layout (location = 6) in vec4 a_clip_rect;\n"
+        "layout (location = 4) in float a_texture_array_index;\n"
+        "layout (location = 5) in float a_sampler_type;\n"
+        "layout (location = 6) in vec4 a_rect;\n"
+        "layout (location = 7) in vec4 a_clip_rect;\n"
         "\n"
         "out vec2 v_texture_uv;\n"
         "out vec4 v_color;\n"
         "out float v_texture_slot_index;\n"
+        "out float v_texture_array_index;\n"
         "out float v_sampler_type;\n"
         "out vec4 v_rect;\n"
         "out vec4 v_clip_rect;\n"
@@ -115,6 +130,7 @@ Renderer::Renderer(u32 *indices) {
             "v_texture_uv = a_texture_uv;\n"
             "v_color = a_color;\n"
             "v_texture_slot_index = a_texture_slot_index;\n"
+            "v_texture_array_index = a_texture_array_index;\n"
             "v_sampler_type = a_sampler_type;\n"
             "v_rect = a_rect;\n"
             "v_clip_rect = a_clip_rect;\n"
@@ -124,11 +140,12 @@ Renderer::Renderer(u32 *indices) {
 
     shader.use();
     std::vector<i32> texture_indices;
-    for (i32 i = 0; i < 32; i++) {
-        texture_indices.push_back(i);
-    }
+    for (i32 i = AGRO_OPENGL_RESERVED_TEXTURE_SLOTS; i < max_texture_slots; i++) { texture_indices.push_back(i); }
+    assert(texture_indices.size() == max_texture_slots - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS && "The index count should be equivalent to the number of non-reserved texture slots.");
     auto loc = glGetUniformLocation(shader.ID, "textures");
-    glUniform1iv(loc, 32, texture_indices.data());
+    glUniform1iv(loc, max_texture_slots, texture_indices.data());
+    loc = glGetUniformLocation(shader.ID, "texture_array");
+    glUniform1i(loc, AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY);
 }
 
 Renderer::~Renderer() {
@@ -141,7 +158,7 @@ Renderer::~Renderer() {
 void Renderer::reset() {
     index = 0;
     quad_count = 0;
-    current_texture_slot = 2;
+    current_texture_slot = AGRO_OPENGL_RESERVED_TEXTURE_SLOTS;
 }
 
 void Renderer::check() {
@@ -151,8 +168,8 @@ void Renderer::check() {
 void Renderer::textCheck(std::shared_ptr<Font> font) {
     if (index + QUAD_VERTEX_COUNT > MAX_BATCH_SIZE * QUAD_VERTEX_COUNT) {
         render();
-        glActiveTexture(gl_texture_begin + current_texture_slot);
-        glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
+        glActiveTexture(gl_texture_begin + AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY);
+        glBindTexture(GL_TEXTURE_2D_ARRAY, font->atlas_ID);
     }
 }
 
@@ -163,11 +180,8 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
         selection.begin = temp;
     }
 
-    if (current_texture_slot > max_texture_slots - 1) {
-        render();
-    }
-    glActiveTexture(gl_texture_begin + current_texture_slot);
-    glBindTexture(GL_TEXTURE_2D, font->atlas_ID);
+    glActiveTexture(gl_texture_begin + AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, font->atlas_ID);
     i32 x = point.x;
     i32 base_bearing = font->max_bearing;
     i32 space_advance = font->get((u32)' ').advance;
@@ -203,29 +217,32 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                     {xpos, ypos + h},
                     {ch.texture_x, (h / font->atlas_height)},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (f32)current_texture_slot,
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
-                    {1.0, 1.0, 1.0, 1.0},
+                    {1.0f, 1.0f, 1.0f, 1.0f},
                     {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 // BOTTOM LEFT
                 vertices[index++] = {
                     {xpos, ypos},
-                    {ch.texture_x, 0.0},
+                    {ch.texture_x, 0.0f},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (f32)current_texture_slot,
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
-                    {1.0, 1.0, 1.0, 1.0},
+                    {1.0f, 1.0f, 1.0f, 1.0f},
                     {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 // BOTTOM RIGHT
                 vertices[index++] = {
                     {xpos + w, ypos},
-                    {ch.texture_x + (w / font->atlas_width), 0.0},
+                    {ch.texture_x + (w / font->atlas_width), 0.0f},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (f32)current_texture_slot,
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
-                    {1.0, 1.0, 1.0, 1.0},
+                    {1.0f, 1.0f, 1.0f, 1.0f},
                     {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 // TOP RIGHT
@@ -233,9 +250,10 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                     {xpos + w, ypos + h},
                     {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
                     {_color.r, _color.g, _color.b, _color.a},
-                    (f32)current_texture_slot,
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
-                    {1.0, 1.0, 1.0, 1.0},
+                    {1.0f, 1.0f, 1.0f, 1.0f},
                     {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
                 };
                 quad_count++;
@@ -244,7 +262,6 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
         }
         i += length;
     }
-    current_texture_slot++;
 }
 
 Size Renderer::measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width, bool is_multiline, i32 line_spacing) {
@@ -286,40 +303,44 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
 
     // TOP LEFT
     vertices[index++] = {
-        {0.0, 1.0},
+        {0.0f, 1.0f},
         {(f32)coords->top_left.x, (f32)coords->top_left.y},
         {color.r, color.g, color.b, color.a},
         (f32)current_texture_slot,
+        0.0f,
         (f32)Renderer::Sampler::Texture,
         {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
-        {0.0, 0.0},
+        {0.0f, 0.0f},
         {(f32)coords->bottom_left.x, (f32)coords->bottom_left.y},
         {color.r, color.g, color.b, color.a},
         (f32)current_texture_slot,
+        0.0f,
         (f32)Renderer::Sampler::Texture,
         {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
-        {1.0, 0.0},
+        {1.0f, 0.0f},
         {(f32)coords->bottom_right.x, (f32)coords->bottom_right.y},
         {color.r, color.g, color.b, color.a},
         (f32)current_texture_slot,
+        0.0f,
         (f32)Renderer::Sampler::Texture,
         {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
-        {1.0, 1.0},
+        {1.0f, 1.0f},
         {(f32)coords->top_right.x, (f32)coords->top_right.y},
         {color.r, color.g, color.b, color.a},
         (f32)current_texture_slot,
+        0.0f,
         (f32)Renderer::Sampler::Texture,
         {(f32)point.x, (f32)point.y, (f32)size.w, (f32)size.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
@@ -343,40 +364,44 @@ void Renderer::fillRect(Rect rect, Color color) {
 
     // TOP LEFT
     vertices[index++] = {
-        {0.0, 1.0},
-        {0.0, 0.0},
+        {0.0f, 1.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Color,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
-        {0.0, 0.0},
-        {0.0, 0.0},
+        {0.0f, 0.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Color,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
-        {1.0, 0.0},
-        {0.0, 0.0},
+        {1.0f, 0.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Color,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
-        {1.0, 1.0},
-        {0.0, 0.0},
+        {1.0f, 1.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Color,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
@@ -392,40 +417,44 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
         case Gradient::TopToBottom: {
             // TOP LEFT
             vertices[index++] = {
-                {0.0, 1.0},
-                {0.0, 0.0},
+                {0.0f, 1.0f},
+                {0.0f, 0.0f},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
-                {0.0, 0.0},
-                {0.0, 0.0},
+                {0.0f, 0.0f},
+                {0.0f, 0.0f},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
-                {1.0, 0.0},
-                {0.0, 0.0},
+                {1.0f, 0.0f},
+                {0.0f, 0.0f},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
-                {1.0, 1.0},
-                {0.0, 0.0},
+                {1.0f, 1.0f},
+                {0.0f, 0.0f},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
@@ -435,40 +464,44 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
         case Gradient::LeftToRight: {
             // TOP LEFT
             vertices[index++] = {
-                {0.0, 1.0},
-                {0.0, 0.0},
+                {0.0f, 1.0f},
+                {0.0f, 0.0f},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM LEFT
             vertices[index++] = {
-                {0.0, 0.0},
-                {0.0, 0.0},
+                {0.0f, 0.0f},
+                {0.0f, 0.0f},
                 {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // BOTTOM RIGHT
             vertices[index++] = {
-                {1.0, 0.0},
-                {0.0, 0.0},
+                {1.0f, 0.0f},
+                {0.0f, 0.0f},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
             };
             // TOP RIGHT
             vertices[index++] = {
-                {1.0, 1.0},
-                {0.0, 0.0},
+                {1.0f, 1.0f},
+                {0.0f, 0.0f},
                 {toColor.r, toColor.g, toColor.b, toColor.a},
-                0.0,
+                0.0f,
+                0.0f,
                 (f32)Renderer::Sampler::Color,
                 {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
                 {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
@@ -485,40 +518,44 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
 
     // TOP LEFT
     vertices[index++] = {
-        {0.0, 1.0},
-        {0.0, 0.0},
+        {0.0f, 1.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Dashed,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM LEFT
     vertices[index++] = {
-        {0.0, 0.0},
-        {0.0, 0.0},
+        {0.0f, 0.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Dashed,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // BOTTOM RIGHT
     vertices[index++] = {
-        {1.0, 0.0},
-        {0.0, 0.0},
+        {1.0f, 0.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Dashed,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
     };
     // TOP RIGHT
     vertices[index++] = {
-        {1.0, 1.0},
-        {0.0, 0.0},
+        {1.0f, 1.0f},
+        {0.0f, 0.0f},
         {color.r, color.g, color.b, color.a},
-        0.0,
+        0.0f,
+        0.0f,
         (f32)Renderer::Sampler::Dashed,
         {(f32)rect.x, (f32)rect.y, (f32)rect.w, (f32)rect.h},
         {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}

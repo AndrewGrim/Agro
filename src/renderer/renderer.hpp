@@ -21,6 +21,10 @@
     #include "texture.hpp"
     #include "font.hpp"
 
+    #define AGRO_OPENGL_RESERVED_FOR_LOADING 0
+    #define AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY 1
+    #define AGRO_OPENGL_RESERVED_TEXTURE_SLOTS 2
+
     struct Renderer {
         enum class Sampler {
             Color,
@@ -34,6 +38,7 @@
             f32 texture_uv[2];
             f32 color[4];
             f32 texture_index;
+            f32 texture_array_index;
             f32 is_text;
             f32 rect[4];
             f32 clip_rect[4];
@@ -47,7 +52,9 @@
         };
 
         i32 max_texture_slots;
-        i32 current_texture_slot = 2;
+        i32 max_texture_depth;
+        i32 max_texture_size;
+        i32 current_texture_slot = AGRO_OPENGL_RESERVED_TEXTURE_SLOTS;
         u32 gl_texture_begin = GL_TEXTURE0;
         Shader shader;
         u32 index = 0;

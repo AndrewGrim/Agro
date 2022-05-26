@@ -32,10 +32,11 @@
             Size size;
             i32 advance = 0;
             f32 texture_x = 0.0f;
+            f32 texture_array_index = 0.0f;
 
             Character() {}
-            Character(Point bearing, Size size, i32 advance, f32 texture_x) :
-            bearing{bearing}, size{size}, advance{advance}, texture_x{texture_x} {}
+            Character(Point bearing, Size size, i32 advance, f32 texture_x, f32 texture_array_index) :
+            bearing{bearing}, size{size}, advance{advance}, texture_x{texture_x}, texture_array_index{texture_array_index} {}
         };
 
         String file_path;
@@ -43,8 +44,10 @@
         Type type;
 
         u32 next_slot = 0;
+        u32 next_depth = 0;
         u32 atlas_width = 0;
         u32 atlas_height = 0;
+        u32 atlas_depth = 0;
         u32 atlas_ID; // Set by opengl when creating font atlas texture.
         i32 max_bearing = 0;
 
@@ -60,7 +63,7 @@
             std::unordered_map<u32, Font::Character> characters;
 
             void load(FT_Face face);
-            void grow(u32 width, u32 height);
+            void grow(u32 width, u32 height, u32 depth);
             void loadGlyph(u32 codepoint, bool bind_texture = true);
     };
 #endif
