@@ -18,6 +18,8 @@
     #include "batch.hpp"
     #include "texture.hpp"
 
+    class Application;
+
     struct Font {
         enum class Type {
             Sans,
@@ -46,13 +48,14 @@
         u32 atlas_ID; // Set by opengl when creating font atlas texture.
         i32 max_bearing = 0;
 
-        Font(FT_Library ft, String file_path, u32 pixel_size, Type type);
-        Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Type type);
+        Font(Application *app, String file_path, u32 pixel_size, Type type);
+        Font(Application *app, const u8 *data, i64 length, u32 pixel_size, Type type);
         ~Font();
         u32 maxHeight();
         Character get(u32 codepoint);
 
         private:
+            Application *app;
             FT_Face face = NULL;
             std::unordered_map<u32, Font::Character> characters;
 

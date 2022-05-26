@@ -1,9 +1,9 @@
 #include "font.hpp"
 #include "../application.hpp"
 
-Font::Font(FT_Library ft, String file_path, u32 pixel_size, Font::Type type)
-: file_path{file_path}, pixel_size{pixel_size}, type{type} {
-    if (FT_New_Face(ft, file_path.data(), 0, &face)) {
+Font::Font(Application *app, String file_path, u32 pixel_size, Font::Type type)
+: app{app}, file_path{file_path}, pixel_size{pixel_size}, type{type} {
+    if (FT_New_Face(app->ft, file_path.data(), 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path.data());
         if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
             fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path.data());
@@ -12,9 +12,9 @@ Font::Font(FT_Library ft, String file_path, u32 pixel_size, Font::Type type)
     load(face);
 }
 
-Font::Font(FT_Library ft, const u8 *data, i64 length, u32 pixel_size, Font::Type type)
-: file_path{":memory:"}, pixel_size{pixel_size}, type{type} {
-    if (FT_New_Memory_Face(ft, data, length, 0, &face)) {
+Font::Font(Application *app, const u8 *data, i64 length, u32 pixel_size, Font::Type type)
+: app{app}, file_path{":memory:"}, pixel_size{pixel_size}, type{type} {
+    if (FT_New_Memory_Face(app->ft, data, length, 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path.data());
         if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
             fail("FAILED_TO_SET_UNICODE_CHARMAP_FOR_FONT", file_path.data());
