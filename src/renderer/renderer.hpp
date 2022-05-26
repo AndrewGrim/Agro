@@ -62,6 +62,7 @@
         Vertex *vertices = new Vertex[MAX_BATCH_SIZE * QUAD_VERTEX_COUNT];
         u32 VAO, VBO, EBO;
         Rect clip_rect; // Gets set before each draw() in Application.
+        Font *last_font = nullptr;
 
         Renderer(u32 *indices);
         ~Renderer();

@@ -180,6 +180,10 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
         selection.begin = temp;
     }
 
+    if (last_font != font.get()) {
+        last_font = font.get();
+        render();
+    }
     glActiveTexture(gl_texture_begin + AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY);
     glBindTexture(GL_TEXTURE_2D_ARRAY, font->atlas_ID);
     i32 x = point.x;
