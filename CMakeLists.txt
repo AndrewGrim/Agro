@@ -71,7 +71,8 @@ elseif (MSVC)
 	target_link_libraries(${PROJECT_NAME}
 		freetype
 		SDL2main
-		SDL2
+		$<$<CONFIG:DEBUG>:SDL2d>
+		$<$<CONFIG:RELEASE>:SDL2>
 		opengl32
 		winmm
 		imm32
