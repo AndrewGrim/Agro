@@ -1377,8 +1377,8 @@ bool TextEdit::handleLayoutEvent(LayoutEvent event) {
             if (!(event^LAYOUT_FONT) && m_mode == Mode::MultiLine) { return true; }
         }
         if (event & LAYOUT_SCALE) {
+            m_text_changed = true;
             if (_style.font.get()) {
-                m_text_changed = true;
                 setFont(std::shared_ptr<Font>(_style.font.get()->reload(Application::get()->currentWindow()->dc->default_style.font->pixel_size)));
             }
         }
