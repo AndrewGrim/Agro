@@ -445,6 +445,48 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
         }
         m_virtual_size.w += m_cursor_width;
         if (m_buffer.size() == 1) { m_virtual_size.h -= m_line_spacing; }
+        // A little workaround to update the selection x values after text changes.
+        // TODO we should probably do this everytime we draw since the x values can
+        // get out of date so quickly and any of them recorded in history become invalid
+        // once text size has changed
+        if (m_buffer.size() && m_selection.hasSelection()) {
+            Selection old_selection = m_selection;
+            bool did_swap = swapSelection();
+            if (m_selection.line_begin == m_selection.line_end) {
+                const String &line = m_buffer[m_selection.line_begin];
+                m_selection.x_begin = dc.measureText(font(), Slice<const char>(line.data(), m_selection.begin), m_tab_width).w;
+                m_selection.x_end = m_selection.x_begin + dc.measureText(font(), Slice<const char>(line.data() + m_selection.begin, m_selection.end - m_selection.begin), m_tab_width).w;
+                if (did_swap) {
+                    i32 temp_x = m_selection.x_begin;
+                    m_selection.x_begin = m_selection.x_end;
+                    m_selection.x_end = temp_x;
+                    i32 temp = m_selection.begin;
+                    m_selection.begin = m_selection.end;
+                    m_selection.end = temp;
+                }
+            } else {
+                {
+                    const String &line = m_buffer[m_selection.line_begin];
+                    m_selection.x_begin = dc.measureText(font(), Slice<const char>(line.data(), m_selection.begin), m_tab_width).w;
+                }
+                {
+                    const String &line = m_buffer[m_selection.line_end];
+                    m_selection.x_end = dc.measureText(font(), Slice<const char>(line.data(), m_selection.end), m_tab_width).w;
+                }
+                if (did_swap) {
+                    i32 temp_x = m_selection.x_begin;
+                    m_selection.x_begin = m_selection.x_end;
+                    m_selection.x_end = temp_x;
+                    i32 temp = m_selection.begin;
+                    m_selection.begin = m_selection.end;
+                    m_selection.end = temp;
+                    i32 temp_line = m_selection.line_begin;
+                    m_selection.line_begin = m_selection.line_end;
+                    m_selection.line_end = temp_line;
+                }
+            }
+
+        }
         m_text_changed = false;
     }
     if (m_size_changed) {
