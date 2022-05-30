@@ -45,6 +45,8 @@
 
         i32 scroll_amount = 50;
 
+        bool freeze = false;
+
         void setMouseCursor(Cursor cursor);
         static Application* get();
 

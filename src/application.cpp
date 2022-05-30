@@ -81,18 +81,22 @@ Application::Application(const char *title, Size size) {
     mainWindow()->bind(SDLK_EQUALS, Mod::Ctrl, [&]() {
         scale += 10;
         if (scale > 500) { scale = 500; }
+        freeze = true;
         for (Window *win : m_windows) {
             win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
             win->layout(LAYOUT_SCALE);
         }
+        mainWindow()->pulse();
     });
     mainWindow()->bind(SDLK_MINUS, Mod::Ctrl, [&]() {
         scale -= 10;
         if (scale < 50) { scale = 50; }
+        freeze = true;
         for (Window *win : m_windows) {
             win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
             win->layout(LAYOUT_SCALE);
         }
+        mainWindow()->pulse();
     });
 }
 
@@ -227,6 +231,7 @@ void Application::run() {
                 window->m_needs_update = false;
             }
         }
+        if (freeze) { freeze = false; }
         u32 frame_end = SDL_GetTicks() - frame_start;
         if (frame_time > frame_end) {
             mainWindow()->delay_till = SDL_GetTicks() + (frame_time - frame_end);

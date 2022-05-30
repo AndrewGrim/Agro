@@ -255,6 +255,7 @@ void Window::setMainWidget(Widget *widget) {
 
 void Window::show() {
     draw();
+    if (Application::get()->freeze) { return; }
     dc->swap_buffer(m_win);
 }
 
