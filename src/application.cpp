@@ -141,7 +141,15 @@ Application* Application::get() {
 }
 
 void Application::run() {
-    mainWindow()->show();
+    // TODO Im not a fan of this solution but it does
+    // prevent the UI from jumping on the initial load
+    // if the font size changes while calculating sizehint.
+    // however it does also cause extra work that isnt stricly necessary.
+    for (Window *win : m_windows) {
+        win->show();
+        win->layout(LAYOUT_FONT);
+        win->show();
+    }
     if (mainWindow()->onReady) {
         mainWindow()->onReady(mainWindow());
     }
