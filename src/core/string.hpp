@@ -79,6 +79,7 @@
         String& operator=(const char *text);
         String& operator=(const String &string);
         String& operator=(String &&string);
+        u8& operator[](u64 index);
         friend bool operator==(const String &lhs, const String &rhs);
         friend bool operator==(const String &lhs, const char *rhs);
         friend void operator+=(String &lhs, const char *rhs);

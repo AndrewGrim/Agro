@@ -139,6 +139,9 @@ int main() {
         assert(String("123abc456").find("efg").type == Option<u64>::Type::None);
     }
     {
+        assert(String("test")[1] == (u8)'e');
+    }
+    {
         String s = "";
 
         s = "a";

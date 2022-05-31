@@ -124,6 +124,10 @@ String& String::operator=(String &&string) {
     return *this;
 }
 
+u8& String::operator[](u64 index) {
+    return ((u8*)data())[index];
+}
+
 bool operator==(const String &lhs, const String &rhs) {
     if (lhs.size() != rhs.size()) { return false; }
     return memcmp(lhs.data(), rhs.data(), lhs.size()) == 0;
