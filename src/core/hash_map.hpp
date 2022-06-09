@@ -11,12 +11,6 @@
 
     template <> struct Hash<i32> {
         u32 operator()(i32 &key) const {
-            // u32 hash = 2166136261;
-            // for (u8 i = 0; i < sizeof(i32); i++) {
-            //     hash ^= ((u8*)&key)[i];
-            //     hash *= 16777619;
-            // }
-            // return hash;
             return (u64)key;
         }
     };
@@ -24,7 +18,6 @@
     template <> struct Hash<String> {
         u32 operator()(String &key) const {
             u32 hash = 2166136261;
-            // TODO we could try to do this 4 bytes at a time while aligned to 4 anyway
             for (u32 i = 0; i < key.size(); i++) {
                 hash ^= key[i];
                 hash *= 16777619;
