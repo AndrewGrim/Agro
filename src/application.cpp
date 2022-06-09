@@ -96,6 +96,11 @@ Application::Application(const char *title, Size size) {
             win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
             win->layout(LAYOUT_SCALE);
         }
+        // TODO this isnt enough for mhwi_db to automatically update it will only do so on the
+        // next update, maybe related to the fact that treeview is virtual size?
+        // either way ideally we would like a nice easy api that a user could resonably use
+        // and so we also need to cut out any gpu rendering and only stop submitting commands
+        // for efficiencies sake
         mainWindow()->pulse();
     });
 }
