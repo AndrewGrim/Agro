@@ -4,6 +4,7 @@
 *.exe
 *.json
 *.txt
+*.DS_Store
 
 /build
 /Agro
