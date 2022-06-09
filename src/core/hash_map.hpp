@@ -58,6 +58,13 @@
             entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
         }
 
+        HashMap(std::initializer_list<std::pair<K, V>> list) {
+            entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
+            for (std::pair<K, V> pair : list) {
+                insert(pair.first, pair.second);
+            }
+        }
+
         ~HashMap() {
             delete[] entries;
         }
