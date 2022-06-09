@@ -123,8 +123,10 @@
             }
         }
 
-        Entry& operator[](K key) {
-            return find(key);
+        V& operator[](K key) {
+            Entry &entry = find(key);
+            assert(entry);
+            return entry.value;
         }
 
         bool remove(K key) {
