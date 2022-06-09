@@ -346,27 +346,75 @@ Option<u64> String::find(const String &query) const {
 }
 
 String toString(int value) {
-    return String::format("%d", value);
+    i64 buffer_size = sizeof(value) * 4;
+    String s = String(buffer_size - 1);
+    i64 actual_size = snprintf(s.data(), buffer_size, "%d", value);
+    if (s._isSmall()) {
+        s._string._small._size = actual_size;
+    } else {
+        s._string._heap._size = actual_size;
+    }
+    return s;
 }
 
 String toString(long value) {
-    return String::format("%ld", value);
+    i64 buffer_size = sizeof(value) * 4;
+    String s = String(buffer_size - 1);
+    i64 actual_size = snprintf(s.data(), buffer_size, "%ld", value);
+    if (s._isSmall()) {
+        s._string._small._size = actual_size;
+    } else {
+        s._string._heap._size = actual_size;
+    }
+    return s;
 }
 
 String toString(long long value) {
-    return String::format("%lld", value);
+    i64 buffer_size = sizeof(value) * 4;
+    String s = String(buffer_size - 1);
+    i64 actual_size = snprintf(s.data(), buffer_size, "%lld", value);
+    if (s._isSmall()) {
+        s._string._small._size = actual_size;
+    } else {
+        s._string._heap._size = actual_size;
+    }
+    return s;
 }
 
 String toString(unsigned value) {
-    return String::format("%u", value);
+    i64 buffer_size = sizeof(value) * 4;
+    String s = String(buffer_size - 1);
+    i64 actual_size = snprintf(s.data(), buffer_size, "%u", value);
+    if (s._isSmall()) {
+        s._string._small._size = actual_size;
+    } else {
+        s._string._heap._size = actual_size;
+    }
+    return s;
 }
 
 String toString(unsigned long value) {
-    return String::format("%lu", value);
+    i64 buffer_size = sizeof(value) * 4;
+    String s = String(buffer_size - 1);
+    i64 actual_size = snprintf(s.data(), buffer_size, "%lu", value);
+    if (s._isSmall()) {
+        s._string._small._size = actual_size;
+    } else {
+        s._string._heap._size = actual_size;
+    }
+    return s;
 }
 
 String toString(unsigned long long value) {
-    return String::format("%llu", value);
+    i64 buffer_size = sizeof(value) * 4;
+    String s = String(buffer_size - 1);
+    i64 actual_size = snprintf(s.data(), buffer_size, "%llu", value);
+    if (s._isSmall()) {
+        s._string._small._size = actual_size;
+    } else {
+        s._string._heap._size = actual_size;
+    }
+    return s;
 }
 
 String toString(float value) {
