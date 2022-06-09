@@ -11,7 +11,12 @@
 
     template <> struct Hash<i32> {
         u32 operator()(i32 &key) const {
-            return (u64)key;
+            u32 hash = 2166136261;
+            for (u8 i = 0; i < sizeof(i32); i++) {
+                hash ^= ((u8*)&key)[i];
+                hash *= 16777619;
+            }
+            return hash;
         }
     };
 
