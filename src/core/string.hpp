@@ -49,6 +49,7 @@
         u8 _padding[sizeof(void*)];
     };
 
+    // TODO we could further increase sso storage by using bit shifts and storing the __is_heap as a single bit
     #define SMALL_STRING_BUFFER (sizeof(HeapString) - 3) // -1 for null terminator, -1 for _size, -1 for _is_heap
 
     struct SmallString {
