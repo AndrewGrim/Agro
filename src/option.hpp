@@ -1,12 +1,12 @@
 #ifndef OPTION_HPP
     #define OPTION_HPP
-    
+
     template <typename T> struct Option {
         enum class Type {
             Some,
             None
         };
-        
+
         Type type;
         T value;
 
