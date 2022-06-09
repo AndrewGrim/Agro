@@ -38,12 +38,12 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 	freetype-2.11.0/include
 )
 target_link_directories(${PROJECT_NAME} PUBLIC
-	build/SDL2-2.0.16
-	build/Debug/SDL2-2.0.16
-	build/Release/SDL2-2.0.16
-	build/freetype-2.11.0
-	build/Debug/freetype-2.11.0
-	build/Release/freetype-2.11.0
+	"${PROJECT_BINARY_DIR}/SDL2-2.0.16"
+	"${PROJECT_BINARY_DIR}/Debug/SDL2-2.0.16"
+	"${PROJECT_BINARY_DIR}/Release/SDL2-2.0.16"
+	"${PROJECT_BINARY_DIR}/freetype-2.11.0"
+	"${PROJECT_BINARY_DIR}/Debug/freetype-2.11.0"
+	"${PROJECT_BINARY_DIR}/Release/freetype-2.11.0"
 )
 if (APPLE)
 	target_link_libraries(${PROJECT_NAME}
