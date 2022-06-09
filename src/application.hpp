@@ -4,6 +4,7 @@
     #include "window.hpp"
     #include "resources.hpp"
     #include "timer.hpp"
+    #include "core/hash_map.hpp"
 
     enum class Cursor {
         Arrow,
@@ -68,6 +69,6 @@
         Cursors *m_cursors = nullptr;
         FT_Library ft = NULL;
 
-        std::unordered_map<const char*, std::shared_ptr<Texture>> icons;
+        HashMap<String, std::shared_ptr<Texture>> icons;
     };
 #endif
