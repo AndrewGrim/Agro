@@ -59,6 +59,8 @@
             assert(entries && "Failed to allocate default capacity for HashMap default ctor!");
         }
 
+        HashMap(const HashMap &map) = delete;
+
         HashMap(std::initializer_list<std::pair<K, V>> list) {
             entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
             assert(entries && "Failed to allocate default capacity for HashMap initializer_list ctor!");
@@ -69,6 +71,15 @@
 
         ~HashMap() {
             delete[] entries;
+        }
+
+        HashMap& operator=(const HashMap &map) = delete;
+
+        HashMap& operator=(HashMap &&map) {
+            this->~HashMap();
+            memcpy(this, &map, sizeof(HashMap<K, V>));
+            map.entries = nullptr;
+            return *this;
         }
 
         bool insert(K key, V value) {
