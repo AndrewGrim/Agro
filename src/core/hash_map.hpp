@@ -56,10 +56,12 @@
 
         HashMap() {
             entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
+            assert(entries && "Failed to allocate default capacity for HashMap default ctor!");
         }
 
         HashMap(std::initializer_list<std::pair<K, V>> list) {
             entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
+            assert(entries && "Failed to allocate default capacity for HashMap initializer_list ctor!");
             for (std::pair<K, V> pair : list) {
                 insert(pair.first, pair.second);
             }
