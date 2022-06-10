@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
             }
         };
         app->mainWindow()->setTitle("Keybindings");
-        i32 map_key = app->mainWindow()->bind(
+        app->mainWindow()->bind(
             SDLK_q,
             Mod::None,
             [&]{
@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
         );
         Button *unbind_button = new Button("Unbind `Q`");
             unbind_button->onMouseClick.addEventListener([=](Widget *widget, MouseEvent event) {
-                app->mainWindow()->unbind(map_key);
+                app->mainWindow()->unbind(SDLK_q, (i32)Mod::None);
             });
         app->mainWindow()->append(unbind_button, Fill::Both);
     app->run();
