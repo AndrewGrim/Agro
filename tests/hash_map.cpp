@@ -33,7 +33,7 @@ int main() {
     }
 
     i32 n = 1337;
-    assert(Hash<i32>()(n) == 1337);
+    assert(Hash<i32>()(n) == 3361957851);
     // Error about undefined symbol because there is no specialization for the u32 type. Expected behaviour.
     // u32 hash = Hash<u32>()(1);
 
