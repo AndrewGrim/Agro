@@ -2,6 +2,7 @@
     #define HASH_MAP_HPP
 
     #include <assert.h>
+    #include <utility>
 
     #include "string.hpp"
 
