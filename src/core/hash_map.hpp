@@ -21,6 +21,17 @@
         }
     };
 
+    template <> struct Hash<u32> {
+        u32 operator()(u32 &key) const {
+            u32 hash = 2166136261;
+            for (u8 i = 0; i < sizeof(u32); i++) {
+                hash ^= ((u8*)&key)[i];
+                hash *= 16777619;
+            }
+            return hash;
+        }
+    };
+
     template <> struct Hash<String> {
         u32 operator()(String &key) const {
             u32 hash = 2166136261;
