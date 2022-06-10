@@ -1,17 +1,17 @@
 #ifndef WINDOW_HPP
     #define WINDOW_HPP
 
-    #include "core/string.hpp"
     #include <vector>
     #include <utility>
     #include <functional>
-    #include <unordered_map>
 
     #include <SDL.h>
 
     #include "event.hpp"
     #include "state.hpp"
     #include "keyboard.hpp"
+    #include "core/string.hpp"
+    #include "core/hash_map.hpp"
     #include "controls/widget.hpp"
     #include "controls/scrolled_box.hpp"
 
@@ -85,9 +85,9 @@
 
             void removeFromState(Widget *widget);
 
-            i32 bind(i32 key, i32 modifiers, std::function<void()> callback);
-            i32 bind(i32 key, Mod modifier, std::function<void()> callback);
-            void unbind(i32 map_key);
+            bool bind(i32 key, i32 modifiers, std::function<void()> callback);
+            bool bind(i32 key, Mod modifier, std::function<void()> callback);
+            bool unbind(i32 key, i32 modifiers);
 
             void quit();
 
@@ -112,9 +112,10 @@
             Widget *m_main_widget = new ScrolledBox(Align::Vertical);
             State *m_state = new State();
             bool m_needs_update = false;
-            // TODO have another map for hotkeys ie menu shortcut keys
-            std::unordered_map<i32, KeyboardShortcut> m_keyboard_shortcuts;
-            i32 m_binding_id = 0; // This is used to give out the next id to a binding. // TODO look in notes for a better solution
+
+            // TODO have another map for hotkeys ie menu shortcut keys... erm do we really need that though?
+            HashMap<KeyboardShortcut, std::function<void()>> m_keyboard_shortcuts;
+
             bool m_running = true;
             bool m_mouse_inside = true;
             bool m_is_mouse_captured = false;
@@ -130,6 +131,7 @@
             /// Used internally by show().
             void draw();
             void drawTooltip();
-            void matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<i32, KeyboardShortcut> keybinds);
+
+            void matchKeybind(bool &matched, KeyboardShortcut hotkey, HashMap<KeyboardShortcut, std::function<void()>> &keybinds);
     };
 #endif

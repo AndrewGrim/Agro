@@ -59,7 +59,28 @@
             assert(entries && "Failed to allocate default capacity for HashMap default ctor!");
         }
 
-        HashMap(const HashMap &map) = delete;
+        HashMap(const HashMap &map) {
+            entries = new Entry[map.capacity];
+            assert(entries && "Failed to allocate default capacity for HashMap copy ctor!");
+            length = 0;
+            for (u64 i = 0; i < map.capacity; i++) {
+                Entry &entry = map.entries[i];
+                if (entry) {
+                    length++;
+                    u32 index = Hash<K>()(entry.key) % capacity;
+                    while (true) {
+                        Entry &copied_entry = entries[index];
+                        if (copied_entry.flags & Entry::NULL_KEY) {
+                            copied_entry.flags = Entry::NOT_NULL;
+                            copied_entry.key = entry.key;
+                            copied_entry.value = entry.value;
+                            break;
+                        }
+                        index = (index + 1) % capacity;
+                    }
+                } // Otherwise its either a null or a tombstone which we dont need to move.
+            }
+        }
 
         HashMap(std::initializer_list<std::pair<K, V>> list) {
             entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];

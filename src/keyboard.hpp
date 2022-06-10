@@ -6,6 +6,7 @@
     #include <SDL.h>
 
     #include "common/number_types.h"
+    #include "core/hash_map.hpp"
 
     // TODO add enum class for keys
 
@@ -46,22 +47,29 @@
     }
 
     struct KeyboardShortcut {
-        i32 key;
-        Mod ctrl;
-        Mod shift;
-        Mod alt;
-        Mod gui;
-        i32 modifiers;
-        std::function<void()> callback;
+        i32 key = -1;
+        i32 modifiers = -1;
 
-        KeyboardShortcut(i32 key, Mod ctrl, Mod shift, Mod alt, Mod gui, i32 modifiers, std::function<void()> callback) {
-            this->key = key;
-            this->ctrl = ctrl;
-            this->shift = shift;
-            this->alt = alt;
-            this->gui = gui;
-            this->modifiers = modifiers;
-            this->callback = callback;
+        KeyboardShortcut() {}
+        KeyboardShortcut(i32 key, i32 modifiers) : key{key}, modifiers{modifiers} {}
+
+        friend bool operator==(const KeyboardShortcut &lhs, const KeyboardShortcut &rhs) {
+            return (lhs.key == rhs.key) && (lhs.modifiers == rhs.modifiers);
+        }
+    };
+
+    template <> struct Hash<KeyboardShortcut> {
+        u32 operator()(KeyboardShortcut &key) const {
+            u32 hash = 2166136261;
+            for (u8 i = 0; i < sizeof(key.key); i++) {
+                hash ^= ((u8*)&key)[i];
+                hash *= 16777619;
+            }
+            for (u8 i = 0; i < sizeof(key.modifiers); i++) {
+                hash ^= ((u8*)&key)[i];
+                hash *= 16777619;
+            }
+            return hash;
         }
     };
 #endif

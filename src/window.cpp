@@ -166,41 +166,31 @@ void Window::handleSDLEvent(SDL_Event &event) {
         case SDL_KEYDOWN: {
                 // BTW it seems its impossible to trigger SDLK_PLUS as an event
                 // it always comes through as SDLK_EQUALS
-                SDL_Keycode key = event.key.keysym.sym;
-                Uint16 mod = event.key.keysym.mod;
-                Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
-                if (mod & KMOD_CTRL) {
-                    mods[0] = Mod::Ctrl;
-                }
-                if (mod & KMOD_SHIFT) {
-                    mods[1] = Mod::Shift;
-                }
-                if (mod & KMOD_ALT) {
-                    mods[2] = Mod::Alt;
-                }
-                if (mod & KMOD_GUI) {
-                    mods[3] = Mod::Gui;
-                }
+                KeyboardShortcut hotkey = KeyboardShortcut(event.key.keysym.sym, event.key.keysym.mod);
+                if (hotkey.modifiers & Mod::LCtrl || hotkey.modifiers & Mod::RCtrl) { hotkey.modifiers |= (i32)Mod::Ctrl; }
+                if (hotkey.modifiers & Mod::LShift || hotkey.modifiers & Mod::RShift) { hotkey.modifiers |= (i32)Mod::Shift; }
+                if (hotkey.modifiers & Mod::LAlt || hotkey.modifiers & Mod::RAlt) { hotkey.modifiers |= (i32)Mod::Alt; }
+                if (hotkey.modifiers & Mod::LGui || hotkey.modifiers & Mod::RGui) { hotkey.modifiers |= (i32)Mod::Gui; }
                 bool matched = false;
                 Widget *focus_widget = m_state->soft_focused ? m_state->soft_focused : m_state->hard_focused;
                 assert(m_main_widget && "The main widget should never be null!");
-                if (key == SDLK_TAB && mods[0] == Mod::Ctrl && mods[1] == Mod::Shift) {
+                if (hotkey.key == SDLK_TAB && hotkey.modifiers & Mod::Ctrl && hotkey.modifiers & Mod::Shift) {
                     propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
-                } else if (key == SDLK_TAB && mods[0] == Mod::Ctrl) {
+                } else if (hotkey.key == SDLK_TAB && hotkey.modifiers & Mod::Ctrl) {
                     propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
-                } else if (m_state->soft_focused && m_state->soft_focused != m_state->hard_focused && key == SDLK_SPACE) {
+                } else if (m_state->soft_focused && m_state->soft_focused != m_state->hard_focused && hotkey.key == SDLK_SPACE) {
                     m_state->soft_focused->activate();
                     SDL_FlushEvent(SDL_TEXTINPUT);
                 } else {
-                    matchKeybind(matched, mods, key, m_keyboard_shortcuts);
+                    matchKeybind(matched, hotkey, m_keyboard_shortcuts);
                     if (!matched) {
                         if (m_state->hard_focused) {
-                            matchKeybind(matched, mods, key, m_state->hard_focused->keyboardShortcuts());
+                            matchKeybind(matched, hotkey, m_state->hard_focused->keyboardShortcuts());
                         }
                         if (!matched) {
-                            if (key == SDLK_TAB && mods[1] == Mod::Shift) {
+                            if (hotkey.key == SDLK_TAB && hotkey.modifiers & Mod::Shift) {
                                 propagateFocusEvent(FocusEvent::Reverse, focus_widget ? focus_widget : m_main_widget);
-                            } else if (key == SDLK_TAB) {
+                            } else if (hotkey.key == SDLK_TAB) {
                                 propagateFocusEvent(FocusEvent::Forward, focus_widget ? focus_widget : m_main_widget);
                             }
                         }
@@ -294,42 +284,16 @@ void Window::removeFromState(Widget *widget) {
     }
 }
 
-i32 Window::bind(i32 key, i32 modifiers, std::function<void()> callback) {
-    Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
-
-    if (modifiers & KMOD_CTRL) {
-        mods[0] = Mod::Ctrl;
-    }
-    if (modifiers & KMOD_SHIFT) {
-        mods[1] = Mod::Shift;
-    }
-    if (modifiers & KMOD_ALT) {
-        mods[2] = Mod::Alt;
-    }
-    if (modifiers & KMOD_GUI) {
-        mods[3] = Mod::Gui;
-    }
-
-    m_keyboard_shortcuts.insert(
-        std::make_pair(
-            m_binding_id,
-            KeyboardShortcut(
-                key,
-                mods[0], mods[1], mods[2], mods[3],
-                modifiers,
-                callback
-            )
-        )
-    );
-    return m_binding_id++;
+bool Window::bind(i32 key, i32 modifiers, std::function<void()> callback) {
+    return m_keyboard_shortcuts.insert(KeyboardShortcut(key, modifiers), callback);
 }
 
-i32 Window::bind(i32 key, Mod modifier, std::function<void()> callback) {
+bool Window::bind(i32 key, Mod modifier, std::function<void()> callback) {
     return bind(key, (i32)modifier, callback);
 }
 
-void Window::unbind(i32 key) {
-    m_keyboard_shortcuts.erase(key);
+bool Window::unbind(i32 key, i32 modifiers) {
+    return m_keyboard_shortcuts.remove(KeyboardShortcut(key, modifiers));
 }
 
 void Window::quit() {
@@ -480,28 +444,11 @@ void Window::propagateFocusEvent(FocusEvent event, Widget *focused) {
     update();
 }
 
-void Window::matchKeybind(bool &matched, Mod mods[4], SDL_Keycode key, std::unordered_map<i32, KeyboardShortcut> keybinds) {
-    for (auto hotkey : keybinds) {
-        if (hotkey.second.key == key) {
-            bool mods_matched = true;
-            if (hotkey.second.ctrl != mods[0]) {
-                mods_matched = false;
-            }
-            if (hotkey.second.shift != mods[1]) {
-                mods_matched = false;
-            }
-            if (hotkey.second.alt != mods[2]) {
-                mods_matched = false;
-            }
-            if (hotkey.second.gui != mods[3]) {
-                mods_matched = false;
-            }
-            if (mods_matched) {
-                hotkey.second.callback();
-                SDL_FlushEvent(SDL_TEXTINPUT);
-                matched = true;
-                break;
-            }
-        }
+void Window::matchKeybind(bool &matched, KeyboardShortcut hotkey, HashMap<KeyboardShortcut, std::function<void()>> &keybinds) {
+    auto entry = keybinds.find(hotkey);
+    if (entry) {
+        entry.value();
+        SDL_FlushEvent(SDL_TEXTINPUT);
+        matched = true;
     }
 }

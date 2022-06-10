@@ -252,45 +252,19 @@ Widget* Widget::setProportion(u32 proportion) {
     return this;
 }
 
-i32 Widget::bind(i32 key, i32 modifiers, std::function<void()> callback) {
-    Mod mods[4] = {Mod::None, Mod::None, Mod::None, Mod::None};
-
-    if (modifiers & KMOD_CTRL) {
-        mods[0] = Mod::Ctrl;
-    }
-    if (modifiers & KMOD_SHIFT) {
-        mods[1] = Mod::Shift;
-    }
-    if (modifiers & KMOD_ALT) {
-        mods[2] = Mod::Alt;
-    }
-    if (modifiers & KMOD_GUI) {
-        mods[3] = Mod::Gui;
-    }
-
-    m_keyboard_shortcuts.insert(
-        std::make_pair(
-            m_binding_id,
-            KeyboardShortcut(
-                key,
-                mods[0], mods[1], mods[2], mods[3],
-                modifiers,
-                callback
-            )
-        )
-    );
-    return m_binding_id++;
+bool Widget::bind(i32 key, i32 modifiers, std::function<void()> callback) {
+    return m_keyboard_shortcuts.insert(KeyboardShortcut(key, modifiers), callback);
 }
 
-i32 Widget::bind(i32 key, Mod modifier, std::function<void()> callback) {
+bool Widget::bind(i32 key, Mod modifier, std::function<void()> callback) {
     return bind(key, (i32)modifier, callback);
 }
 
-void Widget::unbind(i32 key) {
-    m_keyboard_shortcuts.erase(key);
+bool Widget::unbind(i32 key, i32 modifiers) {
+    return m_keyboard_shortcuts.remove(KeyboardShortcut(key, modifiers));
 }
 
-const std::unordered_map<i32, KeyboardShortcut> Widget::keyboardShortcuts() {
+HashMap<KeyboardShortcut, std::function<void()>>& Widget::keyboardShortcuts() {
     return m_keyboard_shortcuts;
 }
 

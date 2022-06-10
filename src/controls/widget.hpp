@@ -2,7 +2,6 @@
     #define WIDGET_HPP
 
     #include <vector>
-    #include <unordered_map>
     #include <functional>
 
     #include "../common/number_types.h"
@@ -12,6 +11,8 @@
     #include "../common/color.hpp"
     #include "../common/point.hpp"
     #include "../common/style.hpp"
+    #include "../core/string.hpp"
+    #include "../core/hash_map.hpp"
     #include "../state.hpp"
     #include "../event.hpp"
     #include "../keyboard.hpp"
@@ -249,10 +250,10 @@
             /// focus, hover and pressed states.
             i32 state();
 
-            i32 bind(i32 key, i32 modifiers, std::function<void()> callback);
-            i32 bind(i32 key, Mod modifier, std::function<void()> callback);
-            void unbind(i32 map_key);
-            const std::unordered_map<i32, KeyboardShortcut> keyboardShortcuts();
+            bool bind(i32 key, i32 modifiers, std::function<void()> callback);
+            bool bind(i32 key, Mod modifier, std::function<void()> callback);
+            bool unbind(i32 key, i32 modifiers);
+            HashMap<KeyboardShortcut, std::function<void()>>& keyboardShortcuts();
             Size size();
             bool isWidget();
 
@@ -284,9 +285,6 @@
             /// Widget expands this one will expand 5 pixels.
             u32 m_proportion = 1;
 
-            /// The id return when binding a keyboard shortcut thats individual to the widget.
-            /// So first keybinding for this widget has an id of 0, then next one 1 and so on.
-            i32 m_binding_id = 0;
-            std::unordered_map<i32, KeyboardShortcut> m_keyboard_shortcuts;
+            HashMap<KeyboardShortcut, std::function<void()>> m_keyboard_shortcuts;
     };
 #endif
