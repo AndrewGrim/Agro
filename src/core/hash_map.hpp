@@ -185,5 +185,15 @@
             entry.value = V();
             return true;
         }
+
+        void clear() {
+            for (u64 i = 0; i < capacity; i++) {
+                Entry &entry = entries[i];
+                entry.flags = Entry::NULL_KEY|Entry::NULL_VALUE;
+                entry.key = K();
+                entry.value = V();
+            }
+            length = 0;
+        }
     };
 #endif
