@@ -34,11 +34,11 @@ u32 Font::maxHeight() {
 
 Font::Character Font::get(u32 codepoint) {
     auto search = characters.find(codepoint);
-    if (search == characters.end()) {
+    if (!search) {
         loadGlyph(codepoint, true);
         return characters[codepoint];
     }
-    return search->second;
+    return search.value;
 }
 
 void Font::load(FT_Face face) {
@@ -173,7 +173,7 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
         GL_UNSIGNED_BYTE,
         g->bitmap.buffer
     );
-    characters.emplace(
+    characters.insert(
         codepoint,
         Character(
             Point(g->bitmap_left, g->bitmap_top),

@@ -1,12 +1,11 @@
 #ifndef FONT_HPP
     #define FONT_HPP
 
-    #include <unordered_map>
-
     #include <ft2build.h>
     #include FT_FREETYPE_H
 
     #include "../core/string.hpp"
+    #include "../core/hash_map.hpp"
     #include "../common/color.hpp"
     #include "../common/rect.hpp"
     #include "../common/size.hpp"
@@ -68,7 +67,7 @@
             Application *app;
 
             FT_Face face = NULL;
-            std::unordered_map<u32, Font::Character> characters;
+            HashMap<u32, Font::Character> characters;
 
             void load(FT_Face face);
             void grow(u32 width, u32 height, u32 depth);
