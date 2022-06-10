@@ -53,7 +53,7 @@
                 NULL_KEY    = 0b0001,
                 NULL_VALUE  = 0b0010,
             };
-            u32 flags = Entry::NULL_KEY | Entry::NULL_VALUE;
+            u32 flags = Entry::NULL_KEY|Entry::NULL_VALUE;
             K key;
             V value;
 
