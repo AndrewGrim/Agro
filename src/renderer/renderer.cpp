@@ -141,7 +141,7 @@ Renderer::Renderer(u32 *indices) {
     shader.use();
     std::vector<i32> texture_indices;
     for (i32 i = AGRO_OPENGL_RESERVED_TEXTURE_SLOTS; i < max_texture_slots; i++) { texture_indices.push_back(i); }
-    assert(texture_indices.size() == max_texture_slots - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS && "The index count should be equivalent to the number of non-reserved texture slots.");
+    assert(texture_indices.size() == (u32)(max_texture_slots - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS) && "The index count should be equivalent to the number of non-reserved texture slots.");
     auto loc = glGetUniformLocation(shader.ID, "textures");
     glUniform1iv(loc, texture_indices.size(), texture_indices.data());
     loc = glGetUniformLocation(shader.ID, "texture_array");

@@ -450,7 +450,6 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
         // get out of date so quickly and any of them recorded in history become invalid
         // once text size has changed
         if (m_buffer.size()) {
-            Selection old_selection = m_selection;
             bool did_swap = swapSelection();
             if (m_selection.line_begin == m_selection.line_end) {
                 const String &line = m_buffer[m_selection.line_begin];
