@@ -2,7 +2,7 @@
 #include "../application.hpp"
 
 Font::Font(Application *app, String file_path, u32 pixel_size, Font::Type type)
-: app{app}, file_path{file_path}, pixel_size{pixel_size}, type{type}, loaded_from_file{true} {
+: file_path{file_path}, loaded_from_file{true}, pixel_size{pixel_size}, type{type}, app{app} {
     if (FT_New_Face(app->ft, file_path.data(), 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path.data());
         if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
@@ -13,7 +13,7 @@ Font::Font(Application *app, String file_path, u32 pixel_size, Font::Type type)
 }
 
 Font::Font(Application *app, const u8 *data, i64 length, u32 pixel_size, Font::Type type)
-: app{app}, file_path{":memory:"}, pixel_size{pixel_size}, type{type}, data{data}, data_size{length} {
+: file_path{":memory:"}, data{data}, data_size{length}, pixel_size{pixel_size}, type{type}, app{app} {
     if (FT_New_Memory_Face(app->ft, data, length, 0, &face)) {
         fail("FAILED_TO_LOAD_FONT", file_path.data());
         if (FT_Select_Charmap(face, FT_ENCODING_UNICODE)) {
@@ -132,7 +132,7 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
         if (next_depth == atlas_depth) {
             info("Font grow depth:", file_path);
             new_atlas_depth *= 2;
-            if (new_atlas_depth > app->currentWindow()->dc->renderer->max_texture_depth) {
+            if (new_atlas_depth > (u32)app->currentWindow()->dc->renderer->max_texture_depth) {
                 fail("Exceeded max_texture_depth:", String::format("new_atlas_depth: %u, max: %d", new_atlas_depth, app->currentWindow()->dc->renderer->max_texture_depth));
             }
             should_grow = true;
