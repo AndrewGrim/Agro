@@ -1182,12 +1182,12 @@
                         if (m_hovered == node) { state |= STATE_HOVERED; }
                         if (!m_table && !i) {
                             // Draw the cell background using appropriate state in treeline gutter when drawing treelines.
-                            cell_x += node->depth * m_indent;
                             EmptyCell().draw(
                                 dc,
-                                Rect(cell_clip.x, cell_clip.y, node->depth * m_indent, cell_clip.h),
+                                Rect(cell_x, cell_clip.y, node->depth * m_indent, cell_clip.h),
                                 state
                             );
+                            cell_x += node->depth * m_indent;
                         }
                         if (drawable->isWidget()) {
                             // Draw the cell background using appropriate state for cells with widgets in them.
