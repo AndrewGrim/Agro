@@ -216,7 +216,7 @@ Widget* slidersAndScrollbars(Application &app) {
 }
 
 Widget* splitter(Application &app) {
-    Box * box = new Box(Align::Vertical);
+    Box *box = new Box(Align::Vertical);
         Splitter *h = new Splitter(Align::Horizontal);
             h->left(new Button("Left"));
             h->right(new Button("Right"));
@@ -236,7 +236,7 @@ struct Hidden {
 };
 
 Widget* treeView(Application &app) {
-    ScrolledBox * box = new ScrolledBox(Align::Horizontal);
+    ScrolledBox *box = new ScrolledBox(Align::Horizontal);
         {
             GroupBox *group = new GroupBox(Align::Vertical, "Mode::Unroll");
                 TreeView<Hidden> *tv = new TreeView<Hidden>();
