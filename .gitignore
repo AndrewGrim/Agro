@@ -2,8 +2,6 @@
 *.so
 *.out
 *.exe
-*.json
-*.txt
 *.DS_Store
 
 /build
