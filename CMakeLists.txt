@@ -35,15 +35,15 @@ file(GLOB sources
 add_library(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
 	SDL2/include
-	freetype-2.11.0/include
+	freetype/include
 )
 target_link_directories(${PROJECT_NAME} PUBLIC
 	"${PROJECT_BINARY_DIR}/SDL2"
 	"${PROJECT_BINARY_DIR}/Debug/SDL2"
 	"${PROJECT_BINARY_DIR}/Release/SDL2"
-	"${PROJECT_BINARY_DIR}/freetype-2.11.0"
-	"${PROJECT_BINARY_DIR}/Debug/freetype-2.11.0"
-	"${PROJECT_BINARY_DIR}/Release/freetype-2.11.0"
+	"${PROJECT_BINARY_DIR}/freetype"
+	"${PROJECT_BINARY_DIR}/Debug/freetype"
+	"${PROJECT_BINARY_DIR}/Release/freetype"
 )
 if (APPLE)
 	target_link_libraries(${PROJECT_NAME}
@@ -108,12 +108,18 @@ set(CMAKE_DISABLE_FIND_PACKAGE_BZip2 TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_PNG TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_BrotliDec TRUE)
-add_subdirectory(${PROJECT_SOURCE_DIR}/freetype-2.11.0)
-set(FT_WITH_ZLIB OFF)
-set(FT_WITH_BZIP2 OFF)
-set(FT_WITH_PNG OFF)
-set(FT_WITH_HARFBUZZ OFF)
-set(FT_WITH_BROTLI OFF)
+# version 2.12.1
+add_subdirectory(${PROJECT_SOURCE_DIR}/freetype)
+set(FT_REQUIRE_ZLIB FALSE)
+set(FT_REQUIRE_BZip2 FALSE)
+set(FT_REQUIRE_PNG FALSE)
+set(FT_REQUIRE_HarfBuzz FALSE)
+set(FT_REQUIRE_BrotliDec FALSE)
+set(FT_DISABLE_ZLIB TRUE)
+set(FT_DISABLE_BZip2 TRUE)
+set(FT_DISABLE_PNG TRUE)
+set(FT_DISABLE_HarfBuzz TRUE)
+set(FT_DISABLE_BrotliDec TRUE)
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
 add_subdirectory(${PROJECT_SOURCE_DIR}/examples)
