@@ -32,6 +32,7 @@ DropDown::DropDown() {
                 win->is_owned = false;
                 win->quit();
                 m_is_open = false;
+                Application::get()->currentWindow()->update();
             };
             m_window->run();
         }
