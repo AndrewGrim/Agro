@@ -34,13 +34,13 @@ file(GLOB sources
 )
 add_library(${PROJECT_NAME} ${sources})
 target_include_directories(${PROJECT_NAME} PUBLIC
-	SDL2-2.0.16/include
+	SDL2/include
 	freetype-2.11.0/include
 )
 target_link_directories(${PROJECT_NAME} PUBLIC
-	"${PROJECT_BINARY_DIR}/SDL2-2.0.16"
-	"${PROJECT_BINARY_DIR}/Debug/SDL2-2.0.16"
-	"${PROJECT_BINARY_DIR}/Release/SDL2-2.0.16"
+	"${PROJECT_BINARY_DIR}/SDL2"
+	"${PROJECT_BINARY_DIR}/Debug/SDL2"
+	"${PROJECT_BINARY_DIR}/Release/SDL2"
 	"${PROJECT_BINARY_DIR}/freetype-2.11.0"
 	"${PROJECT_BINARY_DIR}/Debug/freetype-2.11.0"
 	"${PROJECT_BINARY_DIR}/Release/freetype-2.11.0"
@@ -100,7 +100,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 set(BUILD_SHARED_LIBS OFF)
 set(HAVE_LIBC ON)
-add_subdirectory(${PROJECT_SOURCE_DIR}/SDL2-2.0.16)
+# version 2.0.22
+add_subdirectory(${PROJECT_SOURCE_DIR}/SDL2)
 
 set(CMAKE_DISABLE_FIND_PACKAGE_ZLIB TRUE)
 set(CMAKE_DISABLE_FIND_PACKAGE_BZip2 TRUE)
