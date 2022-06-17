@@ -44,7 +44,7 @@
     };
 
     #define HASH_MAP_MAX_LOAD 0.75f
-    #define HASH_MAP_DEFAULT_CAPACITY 256
+    #define HASH_MAP_DEFAULT_CAPACITY 8
 
     template <typename K, typename V, typename H = Hash<K>> struct HashMap {
         struct Entry {
@@ -63,15 +63,19 @@
         };
 
         u64 length = 0;
-        u64 capacity = HASH_MAP_DEFAULT_CAPACITY;
+        u64 capacity = 0;
         Entry *entries = nullptr;
 
-        HashMap() {
-            entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
-            assert(entries && "Failed to allocate default capacity for HashMap default ctor!");
+        HashMap() {}
+
+        HashMap(u64 starting_size) {
+            capacity = starting_size;
+            entries = new Entry[starting_size];
+            assert(entries && "Failed to allocate default capacity for HashMap starting_size ctor!");
         }
 
         HashMap(const HashMap &map) {
+            capacity = map.capacity;
             entries = new Entry[map.capacity];
             assert(entries && "Failed to allocate default capacity for HashMap copy ctor!");
             length = 0;
@@ -95,7 +99,8 @@
         }
 
         HashMap(std::initializer_list<std::pair<K, V>> list) {
-            entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
+            capacity = list.size();
+            entries = new Entry[list.size()];
             assert(entries && "Failed to allocate default capacity for HashMap initializer_list ctor!");
             for (std::pair<K, V> pair : list) {
                 insert(pair.first, pair.second);
@@ -116,7 +121,7 @@
         }
 
         bool insert(K key, V value) {
-            if (length + 1 > capacity * HASH_MAP_MAX_LOAD) {
+            if (length + 1 > capacity * HASH_MAP_MAX_LOAD && entries) {
                 u64 new_capacity = capacity * 2;
                 Entry *new_entries = new Entry[new_capacity];
                 assert(new_entries && "Failed to grow HashMap!");
@@ -152,6 +157,11 @@
         }
 
         Entry& find(K key) {
+            if (!entries) {
+                capacity = HASH_MAP_DEFAULT_CAPACITY;
+                entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
+                assert(entries && "Failed to allocate default capacity for HashMap find!");
+            }
             u32 index = Hash<K>()(key) % capacity;
             Entry *tombstone = nullptr;
             while (true) {
@@ -176,6 +186,7 @@
         }
 
         bool remove(K key) {
+            if (!entries) { return false; }
             Entry &entry = find(key);
             if (entry.flags & Entry::NULL_KEY) { return false; }
             // We dont set Entry::NULL_VALUE here to make it a tombstone.
