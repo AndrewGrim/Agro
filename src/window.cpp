@@ -308,19 +308,17 @@ void Window::quit() {
 
 void Window::handleResizeEvent(i32 width, i32 height) {
     Application::get()->setCurrentWindow(this);
+    SDL_GL_SetSwapInterval(1);
     active_context_menu = nullptr;
     size = Size(width, height);
     i32 w, h;
     SDL_GL_GetDrawableSize(m_win, &w, &h);
     glViewport(0, 0, w, h);
-    if (SDL_GetTicks() >= delay_till) {
-        // TODO frame time ie custom fps
-        delay_till = SDL_GetTicks() + (1000 / 60);
-        show();
-    }
+    show();
     if (onResize) {
         onResize(this);
     }
+    SDL_GL_SetSwapInterval(0);
 }
 
 void Window::resize(i32 width, i32 height) {
