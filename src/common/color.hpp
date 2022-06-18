@@ -6,32 +6,18 @@
 
     #include "number_types.h"
 
-    #define COLOR_DEFAULT Color(Color::IsDefault::Yes)
+    #define COLOR_DEFAULT Color(0, 0, 0, 1)
     #define COLOR_NONE Color(0, 0, 0, 0)
     #define COLOR_BLACK Color(0, 0, 0, 255)
     #define COLOR_WHITE Color(255, 255, 255, 255)
 
     struct Color {
-        enum class IsDefault {
-            Yes, No
-        };
-
-        IsDefault is_default = IsDefault::No;
-
         u8 r = 0;
         u8 g = 0;
         u8 b = 0;
         u8 a = 255;
 
-
-        Color(IsDefault is_default) : is_default{is_default} {
-
-        }
-
-        Color(u8 r = 0, u8 g = 0, u8 b = 0, u8 a = 255) :
-            r{r}, g{g}, b{b}, a{a} {
-
-        }
+        Color(u8 r = 0, u8 g = 0, u8 b = 0, u8 a = 255) : r{r}, g{g}, b{b}, a{a} {}
 
         Color(const char *string) {
             if (!string || *string == '\0') return;
@@ -78,20 +64,14 @@
         }
 
         operator bool() {
-            if (is_default == IsDefault::Yes) {
-                return false;
-            }
-            return true;
+            return !(*this == COLOR_DEFAULT);
         }
 
         bool operator==(Color &&rhs) {
-            if (this->r == rhs.r &&
-                this->g == rhs.g &&
-                this->b == rhs.b &&
-                this->a == rhs.a) {
-                return true;
-            }
-            return false;
+            return this->r == rhs.r &&
+                   this->g == rhs.g &&
+                   this->b == rhs.b &&
+                   this->a == rhs.a;
         }
 
         Color& operator+=(const Color &rhs) {
