@@ -1,18 +1,18 @@
 #include "image.hpp"
 
-Image::Image(String file_path) : Widget() {
+Image::Image(String file_path) {
     m_texture = std::make_shared<Texture>(file_path);
     m_size = originalSize();
     setWidgetBackgroundColor(COLOR_NONE);
 }
 
-Image::Image(const unsigned char *image_data, i32 length) : Widget() {
+Image::Image(const unsigned char *image_data, i32 length) {
     m_texture = std::make_shared<Texture>(image_data, length);
     m_size = originalSize();
     setWidgetBackgroundColor(COLOR_NONE);
 }
 
-Image::Image(std::shared_ptr<Texture> texture) : Widget() {
+Image::Image(std::shared_ptr<Texture> texture) {
     m_texture = texture;
     m_size = originalSize();
     setWidgetBackgroundColor(COLOR_NONE);
