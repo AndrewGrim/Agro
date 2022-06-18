@@ -177,8 +177,6 @@ void String::_setContent(u64 new_size, const char *text) {
         assert(_string._heap._data && "Failed memory allocation for String!");
         if (text) {
             memcpy(_string._heap._data, text, new_size);
-        } else {
-            _string._heap._data[0] = '\0';
         }
         _string._heap._size = new_size;
         _string._heap._data[_string._heap._size] = '\0';
@@ -187,8 +185,6 @@ void String::_setContent(u64 new_size, const char *text) {
     } else {
         if (text) {
             memcpy(_string._small._data, text, new_size);
-        } else {
-            _string._small._data[0] = '\0';
         }
         _string._small._size = new_size;
         _string._small._data[_string._small._size] = '\0';
