@@ -15,7 +15,7 @@ void EmptyCell::draw(DrawingContext &dc, Rect rect, i32 state) {
         dc.fillRect(rect, bg);
     }
     if (state & STATE_HOVERED) {
-        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 55));
     }
 }
 
@@ -38,7 +38,7 @@ void TextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
         bg = dc.accentWidgetBackground(style());
-        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 55));
     }
     dc.padding(rect, style());
     dc.fillTextMultilineAligned(
@@ -77,7 +77,7 @@ void ImageCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
         bg = dc.accentWidgetBackground(style());
-        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 55));
     }
     dc.padding(rect, style());
     dc.drawTextureAligned(
@@ -108,7 +108,7 @@ void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) 
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
         bg = dc.accentWidgetBackground(style());
-        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 55));
     }
     dc.padding(rect, style());
     Rect drawing_rect = rect;
@@ -163,7 +163,7 @@ void ImageTextCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, bg);
     if (state & STATE_HOVERED) {
         bg = dc.accentWidgetBackground(style());
-        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 0.2f));
+        dc.fillRect(rect, Color(bg.r, bg.g, bg.b, 55));
     }
     dc.padding(rect, style());
     Size text_size = dc.measureTextMultiline(font(), text.slice());

@@ -18,12 +18,11 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
     renderer = new Renderer(indices);
 
     default_light_style = {
-        Style::Margin {
-            STYLE_ALL,
-            1,
-            1,
-            1,
-            1
+        Style::BorderColor {
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT
         },
 
         Style::Border {
@@ -34,11 +33,12 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
             1
         },
 
-        Style::BorderColor {
-            COLOR_DEFAULT,
-            COLOR_DEFAULT,
-            COLOR_DEFAULT,
-            COLOR_DEFAULT
+        Style::Margin {
+            STYLE_ALL,
+            1,
+            1,
+            1,
+            1
         },
 
         Style::Padding {
@@ -69,12 +69,11 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
         Color("#777777")
     };
     default_dark_style = {
-        Style::Margin {
-            STYLE_ALL,
-            1,
-            1,
-            1,
-            1
+        Style::BorderColor {
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT,
+            COLOR_DEFAULT
         },
 
         Style::Border {
@@ -85,12 +84,14 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
             1
         },
 
-        Style::BorderColor {
-            COLOR_DEFAULT,
-            COLOR_DEFAULT,
-            COLOR_DEFAULT,
-            COLOR_DEFAULT
+        Style::Margin {
+            STYLE_ALL,
+            1,
+            1,
+            1,
+            1
         },
+
 
         Style::Padding {
             STYLE_ALL,

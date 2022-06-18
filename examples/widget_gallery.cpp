@@ -289,12 +289,12 @@ Widget* treeView(Application &app) {
                         for (i32 j = 1; j < 21; j++) {
                             auto n = model->append(parent, new TreeNode<Hidden>(
                                 {
-                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f, 0.7f, ic)), "Row " + toString(count)),
-                                    new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f, ic, 0.7f))),
+                                    new ImageTextCellRenderer((new Image(app.icons["up_arrow"]))->setForeground(Color(0.7f * 255, 0.7f * 255, ic * 255)), "Row " + toString(count)),
+                                    new ImageCellRenderer((new Image(app.icons["up_arrow"]))->flipVertically()->setForeground(Color(0.7f * 255, ic * 255, 0.7f * 255))),
                                     new MultipleImagesCellRenderer({
-                                        *(Image(app.icons["close"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                        *(Image(app.icons["up_arrow"]).setForeground(Color(ic, 0.7f, 0.7f))),
-                                        *(Image(app.icons["close_thin"]).setForeground(Color(ic, 0.7f, 0.7f))),
+                                        *(Image(app.icons["close"]).setForeground(Color(ic * 255, 0.7f * 255, 0.7f * 255))),
+                                        *(Image(app.icons["up_arrow"]).setForeground(Color(ic * 255, 0.7f * 255, 0.7f * 255))),
+                                        *(Image(app.icons["close_thin"]).setForeground(Color(ic * 255, 0.7f * 255, 0.7f * 255))),
                                     }),
                                 },
                                 new Hidden(count)

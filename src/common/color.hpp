@@ -7,9 +7,9 @@
     #include "number_types.h"
 
     #define COLOR_DEFAULT Color(Color::IsDefault::Yes)
-    #define COLOR_NONE Color(0.0f, 0.0f, 0.0f, 0.0f)
-	#define COLOR_BLACK Color(0.0f, 0.0f, 0.0f, 1.0f)
-	#define COLOR_WHITE Color(1.0f, 1.0f, 1.0f, 1.0f)
+    #define COLOR_NONE Color(0, 0, 0, 0)
+	#define COLOR_BLACK Color(0, 0, 0, 255)
+	#define COLOR_WHITE Color(255, 255, 255, 255)
 
     struct Color {
         enum class IsDefault {
@@ -18,17 +18,17 @@
 
         IsDefault is_default = IsDefault::No;
 
-        f32 r = 0.0f;
-        f32 g = 0.0f;
-        f32 b = 0.0f;
-        f32 a = 1.0f;
+        u8 r = 0;
+        u8 g = 0;
+        u8 b = 0;
+        u8 a = 255;
 
 
         Color(IsDefault is_default) : is_default{is_default} {
 
         }
 
-        Color(f32 r = 0.0f, f32 g = 0.0f, f32 b = 0.0f, f32 a = 1.0f) :
+        Color(u8 r = 0, u8 g = 0, u8 b = 0, u8 a = 255) :
             r{r}, g{g}, b{b}, a{a} {
 
         }
@@ -37,13 +37,13 @@
             if (!string || *string == '\0') return;
             else if (*string == '#') string++;
 
-            f32 *color_attribute = &r;
+            u8 *color_attribute = &r;
             for (i32 i = 0; i < 4; i++) {
                 if (*string == '\0') { return; }
-                *color_attribute = (matchHexFromChar(*string) * 16) / 255.0f;
+                *color_attribute = (matchHexFromChar(*string) * 16);
                 string++;
                 if (*string == '\0') { return; }
-                *color_attribute += matchHexFromChar(*string) / 255.0f;
+                *color_attribute += matchHexFromChar(*string);
                 string++;
                 color_attribute++;
             }
@@ -73,12 +73,8 @@
 
         String toString() {
             char buffer[10] = {};
-            sprintf(buffer, "#%.02X%.02X%.02X%.02X", (i32)(r * 255), (i32)(g * 255), (i32)(b * 255), (i32)(a * 255));
+            sprintf(buffer, "#%.02X%.02X%.02X%.02X", r, g, b, a);
             return String(buffer);
-        }
-
-        static Color fromInt(u8 r, u8 g = 0, u8 b = 0, u8 a = 255) {
-            return Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
         }
 
         operator bool() {
@@ -112,7 +108,7 @@
             f32 b = (to.b - from.b) * step;
             f32 a = (to.a - from.a) * step;
 
-            return from += Color(r, g, b, a);
+            return from += Color(r * 255, g * 255, b * 255, a * 255);
         }
     };
 #endif

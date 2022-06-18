@@ -220,7 +220,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                 vertices[index++] = {
                     {xpos, ypos + h},
                     {ch.texture_x, (h / font->atlas_height)},
-                    {_color.r, _color.g, _color.b, _color.a},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
                     (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
                     ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
@@ -231,7 +231,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                 vertices[index++] = {
                     {xpos, ypos},
                     {ch.texture_x, 0.0f},
-                    {_color.r, _color.g, _color.b, _color.a},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
                     (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
                     ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
@@ -242,7 +242,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                 vertices[index++] = {
                     {xpos + w, ypos},
                     {ch.texture_x + (w / font->atlas_width), 0.0f},
-                    {_color.r, _color.g, _color.b, _color.a},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
                     (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
                     ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
@@ -253,7 +253,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
                 vertices[index++] = {
                     {xpos + w, ypos + h},
                     {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
-                    {_color.r, _color.g, _color.b, _color.a},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
                     (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
                     ch.texture_array_index,
                     (f32)Renderer::Sampler::Text,
@@ -309,7 +309,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     vertices[index++] = {
         {0.0f, 1.0f},
         {(f32)coords->top_left.x, (f32)coords->top_left.y},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         (f32)current_texture_slot,
         0.0f,
         (f32)Renderer::Sampler::Texture,
@@ -320,7 +320,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     vertices[index++] = {
         {0.0f, 0.0f},
         {(f32)coords->bottom_left.x, (f32)coords->bottom_left.y},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         (f32)current_texture_slot,
         0.0f,
         (f32)Renderer::Sampler::Texture,
@@ -331,7 +331,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     vertices[index++] = {
         {1.0f, 0.0f},
         {(f32)coords->bottom_right.x, (f32)coords->bottom_right.y},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         (f32)current_texture_slot,
         0.0f,
         (f32)Renderer::Sampler::Texture,
@@ -342,7 +342,7 @@ void Renderer::drawTexture(Point point, Size size, Texture *texture, TextureCoor
     vertices[index++] = {
         {1.0f, 1.0f},
         {(f32)coords->top_right.x, (f32)coords->top_right.y},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         (f32)current_texture_slot,
         0.0f,
         (f32)Renderer::Sampler::Texture,
@@ -370,7 +370,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     vertices[index++] = {
         {0.0f, 1.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Color,
@@ -381,7 +381,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     vertices[index++] = {
         {0.0f, 0.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Color,
@@ -392,7 +392,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     vertices[index++] = {
         {1.0f, 0.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Color,
@@ -403,7 +403,7 @@ void Renderer::fillRect(Rect rect, Color color) {
     vertices[index++] = {
         {1.0f, 1.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Color,
@@ -423,7 +423,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {0.0f, 1.0f},
                 {0.0f, 0.0f},
-                {toColor.r, toColor.g, toColor.b, toColor.a},
+                {toColor.r / 255.0f, toColor.g / 255.0f, toColor.b / 255.0f, toColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -434,7 +434,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {0.0f, 0.0f},
                 {0.0f, 0.0f},
-                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                {fromColor.r / 255.0f, fromColor.g / 255.0f, fromColor.b / 255.0f, fromColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -445,7 +445,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {1.0f, 0.0f},
                 {0.0f, 0.0f},
-                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                {fromColor.r / 255.0f, fromColor.g / 255.0f, fromColor.b / 255.0f, fromColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -456,7 +456,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {1.0f, 1.0f},
                 {0.0f, 0.0f},
-                {toColor.r, toColor.g, toColor.b, toColor.a},
+                {toColor.r / 255.0f, toColor.g / 255.0f, toColor.b / 255.0f, toColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -470,7 +470,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {0.0f, 1.0f},
                 {0.0f, 0.0f},
-                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                {fromColor.r / 255.0f, fromColor.g / 255.0f, fromColor.b / 255.0f, fromColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -481,7 +481,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {0.0f, 0.0f},
                 {0.0f, 0.0f},
-                {fromColor.r, fromColor.g, fromColor.b, fromColor.a},
+                {fromColor.r / 255.0f, fromColor.g / 255.0f, fromColor.b / 255.0f, fromColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -492,7 +492,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {1.0f, 0.0f},
                 {0.0f, 0.0f},
-                {toColor.r, toColor.g, toColor.b, toColor.a},
+                {toColor.r / 255.0f, toColor.g / 255.0f, toColor.b / 255.0f, toColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -503,7 +503,7 @@ void Renderer::fillRectWithGradient(Rect rect, Color fromColor, Color toColor, G
             vertices[index++] = {
                 {1.0f, 1.0f},
                 {0.0f, 0.0f},
-                {toColor.r, toColor.g, toColor.b, toColor.a},
+                {toColor.r / 255.0f, toColor.g / 255.0f, toColor.b / 255.0f, toColor.a / 255.0f},
                 0.0f,
                 0.0f,
                 (f32)Renderer::Sampler::Color,
@@ -524,7 +524,7 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
     vertices[index++] = {
         {0.0f, 1.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Dashed,
@@ -535,7 +535,7 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
     vertices[index++] = {
         {0.0f, 0.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Dashed,
@@ -546,7 +546,7 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
     vertices[index++] = {
         {1.0f, 0.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Dashed,
@@ -557,7 +557,7 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
     vertices[index++] = {
         {1.0f, 1.0f},
         {0.0f, 0.0f},
-        {color.r, color.g, color.b, color.a},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
         0.0f,
         0.0f,
         (f32)Renderer::Sampler::Dashed,

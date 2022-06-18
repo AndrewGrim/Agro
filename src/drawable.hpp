@@ -13,14 +13,14 @@
     /// or even a regular Widget within a cell.
     /// Providing "free" inclusion of Widgets within the TreeView Widget.
     struct Drawable {
-        /// The parent* is mostly used by compound Widgets and event handling (especially layout).
-        Widget *parent = nullptr;
-
         /// Describes the style according to which the Drawable should be
         /// drawn. Note that for most Drawables this will contain default
         /// values that specify that the drawee should use the default
         /// style from DrawingContext.
         Style _style;
+
+        /// The parent* is mostly used by compound Widgets and event handling (especially layout).
+        Widget *parent = nullptr;
 
         /// The precomputed sizeHint of the Drawable.
         /// Returned when nothing changed that would
