@@ -27,5 +27,5 @@ class ColorPicker : public Widget {
         TextureCoordinates m_coords;
         TextEdit *m_color_edit = nullptr;
         Label *m_color_label = nullptr;
-        f32 *m_texture_data = new f32[COLOR_PICKER_HEIGHT * COLOR_PICKER_WIDTH * 4];
+        u8 *m_texture_data = new u8[COLOR_PICKER_HEIGHT * COLOR_PICKER_WIDTH * 4];
 };

@@ -20,7 +20,7 @@ void updateColor(ColorPicker *color_picker) {
 
 ColorPicker::ColorPicker() {
     glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, m_texture_data);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_texture_data);
     m_color_edit = new TextEdit(COLOR_NONE.toString().data());
     append(m_color_edit, Fill::Horizontal);
     m_color_label = new Label("    ");
