@@ -8,8 +8,8 @@
 
     #define COLOR_DEFAULT Color(Color::IsDefault::Yes)
     #define COLOR_NONE Color(0, 0, 0, 0)
-	#define COLOR_BLACK Color(0, 0, 0, 255)
-	#define COLOR_WHITE Color(255, 255, 255, 255)
+    #define COLOR_BLACK Color(0, 0, 0, 255)
+    #define COLOR_WHITE Color(255, 255, 255, 255)
 
     struct Color {
         enum class IsDefault {
