@@ -192,7 +192,7 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
     for (u64 i = 0; i < text.length;) {
         u8 c = text.data[i];
         u8 length = utf8::length(text.data + i);
-        assert(length != 0 && "Invalid utf8 sequence start byte");
+        assert(length && "Invalid utf8 sequence start byte");
         textCheck(font);
         if (c == ' ') {
             x += space_advance;
@@ -201,12 +201,12 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
         } else if (c == '\n') {
             if (is_multiline) {
                 point.y += font->maxHeight() + line_spacing;
-                if (point.y >= clip_rect.y + clip_rect.h) { break; }
+                if (point.y >= clip_rect.y + clip_rect.h) { return; }
                 x = point.x;
             }
         } else {
             Font::Character ch = font->get(utf8::decode(text.data + i, length));
-            if (!is_multiline && x > clip_rect.x + clip_rect.w) { break; }
+            if (!is_multiline && x > clip_rect.x + clip_rect.w) { return; }
             auto _color = color;
             if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
             if (x + ch.advance >= clip_rect.x && x <= clip_rect.x + clip_rect.w) {
