@@ -7,3 +7,5 @@
 /build
 /Agro
 /.*
+
+compile_commands.json
