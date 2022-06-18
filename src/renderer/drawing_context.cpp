@@ -92,7 +92,6 @@ DrawingContext::DrawingContext(Window *window) : window{window} {
             1
         },
 
-
         Style::Padding {
             STYLE_ALL,
             5,
