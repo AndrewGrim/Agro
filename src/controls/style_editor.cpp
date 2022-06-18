@@ -33,7 +33,7 @@ StyleEditor::StyleEditor() : ScrolledBox(Align::Vertical) {
         h_box->append(reset);
     append(h_box);
 
-    i32 *size_options[12] = {
+    i16 *size_options[12] = {
         &s.margin.top, &s.margin.bottom, &s.margin.left, &s.margin.right,
         &s.border.top, &s.border.bottom, &s.border.left, &s.border.right,
         &s.padding.top, &s.padding.bottom, &s.padding.left, &s.padding.right

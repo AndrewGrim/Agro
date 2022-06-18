@@ -27,26 +27,26 @@
 
         struct Border {
             i8 type   = STYLE_DEFAULT;
-            i32 top    = STYLE_DEFAULT;
-            i32 bottom = STYLE_DEFAULT;
-            i32 left   = STYLE_DEFAULT;
-            i32 right  = STYLE_DEFAULT;
+            i16 top    = STYLE_DEFAULT;
+            i16 bottom = STYLE_DEFAULT;
+            i16 left   = STYLE_DEFAULT;
+            i16 right  = STYLE_DEFAULT;
         };
 
         struct Margin {
             i8 type   = STYLE_DEFAULT;
-            i32 top    = STYLE_DEFAULT;
-            i32 bottom = STYLE_DEFAULT;
-            i32 left   = STYLE_DEFAULT;
-            i32 right  = STYLE_DEFAULT;
+            i16 top    = STYLE_DEFAULT;
+            i16 bottom = STYLE_DEFAULT;
+            i16 left   = STYLE_DEFAULT;
+            i16 right  = STYLE_DEFAULT;
         };
 
         struct Padding {
             i8 type   = STYLE_DEFAULT;
-            i32 top    = STYLE_DEFAULT;
-            i32 bottom = STYLE_DEFAULT;
-            i32 left   = STYLE_DEFAULT;
-            i32 right  = STYLE_DEFAULT;
+            i16 top    = STYLE_DEFAULT;
+            i16 bottom = STYLE_DEFAULT;
+            i16 left   = STYLE_DEFAULT;
+            i16 right  = STYLE_DEFAULT;
         };
 
         BorderColor border_color;
