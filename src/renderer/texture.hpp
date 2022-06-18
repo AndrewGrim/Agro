@@ -77,7 +77,7 @@
         u32 ID;
 
         Texture(String file_path) {
-            unsigned char *data = stbi_load(
+            u8 *data = stbi_load(
                 file_path.data(),
                 &width,
                 &height,
@@ -87,9 +87,9 @@
             makeGLTexture(data, width, height, nr_channels, file_path);
         }
 
-        Texture(const unsigned char *image_data, i32 length) {
+        Texture(const u8 *image_data, i32 length) {
             assert(image_data && "Null image data!");
-            unsigned char *data = stbi_load_from_memory(
+            u8 *data = stbi_load_from_memory(
                 image_data,
                 length,
                 &width,
@@ -104,7 +104,7 @@
             glDeleteTextures(1, &this->ID);
         }
 
-        void makeGLTexture(unsigned char *data, i32 width, i32 height, i32 nr_channels, String file_path) {
+        void makeGLTexture(u8 *data, i32 width, i32 height, i32 nr_channels, String file_path) {
             if (data) {
                 glActiveTexture(GL_TEXTURE0);
                 glGenTextures(1, &ID);
