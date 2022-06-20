@@ -12,8 +12,7 @@ u32 tooltipCallback(u32 interval, void *window) {
 }
 
 Window::Window(const char* title, Size size, Point point, i32 flags) {
-    this->m_title = title;
-    size.w = size.w < 120 ? 120 : size.w;
+    m_title = title;
     this->size = size;
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
