@@ -55,7 +55,7 @@ Application::Application(const char *title, Size size) {
         fail("FAILED_TO_INITIALIZE_SDL");
     }
     SDL_SetEventFilter(forcePaintWhileResizing, this);
-    Window *win = new Window(title, size, Point());
+    Window *win = new Window(title, size, Point(), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
     icons = {
         {"close", std::make_shared<Texture>(close_png, close_png_length)},
         {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
@@ -155,6 +155,7 @@ void Application::run() {
         win->layout(LAYOUT_FONT);
         win->show();
     }
+    SDL_ShowWindow(mainWindow()->m_win);
     if (mainWindow()->onReady) {
         mainWindow()->onReady(mainWindow());
     }
