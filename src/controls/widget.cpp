@@ -28,6 +28,7 @@ Widget* Widget::append(Widget* widget, Fill fill_policy, u32 proportion) {
 
 Widget* Widget::remove(u64 parent_index) {
     Widget *child = this->children[parent_index];
+    // TODO definitely add window ptrs to widgets
     Application::get()->currentWindow()->removeFromState(child);
     this->children.erase(this->children.begin() + parent_index);
     u64 i = 0;
@@ -36,6 +37,8 @@ Widget* Widget::remove(u64 parent_index) {
         i++;
     }
     this->layout(LAYOUT_CHILD);
+    child->parent = nullptr;
+    child->parent_index = -1;
 
     return child;
 }
