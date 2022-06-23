@@ -47,7 +47,6 @@ DropDown::DropDown(Cells items, Size min_size) {
 
 DropDown::~DropDown() {
     if (m_window) { m_window->onFocusLost(m_window); }
-    m_open_close->rect = Rect(1, 2, 3, 4);
     delete m_open_close;
     delete m_list;
 }
