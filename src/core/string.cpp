@@ -325,6 +325,7 @@ Slice<const char> String::slice() const {
     return Slice<const char>(data(), size());
 }
 
+// TODO this was a port from an older program, surely continue would be the same as goto in this case?
 Option<u64> String::find(const String &query) const {
     u8 first = query.data()[0];
     for (u64 i = 0; i < this->size(); i++) {

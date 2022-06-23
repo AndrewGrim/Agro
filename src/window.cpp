@@ -65,6 +65,7 @@ Window::~Window() {
     SDL_DestroyWindow(m_win);
 }
 
+// TODO we may want run() to set the current window in the future
 void Window::run() {
     Application::get()->m_windows.push_back(this);
     dc->default_style = Application::get()->mainWindow()->dc->default_style;
