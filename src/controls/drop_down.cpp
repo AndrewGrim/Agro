@@ -1,7 +1,7 @@
 #include "drop_down.hpp"
 
-DropDown::DropDown(Cells items) {
-    m_list = new List(items);
+DropDown::DropDown(Cells items, Size min_size) {
+    m_list = new List(items, min_size);
     m_list->onItemSelected.addEventListener([&](Widget *widget, CellRenderer *cell, i32 index) {
         setCurrent(index);
     });
