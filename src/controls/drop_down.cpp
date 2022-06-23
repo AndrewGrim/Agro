@@ -2,6 +2,7 @@
 
 DropDown::DropDown(Cells items, Size min_size) {
     m_list = new List(items, min_size);
+    if (items.data->size()) { m_list->m_focused = 0; }
     m_list->onItemSelected.addEventListener([&](Widget *widget, CellRenderer *cell, i32 index) {
         setCurrent(index);
     });
