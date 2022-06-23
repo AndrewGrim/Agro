@@ -114,7 +114,7 @@ void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) 
     Rect drawing_rect = rect;
     Size size = sizeHint(dc);
     drawing_rect.x = drawing_rect.x + (drawing_rect.w / 2) - (size.w / 2);
-    for (auto img : images) {
+    for (Image &img : images) {
         dc.drawTextureAligned(
             drawing_rect,
             img.size(),
@@ -131,7 +131,7 @@ void MultipleImagesCellRenderer::draw(DrawingContext &dc, Rect rect, i32 state) 
 Size MultipleImagesCellRenderer::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Size size = Size();
-        for (auto img : images) {
+        for (Image &img : images) {
             Size s = img.sizeHint(dc);
             size.w += s.w;
             if (s.h > size.h) { size.h = s.h; }
