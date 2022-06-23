@@ -45,7 +45,7 @@
                     }
                 } // ELSE NO OP
             } else {
-                new_clip.w = std::min(parent.w, new_clip.w);
+                new_clip.w = parent.w < new_clip.w ? parent.w : new_clip.w;
             }
 
             if (new_clip.y < parent.y) {
@@ -65,7 +65,7 @@
                     }
                 } // ELSE NO OP
             } else {
-                new_clip.h = std::min(parent.h, new_clip.h);
+                new_clip.h = parent.h < new_clip.h ? parent.h : new_clip.h;
             }
 
             return new_clip;
