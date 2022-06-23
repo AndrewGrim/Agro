@@ -162,7 +162,9 @@
             /// This method is used to add a Widget to the children
             /// of the Widget in question. It adds the Widget to the
             /// end of the children dynamic array.
-            virtual Widget* append(Widget *widget, Fill fill_policy = Fill::None, u32 proportion = 1);
+            virtual Widget* append(Widget *widget);
+            virtual Widget* append(Widget *widget, Fill fill_policy);
+            virtual Widget* append(Widget *widget, Fill fill_policy, u32 proportion);
 
             /// This method is used to remove a Widget from parent's children based on the given index.
             // TODO the index should be passed in internally rather than requiring the user to pass it in.

@@ -12,7 +12,32 @@ Widget::~Widget() {
     delete this->tooltip;
 }
 
-Widget* Widget::append(Widget* widget, Fill fill_policy, u32 proportion) {
+Widget* Widget::append(Widget *widget) {
+    if (widget->parent) {
+        widget->parent->remove(widget->parent_index);
+    }
+    widget->parent = this;
+    this->children.push_back(widget);
+    widget->parent_index = this->children.size() - 1;
+    this->layout(LAYOUT_CHILD);
+
+    return this;
+}
+
+Widget* Widget::append(Widget *widget, Fill fill_policy) {
+    if (widget->parent) {
+        widget->parent->remove(widget->parent_index);
+    }
+    widget->parent = this;
+    widget->setFillPolicy(fill_policy);
+    this->children.push_back(widget);
+    widget->parent_index = this->children.size() - 1;
+    this->layout(LAYOUT_CHILD);
+
+    return this;
+}
+
+Widget* Widget::append(Widget *widget, Fill fill_policy, u32 proportion) {
     if (widget->parent) {
         widget->parent->remove(widget->parent_index);
     }
