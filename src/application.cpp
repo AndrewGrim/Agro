@@ -56,6 +56,7 @@ Application::Application(const char *title, Size size) {
     }
     SDL_SetHint(SDL_HINT_MOUSE_AUTO_CAPTURE, "1");
     SDL_SetHint(SDL_HINT_QUIT_ON_LAST_WINDOW_CLOSE , "1");
+    SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
     SDL_SetEventFilter(forcePaintWhileResizing, this);
     Window *win = new Window(title, size, Point(), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
     icons = {
