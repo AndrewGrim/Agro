@@ -71,6 +71,7 @@ Application::Application(const char *title, Size size) {
     };
     m_cursors = new Cursors();
     current_window = win;
+    m_main_window = win;
     m_windows.push_back(win);
     win->dc->default_style.font = std::shared_ptr<Font>(new Font(this, DejaVuSans_ttf, DejaVuSans_ttf_length, 14, Font::Type::Sans));
     win->dc->default_light_style.font = win->dc->default_style.font;
@@ -116,7 +117,7 @@ Application::~Application() {
         // design changes. However we still want to free it just at the very end.
         if (!win->is_owned) { delete win; }
     }
-    delete mainWindow();
+    delete m_main_window;
     delete m_cursors;
     SDL_Quit();
     FT_Done_FreeType(ft);
@@ -258,6 +259,7 @@ void Application::run() {
 }
 
 void Application::setCurrentWindow(Window *window) {
+    assert(window && "Tried to set current window to null!");
     current_window = window;
     SDL_GL_MakeCurrent(window->m_win, window->m_sdl_context);
 }
@@ -268,7 +270,7 @@ Window* Application::currentWindow() {
 }
 
 Window* Application::mainWindow() {
-    return m_windows[0];
+    return m_main_window;
 }
 
 Timer Application::addTimer(u32 after, std::function<u32(u32 interval)> callback) {

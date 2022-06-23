@@ -64,6 +64,7 @@
         ~Application();
 
         Window *current_window = nullptr;
+        Window *m_main_window = nullptr;
         std::vector<Window*> m_windows;
         std::vector<Timer> m_timers;
         Cursors *m_cursors = nullptr;
