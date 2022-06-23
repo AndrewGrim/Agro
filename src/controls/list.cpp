@@ -1,13 +1,13 @@
 #include "list.hpp"
 #include "../application.hpp"
 
-List::List(std::shared_ptr<std::vector<CellRenderer*>> items, Size min_size) : Scrollable(min_size), m_items(items) {
+List::List(Cells items, Size min_size) : Scrollable(min_size), m_items(items) {
     // TODO could do with binary search lookup
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         DrawingContext &dc = *Application::get()->mainWindow()->dc;
         i32 y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         i32 index = 0;
-        for (CellRenderer *item : *m_items) {
+        for (CellRenderer *item : *(m_items.data)) {
             Size item_size = item->sizeHint(dc);
             if (event.y >= y && event.y <= y + item_size.h) {
                 setCurrent(index);
@@ -23,7 +23,7 @@ List::List(std::shared_ptr<std::vector<CellRenderer*>> items, Size min_size) : S
         DrawingContext &dc = *Application::get()->mainWindow()->dc;
         i32 y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         i32 index = 0;
-        for (CellRenderer *item : *m_items) {
+        for (CellRenderer *item : *(m_items.data)) {
             Size item_size = item->sizeHint(dc);
             if (event.y >= y && event.y <= y + item_size.h) {
                 m_hovered = index;
@@ -39,13 +39,7 @@ List::List(std::shared_ptr<std::vector<CellRenderer*>> items, Size min_size) : S
     });
 }
 
-List::~List() {
-    if (m_items.use_count() == 1) {
-        for (CellRenderer *item : *m_items) {
-            delete item;
-        }
-    }
-}
+List::~List() {}
 
 const char* List::name() {
     return "List";
@@ -62,7 +56,7 @@ void List::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, dc.textBackground(style()));
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
     i32 index = 0;
-    for (Drawable *item : *m_items) {
+    for (CellRenderer *item : *(m_items.data)) {
         Size item_size = item->sizeHint(dc);
         if (pos.y + item_size.h >= rect.y) {
             i32 item_state = STATE_DEFAULT;
@@ -83,7 +77,7 @@ Size List::sizeHint(DrawingContext &dc) {
     if (m_size_changed) {
         Scrollable::sizeHint(dc);
         Size virtual_size = Size();
-        for (Drawable *item : *m_items) {
+        for (CellRenderer *item : *(m_items.data)) {
             Size item_size = item->sizeHint(dc);
             virtual_size.h += item_size.h;
             if (item_size.w > virtual_size.w) { virtual_size.w = item_size.w; }
@@ -115,17 +109,17 @@ void List::setCurrent(i32 index) {
 }
 
 i32 List::appendItem(CellRenderer *cell) {
-    (*m_items).push_back(cell);
-    return (*m_items).size() - 1;
+    m_items.append(cell);
+    return m_items.data->size() - 1;
 }
 
 CellRenderer* List::getItem(i32 index) {
-    return (*m_items)[index];
+    return m_items[index];
 }
 
 void List::clear() {
-    for (CellRenderer *item : *m_items) {
+    for (CellRenderer *item : *(m_items.data)) {
         delete item;
     }
-    (*m_items).clear();
+    m_items.clear();
 }

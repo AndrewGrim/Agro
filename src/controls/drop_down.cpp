@@ -1,7 +1,7 @@
 #include "drop_down.hpp"
 
-DropDown::DropDown(std::shared_ptr<std::vector<CellRenderer*>> items) {
-    m_list = !items ? new List() : new List(items);
+DropDown::DropDown(Cells items) {
+    m_list = new List(items);
     m_list->onItemSelected.addEventListener([&](Widget *widget, CellRenderer *cell, i32 index) {
         setCurrent(index);
     });
@@ -28,7 +28,6 @@ DropDown::DropDown(std::shared_ptr<std::vector<CellRenderer*>> items) {
             delete m_window->mainWidget();
             m_window->setMainWidget(m_list);
             m_window->onFocusLost = [&](Window *win) {
-                println("onFocusLost");
                 m_open_close->flipVertically();
                 m_window->m_main_widget = nullptr;
                 m_window = nullptr;
@@ -76,7 +75,7 @@ void DropDown::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     Size size = m_open_close->sizeHint(dc);
     rect.w -= size.w;
-    if (m_list->m_items->size() && current() > -1) {
+    if (m_list->m_items.data->size() && current() > -1) {
         CellRenderer *item = getItem(current());
         item->draw(dc, rect, STATE_DEFAULT);
     }
@@ -97,6 +96,12 @@ void DropDown::draw(DrawingContext &dc, Rect rect, i32 state) {
 }
 
 Size DropDown::sizeHint(DrawingContext &dc) {
+    if (m_biggest_item.w < m_list->m_items.max_cell_size->w ||
+        m_biggest_item.h < m_list->m_items.max_cell_size->h
+    ) {
+        m_biggest_item = *m_list->m_items.max_cell_size;
+        m_size_changed = true;
+    }
     if (m_size_changed) {
         Size size = m_biggest_item;
         size.w += m_open_close->m_size.w;
@@ -144,7 +149,7 @@ i32 DropDown::appendItem(CellRenderer *cell) {
         should_layout = true;
     }
     if (should_layout) { layout(LAYOUT_CHILD); } else { update(); }
-    return m_list->m_items->size() - 1;
+    return m_list->m_items.data->size() - 1;
 }
 
 CellRenderer* DropDown::getItem(i32 index) {

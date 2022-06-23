@@ -1,10 +1,42 @@
 #include "cell_renderer.hpp"
+#include "../application.hpp"
 
 CellRenderer::CellRenderer() {
     setWidgetBackgroundColor(COLOR_NONE);
 }
 
 CellRenderer::~CellRenderer() {}
+
+Cells::Cells() {}
+
+Cells::~Cells() {
+    if (data.use_count() == 1) {
+        for (CellRenderer *item : *data) {
+            delete item;
+        }
+        delete max_cell_size;
+    }
+}
+
+void Cells::append(CellRenderer *cell) {
+    data->push_back(cell);
+    DrawingContext &dc = *Application::get()->currentWindow()->dc;
+    Size new_cell_size = cell->sizeHint(dc);
+    if (new_cell_size.w > max_cell_size->w) {
+        max_cell_size->w = new_cell_size.w;
+    }
+    if (new_cell_size.h > max_cell_size->h) {
+        max_cell_size->h = new_cell_size.h;
+    }
+}
+
+CellRenderer* Cells::operator[](usize index) {
+    return (*data)[index];
+}
+
+void Cells::clear() {
+    data->clear();
+}
 
 EmptyCell::EmptyCell() {}
 EmptyCell::~EmptyCell() {}

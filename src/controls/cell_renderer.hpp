@@ -12,6 +12,18 @@
         virtual Size sizeHint(DrawingContext &dc) override = 0;
     };
 
+    struct Cells {
+        std::shared_ptr<std::vector<CellRenderer*>> data = std::make_shared<std::vector<CellRenderer*>>();
+        Size *max_cell_size = new Size();
+
+        Cells();
+
+        ~Cells();
+        void append(CellRenderer *cell);
+        CellRenderer* operator[](usize index);
+        void clear();
+    };
+
     struct EmptyCell : public CellRenderer {
         EmptyCell();
         ~EmptyCell();

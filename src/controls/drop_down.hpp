@@ -8,7 +8,7 @@
         public:
             EventListener<Widget*, CellRenderer*, i32> onItemSelected = EventListener<Widget*, CellRenderer*, i32>();
 
-            DropDown(std::shared_ptr<std::vector<CellRenderer*>> items = nullptr);
+            DropDown(Cells items = Cells());
             ~DropDown();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
