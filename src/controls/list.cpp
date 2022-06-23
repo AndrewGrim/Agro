@@ -8,6 +8,9 @@ List::List(Cells items, Size min_size) : Scrollable(min_size), m_items(items) {
         i32 y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         i32 index = 0;
         for (CellRenderer *item : *(m_items.data)) {
+            if (m_predicate && m_query.size()) {
+                if (!m_predicate(m_query, item)) { index++; continue; }
+            }
             Size item_size = item->sizeHint(dc);
             if (event.y >= y && event.y <= y + item_size.h) {
                 setCurrent(index);
@@ -24,6 +27,9 @@ List::List(Cells items, Size min_size) : Scrollable(min_size), m_items(items) {
         i32 y = rect.y - (m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * ((m_size.h) - rect.h);
         i32 index = 0;
         for (CellRenderer *item : *(m_items.data)) {
+            if (m_predicate && m_query.size()) {
+                if (!m_predicate(m_query, item)) { index++; continue; }
+            }
             Size item_size = item->sizeHint(dc);
             if (event.y >= y && event.y <= y + item_size.h) {
                 m_hovered = index;
@@ -57,6 +63,9 @@ void List::draw(DrawingContext &dc, Rect rect, i32 state) {
     pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_size);
     i32 index = 0;
     for (CellRenderer *item : *(m_items.data)) {
+        if (m_predicate && m_query.size()) {
+            if (!m_predicate(m_query, item)) { index++; continue; }
+        }
         Size item_size = item->sizeHint(dc);
         if (pos.y + item_size.h >= rect.y) {
             i32 item_state = STATE_DEFAULT;

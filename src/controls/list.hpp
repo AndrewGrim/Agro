@@ -23,5 +23,7 @@
             Cells m_items;
             i32 m_focused = -1;
             i32 m_hovered = -1;
+            std::function<bool(String query, CellRenderer *cell)> m_predicate = nullptr;
+            String m_query;
     };
 #endif
