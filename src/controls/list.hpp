@@ -8,7 +8,7 @@
         public:
             EventListener<Widget*, CellRenderer*, i32> onItemSelected = EventListener<Widget*, CellRenderer*, i32>();
 
-            List(Size min_size = Size(100, 100));
+            List(std::shared_ptr<std::vector<CellRenderer*>> items = std::make_shared<std::vector<CellRenderer*>>(), Size min_size = Size(100, 100));
             ~List();
             const char* name() override ;
             void draw(DrawingContext &dc, Rect rect, i32 state) override;
@@ -20,7 +20,7 @@
             CellRenderer* getItem(i32 index);
             void clear();
 
-            std::vector<CellRenderer*> m_items;
+            std::shared_ptr<std::vector<CellRenderer*>> m_items;
             i32 m_focused = -1;
             i32 m_hovered = -1;
     };

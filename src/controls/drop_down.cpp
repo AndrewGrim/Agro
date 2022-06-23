@@ -1,12 +1,14 @@
 #include "drop_down.hpp"
 
-DropDown::DropDown() {
-    append(m_list);
+DropDown::DropDown(std::shared_ptr<std::vector<CellRenderer*>> items) {
+    m_list = !items ? new List() : new List(items);
     m_list->onItemSelected.addEventListener([&](Widget *widget, CellRenderer *cell, i32 index) {
         setCurrent(index);
     });
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
-        if (!m_is_open) {
+        if (m_must_close) {
+            m_must_close = false;
+        } else {
             m_open_close->flipVertically();
             Window *current = Application::get()->currentWindow();
             i32 x, y;
@@ -17,7 +19,7 @@ DropDown::DropDown() {
                 // TODO make sure to try to create the window within the bounds of the screen
                 // otherwise it will most likely be moved by the window manager
                 Point(x + rect.x, y + rect.y + rect.h),
-                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS
+                SDL_WINDOW_OPENGL | SDL_WINDOW_BORDERLESS
             );
             m_window->is_owned = true;
             m_window->dc->default_style = current->dc->default_style;
@@ -26,17 +28,18 @@ DropDown::DropDown() {
             delete m_window->mainWidget();
             m_window->setMainWidget(m_list);
             m_window->onFocusLost = [&](Window *win) {
+                println("onFocusLost");
                 m_open_close->flipVertically();
                 m_window->m_main_widget = nullptr;
                 m_window = nullptr;
                 win->is_owned = false;
                 win->quit();
-                m_is_open = false;
+                m_must_close = isHovered() ? true : false;
                 Application::get()->currentWindow()->update();
             };
             m_window->run();
+            SDL_RaiseWindow(m_window->m_win);
         }
-        m_is_open = !m_is_open;
     });
     bind(SDLK_SPACE, Mod::None, [&](){
         activate();
@@ -44,8 +47,10 @@ DropDown::DropDown() {
 }
 
 DropDown::~DropDown() {
-    if (m_is_open) { m_window->onFocusLost(m_window); }
+    if (m_window) { m_window->onFocusLost(m_window); }
+    m_open_close->rect = Rect(1, 2, 3, 4);
     delete m_open_close;
+    delete m_list;
 }
 
 const char* DropDown::name() {
@@ -71,7 +76,7 @@ void DropDown::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     Size size = m_open_close->sizeHint(dc);
     rect.w -= size.w;
-    if (m_list->m_items.size() && current() > -1) {
+    if (m_list->m_items->size() && current() > -1) {
         CellRenderer *item = getItem(current());
         item->draw(dc, rect, STATE_DEFAULT);
     }
@@ -120,7 +125,7 @@ i32 DropDown::current() {
 
 void DropDown::setCurrent(i32 index) {
     m_list->m_focused = index;
-    if (m_is_open) { m_window->onFocusLost(m_window); }
+    if (m_window) { m_window->onFocusLost(m_window); }
     onItemSelected.notify(this, getItem(index), index);
     update();
 }
@@ -139,7 +144,7 @@ i32 DropDown::appendItem(CellRenderer *cell) {
         should_layout = true;
     }
     if (should_layout) { layout(LAYOUT_CHILD); } else { update(); }
-    return m_list->m_items.size() - 1;
+    return m_list->m_items->size() - 1;
 }
 
 CellRenderer* DropDown::getItem(i32 index) {

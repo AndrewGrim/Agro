@@ -8,7 +8,7 @@
         public:
             EventListener<Widget*, CellRenderer*, i32> onItemSelected = EventListener<Widget*, CellRenderer*, i32>();
 
-            DropDown();
+            DropDown(std::shared_ptr<std::vector<CellRenderer*>> items = nullptr);
             ~DropDown();
             virtual const char* name() override;
             virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
@@ -20,9 +20,9 @@
             CellRenderer* getItem(i32 index);
             void clear();
 
-            bool m_is_open = false;
+            bool m_must_close = false;
             Image *m_open_close = (new Image(Application::get()->icons["up_arrow"]))->flipVertically()->setMinSize(Size(12, 12));
-            List *m_list = new List();
+            List *m_list = nullptr;
             Size m_biggest_item;
             Window *m_window = nullptr;
     };
