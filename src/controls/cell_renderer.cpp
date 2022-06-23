@@ -9,6 +9,12 @@ CellRenderer::~CellRenderer() {}
 
 Cells::Cells() {}
 
+Cells::Cells(std::initializer_list<CellRenderer*> list) {
+    for (CellRenderer *cell : list) {
+        append(cell);
+    }
+}
+
 Cells::~Cells() {
     if (data.use_count() == 1) {
         for (CellRenderer *item : *data) {

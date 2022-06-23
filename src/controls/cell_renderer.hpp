@@ -17,6 +17,7 @@
         Size *max_cell_size = new Size();
 
         Cells();
+        Cells(std::initializer_list<CellRenderer*> list);
 
         ~Cells();
         void append(CellRenderer *cell);
