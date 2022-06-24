@@ -37,6 +37,9 @@ ComboBox::ComboBox(std::function<bool(String query, CellRenderer *cell)> predica
                 box->append(m_filter);
                 box->append(m_list);
             m_window->setMainWidget(box);
+            m_window->bind(SDLK_ESCAPE, Mod::None, [&]() {
+                if (m_window) { m_window->onFocusLost(m_window); }
+            });
             m_window->onFocusLost = [&, box](Window *win) {
                 m_open_close->flipVertically();
                 m_filter->setText("");

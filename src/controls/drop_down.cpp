@@ -28,6 +28,9 @@ DropDown::DropDown(Cells items, Size min_size) {
             m_window->dc->default_dark_style = current->dc->default_dark_style;
             delete m_window->mainWidget();
             m_window->setMainWidget(m_list);
+            m_window->bind(SDLK_ESCAPE, Mod::None, [&]() {
+                if (m_window) { m_window->onFocusLost(m_window); }
+            });
             m_window->onFocusLost = [&](Window *win) {
                 m_open_close->flipVertically();
                 m_window->m_main_widget = nullptr;
