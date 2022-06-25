@@ -69,6 +69,7 @@
         HashMap() {}
 
         HashMap(u64 starting_size) {
+            assert(!(starting_size & 1) && "HashMap capacity must be power of 2!");
             capacity = starting_size;
             entries = new Entry[starting_size];
             assert(entries && "Failed to allocate default capacity for HashMap starting_size ctor!");
@@ -99,12 +100,7 @@
         }
 
         HashMap(std::initializer_list<std::pair<K, V>> list) {
-            capacity = list.size();
-            entries = new Entry[list.size()];
-            assert(entries && "Failed to allocate default capacity for HashMap initializer_list ctor!");
-            for (std::pair<K, V> pair : list) {
-                insert(pair.first, pair.second);
-            }
+            insert(list);
         }
 
         ~HashMap() {
@@ -154,6 +150,12 @@
             entry.key = key;
             entry.value = value;
             return is_new_key;
+        }
+
+        void insert(std::initializer_list<std::pair<K, V>> list) {
+            for (std::pair<K, V> pair : list) {
+                insert(pair.first, pair.second);
+            }
         }
 
         Entry& find(K key) {

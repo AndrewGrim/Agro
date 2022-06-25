@@ -59,7 +59,7 @@ Application::Application(const char *title, Size size) {
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
     SDL_SetEventFilter(forcePaintWhileResizing, this);
     Window *win = new Window(title, size, Point(), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
-    icons = {
+    icons.insert({
         {"close", std::make_shared<Texture>(close_png, close_png_length)},
         {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
         {"up_arrow", std::make_shared<Texture>(up_arrow_png, up_arrow_png_length)},
@@ -71,7 +71,7 @@ Application::Application(const char *title, Size size) {
         {"radio_button_checked", std::make_shared<Texture>(radio_button_checked_png, radio_button_checked_png_length)},
         {"radio_button_background", std::make_shared<Texture>(radio_button_background_png, radio_button_background_png_length)},
         {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
-    };
+    });
     m_cursors = new Cursors();
     current_window = win;
     m_main_window = win;
