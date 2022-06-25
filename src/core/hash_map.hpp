@@ -83,7 +83,7 @@
                 Entry &entry = map.entries[i];
                 if (entry) {
                     length++;
-                    u32 index = Hash<K>()(entry.key) % capacity;
+                    u32 index = Hash<K>()(entry.key) & (capacity - 1);
                     while (true) {
                         Entry &copied_entry = entries[index];
                         if (copied_entry.flags & Entry::NULL_KEY) {
@@ -92,7 +92,7 @@
                             copied_entry.value = entry.value;
                             break;
                         }
-                        index = (index + 1) % capacity;
+                        index = (index + 1) & (capacity - 1);
                     }
                 } // Otherwise its either a null or a tombstone which we dont need to move.
             }
@@ -130,7 +130,7 @@
                     Entry &entry = entries[i];
                     if (entry) {
                         length++;
-                        u32 index = Hash<K>()(entry.key) % new_capacity;
+                        u32 index = Hash<K>()(entry.key) & (new_capacity - 1);
                         while (true) {
                             Entry &new_entry = new_entries[index];
                             if (new_entry.flags & Entry::NULL_KEY) {
@@ -139,7 +139,7 @@
                                 new_entry.value = entry.value;
                                 break;
                             }
-                            index = (index + 1) % new_capacity;
+                            index = (index + 1) & (new_capacity - 1);
                         }
                     } // Otherwise its either a null or a tombstone which we dont need to move.
                 }
@@ -162,7 +162,7 @@
                 entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
                 assert(entries && "Failed to allocate default capacity for HashMap find!");
             }
-            u32 index = Hash<K>()(key) % capacity;
+            u32 index = Hash<K>()(key) & (capacity - 1);
             Entry *tombstone = nullptr;
             while (true) {
                 Entry *entry = &entries[index];
@@ -175,7 +175,7 @@
                 } else if (entry->key == key) { // TODO here we could use a predicate similar to the generic hash
                     return *entry;
                 }
-                index = (index + 1) % capacity;
+                index = (index + 1) & (capacity - 1);
             }
         }
 
