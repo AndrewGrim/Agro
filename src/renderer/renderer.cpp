@@ -46,6 +46,59 @@ Renderer::Renderer(u32 *indices) {
     into the texture sampler in this fragment shader (textures[index]).
     So while we still generate cases for all texture slots the first 2 will not be hit.
     */
+
+    #ifdef __EMSCRIPTEN__
+    String fragment_shader = "#version 300 es\n";
+        fragment_shader += "in lowp vec2 v_texture_uv;\n";
+        fragment_shader += "in lowp vec4 v_color;\n";
+        fragment_shader += "in lowp float v_texture_slot_index;\n";
+        fragment_shader += "in lowp float v_texture_array_index;\n";
+        fragment_shader += "in lowp float v_sampler_type;\n";
+        fragment_shader += "in lowp vec4 v_rect;\n";
+        fragment_shader += "in lowp vec4 v_clip_rect;\n";
+        fragment_shader += "\n";
+        fragment_shader += "out lowp vec4 f_color;\n";
+        fragment_shader += "\n";
+        fragment_shader += "uniform sampler2D textures[" + toString(max_texture_slots - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS) + "];\n";
+        fragment_shader += "uniform lowp sampler2DArray texture_array;\n";
+        fragment_shader += "\n";
+        fragment_shader += "void main()\n";
+        fragment_shader += "{\n";
+        fragment_shader += "mediump float upperLeftFragCoordY = 800.0 - gl_FragCoord.y;\n";
+        fragment_shader += "if ((gl_FragCoord.x < v_clip_rect.x || upperLeftFragCoordY < v_clip_rect.y) ||\n";
+        fragment_shader += "    (gl_FragCoord.x > (v_clip_rect.x + v_clip_rect.z) || upperLeftFragCoordY > (v_clip_rect.y + v_clip_rect.w))) {\n";
+        fragment_shader += "discard;\n";
+        fragment_shader += "}\n";
+        fragment_shader += "lowp vec4 sampled;\n";
+        fragment_shader += "switch (int(v_texture_slot_index)) {\n";
+        for (int i = 0; i < max_texture_slots; i++) {
+            fragment_shader += "case " + toString(i) + ":\n";
+                fragment_shader += "switch (int(v_sampler_type)) {\n";
+                    fragment_shader += "case 0: ";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "case 1: ";
+                        fragment_shader += "sampled = vec4(texture(textures[" + toString(i > AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY ? i - AGRO_OPENGL_RESERVED_TEXTURE_SLOTS : i) + "], v_texture_uv));\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "case 2: ";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, texture(texture_array, vec3(v_texture_uv.xy, v_texture_array_index)).r);\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "case 3: ";
+                        // TODO this is acutally pretty good, however i feel like we might want it to be a bit thicker, and it would be nice if it could scale with border width
+                        fragment_shader += "if (((int(gl_FragCoord.x) == int(v_rect.x)) || (int(gl_FragCoord.x) == int(v_rect.x + v_rect.z) - 1)) ||\n";
+                        fragment_shader += "    ((int(upperLeftFragCoordY) == int(v_rect.y)) || (int(upperLeftFragCoordY) == int(v_rect.y + v_rect.w) - 1))) {\n";
+                        fragment_shader += "    if ((int(upperLeftFragCoordY) == int(v_rect.y) || int(upperLeftFragCoordY) == int(v_rect.y) + int(v_rect.w) - 1) && int(gl_FragCoord.x) % 10 < 5) { discard; }\n";
+                        fragment_shader += "    else if ((int(gl_FragCoord.x) == int(v_rect.x) || int(gl_FragCoord.x) == int(v_rect.x) + int(v_rect.z) - 1) && int(upperLeftFragCoordY) % 10 < 5) { discard; }\n";
+                        fragment_shader += "} else { discard; }\n";
+                        fragment_shader += "sampled = vec4(1.0, 1.0, 1.0, 1.0);\n";
+                        fragment_shader += "break;\n";
+                    fragment_shader += "}\n";
+                fragment_shader += "break;\n";
+        }
+        fragment_shader += "}\n";
+        fragment_shader += "f_color = v_color * sampled;\n";
+        fragment_shader += "}";
+    #else
     String fragment_shader = "#version 330 core\n";
         fragment_shader += "layout (origin_upper_left) in vec4 gl_FragCoord;\n";
         fragment_shader += "in vec2 v_texture_uv;\n";
@@ -96,9 +149,14 @@ Renderer::Renderer(u32 *indices) {
         fragment_shader += "}\n";
         fragment_shader += "f_color = v_color * sampled;\n";
         fragment_shader += "}";
+    #endif
 
     shader = Shader(
+        #ifdef __EMSCRIPTEN__
+        "#version 300 es\n"
+        #else
         "#version 330 core\n"
+        #endif
         "layout (location = 0) in vec2 a_opengl_position;\n"
         "layout (location = 1) in vec2 a_texture_uv;\n"
         "layout (location = 2) in vec4 a_color;\n"

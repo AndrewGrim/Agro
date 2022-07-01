@@ -12,7 +12,12 @@
     #include "../common/point.hpp"
     #include "../common/style.hpp"
 
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
     #include "glad.h"
+#endif
+
     #include "shader.hpp"
     #include "batch.hpp"
     #include "renderer.hpp"

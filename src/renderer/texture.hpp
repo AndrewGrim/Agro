@@ -3,7 +3,12 @@
 
     #include <cassert>
 
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
     #include "glad.h"
+#endif
+
     #include "stb_image.h"
     #include "../util.hpp"
     #include "../common/point.hpp"

@@ -12,6 +12,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	set(CMAKE_CXX_FLAGS_DEBUG "/DEBUG")
 	set(CMAKE_CXX_FLAGS_RELEASE "/O2")
 	set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")
+elseif (EMSCRIPTEN)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_WEBGL2=1")
 else ()
 	set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wpedantic -no-pie")
 	set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -79,6 +81,8 @@ elseif (MSVC)
 		version
 		setupapi
 	)
+elseif (EMSCRIPTEN)
+	target_link_libraries(${PROJECT_NAME} freetype)
 else ()
 	target_link_libraries(${PROJECT_NAME}
 		freetype

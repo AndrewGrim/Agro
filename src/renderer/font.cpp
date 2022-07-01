@@ -50,10 +50,26 @@ void Font::load(FT_Face face) {
     glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &atlas_ID);
     glBindTexture(GL_TEXTURE_2D_ARRAY, atlas_ID);
+#ifdef __EMSCRIPTEN__
+    u8 *fuck_webgl = new u8[atlas_width * atlas_height * atlas_depth];
     glTexImage3D(
         GL_TEXTURE_2D_ARRAY,
         0, // mipmap level
+        GL_R8,
+        atlas_width,
+        atlas_height,
+        atlas_depth, // layers
+        0, // border (must be zero... dont ask)
         GL_RED,
+        GL_UNSIGNED_BYTE,
+        fuck_webgl // texture data
+    );
+    delete[] fuck_webgl;
+#else
+    glTexImage3D(
+        GL_TEXTURE_2D_ARRAY,
+        0, // mipmap level
+        GL_R8,
         atlas_width,
         atlas_height,
         atlas_depth, // layers
@@ -62,6 +78,7 @@ void Font::load(FT_Face face) {
         GL_UNSIGNED_BYTE,
         NULL // texture data
     );
+#endif
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -80,10 +97,26 @@ void Font::grow(u32 width, u32 height, u32 depth) {
     glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &new_texture);
     glBindTexture(GL_TEXTURE_2D_ARRAY, new_texture);
+#ifdef __EMSCRIPTEN__
+    u8 *fuck_webgl = new u8[atlas_width * atlas_height * atlas_depth];
     glTexImage3D(
         GL_TEXTURE_2D_ARRAY,
         0,
+        GL_R8,
+        width,
+        height,
+        depth,
+        0,
         GL_RED,
+        GL_UNSIGNED_BYTE,
+        fuck_webgl
+    );
+    delete[] fuck_webgl;
+#else
+    glTexImage3D(
+        GL_TEXTURE_2D_ARRAY,
+        0,
+        GL_R8,
         width,
         height,
         depth,
@@ -92,6 +125,7 @@ void Font::grow(u32 width, u32 height, u32 depth) {
         GL_UNSIGNED_BYTE,
         NULL
     );
+#endif
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -160,6 +194,23 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
         should_grow = false;
     }
 
+#ifdef __EMSCRIPTEN__
+    u8 *fuck_webgl = new u8[g->bitmap.width * g->bitmap.rows];
+    glTexSubImage3D(
+        GL_TEXTURE_2D_ARRAY,
+        0,
+        next_slot,
+        0,
+        next_depth,
+        g->bitmap.width,
+        g->bitmap.rows,
+        1, // This is the depth of the texture so you could submit an array of textures instead of just one at a time.
+        GL_RED,
+        GL_UNSIGNED_BYTE,
+        g->bitmap.buffer ? g->bitmap.buffer : fuck_webgl
+    );
+    delete[] fuck_webgl;
+#else
     glTexSubImage3D(
         GL_TEXTURE_2D_ARRAY,
         0,
@@ -173,6 +224,7 @@ void Font::loadGlyph(u32 codepoint, bool bind_texture) {
         GL_UNSIGNED_BYTE,
         g->bitmap.buffer
     );
+#endif
     characters.insert(
         codepoint,
         Character(

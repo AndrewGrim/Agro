@@ -1,24 +1,9 @@
 #include "application.hpp"
 #include "drawable.hpp"
 
-Cursors::Cursors() {
-
-}
-
-Cursors::~Cursors() {
-    SDL_FreeCursor(arrow);
-    SDL_FreeCursor(i_beam);
-    SDL_FreeCursor(wait);
-    SDL_FreeCursor(crosshair);
-    SDL_FreeCursor(wait_arrow);
-    SDL_FreeCursor(size_nwse);
-    SDL_FreeCursor(size_nesw);
-    SDL_FreeCursor(size_we);
-    SDL_FreeCursor(size_ns);
-    SDL_FreeCursor(size_all);
-    SDL_FreeCursor(no);
-    SDL_FreeCursor(hand);
-}
+#ifdef __EMSCRIPTEN__
+    #include <emscripten.h>
+#endif
 
 Window* findEventWindow(std::vector<Window*> &windows, u32 id) {
     for (Window *window : windows) {
@@ -47,7 +32,123 @@ i32 forcePaintWhileResizing(void *data, SDL_Event *event) {
     return 1;
 }
 
+Application *__app = nullptr;
+u32 fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
+u32 frame_time = 1000 / fps;
+
+void __render() {
+    DELAY:;
+    u32 frame_start;
+    SDL_Event event;
+    i32 status;
+    if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
+        frame_start = SDL_GetTicks();
+        switch (event.type) {
+            case SDL_MOUSEBUTTONDOWN: {
+                Window *event_window = findEventWindow(__app->m_windows, event.button.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event, 'SDL_MOUSEBUTTONDOWN' perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_MOUSEBUTTONUP: {
+                Window *event_window = findEventWindow(__app->m_windows, event.button.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event 'SDL_MOUSEBUTTONUP', perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_MOUSEMOTION: {
+                Window *event_window = findEventWindow(__app->m_windows, event.motion.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event 'SDL_MOUSEMOTION', perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_MOUSEWHEEL: {
+                Window *event_window = findEventWindow(__app->m_windows, event.wheel.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event 'SDL_MOUSEWHEEL', perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_WINDOWEVENT: {
+                Window *event_window = findEventWindow(__app->m_windows, event.window.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event 'SDL_WINDOWEVENT', perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_KEYDOWN: {
+                Window *event_window = findEventWindow(__app->m_windows, event.key.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event 'SDL_KEYDOWN', perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_TEXTINPUT: {
+                Window *event_window = findEventWindow(__app->m_windows, event.text.windowID);
+                if (event_window) { event_window->handleSDLEvent(event); }
+                else { info("Couldn't find Window for event 'SDL_TEXTINPUT', perhaps it was deleted?"); }
+                break;
+            }
+            case SDL_USEREVENT:
+                switch (event.user.code) {
+                    case LAYOUT_FONT:
+                        for (Window *window : __app->m_windows) {
+                            window->layout(LAYOUT_FONT);
+                            window->show();
+                        }
+                        break;
+                    default:; // Right now the only other event is LAYOUT_NONE which we don't need to explicitly handle.
+                }
+                break;
+            case SDL_QUIT:
+                __app->mainWindow()->quit();
+                break;
+        }
+    }
+    // TODO surely this should be application specific rather than window
+    if (!status) { frame_start = SDL_GetTicks(); }
+    if (__app->mainWindow()->delay_till) {
+        if (SDL_GetTicks() < __app->mainWindow()->delay_till) {
+            goto DELAY;
+        } else {
+            __app->mainWindow()->delay_till = 0;
+        }
+    }
+
+    for (Window *window : __app->m_windows) {
+        if (window->m_needs_update) {
+            window->show();
+            window->m_needs_update = false;
+        }
+    }
+
+    if (__app->freeze) { __app->freeze = false; }
+    u32 frame_end = SDL_GetTicks() - frame_start;
+    if (frame_time > frame_end) {
+        __app->mainWindow()->delay_till = SDL_GetTicks() + (frame_time - frame_end);
+    } else {
+        __app->mainWindow()->delay_till = 0;
+    }
+}
+
+Cursors::Cursors() {
+
+}
+
+Cursors::~Cursors() {
+    SDL_FreeCursor(arrow);
+    SDL_FreeCursor(i_beam);
+    SDL_FreeCursor(wait);
+    SDL_FreeCursor(crosshair);
+    SDL_FreeCursor(wait_arrow);
+    SDL_FreeCursor(size_nwse);
+    SDL_FreeCursor(size_nesw);
+    SDL_FreeCursor(size_we);
+    SDL_FreeCursor(size_ns);
+    SDL_FreeCursor(size_all);
+    SDL_FreeCursor(no);
+    SDL_FreeCursor(hand);
+}
+
 Application::Application(const char *title, Size size) {
+    __app = this;
     if (FT_Init_FreeType(&ft)) {
         fail("FAILED_TO_INITIALISE_FREETYPE");
     }
@@ -166,96 +267,12 @@ void Application::run() {
     // TODO not sure why we have this here, if anything we should handle the nullptr
     // since its not guaranteed that the main widget will be hovered
     mainWindow()->m_state->hovered = mainWindow()->m_main_widget;
-    u32 fps = 60; // TODO we should query the refresh rate of the monitor the window is on, also allow for overrides
-    u32 frame_time = 1000 / fps;
     while (mainWindow()->m_running) {
-        DELAY:;
-        u32 frame_start;
-        SDL_Event event;
-        i32 status;
-        if ((status = SDL_WaitEventTimeout(&event, frame_time))) {
-            frame_start = SDL_GetTicks();
-            switch (event.type) {
-                case SDL_MOUSEBUTTONDOWN: {
-                    Window *event_window = findEventWindow(m_windows, event.button.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event, 'SDL_MOUSEBUTTONDOWN' perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_MOUSEBUTTONUP: {
-                    Window *event_window = findEventWindow(m_windows, event.button.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event 'SDL_MOUSEBUTTONUP', perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_MOUSEMOTION: {
-                    Window *event_window = findEventWindow(m_windows, event.motion.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event 'SDL_MOUSEMOTION', perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_MOUSEWHEEL: {
-                    Window *event_window = findEventWindow(m_windows, event.wheel.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event 'SDL_MOUSEWHEEL', perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_WINDOWEVENT: {
-                    Window *event_window = findEventWindow(m_windows, event.window.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event 'SDL_WINDOWEVENT', perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_KEYDOWN: {
-                    Window *event_window = findEventWindow(m_windows, event.key.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event 'SDL_KEYDOWN', perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_TEXTINPUT: {
-                    Window *event_window = findEventWindow(m_windows, event.text.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
-                    else { info("Couldn't find Window for event 'SDL_TEXTINPUT', perhaps it was deleted?"); }
-                    break;
-                }
-                case SDL_USEREVENT:
-                    switch (event.user.code) {
-                        case LAYOUT_FONT:
-                            for (Window *window : m_windows) {
-                                window->layout(LAYOUT_FONT);
-                                window->show();
-                            }
-                            break;
-                        default:; // Right now the only other event is LAYOUT_NONE which we don't need to explicitly handle.
-                    }
-                    break;
-                case SDL_QUIT:
-                    mainWindow()->quit();
-                    break;
-            }
-        }
-        // TODO surely this should be application specific rather than window
-        if (!status) { frame_start = SDL_GetTicks(); }
-        if (mainWindow()->delay_till) {
-            if (SDL_GetTicks() < mainWindow()->delay_till) {
-                goto DELAY;
-            } else {
-                mainWindow()->delay_till = 0;
-            }
-        }
-        for (Window *window : m_windows) {
-            if (window->m_needs_update) {
-                window->show();
-                window->m_needs_update = false;
-            }
-        }
-        if (freeze) { freeze = false; }
-        u32 frame_end = SDL_GetTicks() - frame_start;
-        if (frame_time > frame_end) {
-            mainWindow()->delay_till = SDL_GetTicks() + (frame_time - frame_end);
-        } else {
-            mainWindow()->delay_till = 0;
-        }
+    #ifdef __EMSCRIPTEN__
+        emscripten_set_main_loop(__render, fps, 1);
+    #else
+        __render();
+    #endif
     }
 
     delete this;

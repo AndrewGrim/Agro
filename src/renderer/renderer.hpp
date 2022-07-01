@@ -15,7 +15,12 @@
     #include "../common/size.hpp"
     #include "../common/point.hpp"
 
+#ifdef __EMSCRIPTEN__
+    #include <GLES3/gl3.h>
+#else
     #include "glad.h"
+#endif
+
     #include "shader.hpp"
     #include "batch.hpp"
     #include "texture.hpp"

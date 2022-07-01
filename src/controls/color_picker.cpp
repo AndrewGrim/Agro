@@ -19,8 +19,13 @@ void updateColor(ColorPicker *color_picker) {
 }
 
 ColorPicker::ColorPicker() {
+#ifdef __EMSCRIPTEN__
+    // TODO glGetTexImage doesnt exists in OpenGLES3 but we should be able to just keep an embedded colour picker image instead
+    // in the mean time just return a zeroed out array
+#else
     glBindTexture(GL_TEXTURE_2D, Application::get()->icons["color_picker_gradient"]->ID);
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, m_texture_data);
+#endif
     m_color_edit = new TextEdit(COLOR_NONE.toString().data());
     append(m_color_edit, Fill::Horizontal);
     m_color_label = new Label("    ");
