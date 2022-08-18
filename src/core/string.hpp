@@ -89,6 +89,7 @@
         friend String operator+(String &&lhs, const char *rhs);
         friend String operator+(String &lhs, const String &rhs);
         friend String operator+(String &&lhs, const String &rhs);
+        operator Slice<const char>() const;
         void _setContent(u64 new_size, const char *text);
         bool _isSmall() const;
         // Note: this method only works on ascii.

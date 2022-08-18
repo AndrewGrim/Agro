@@ -171,6 +171,10 @@ String operator+(String &&lhs, const String &rhs) {
     return new_string;
 }
 
+String::operator Slice<const char>() const {
+    return this->slice();
+}
+
 void String::_setContent(u64 new_size, const char *text) {
     if (new_size > SMALL_STRING_BUFFER) {
         _string._heap._data = new u8[new_size + 1];  // +1 to account for null terminator.

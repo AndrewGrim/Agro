@@ -43,6 +43,17 @@
         }
     };
 
+    template <> struct Hash<Slice<const char>> {
+        u32 operator()(Slice<const char> &key) const {
+            u32 hash = 2166136261;
+            for (u32 i = 0; i < key.length; i++) {
+                hash ^= key.data[i];
+                hash *= 16777619;
+            }
+            return hash;
+        }
+    };
+
     #define HASH_MAP_MAX_LOAD 0.75f
     #define HASH_MAP_DEFAULT_CAPACITY 8
 
