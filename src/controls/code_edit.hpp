@@ -5,86 +5,35 @@
     #include "../renderer/renderer.hpp"
     #include "text_edit.hpp"
 
-    struct Position {
-        u32 line = 0;
-        u32 column = 0;
+    struct Offset {
         u32 index = 0;
 
-        Position() {}
+        Offset() {}
 
         void next() {
             advance(1);
         }
 
         void advance(u32 count) {
-            column += count;
             index += count;
-        }
-
-        void newline() {
-            line++;
-            column = 0;
-            index++;
         }
     };
 
     struct Token {
         enum class Type : u32 {
-            Null = '\0',
-            Newline = '\n',
-            CarriageReturn = '\r',
-            Tab = '\t',
-            Space = ' ',
+            NUL = 0, SOH, STX, ETX, EOT, ENQ, ACK, BEL, BS, TAB, LF, VT, FF, CR, SO, SI, DLE, DC1, DC2, DC3, DC4, NAK, SYN, ETB, CAN, EM, SUB, ESC, FS, GS, RS, US,
+            Space, ExclamationMark, DoubleQuotes, Pound, DollarSign, Modulo, Ampersand, SingleQuote, OpenParenthesis, CloseParenthesis, Asterisk, Plus, Comma, Minus,
+            Dot, ForwardSlash, Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Colon, SemiColon, LessThan, Equals, GreaterThan, QuestionMark,
+            At, A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, OpenBracket, BackwardSlash, CloseBracket, Caret, Underscore,
+            Backtick, a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z, OpenBrace, Pipe, CloseBrace, Tilde, DEL,
 
-            OpenParenthesis = '(',
-            CloseParenthesis = ')',
-            OpenBrace = '{',
-            CloseBrace = '}',
-            OpenBracket = '[',
-            CloseBracket = ']',
-            LessThan = '<',
-            GreaterThan = '>',
-
-            Pound = '#',
-            Colon = ':',
-            SemiColon = ';',
-            Plus = '+',
-            Minus = '-',
-            Asterisk = '*',
-            Ampersand = '&',
-            Comma = ',',
-            Dot = '.',
-            Equals = '=',
-            ExclamationMark = '!',
-            QuestionMark = '?',
-            Pipe = '|',
-            Caret = '^',
-            Underscore = '_',
-            At = '@',
-            Tilde = '~',
-            GraveAccent = '`',
-            Modulo = '%',
-            Dollar = '$',
-
-            ForwardSlash = '/',
-            BackwardSlash = '\\',
-
-            DoubleQuotes = '"',
-            SingleQuote = '\'',
-
-            StringBegin = 1000,
-            StringEnd,
-            CharacterBegin,
-            CharacterEnd,
+            String = 1000,
+            Character,
             Escaped,
-            NumberBegin,
-            NumberEnd,
-            PreProcessorStatementBegin,
-            PreProcessorStatementEnd,
-            SingleLineCommentBegin,
-            SingleLineCommentEnd,
-            MultiLineCommentBegin,
-            MultiLineCommentEnd,
+            Number,
+            PreProcessorStatement,
+            SingleLineComment,
+            MultiLineComment,
 
             Identifier = 2000,
             Auto,
@@ -144,18 +93,7 @@
     };
 
     struct Lexer {
-        enum class State {
-            Default,
-            Identifier,
-            SingleLineComment,
-            MultiLineComment,
-            StringLiteral,
-            CharacterLiteral,
-            Number,
-            PreProcessor,
-        };
-
-        HashMap<String, Token::Type> keywords = {
+        HashMap<Slice<const char>, Token::Type> keywords = {
             {"auto", Token::Type::Auto},
             {"break", Token::Type::Break},
             {"case", Token::Type::Case},
@@ -205,9 +143,7 @@
             {"_Thread_local", Token::Type::ThreadLocal},
         };
 
-        State state;
-        u32 state_begin;
-        Position pos;
+        Offset pos;
         Slice<const char> source;
         Slice<Token> tokens;
 

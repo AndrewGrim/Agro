@@ -5,178 +5,117 @@
 
 Lexer::Lexer() {}
 
+// TODO just gotta fix escapes
+// they continue on until the next token
 void Lexer::lex(Slice<const char> source) {
-    state = State::Default;
-    pos = Position();
+    pos = Offset();
     this->source = source;
     tokens = Slice<Token>(new Token[source.length], 0);
 
     while (pos.index < source.length) {
         u8 next_c = source.data[pos.index];
         Token::Type token = (Token::Type)next_c;
-        if (state == State::SingleLineComment) {
-            if (token == Token::Type::Newline) {
-                state = State::Default;
-                // tokens.data[tokens.length++] = Token(Token::Type::SingleLineCommentEnd, pos.index - 1); // -1 to avoid including newline.
-                // tokens.data[tokens.length++] = Token(Token::Type::Newline, pos.index);
-                pos.newline();
-            } else {
-                pos.next();
-            }
-        } else if (state == State::MultiLineComment) {
-            // TODO im not sure if C supports nested multiline comments
-            if (token == Token::Type::Asterisk && peek(Token::Type::ForwardSlash)) {
-                state = State::Default;
-                // tokens.data[tokens.length++] = Token(Token::Type::MultiLineCommentEnd, pos.index);
+        if (next_c == '/') {
+            if (peek(Token::Type::ForwardSlash)) {
+                tokens.data[tokens.length++] = Token(Token::Type::SingleLineComment, pos.index);
                 pos.advance(2);
-            } else if (token == Token::Type::Newline) {
-                tokens.data[tokens.length++] = Token(Token::Type::Newline, pos.index);
-                pos.newline();
+                while (pos.index < source.length) {
+                    if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                        pos.next();
+                        break;
+                    }
+                    pos.next();
+                }
+            } else if (peek(Token::Type::Asterisk)) {
+                tokens.data[tokens.length++] = Token(Token::Type::MultiLineComment, pos.index);
+                pos.advance(2);
+                while (pos.index < source.length) {
+                    if ((Token::Type)source.data[pos.index] == Token::Type::Asterisk && peek(Token::Type::ForwardSlash)) {
+                        pos.advance(2);
+                        break;
+                    }
+                    pos.next();
+                }
             } else {
+                tokens.data[tokens.length++] = Token(Token::Type::ForwardSlash, pos.index);
                 pos.next();
             }
-        } else if (state == State::StringLiteral) {
-            switch (token) {
-                case Token::Type::BackwardSlash: {
-                    if (pos.index + 1 < source.length) {
-                        tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                        pos.advance(2);
+        } else if (isalnum(next_c) || next_c == '_') {
+            u32 identifier_start = pos.index;
+            pos.next();
+            while (pos.index < source.length) {
+                if (!isalnum(source.data[pos.index]) && source.data[pos.index] != '_') {
+                    Slice<const char> identifier = Slice<const char>(source.data + identifier_start, pos.index - identifier_start);
+                    auto entry = keywords.find(identifier);
+                    if (entry) {
+                        tokens.data[tokens.length++] = Token(entry.value, identifier_start);
+                    } else {
+                        tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
                     }
                     break;
                 }
-                case Token::Type::DoubleQuotes: {
-                    state = State::Default;
-                    // tokens.data[tokens.length++] = Token(Token::Type::StringEnd, pos.index);
-                    pos.next();
-                    break;
-                }
-                case Token::Type::Newline: {
-                    state = State::Default;
-                    // tokens.data[tokens.length++] = Token(Token::Type::Newline, pos.index);
-                    pos.newline();
-                    break;
-                }
-                default:
-                    pos.next();
-            }
-        } else if (state == State::CharacterLiteral) {
-            switch (token) {
-                case Token::Type::BackwardSlash: {
-                    if (pos.index + 1 < source.length) {
-                        tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                        pos.advance(2);
-                    }
-                    break;
-                }
-                case Token::Type::SingleQuote: {
-                    state = State::Default;
-                    tokens.data[tokens.length++] = Token(Token::Type::CharacterEnd, pos.index);
-                    pos.next();
-                    break;
-                }
-                case Token::Type::Newline: {
-                    state = State::Default;
-                    // tokens.data[tokens.length++] = Token(Token::Type::Newline, pos.index);
-                    pos.newline();
-                    break;
-                }
-                default:
-                    pos.next();
-            }
-        } else if (state == State::Number) {
-            // TODO number literals can have:
-            // dots, F suffix for floats
-            // hex and possibly octal and binary prefixes?
-            // C23 ' as separator for easier reading
-            if (!isdigit(next_c)) {
-                state = State::Default;
-                // tokens.data[tokens.length++] = Token(Token::Type::NumberEnd, pos.index - 1); // -1 to exclude end token from number.
-            } else {
                 pos.next();
             }
-        } else if (state == State::Identifier) {
-            if (!isalnum(next_c) && next_c != '_') {
-                state = State::Default;
-                String identifier = String(source.data + state_begin, pos.index - state_begin);
-                auto entry = keywords.find(identifier);
-                if (entry) {
-                    tokens.data[tokens.length++] = Token(entry.value, state_begin);
+        } else if (isdigit(next_c)) {
+            tokens.data[tokens.length++] = Token(Token::Type::Number, pos.index);
+            pos.next();
+            while (pos.index < source.length) {
+                if (!isdigit(source.data[pos.index])) {
+                    break;
+                }
+                pos.next();
+            }
+        } else if (next_c == '"') {
+            tokens.data[tokens.length++] = Token(Token::Type::String, pos.index);
+            pos.next();
+            while (pos.index < source.length) {
+                if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                    tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                    pos.advance(2);
+                } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
+                    pos.next();
+                    break;
+                } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                    pos.next();
+                    break;
                 } else {
-                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, state_begin);
+                    pos.next();
                 }
-            } else {
-                pos.next();
             }
-        } else if (state == State::PreProcessor) {
-            switch (token) {
-                case Token::Type::BackwardSlash: {
-                    if (pos.index + 1 < source.length) {
-                        tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                        pos.advance(2);
-                    }
+        } else if (next_c == '\'') {
+            tokens.data[tokens.length++] = Token(Token::Type::Character, pos.index);
+            pos.next();
+            while (pos.index < source.length) {
+                if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                    tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                    pos.advance(2);
+                } else if ((Token::Type)source.data[pos.index] == Token::Type::SingleQuote) {
+                    pos.next();
                     break;
-                }
-                case Token::Type::Newline: {
-                    state = State::Default;
-                    // tokens.data[tokens.length++] = Token(Token::Type::PreProcessorStatementEnd, pos.index - 1); // -1 to avoid including newline.
-                    // tokens.data[tokens.length++] = Token(Token::Type::Newline, pos.index);
-                    pos.newline();
+                } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                    pos.next();
                     break;
+                } else {
+                    pos.next();
                 }
-                default: pos.next();
+            }
+        } else if (next_c == '#') {
+            tokens.data[tokens.length++] = Token(Token::Type::PreProcessorStatement, pos.index);
+            pos.next();
+            while (pos.index < source.length) {
+                if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                    tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                    pos.advance(2);
+                } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                    pos.next();
+                    break;
+                } else {
+                    pos.next();
+                }
             }
         } else {
-            switch (token) {
-                case Token::Type::ForwardSlash: {
-                    if (peek(Token::Type::ForwardSlash)) {
-                        state = State::SingleLineComment;
-                        tokens.data[tokens.length++] = Token(Token::Type::SingleLineCommentBegin, pos.index);
-                        pos.advance(2);
-                        break;
-                    } else if (peek(Token::Type::Asterisk)) {
-                        state = State::MultiLineComment;
-                        tokens.data[tokens.length++] = Token(Token::Type::MultiLineCommentBegin, pos.index);
-                        pos.advance(2);
-                        break;
-                    }
-                    tokens.data[tokens.length++] = Token(token, pos.index);
-                    pos.next();
-                    break;
-                }
-                case Token::Type::DoubleQuotes: {
-                    state = State::StringLiteral;
-                    tokens.data[tokens.length++] = Token(Token::Type::StringBegin, pos.index);
-                    pos.next();
-                    break;
-                }
-                case Token::Type::SingleQuote: {
-                    state = State::CharacterLiteral;
-                    tokens.data[tokens.length++] = Token(Token::Type::CharacterBegin, pos.index);
-                    pos.next();
-                    break;
-                }
-                case Token::Type::Newline:
-                    // tokens.data[tokens.length++] = Token(Token::Type::Newline, pos.index);
-                    pos.newline();
-                    break;
-                case Token::Type::Pound: {
-                    state = State::PreProcessor;
-                    tokens.data[tokens.length++] = Token(Token::Type::PreProcessorStatementBegin, pos.index);
-                    pos.next();
-                    break;
-                }
-                default:
-                    if (isalpha(next_c) || next_c == '_') {
-                        state = State::Identifier;
-                        state_begin = pos.index;
-                    } else if (isdigit(next_c)) {
-                        state = State::Number;
-                        tokens.data[tokens.length++] = Token(Token::Type::NumberBegin, pos.index);
-                    } else {
-                        tokens.data[tokens.length++] = Token(token, pos.index);
-                    }
-                    pos.next();
-            }
+            tokens.data[tokens.length++] = Token(token, pos.index);
+            pos.next();
         }
     }
 }
@@ -364,7 +303,7 @@ Token* binarySearch(u64 target, Slice<Token> tokens) {
     if (target < token.index) {
        return &tokens.data[mid - 1];
     }
-   return &tokens.data[mid];
+    return &tokens.data[mid];
 }
 
 void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<const char> text, Point point, u64 byte_offset, Color color, Renderer::Selection selection, Color selection_color) {
@@ -406,23 +345,23 @@ void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<con
                     (u32)current_token->type <= (u32)Token::Type::ThreadLocal
                 ) {
                     _color = Color("#e44533");
-                } else if (current_token->type == Token::Type::MultiLineCommentBegin) {
+                } else if (current_token->type == Token::Type::MultiLineComment) {
                     _color = Color("#928372");
-                } else if (current_token->type == Token::Type::SingleLineCommentBegin) {
+                } else if (current_token->type == Token::Type::SingleLineComment) {
                     _color = Color("#928372");
-                } else if (current_token->type == Token::Type::StringBegin) {
+                } else if (current_token->type == Token::Type::String) {
                     _color = Color("#b8bb26");
-                } else if (current_token->type == Token::Type::CharacterBegin) {
+                } else if (current_token->type == Token::Type::Character) {
                     _color = Color("#b8bb26");
-                } else if (current_token->type == Token::Type::PreProcessorStatementBegin) {
+                } else if (current_token->type == Token::Type::PreProcessorStatement) {
                     _color = Color("#428372");
-                } else if (current_token->type == Token::Type::NumberBegin) {
+                } else if (current_token->type == Token::Type::Number) {
                     _color = Color("#cb8296");
                 } else if (current_token->type == Token::Type::Identifier) {
                     _color = Color("#81ac71");
                 } else if (current_token->type == Token::Type::Escaped) {
                     _color = Color("#cb8296");
-                } else if ((u32)current_token->type < (u32)Token::Type::StringBegin) {
+                } else if ((u32)current_token->type < (u32)Token::Type::String) {
                     _color = Color("#928372");
                 } else {
                     _color = color;
