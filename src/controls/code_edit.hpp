@@ -34,6 +34,7 @@
             PreProcessorStatement,
             SingleLineComment,
             MultiLineComment,
+            Function,
 
             Identifier = 2000,
             Auto,

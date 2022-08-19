@@ -50,7 +50,11 @@ void Lexer::lex(Slice<const char> source) {
                     if (entry) {
                         tokens.data[tokens.length++] = Token(entry.value, identifier_start);
                     } else {
-                        tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                        if (source.data[pos.index] == '(') {
+                            tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                        } else {
+                            tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                        }
                     }
                     break;
                 }
@@ -374,10 +378,12 @@ void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<con
                     _color = Color("#81ac71");
                 } else if (current_token->type == Token::Type::Escaped) {
                     _color = Color("#cb8296");
+                } else if (current_token->type == Token::Type::Function) {
+                    _color = Color("#d07617");
                 } else if ((u32)current_token->type < (u32)Token::Type::String) {
                     _color = Color("#928372");
                 } else {
-                    _color = color;
+                    assert(false && "Unimplemented Token::Type when syntax highlighting!");
                 }
             }
             if (c == ' ') {
