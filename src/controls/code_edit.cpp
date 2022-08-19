@@ -215,7 +215,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                     (bg_end - bg_start) + selection_extra,
                     TEXT_HEIGHT
                 ),
-                dc.accentWidgetBackground(style())
+                Color("#cccccc55")
             );
 
             // Draw the text buffer.
