@@ -567,3 +567,53 @@ void Renderer::drawDashedRect(Rect rect, Color color) {
 
     quad_count++;
 }
+
+void Renderer::textQuad(f32 x, f32 y, Font::Character ch, Font &font, Color color) {
+    f32 w = ch.size.w;
+    f32 h = ch.size.h;
+    // TOP LEFT
+    vertices[index++] = {
+        {x, y + h},
+        {ch.texture_x, (h / font.atlas_height)},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
+        (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+        (f32)ch.texture_array_index,
+        (f32)Renderer::Sampler::Text,
+        {1.0f, 1.0f, 1.0f, 1.0f},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+    };
+    // BOTTOM LEFT
+    vertices[index++] = {
+        {x, y},
+        {ch.texture_x, 0.0f},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
+        (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+        (f32)ch.texture_array_index,
+        (f32)Renderer::Sampler::Text,
+        {1.0f, 1.0f, 1.0f, 1.0f},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+    };
+    // BOTTOM RIGHT
+    vertices[index++] = {
+        {x + w, y},
+        {ch.texture_x + (w / font.atlas_width), 0.0f},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
+        (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+        (f32)ch.texture_array_index,
+        (f32)Renderer::Sampler::Text,
+        {1.0f, 1.0f, 1.0f, 1.0f},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+    };
+    // TOP RIGHT
+    vertices[index++] = {
+        {x + w, y + h},
+        {ch.texture_x + (w / font.atlas_width), (h / font.atlas_height)},
+        {color.r / 255.0f, color.g / 255.0f, color.b / 255.0f, color.a / 255.0f},
+        (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+        (f32)ch.texture_array_index,
+        (f32)Renderer::Sampler::Text,
+        {1.0f, 1.0f, 1.0f, 1.0f},
+        {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+    };
+    quad_count++;
+}

@@ -371,55 +371,7 @@ void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<con
             if (x + ch.advance >= renderer.clip_rect.x && x <= renderer.clip_rect.x + renderer.clip_rect.w) {
                 f32 xpos = x + ch.bearing.x;
                 f32 ypos = point.y + (base_bearing - ch.bearing.y);
-
-                f32 w = ch.size.w;
-                f32 h = ch.size.h;
-
-                // TOP LEFT
-                renderer.vertices[renderer.index++] = {
-                    {xpos, ypos + h},
-                    {ch.texture_x, (h / font->atlas_height)},
-                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
-                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
-                    ch.texture_array_index,
-                    (f32)Renderer::Sampler::Text,
-                    {1.0f, 1.0f, 1.0f, 1.0f},
-                    {(f32)renderer.clip_rect.x, (f32)renderer.clip_rect.y, (f32)renderer.clip_rect.w, (f32)renderer.clip_rect.h}
-                };
-                // BOTTOM LEFT
-                renderer.vertices[renderer.index++] = {
-                    {xpos, ypos},
-                    {ch.texture_x, 0.0f},
-                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
-                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
-                    ch.texture_array_index,
-                    (f32)Renderer::Sampler::Text,
-                    {1.0f, 1.0f, 1.0f, 1.0f},
-                    {(f32)renderer.clip_rect.x, (f32)renderer.clip_rect.y, (f32)renderer.clip_rect.w, (f32)renderer.clip_rect.h}
-                };
-                // BOTTOM RIGHT
-                renderer.vertices[renderer.index++] = {
-                    {xpos + w, ypos},
-                    {ch.texture_x + (w / font->atlas_width), 0.0f},
-                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
-                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
-                    ch.texture_array_index,
-                    (f32)Renderer::Sampler::Text,
-                    {1.0f, 1.0f, 1.0f, 1.0f},
-                    {(f32)renderer.clip_rect.x, (f32)renderer.clip_rect.y, (f32)renderer.clip_rect.w, (f32)renderer.clip_rect.h}
-                };
-                // TOP RIGHT
-                renderer.vertices[renderer.index++] = {
-                    {xpos + w, ypos + h},
-                    {ch.texture_x + (w / font->atlas_width), (h / font->atlas_height)},
-                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
-                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
-                    ch.texture_array_index,
-                    (f32)Renderer::Sampler::Text,
-                    {1.0f, 1.0f, 1.0f, 1.0f},
-                    {(f32)renderer.clip_rect.x, (f32)renderer.clip_rect.y, (f32)renderer.clip_rect.w, (f32)renderer.clip_rect.h}
-                };
-                renderer.quad_count++;
+                renderer.textQuad(xpos, ypos, ch, *font.get(), _color);
             }
             x += ch.advance;
         }

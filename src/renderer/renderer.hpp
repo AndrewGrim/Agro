@@ -72,6 +72,7 @@
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
         void drawDashedRect(Rect rect, Color color);
+        void textQuad(f32 x, f32 y, Font::Character ch, Font &font, Color color);
         void check();
         void textCheck(std::shared_ptr<Font> font);
         void render();
