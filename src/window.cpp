@@ -6,7 +6,7 @@ u32 tooltipCallback(u32 interval, void *window) {
     Window *win = (Window*)window;
     win->draw_tooltip = true;
     win->update();
-    win->pulse();
+    Application::pulse();
 
     return 0;
 }
@@ -377,18 +377,6 @@ void Window::move(i32 x, i32 y) {
 
 void Window::center() {
     SDL_SetWindowPosition(m_win, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-}
-
-void Window::pulse() {
-    SDL_Event event;
-    SDL_UserEvent userevent;
-    userevent.type = SDL_USEREVENT;
-    userevent.code = LAYOUT_NONE;
-    userevent.data1 = NULL;
-    userevent.data2 = NULL;
-    event.type = SDL_USEREVENT;
-    event.user = userevent;
-    SDL_PushEvent(&event);
 }
 
 Window::ContextEventResult Window::propagateMouseEvent(MouseEvent event) {

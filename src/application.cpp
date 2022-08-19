@@ -249,17 +249,7 @@ void Application::run() {
         }
         if (freeze) {
             freeze = false;
-            {
-                SDL_Event event;
-                SDL_UserEvent userevent;
-                userevent.type = SDL_USEREVENT;
-                userevent.code = LAYOUT_SCALE;
-                userevent.data1 = NULL;
-                userevent.data2 = NULL;
-                event.type = SDL_USEREVENT;
-                event.user = userevent;
-                SDL_PushEvent(&event);
-            }
+            Application::pulse(LAYOUT_SCALE);
         }
         u32 frame_end = SDL_GetTicks() - frame_start;
         if (frame_time > frame_end) {
@@ -302,4 +292,16 @@ void Application::removeTimer(Timer timer) {
             break;
         }
     }
+}
+
+void Application::pulse(LayoutEvent layout_event) {
+    SDL_Event event;
+    SDL_UserEvent userevent;
+    userevent.type = SDL_USEREVENT;
+    userevent.code = layout_event;
+    userevent.data1 = NULL;
+    userevent.data2 = NULL;
+    event.type = SDL_USEREVENT;
+    event.user = userevent;
+    SDL_PushEvent(&event);
 }

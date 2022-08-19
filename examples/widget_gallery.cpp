@@ -28,7 +28,7 @@ u32 timerCallback(u32 interval, void *data) {
         bar->m_value = 0.0;
     }
     app->mainWindow()->update();
-    app->mainWindow()->pulse();
+    Application::pulse();
 
     return 50;
 }
@@ -347,7 +347,7 @@ int main(int argc, char **argv) {
         //             bar->m_value = 0.0;
         //         }
         //         app->mainWindow()->update();
-        //         app->mainWindow()->pulse();
+        //         Application::pulse();
 
         //         return 50;
         //     }

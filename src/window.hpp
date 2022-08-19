@@ -101,7 +101,6 @@
 
             void move(i32 x, i32 y);
             void center();
-            void pulse();
             ContextEventResult propagateMouseEvent(MouseEvent event);
             void propagateFocusEvent(FocusEvent event, Widget *widget);
 
