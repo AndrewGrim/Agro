@@ -329,13 +329,27 @@ void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<con
         u8 length = utf8::length(text.data + i);
         assert(length && "Invalid utf8 sequence start byte");
         renderer.textCheck(font);
+        Font::Character ch;
+        i32 advance = -1;
+        f32 xpos = -1.0f;
+        f32 ypos = -1.0f;
         if (c == ' ') {
-            x += space_advance;
+            ch = font->get('.');
+            advance = space_advance;
+            xpos = x + ch.bearing.x;
+            ypos = point.y + (font->maxHeight() / 2);
         } else if (c == '\t') {
-            x += space_advance * m_tab_width;
+            ch = font->get('_');
+            advance = space_advance * m_tab_width;
+            xpos = x + ch.bearing.x;
+            ypos = point.y + (font->maxHeight() / 2);
         } else {
-            Font::Character ch = font->get(utf8::decode(text.data + i, length));
-            if (x > renderer.clip_rect.x + renderer.clip_rect.w) { return; }
+            ch = font->get(utf8::decode(text.data + i, length));
+            advance = ch.advance;
+            xpos = x + ch.bearing.x;
+            ypos = point.y + (base_bearing - ch.bearing.y);
+        }
+        if (x + advance >= renderer.clip_rect.x && x <= renderer.clip_rect.x + renderer.clip_rect.w) {
             auto _color = color;
             if (!current_token) { _color = color; }
             else {
@@ -366,14 +380,19 @@ void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<con
                     _color = color;
                 }
             }
-            if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
-            if (x + ch.advance >= renderer.clip_rect.x && x <= renderer.clip_rect.x + renderer.clip_rect.w) {
-                f32 xpos = x + ch.bearing.x;
-                f32 ypos = point.y + (base_bearing - ch.bearing.y);
+            if (c == ' ') {
+                _color.a = 80;
+                renderer.textQuad(xpos, ypos, ch, *font.get(), _color);
+            } else if (c == '\t') {
+                _color.a = 80;
+                // TODO we may want to determine better size
+                renderer.fillRect(Rect(x + (m_tab_width / 2), ypos, advance - m_tab_width, ch.size.h), _color);
+            } else {
                 renderer.textQuad(xpos, ypos, ch, *font.get(), _color);
             }
-            x += ch.advance;
         }
+        x += advance;
+        if (x > renderer.clip_rect.x + renderer.clip_rect.w) { return; }
         i += length;
         byte_offset += length;
         if (
