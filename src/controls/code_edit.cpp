@@ -40,7 +40,7 @@ void Lexer::lex(Slice<const char> source) {
                 tokens.data[tokens.length++] = Token(Token::Type::ForwardSlash, pos.index);
                 pos.next();
             }
-        } else if (isalnum(next_c) || next_c == '_') {
+        } else if (isalpha(next_c) || next_c == '_') {
             u32 identifier_start = pos.index;
             pos.next();
             while (pos.index < source.length) {
