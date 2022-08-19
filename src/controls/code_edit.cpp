@@ -218,7 +218,6 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 dc.accentWidgetBackground(style())
             );
 
-            // TODO last line is weird and consists of only tofus?
             // Draw the text buffer.
             __fillSingleLineColoredText(
                 font(),
