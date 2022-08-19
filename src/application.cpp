@@ -83,29 +83,22 @@ Application::Application(const char *title, Size size) {
 
     // TODO these are not global anymore hmm...
     mainWindow()->bind(SDLK_EQUALS, Mod::Ctrl, [&]() {
-        scale += 10;
-        if (scale > 500) { scale = 500; }
+        if (scale == 500) { return; }
+        scale += 25;
         freeze = true;
         for (Window *win : m_windows) {
             win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
             win->layout(LAYOUT_SCALE);
         }
-        mainWindow()->pulse();
     });
     mainWindow()->bind(SDLK_MINUS, Mod::Ctrl, [&]() {
-        scale -= 10;
-        if (scale < 50) { scale = 50; }
+        if (scale == 50) { return; }
+        scale -= 25;
         freeze = true;
         for (Window *win : m_windows) {
             win->dc->default_style.font = std::shared_ptr<Font>(win->dc->default_style.font->reload((i64)(default_scale_font_size * (scale / 100.0))));
             win->layout(LAYOUT_SCALE);
         }
-        // TODO this isnt enough for mhwi_db to automatically update it will only do so on the
-        // next update, maybe related to the fact that treeview is virtual size?
-        // either way ideally we would like a nice easy api that a user could resonably use
-        // and so we also need to cut out any gpu rendering and only stop submitting commands
-        // for efficiencies sake
-        mainWindow()->pulse();
     });
 }
 
@@ -117,7 +110,7 @@ Application::~Application() {
         // This is to prevent deleting Windows which are owned by something else
         // like dropdown list and in the future tooltips etc.
         // This includes the mainWindow that is part of Application due to the
-        // design changes. However we still want to free it just at the very end.
+        // design changes. However we still want to free it, just at the very end.
         if (!win->is_owned) { delete win; }
     }
     delete m_main_window;
@@ -226,6 +219,11 @@ void Application::run() {
                                 window->show();
                             }
                             break;
+                        case LAYOUT_SCALE:
+                            for (Window *window : m_windows) {
+                                window->update();
+                            }
+                            break;
                         default:; // Right now the only other event is LAYOUT_NONE which we don't need to explicitly handle.
                     }
                     break;
@@ -249,7 +247,20 @@ void Application::run() {
                 window->m_needs_update = false;
             }
         }
-        if (freeze) { freeze = false; }
+        if (freeze) {
+            freeze = false;
+            {
+                SDL_Event event;
+                SDL_UserEvent userevent;
+                userevent.type = SDL_USEREVENT;
+                userevent.code = LAYOUT_SCALE;
+                userevent.data1 = NULL;
+                userevent.data2 = NULL;
+                event.type = SDL_USEREVENT;
+                event.user = userevent;
+                SDL_PushEvent(&event);
+            }
+        }
         u32 frame_end = SDL_GetTicks() - frame_start;
         if (frame_time > frame_end) {
             mainWindow()->delay_till = SDL_GetTicks() + (frame_time - frame_end);
