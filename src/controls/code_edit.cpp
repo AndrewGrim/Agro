@@ -60,7 +60,7 @@ void Lexer::lex(Slice<const char> source) {
             tokens.data[tokens.length++] = Token(Token::Type::Number, pos.index);
             pos.next();
             while (pos.index < source.length) {
-                if (!isdigit(source.data[pos.index])) {
+                if (!isalnum(source.data[pos.index])) {
                     break;
                 }
                 pos.next();
