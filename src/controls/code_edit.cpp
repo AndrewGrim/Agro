@@ -2,6 +2,7 @@
 
 #define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
 #define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
+#define IS_BASE_X_SCROLL ((m_vertical_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
 
 Lexer::Lexer() {}
 
@@ -181,6 +182,17 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         // update: the below workaround does work but i would like it to be more "precise"
         if (line_index >= m_buffer.size()) { line_index = m_buffer.size() - 2; }
         for (u64 line = 0; line < line_index; byte_offset += m_buffer[line].size() + 1, line++); // +1 for newline
+        if (IS_BASE_X_SCROLL) {
+            dc.fillRect(
+                Rect(
+                    rect.x + line_numbers_width + (line_numbers_padding / 2) - 1,
+                    this->rect.y,
+                    1,
+                    this->rect.h
+                ),
+                Color("#cccccc")
+            );
+        }
         for (; line_index < m_buffer.size(); line_index++) {
             const String &line = m_buffer[line_index];
             // Determine the selection to pass in to the renderer and dimensions to use for selection background.
@@ -229,6 +241,10 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 COLOR_NONE
             );
 
+            // Modify clipping region to account for line numbers;
+            dc.renderer->clip_rect.x += line_numbers_width + line_numbers_padding;
+            dc.renderer->clip_rect.w -= line_numbers_width + line_numbers_padding;
+
             // Draw selection background
             i32 selection_extra = selection.begin != selection.end ? m_cursor_width : 0;
             dc.fillRect(
@@ -251,6 +267,11 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 selection,
                 dc.textSelected(style())
             );
+
+            // Reset the clipping region back to what it was.
+            dc.renderer->clip_rect.x -= line_numbers_width + line_numbers_padding;
+            dc.renderer->clip_rect.w += line_numbers_width + line_numbers_padding;
+
             byte_offset += line.size() + 1; // +1 for newline
             text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
@@ -291,6 +312,8 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     if (state & STATE_HARD_FOCUSED) {
         i32 y = inner_rect.y;
         y -= Y_SCROLL_OFFSET;
+        dc.renderer->clip_rect.x += line_numbers_width + line_numbers_padding;
+        dc.renderer->clip_rect.w -= line_numbers_width + line_numbers_padding;
         dc.fillRect(
             Rect(
                 x_scroll_offset + m_selection.x_end,
@@ -300,6 +323,8 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             ),
             dc.textForeground(style()) // TODO should be a separate color setting
         );
+        dc.renderer->clip_rect.x -= line_numbers_width + line_numbers_padding;
+        dc.renderer->clip_rect.w += line_numbers_width + line_numbers_padding;
     }
 
     {
