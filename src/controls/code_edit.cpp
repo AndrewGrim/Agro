@@ -160,6 +160,12 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Rect post_padding = rect;
     inner_rect = rect;
 
+    i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
+    u32 line_numbers_padding = 10;
+    inner_rect.x += line_numbers_width + line_numbers_padding;
+    inner_rect.w -= line_numbers_width + line_numbers_padding;
+    pos.x += line_numbers_width + line_numbers_padding;
+
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     // Draw normal text;
     u64 line_index = -((pos.y - inner_rect.y) / TEXT_HEIGHT);
@@ -210,6 +216,19 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
                 }
             } else { selection = Renderer::Selection(); }
 
+            dc.fillTextAligned(
+                font(),
+                toString(line_index + 1),
+                HorizontalAlignment::Center,
+                VerticalAlignment::Center,
+                Rect(rect.x, text_region.y, line_numbers_width, TEXT_HEIGHT),
+                0,
+                Color("#cccccc"),
+                0,
+                Renderer::Selection(),
+                COLOR_NONE
+            );
+
             // Draw selection background
             i32 selection_extra = selection.begin != selection.end ? m_cursor_width : 0;
             dc.fillRect(
@@ -241,6 +260,18 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     } else {
         for (; line_index < m_placeholder_buffer.size(); line_index++) {
             const String &line = m_placeholder_buffer[line_index];
+            dc.fillTextAligned(
+                font(),
+                toString(line_index + 1),
+                HorizontalAlignment::Center,
+                VerticalAlignment::Center,
+                Rect(rect.x, text_region.y, line_numbers_width, TEXT_HEIGHT),
+                0,
+                Color("#cccccc"),
+                0,
+                Renderer::Selection(),
+                COLOR_NONE
+            );
             dc.fillTextAligned(
                 font(),
                 line.slice(),
