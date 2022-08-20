@@ -53,7 +53,6 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     m_last_codepoint_index++;
                 }
             }
-            if (line >= m_buffer.size()) { line = m_buffer.size() - 1; } // This accounts for clicking outside text on y axis.
 
             if (isShiftPressed()) {
                 if (line < m_selection.line_begin && line < m_selection.line_end) {
