@@ -157,7 +157,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, dc.textBackground(style()));
     dc.padding(rect, style());
 
-    if (m_overscroll) { m_virtual_size.h = ((m_buffer.size() - 1) * TEXT_HEIGHT) + rect.h; }
+    if (m_overscroll) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     Rect post_padding = rect;
     inner_rect = rect;
