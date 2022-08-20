@@ -2,7 +2,7 @@
 
 #define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
 #define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
-#define IS_BASE_X_SCROLL ((m_vertical_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
+#define IS_BASE_X_SCROLL ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
 
 Lexer::Lexer() {}
 
