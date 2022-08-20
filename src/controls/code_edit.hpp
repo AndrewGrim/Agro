@@ -155,6 +155,7 @@
 
     struct CodeEdit : public TextEdit {
         Lexer lexer;
+        bool m_overscroll = true;
 
         CodeEdit(String text = "", Size min_size = Size(100, 100));
         ~CodeEdit();
