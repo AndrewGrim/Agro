@@ -1,5 +1,6 @@
 #include "code_edit.hpp"
 
+#define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
 #define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
 #define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
 #define IS_BASE_X_SCROLL ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
@@ -170,7 +171,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     // Draw normal text;
-    u64 line_index = -((pos.y - inner_rect.y) / TEXT_HEIGHT);
+    u64 line_index = NORMALIZE(0, (i32)m_buffer.size() - 1, -((pos.y - inner_rect.y) / TEXT_HEIGHT));
     text_region.y += TEXT_HEIGHT * line_index;
     i32 x_scroll_offset = (pos.x);
     if (!(m_buffer.size() == 1 && !m_buffer[0].size())) {
@@ -178,10 +179,6 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         bool did_swap = swapSelection();
         Renderer::Selection selection;
         u64 byte_offset = 0;
-        // TODO font scaling issue here where sometimes the math makes it such
-        // that line_index falls outside of m_buffer and text does not render
-        // update: the below workaround does work but i would like it to be more "precise"
-        if (line_index >= m_buffer.size()) { line_index = m_buffer.size() - 2; }
         for (u64 line = 0; line < line_index; byte_offset += m_buffer[line].size() + 1, line++); // +1 for newline
         if (IS_BASE_X_SCROLL) {
             dc.fillRect(

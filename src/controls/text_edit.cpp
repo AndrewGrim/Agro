@@ -308,17 +308,13 @@ void TextEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
     // Draw normal text;
-    u64 line_index = -((pos.y - inner_rect.y) / TEXT_HEIGHT);
+    u64 line_index = NORMALIZE(0, (i32)m_buffer.size() - 1, -((pos.y - inner_rect.y) / TEXT_HEIGHT));
     text_region.y += TEXT_HEIGHT * line_index;
     i32 x_scroll_offset = (pos.x);
     if (!(m_buffer.size() == 1 && !m_buffer[0].size())) {
         Selection before_swap = m_selection;
         bool did_swap = swapSelection();
         Renderer::Selection selection;
-        // TODO font scaling issue here where sometimes the math makes it such
-        // that line_index falls outside of m_buffer and text does not render
-        // update: the below workaround does work but i would like it to be more "precise"
-        if (line_index >= m_buffer.size()) { line_index = m_buffer.size() - 2; }
         for (; line_index < m_buffer.size(); line_index++) {
             const String &line = m_buffer[line_index];
             // Determine the selection to pass in to the renderer and dimensions to use for selection background.
