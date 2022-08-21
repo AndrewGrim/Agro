@@ -135,7 +135,7 @@ bool Lexer::peek(Token::Type type) {
 CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mode::MultiLine, min_size) {
     onTextChanged.addEventListener([&]() {
         delete[] m_lexer.tokens.data;
-        m_lexer.lex(this->text().slice());
+        m_lexer.lex(this->text());
         __renderMinimap(Size(m_minimap_width, inner_rect.h));
     });
     onTextChanged.notify();
