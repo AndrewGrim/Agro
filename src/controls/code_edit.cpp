@@ -487,24 +487,80 @@ void CodeEdit::__fillSingleLineColoredText(
 }
 
 void CodeEdit::__renderMinimap(Size size) {
+    // In the event that the texture will be taller than the line count
+    // set the texture size to which ever is smaller.
+    size.h = size.h > m_buffer.size() ? m_buffer.size() : size.h;
+    assert(sizeof(Color) == 4 && "Color size should be 4 bytes or 32bits!");
     u8 *texture = new u8[size.h * size.w * sizeof(Color)];
     memset(texture, 0x00, size.h * size.w * sizeof(Color));
     u64 texture_line = 0;
     f32 line_index = 0;
-    for (; line_index < m_buffer.size() and texture_line < (u64)size.h; line_index += m_buffer.size() / (f32)size.h) {
+    u64 byte_offset = 0;
+    for (; texture_line < (u64)size.h;) {
+        Token *current_token = binarySearch(byte_offset, m_lexer.tokens);
         String &line = m_buffer[(u64)line_index];
+        u64 line_byte_offset = byte_offset;
         for (u64 index = 0; index < line.size() and index < (u64)size.w;) {
             const u8 &byte = line[index];
             if (byte == ' ') {
                 index++;
+                line_byte_offset++;
             } else if (byte == '\t') {
                 index += m_tab_width;
+                line_byte_offset += m_tab_width;
             } else {
-                *(Color*)&texture[(texture_line * size.w * sizeof(Color)) + (index * sizeof(Color))] = Color("#000000ff");
+                Color color;
+                if (!current_token) { color = Application::get()->currentWindow()->dc->textForeground(style()); }
+                else {
+                    if (
+                        (u32)current_token->type > (u32)Token::Type::Identifier &&
+                        (u32)current_token->type <= (u32)Token::Type::ThreadLocal
+                    ) {
+                        color = Color(0xe4, 0x45, 0x33);
+                    } else if (current_token->type == Token::Type::MultiLineComment) {
+                        color = Color(0x92, 0x83, 0x72);
+                    } else if (current_token->type == Token::Type::SingleLineComment) {
+                        color = Color(0x92, 0x83, 0x72);
+                    } else if (current_token->type == Token::Type::String) {
+                        color = Color(0xb8, 0xbb, 0x26);
+                    } else if (current_token->type == Token::Type::Character) {
+                        color = Color(0xb8, 0xbb, 0x26);
+                    } else if (current_token->type == Token::Type::PreProcessorStatement) {
+                        color = Color(0x42, 0x83, 0x72);
+                    } else if (current_token->type == Token::Type::Number) {
+                        color = Color(0xcb, 0x82, 0x96);
+                    } else if (current_token->type == Token::Type::Identifier) {
+                        color = Color(0x81, 0xac, 0x71);
+                    } else if (current_token->type == Token::Type::Escaped) {
+                        color = Color(0xcb, 0x82, 0x96);
+                    } else if (current_token->type == Token::Type::Function) {
+                        color = Color(0xd0, 0x76, 0x17);
+                    } else if ((u32)current_token->type < (u32)Token::Type::String) {
+                        color = Color(0x92, 0x83, 0x72);
+                    } else {
+                        assert(false && "Unimplemented Token::Type when syntax highlighting in minimap!");
+                    }
+                }
+                if ((u64)texture_line % 2) {
+                    color.a = 0xaa;
+                }
+                *(Color*)&texture[(texture_line * size.w * sizeof(Color)) + (index * sizeof(Color))] = color;
                 index++;
+                line_byte_offset++;
+            }
+            if (
+                current_token &&
+                current_token != m_lexer.tokens.data + m_lexer.tokens.length &&
+                line_byte_offset == (current_token + 1)->index
+            ) {
+                current_token++;
             }
         }
         texture_line++;
+        for (u64 __line = line_index; __line < (u64)line_index + m_buffer.size() / size.h; __line++) {
+            byte_offset += m_buffer[__line].size() + 1; // +1 for newline
+        }
+        line_index += m_buffer.size() / (f32)size.h;
     }
     m_minimap_texture = std::make_shared<Texture>(texture, size.w, size.h, sizeof(Color));
     delete[] texture;
