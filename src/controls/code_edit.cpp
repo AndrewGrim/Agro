@@ -282,7 +282,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         }
         dc.drawTexture(
             Point(this->rect.x, inner_rect.y),
-            Size(m_minimap_width, inner_rect.h),
+            Size(m_minimap_width, inner_rect.h > m_buffer.size() ? m_buffer.size() : inner_rect.h),
             m_minimap_texture.get(),
             &coords,
             COLOR_WHITE
