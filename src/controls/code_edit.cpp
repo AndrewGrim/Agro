@@ -282,7 +282,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         }
         dc.drawTexture(
             Point(this->rect.x, inner_rect.y),
-            Size(m_minimap_width, inner_rect.h > m_buffer.size() ? m_buffer.size() : inner_rect.h),
+            Size(m_minimap_width, inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h),
             m_minimap_texture.get(),
             &coords,
             COLOR_WHITE
@@ -489,7 +489,7 @@ void CodeEdit::__fillSingleLineColoredText(
 void CodeEdit::__renderMinimap(Size size) {
     // In the event that the texture will be taller than the line count
     // set the texture size to which ever is smaller.
-    size.h = size.h > m_buffer.size() ? m_buffer.size() : size.h;
+    size.h = size.h > (i32)m_buffer.size() ? m_buffer.size() : size.h;
     assert(sizeof(Color) == 4 && "Color size should be 4 bytes or 32bits!");
     u8 *texture = new u8[size.h * size.w * sizeof(Color)];
     memset(texture, 0x00, size.h * size.w * sizeof(Color));
