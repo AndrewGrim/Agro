@@ -157,7 +157,7 @@
         Lexer m_lexer;
         bool m_overscroll = true;
         std::shared_ptr<Texture> m_minimap_texture = nullptr;
-        u32 m_minimap_width = 80;
+        u32 m_minimap_width = 120;
 
         CodeEdit(String text = "", Size min_size = Size(100, 100));
         ~CodeEdit();
