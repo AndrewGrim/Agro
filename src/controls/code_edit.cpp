@@ -436,27 +436,27 @@ void CodeEdit::__fillSingleLineColoredText(
                     (u32)current_token->type > (u32)Token::Type::Identifier &&
                     (u32)current_token->type <= (u32)Token::Type::ThreadLocal
                 ) {
-                    _color = Color("#e44533");
+                    _color = Color(0xe4, 0x45, 0x33);
                 } else if (current_token->type == Token::Type::MultiLineComment) {
-                    _color = Color("#928372");
+                    _color = Color(0x92, 0x83, 0x72);
                 } else if (current_token->type == Token::Type::SingleLineComment) {
-                    _color = Color("#928372");
+                    _color = Color(0x92, 0x83, 0x72);
                 } else if (current_token->type == Token::Type::String) {
-                    _color = Color("#b8bb26");
+                    _color = Color(0xb8, 0xbb, 0x26);
                 } else if (current_token->type == Token::Type::Character) {
-                    _color = Color("#b8bb26");
+                    _color = Color(0xb8, 0xbb, 0x26);
                 } else if (current_token->type == Token::Type::PreProcessorStatement) {
-                    _color = Color("#428372");
+                    _color = Color(0x42, 0x83, 0x72);
                 } else if (current_token->type == Token::Type::Number) {
-                    _color = Color("#cb8296");
+                    _color = Color(0xcb, 0x82, 0x96);
                 } else if (current_token->type == Token::Type::Identifier) {
-                    _color = Color("#81ac71");
+                    _color = Color(0x81, 0xac, 0x71);
                 } else if (current_token->type == Token::Type::Escaped) {
-                    _color = Color("#cb8296");
+                    _color = Color(0xcb, 0x82, 0x96);
                 } else if (current_token->type == Token::Type::Function) {
-                    _color = Color("#d07617");
+                    _color = Color(0xd0, 0x76, 0x17);
                 } else if ((u32)current_token->type < (u32)Token::Type::String) {
-                    _color = Color("#928372");
+                    _color = Color(0x92, 0x83, 0x72);
                 } else {
                     assert(false && "Unimplemented Token::Type when syntax highlighting!");
                 }
