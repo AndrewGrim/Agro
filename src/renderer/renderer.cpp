@@ -268,6 +268,101 @@ void Renderer::fillText(std::shared_ptr<Font> font, Slice<const char> text, Poin
     }
 }
 
+void Renderer::fillTextAtScale(std::shared_ptr<Font> font, Slice<const char> text, Point point, Color color, i32 tab_width, bool is_multiline, i32 line_spacing, Selection selection, Color selection_color, f32 scale) {
+    if (selection.begin > selection.end) {
+        auto temp = selection.end;
+        selection.end = selection.begin;
+        selection.begin = temp;
+    }
+
+    if (last_font != font.get()) {
+        last_font = font.get();
+        render();
+    }
+    glActiveTexture(gl_texture_begin + AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, font->atlas_ID);
+    i32 x = point.x;
+    i32 base_bearing = font->max_bearing * scale;
+    i32 space_advance = font->get((u32)' ').advance * scale;
+    for (u64 i = 0; i < text.length;) {
+        u8 c = text.data[i];
+        u8 length = utf8::length(text.data + i);
+        assert(length && "Invalid utf8 sequence start byte");
+        textCheck(font);
+        if (c == ' ') {
+            x += space_advance;
+        } else if (c == '\t') {
+            x += space_advance * tab_width;
+        } else if (c == '\n') {
+            if (is_multiline) {
+                point.y += font->maxHeight() * scale + line_spacing;
+                if (point.y >= clip_rect.y + clip_rect.h) { return; }
+                x = point.x;
+            }
+        } else {
+            Font::Character ch = font->get(utf8::decode(text.data + i, length));
+            if (!is_multiline && x > clip_rect.x + clip_rect.w) { return; }
+            auto _color = color;
+            if (selection.begin != selection.end && (i >= selection.begin && i < selection.end)) { _color = selection_color; }
+            if (x + ch.advance >= clip_rect.x && x <= clip_rect.x + clip_rect.w) {
+                f32 xpos = x + ch.bearing.x * scale;
+                f32 ypos = point.y + (base_bearing - ch.bearing.y * scale);
+
+                f32 w = ch.size.w * scale;
+                f32 h = ch.size.h * scale;
+
+                // TOP LEFT
+                vertices[index++] = {
+                    {xpos, ypos + h},
+                    {ch.texture_x, (h / scale / font->atlas_height)},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
+                    (f32)Renderer::Sampler::Text,
+                    {1.0f, 1.0f, 1.0f, 1.0f},
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+                };
+                // BOTTOM LEFT
+                vertices[index++] = {
+                    {xpos, ypos},
+                    {ch.texture_x, 0.0f},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
+                    (f32)Renderer::Sampler::Text,
+                    {1.0f, 1.0f, 1.0f, 1.0f},
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+                };
+                // BOTTOM RIGHT
+                vertices[index++] = {
+                    {xpos + w, ypos},
+                    {ch.texture_x + (w / scale / font->atlas_width), 0.0f},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
+                    (f32)Renderer::Sampler::Text,
+                    {1.0f, 1.0f, 1.0f, 1.0f},
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+                };
+                // TOP RIGHT
+                vertices[index++] = {
+                    {xpos + w, ypos + h},
+                    {ch.texture_x + (w / scale / font->atlas_width), (h / scale / font->atlas_height)},
+                    {_color.r / 255.0f, _color.g / 255.0f, _color.b / 255.0f, _color.a / 255.0f},
+                    (f32)AGRO_OPENGL_RESERVED_FOR_TEXTURE_ARRAY,
+                    ch.texture_array_index,
+                    (f32)Renderer::Sampler::Text,
+                    {1.0f, 1.0f, 1.0f, 1.0f},
+                    {(f32)clip_rect.x, (f32)clip_rect.y, (f32)clip_rect.w, (f32)clip_rect.h}
+                };
+                quad_count++;
+            }
+            x += ch.advance * scale;
+        }
+        i += length;
+    }
+}
+
 Size Renderer::measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width, bool is_multiline, i32 line_spacing) {
     Size size = Size(0, font->maxHeight());
     i32 line_width = 0;
@@ -288,6 +383,34 @@ Size Renderer::measureText(std::shared_ptr<Font> font, Slice<const char> text, i
             }
         } else {
             line_width += font->get(utf8::decode(text.data + i, length)).advance;
+        }
+        i += length;
+    }
+    if (line_width > size.w) { size.w = line_width; }
+
+    return size;
+}
+
+Size Renderer::measureTextAtScale(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width, bool is_multiline, i32 line_spacing, f32 scale) {
+    Size size = Size(0, font->maxHeight() * scale);
+    i32 line_width = 0;
+    i32 space_advance = font->get((u32)' ').advance * scale;
+    for (u64 i = 0; i < text.length;) {
+        u8 c = text.data[i];
+        u8 length = utf8::length(text.data + i);
+        assert(length != 0 && "Invalid utf8 sequence start byte");
+        if (c == '\t') {
+            line_width += space_advance * tab_width;
+        } else if (c == '\n') {
+            if (is_multiline) {
+                size.h += font->maxHeight() * scale + line_spacing;
+                if (line_width > size.w) {
+                    size.w = line_width;
+                    line_width = 0;
+                }
+            }
+        } else {
+            line_width += font->get(utf8::decode(text.data + i, length)).advance * scale;
         }
         i += length;
     }

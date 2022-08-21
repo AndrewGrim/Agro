@@ -66,8 +66,44 @@
 
         Renderer(u32 *indices);
         ~Renderer();
-        void fillText(std::shared_ptr<Font> font, Slice<const char> text, Point point, Color color = COLOR_BLACK, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5, Selection selection = Selection(), Color selection_color = COLOR_BLACK);
-        Size measureText(std::shared_ptr<Font> font, Slice<const char> text, i32 tab_width = 4, bool is_multiline = false, i32 line_spacing = 5);
+        void fillText(
+            std::shared_ptr<Font> font,
+            Slice<const char> text,
+            Point point,
+            Color color = COLOR_BLACK,
+            i32 tab_width = 4,
+            bool is_multiline = false,
+            i32 line_spacing = 5,
+            Selection selection = Selection(),
+            Color selection_color = COLOR_BLACK
+        );
+        void fillTextAtScale(
+            std::shared_ptr<Font> font,
+            Slice<const char> text,
+            Point point,
+            Color color = COLOR_BLACK,
+            i32 tab_width = 4,
+            bool is_multiline = false,
+            i32 line_spacing = 5,
+            Selection selection = Selection(),
+            Color selection_color = COLOR_BLACK,
+            f32 scale = 1.0f
+        );
+        Size measureText(
+            std::shared_ptr<Font> font,
+            Slice<const char> text,
+            i32 tab_width = 4,
+            bool is_multiline = false,
+            i32 line_spacing = 5
+        );
+        Size measureTextAtScale(
+            std::shared_ptr<Font> font,
+            Slice<const char> text,
+            i32 tab_width = 4,
+            bool is_multiline = false,
+            i32 line_spacing = 5,
+            f32 scale = 1.0f
+        );
         void drawTexture(Point point, Size size, Texture *texture, TextureCoordinates *coords, Color color = COLOR_WHITE);
         void fillRect(Rect rect, Color color);
         void fillRectWithGradient(Rect rect, Color fromColor, Color toColor, Gradient orientation);
