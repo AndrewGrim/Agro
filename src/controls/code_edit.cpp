@@ -134,14 +134,15 @@ bool Lexer::peek(Token::Type type) {
 
 CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mode::MultiLine, min_size) {
     onTextChanged.addEventListener([&]() {
-        delete[] lexer.tokens.data;
-        lexer.lex(this->text().slice());
+        delete[] m_lexer.tokens.data;
+        m_lexer.lex(this->text().slice());
+        __renderMinimap(Size(m_minimap_width, inner_rect.h));
     });
     onTextChanged.notify();
 }
 
 CodeEdit::~CodeEdit() {
-    delete[] lexer.tokens.data;
+    delete[] m_lexer.tokens.data;
 }
 
 const char* CodeEdit::name() {
@@ -274,6 +275,18 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
         }
+        auto coords = TextureCoordinates();
+        assert(m_minimap_texture.get() && "Minimap texture should not be null!");
+        if (inner_rect.h != m_minimap_texture->height) {
+            __renderMinimap(Size(m_minimap_width, inner_rect.h));
+        }
+        dc.drawTexture(
+            Point(this->rect.x, inner_rect.y),
+            Size(m_minimap_width, inner_rect.h),
+            m_minimap_texture.get(),
+            &coords,
+            COLOR_WHITE
+        );
         if (did_swap) { m_selection = before_swap; }
     // Draw placeholder text.
     } else {
@@ -363,9 +376,17 @@ Token* binarySearch(u64 target, Slice<Token> tokens) {
     return &tokens.data[mid];
 }
 
-void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<const char> text, Point point, u64 byte_offset, Color color, Renderer::Selection selection, Color selection_color) {
+void CodeEdit::__fillSingleLineColoredText(
+    std::shared_ptr<Font> font,
+    Slice<const char> text,
+    Point point,
+    u64 byte_offset,
+    Color color,
+    Renderer::Selection selection,
+    Color selection_color
+) {
     Renderer &renderer = *Application::get()->currentWindow()->dc->renderer;
-    Token *current_token = binarySearch(byte_offset, lexer.tokens);
+    Token *current_token = binarySearch(byte_offset, m_lexer.tokens);
 
     if (selection.begin > selection.end) {
         auto temp = selection.end;
@@ -457,10 +478,34 @@ void CodeEdit::__fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<con
         byte_offset += length;
         if (
             current_token &&
-            current_token != lexer.tokens.data + lexer.tokens.length &&
+            current_token != m_lexer.tokens.data + m_lexer.tokens.length &&
             byte_offset == (current_token + 1)->index
         ) {
             current_token++;
         }
     }
+}
+
+void CodeEdit::__renderMinimap(Size size) {
+    u8 *texture = new u8[size.h * size.w * sizeof(Color)];
+    memset(texture, 0x00, size.h * size.w * sizeof(Color));
+    u64 texture_line = 0;
+    f32 line_index = 0;
+    for (; line_index < m_buffer.size() and texture_line < (u64)size.h; line_index += m_buffer.size() / (f32)size.h) {
+        String &line = m_buffer[(u64)line_index];
+        for (u64 index = 0; index < line.size() and index < (u64)size.w;) {
+            const u8 &byte = line[index];
+            if (byte == ' ') {
+                index++;
+            } else if (byte == '\t') {
+                index += m_tab_width;
+            } else {
+                *(Color*)&texture[(texture_line * size.w * sizeof(Color)) + (index * sizeof(Color))] = Color("#000000ff");
+                index++;
+            }
+        }
+        texture_line++;
+    }
+    m_minimap_texture = std::make_shared<Texture>(texture, size.w, size.h, sizeof(Color));
+    delete[] texture;
 }

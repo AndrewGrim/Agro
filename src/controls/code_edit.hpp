@@ -154,13 +154,24 @@
     };
 
     struct CodeEdit : public TextEdit {
-        Lexer lexer;
+        Lexer m_lexer;
         bool m_overscroll = true;
+        std::shared_ptr<Texture> m_minimap_texture = nullptr;
+        u32 m_minimap_width = 80;
 
         CodeEdit(String text = "", Size min_size = Size(100, 100));
         ~CodeEdit();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
-        void __fillSingleLineColoredText(std::shared_ptr<Font> font, Slice<const char> text, Point point, u64 byte_offset, Color color, Renderer::Selection selection, Color selection_color);
+        void __fillSingleLineColoredText(
+            std::shared_ptr<Font> font,
+            Slice<const char> text,
+            Point point,
+            u64 byte_offset,
+            Color color,
+            Renderer::Selection selection,
+            Color selection_color
+        );
+        void __renderMinimap(Size size);
     };
 #endif
