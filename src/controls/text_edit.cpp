@@ -1253,8 +1253,8 @@ bool TextEdit::undo() {
                 u64 delete_n_bytes = item.text.size();
                 u64 line = m_selection.line_begin;
                 u64 total = m_buffer[line].size() - m_selection.begin;
-                if (delete_n_bytes > m_buffer[line].size()) { println("runs"); line++; total++; }
-                for (; total + m_buffer[line].size() + 1 < delete_n_bytes; total += m_buffer[line].size() + 1, line++) { println("loop"); }
+                if (delete_n_bytes > m_buffer[line].size()) { line++; total++; }
+                for (; total + m_buffer[line].size() + 1 < delete_n_bytes; total += m_buffer[line].size() + 1, line++);
                 m_selection.line_end = line;
                 m_selection.end = delete_n_bytes - total;
                 if (m_selection.line_begin == m_selection.line_end) {
