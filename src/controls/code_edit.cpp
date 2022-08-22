@@ -296,6 +296,15 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             &coords,
             COLOR_WHITE
         );
+        dc.fillRect(
+            Rect(
+                inner_rect.x + inner_rect.w,
+                inner_rect.y + (m_selection.line_begin / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h)),
+                m_minimap_width,
+                (m_selection.line_end - m_selection.line_begin) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1
+            ),
+            Color("#cccccc55")
+        );
         if (m_horizontal_scrollbar->isVisible()) {
             dc.fillRect(
                 Rect(
