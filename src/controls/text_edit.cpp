@@ -1250,8 +1250,20 @@ bool TextEdit::undo() {
                 break;
             case HistoryItem::Action::Insert: {
                 m_selection = item.selection;
-                utf8::Iterator iter = item.text.utf8Begin();
-                while ((iter = iter.next())) {
+                u64 delete_n_bytes = item.text.size();
+                u64 total = 0;
+                u64 line = m_selection.line_begin;
+                for (; total + m_buffer[line].size() + 1 < delete_n_bytes; total += m_buffer[line].size() + 1, line++);
+                m_selection.line_end = line;
+                m_selection.end = 0;
+                m_selection.x_end = 0;
+                deleteSelection(true);
+
+                m_selection = item.selection;
+                utf8::Iterator iter = item.text.utf8End();
+                delete_n_bytes -= total;
+                while (delete_n_bytes && (iter = iter.prev())) {
+                    delete_n_bytes -= iter.length;
                     deleteOne(false, true);
                 }
                 break;
