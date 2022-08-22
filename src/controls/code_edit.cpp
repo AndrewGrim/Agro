@@ -296,6 +296,17 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             &coords,
             COLOR_WHITE
         );
+        if (m_horizontal_scrollbar->isVisible()) {
+            dc.fillRect(
+                Rect(
+                    inner_rect.x + inner_rect.w - 1,
+                    this->rect.y,
+                    1,
+                    this->rect.h
+                ),
+                Color("#cccccc")
+            );
+        }
         if (did_swap) { m_selection = before_swap; }
     // Draw placeholder text.
     } else {
