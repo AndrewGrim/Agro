@@ -167,7 +167,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
     u32 line_numbers_padding = 10;
     inner_rect.x += line_numbers_width + line_numbers_padding;
-    inner_rect.w -= line_numbers_width + line_numbers_padding;
+    inner_rect.w -= line_numbers_width + line_numbers_padding + m_minimap_width;
     pos.x += line_numbers_width + line_numbers_padding;
 
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
@@ -280,8 +280,15 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         if (inner_rect.h != m_minimap_texture->height) {
             __renderMinimap(Size(m_minimap_width, inner_rect.h));
         }
+        dc.fillRect(
+            Rect(
+                inner_rect.x + inner_rect.w, this->rect.y,
+                m_minimap_width + inner_rect.x - this->rect.x, this->rect.h
+            ),
+            dc.textBackground(style())
+        );
         dc.drawTexture(
-            Point(this->rect.x, inner_rect.y),
+            Point(inner_rect.x + inner_rect.w, inner_rect.y),
             Size(m_minimap_width, inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h),
             m_minimap_texture.get(),
             &coords,
