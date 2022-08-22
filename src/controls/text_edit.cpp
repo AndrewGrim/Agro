@@ -1370,9 +1370,12 @@ bool TextEdit::handleScrollEvent(ScrollEvent event) {
 }
 
 String TextEdit::selection() {
-    swapSelection();
+    Selection before_swap = m_selection;
+    bool did_swap = swapSelection();
     if (m_selection.line_begin == m_selection.line_end) {
-        return m_buffer[m_selection.line_end].substring(m_selection.begin, m_selection.end);
+        String s = m_buffer[m_selection.line_end].substring(m_selection.begin, m_selection.end);
+        if (did_swap) { m_selection = before_swap; }
+        return s;
     } else {
         u64 length = 0;
         for (u64 i = m_selection.line_begin; i <= m_selection.line_end; i++) {
@@ -1403,6 +1406,7 @@ String TextEdit::selection() {
             }
         }
         s.data()[s.size()] = '\0';
+        if (did_swap) { m_selection = before_swap; }
         return s;
     }
 }
