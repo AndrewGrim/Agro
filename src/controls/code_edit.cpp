@@ -640,6 +640,6 @@ void CodeEdit::__renderMinimap(Size size) {
         }
         line_index += m_buffer.size() / (f32)size.h;
     }
-    m_minimap_texture = std::make_shared<Texture>(texture, size.w, size.h, sizeof(Color));
+    m_minimap_texture = std::make_shared<Texture>(texture, size.w, size.h, (i32)sizeof(Color));
     delete[] texture;
 }
