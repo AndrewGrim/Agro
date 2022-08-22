@@ -3,7 +3,7 @@
 #define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
 #define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
 #define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
-#define IS_BASE_X_SCROLL ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
+#define IS_NOT_BASE_X_SCROLL ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
 
 Lexer::Lexer() {}
 
@@ -183,7 +183,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         Renderer::Selection selection;
         u64 byte_offset = 0;
         for (u64 line = 0; line < line_index; byte_offset += m_buffer[line].size() + 1, line++); // +1 for newline
-        if (IS_BASE_X_SCROLL) {
+        if (IS_NOT_BASE_X_SCROLL) {
             dc.fillRect(
                 Rect(
                     rect.x + line_numbers_width + (line_numbers_padding / 2) - 1,
