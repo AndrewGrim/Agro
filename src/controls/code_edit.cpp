@@ -284,13 +284,13 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         }
         dc.fillRect(
             Rect(
-                inner_rect.x + inner_rect.w, this->rect.y,
+                inner_rect.x + inner_rect.w + m_cursor_width, this->rect.y,
                 m_minimap_width + inner_rect.x - this->rect.x, this->rect.h
             ),
             dc.textBackground(style())
         );
         dc.drawTexture(
-            Point(inner_rect.x + inner_rect.w, inner_rect.y),
+            Point(inner_rect.x + inner_rect.w + m_cursor_width, inner_rect.y),
             Size(m_minimap_width, inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h),
             m_minimap_texture.get(),
             &coords,
@@ -298,7 +298,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         );
         dc.fillRect(
             Rect(
-                inner_rect.x + inner_rect.w,
+                inner_rect.x + inner_rect.w + m_cursor_width,
                 inner_rect.y + (m_selection.line_begin / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h)),
                 m_minimap_width,
                 (m_selection.line_end - m_selection.line_begin) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1
@@ -308,7 +308,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         if (m_horizontal_scrollbar->isVisible()) {
             dc.fillRect(
                 Rect(
-                    inner_rect.x + inner_rect.w - 1,
+                    inner_rect.x + inner_rect.w + m_cursor_width - 1,
                     this->rect.y,
                     1,
                     this->rect.h
@@ -373,7 +373,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         Size padding = Size();
         dc.sizeHintPadding(padding, style());
         Rect scrollbars = Rect(post_padding.x - paddingLeft(), post_padding.y - paddingTop(), post_padding.w + padding.w, post_padding.h + padding.h);
-        drawScrollBars(dc, scrollbars, m_virtual_size, line_numbers_width + line_numbers_padding + m_minimap_width);
+        drawScrollBars(dc, scrollbars, m_virtual_size, line_numbers_width + line_numbers_padding + m_minimap_width + m_cursor_width);
     }
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style(), state);
