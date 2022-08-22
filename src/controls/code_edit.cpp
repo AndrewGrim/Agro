@@ -285,7 +285,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         dc.fillRect(
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width, this->rect.y,
-                m_minimap_width + inner_rect.x - this->rect.x, this->rect.h
+                m_minimap_width + (post_padding.x - this->rect.x), this->rect.h
             ),
             dc.textBackground(style())
         );
@@ -353,7 +353,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         i32 y = inner_rect.y;
         y -= Y_SCROLL_OFFSET;
         dc.renderer->clip_rect.x += line_numbers_width + line_numbers_padding;
-        dc.renderer->clip_rect.w -= line_numbers_width + line_numbers_padding;
+        dc.renderer->clip_rect.w -= line_numbers_width + line_numbers_padding * 2 + m_minimap_width + (post_padding.x - this->rect.x);
         dc.fillRect(
             Rect(
                 x_scroll_offset + m_selection.x_end,
@@ -364,7 +364,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             dc.textForeground(style()) // TODO should be a separate color setting
         );
         dc.renderer->clip_rect.x -= line_numbers_width + line_numbers_padding;
-        dc.renderer->clip_rect.w += line_numbers_width + line_numbers_padding;
+        dc.renderer->clip_rect.w += line_numbers_width + line_numbers_padding * 2 + m_minimap_width + (post_padding.x - this->rect.x);
     }
 
     {
