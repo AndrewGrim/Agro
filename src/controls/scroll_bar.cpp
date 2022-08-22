@@ -55,9 +55,7 @@ SimpleScrollBar::SimpleScrollBar(Align alignment, Size min_size) : Box(alignment
     append(m_slider, Fill::Both);
 }
 
-SimpleScrollBar::~SimpleScrollBar() {
-
-}
+SimpleScrollBar::~SimpleScrollBar() {}
 
 const char* SimpleScrollBar::name() {
     return "SimpleScrollBar";
