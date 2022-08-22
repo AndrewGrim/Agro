@@ -1251,21 +1251,17 @@ bool TextEdit::undo() {
             case HistoryItem::Action::Insert: {
                 m_selection = item.selection;
                 u64 delete_n_bytes = item.text.size();
-                u64 total = 0;
                 u64 line = m_selection.line_begin;
-                for (; total + m_buffer[line].size() + 1 < delete_n_bytes; total += m_buffer[line].size() + 1, line++);
+                u64 total = m_buffer[line].size() - m_selection.begin;
+                if (delete_n_bytes > m_buffer[line].size()) { println("runs"); line++; total++; }
+                for (; total + m_buffer[line].size() + 1 < delete_n_bytes; total += m_buffer[line].size() + 1, line++) { println("loop"); }
                 m_selection.line_end = line;
-                m_selection.end = 0;
-                m_selection.x_end = 0;
-                deleteSelection(true);
-
-                m_selection = item.selection;
-                utf8::Iterator iter = item.text.utf8End();
-                delete_n_bytes -= total;
-                while (delete_n_bytes && (iter = iter.prev())) {
-                    delete_n_bytes -= iter.length;
-                    deleteOne(false, true);
+                m_selection.end = delete_n_bytes - total;
+                if (m_selection.line_begin == m_selection.line_end) {
+                    m_selection.end = m_selection.begin + delete_n_bytes;
                 }
+                deleteSelection(true);
+                m_selection = item.selection;
                 break;
             }
             default: assert(false && "Not a valid HistoryItem!");
