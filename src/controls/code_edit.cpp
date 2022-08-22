@@ -160,14 +160,16 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.padding(rect, style());
 
     if (m_overscroll) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
+
+    i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
+    u32 line_numbers_padding = 10;
+    rect.w -= line_numbers_width + line_numbers_padding + m_minimap_width;
+
     Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     Rect post_padding = rect;
     inner_rect = rect;
 
-    i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
-    u32 line_numbers_padding = 10;
     inner_rect.x += line_numbers_width + line_numbers_padding;
-    inner_rect.w -= line_numbers_width + line_numbers_padding + m_minimap_width;
     pos.x += line_numbers_width + line_numbers_padding;
 
     Rect text_region = Rect(pos.x, pos.y, inner_rect.w, inner_rect.h);
@@ -351,11 +353,60 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         Size padding = Size();
         dc.sizeHintPadding(padding, style());
         Rect scrollbars = Rect(post_padding.x - paddingLeft(), post_padding.y - paddingTop(), post_padding.w + padding.w, post_padding.h + padding.h);
-        drawScrollBars(dc, scrollbars, m_virtual_size);
+        drawScrollBars(dc, scrollbars, m_virtual_size, line_numbers_width + line_numbers_padding + m_minimap_width);
     }
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style(), state);
     dc.setClip(previous_clip);
+}
+
+void CodeEdit::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size, i32 extra) {
+    rect.w += extra;
+    if (m_vertical_scrollbar->isVisible()) {
+        Size size = m_vertical_scrollbar->sizeHint(dc);
+        i32 slider_size = rect.h * ((rect.h - size.h / 2.0) / virtual_size.h);
+        if (slider_size < 10) {
+            slider_size = 10;
+        }
+        m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
+        m_vertical_scrollbar->draw(
+            dc,
+            Rect(
+                rect.x + rect.w,
+                rect.y,
+                size.w,
+                rect.h > size.h ? rect.h : size.h
+            ),
+            m_vertical_scrollbar->state()
+        );
+    }
+    if (m_horizontal_scrollbar->isVisible()) {
+        Size size = m_horizontal_scrollbar->sizeHint(dc);
+        i32 slider_size = rect.w * ((rect.w - extra - size.w / 2.0) / virtual_size.w);
+        if (slider_size < 10) {
+            slider_size = 10;
+        }
+        m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
+        m_horizontal_scrollbar->draw(
+            dc,
+            Rect(
+                rect.x,
+                rect.y + rect.h,
+                rect.w > size.w ? rect.w : size.w,
+                size.h
+            ),
+            m_horizontal_scrollbar->state()
+        );
+    }
+    if (m_vertical_scrollbar->isVisible() && m_horizontal_scrollbar->isVisible()) {
+        dc.fillRect(Rect(
+            rect.x + rect.w,
+            rect.y + rect.h,
+            m_vertical_scrollbar->sizeHint(dc).w,
+            m_horizontal_scrollbar->sizeHint(dc).h),
+            dc.widgetBackground(m_vertical_scrollbar->style())
+        );
+    }
 }
 
 Token* binarySearch(u64 target, Slice<Token> tokens) {

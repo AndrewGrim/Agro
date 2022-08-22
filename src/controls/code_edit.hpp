@@ -163,6 +163,7 @@
         ~CodeEdit();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
+        void drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size, i32 extra);
         void __fillSingleLineColoredText(
             std::shared_ptr<Font> font,
             Slice<const char> text,
