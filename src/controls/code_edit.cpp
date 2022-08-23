@@ -152,9 +152,7 @@ void MinimapButton::draw(DrawingContext &dc, Rect rect, i32 state) {
         color = Color("#88888855");
     }
     dc.drawBorder(rect, style(), state);
-    Rect focus_rect = rect;
     dc.fillRect(rect, color);
-    dc.drawKeyboardFocus(focus_rect, style(), state);
 }
 
 Size MinimapButton::sizeHint(DrawingContext &dc) {
