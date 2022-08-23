@@ -254,11 +254,6 @@ Size Minimap::sizeHint(DrawingContext &dc) {
 }
 
 bool Minimap::handleScrollEvent(ScrollEvent event) {
-    // TODO need to sync this to vertical scrollbar
-    // and the other way as well
-    // i think it will be easiest to just override the default scrollbars
-    // but now is not the time for that
-    // TODO question is should we notify both onValueChanged handlers??
     m_value = NORMALIZE(m_min, m_max, m_value + m_step * event.y);
     // Sync the minimap scroll with the vertical scrollbar.
     ((Scrollable*)parent)->m_vertical_scrollbar->m_slider->m_value = m_value;
@@ -269,32 +264,10 @@ bool Minimap::handleScrollEvent(ScrollEvent event) {
 
 
 CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mode::MultiLine, min_size) {
-    onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-        // Sync minimap position to the potential scroll from mouse selection.
-        m_minimap->m_value = m_vertical_scrollbar->m_slider->m_value;
-    });
     m_minimap = new Minimap();
     append(m_minimap);
-    // Override the vertical scrollbar motion handler to sync its movement with the minimap.
-    m_vertical_scrollbar->m_slider->m_slider_button->onMouseMotion.listeners.pop_back();
-    m_vertical_scrollbar->m_slider->m_slider_button->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
-        Slider *slider = m_vertical_scrollbar->m_slider;
-        SliderButton *self = slider->m_slider_button;
-        if (self->isPressed()) {
-            Rect rect = this->rect;
-            i32 size = slider->m_slider_button_size;
-
-            i32 event_pos = event.y;
-            i32 position = slider->rect.y;
-            i32 length = slider->rect.h;
-            i32 start = size - slider->m_origin;
-            f64 value = (event_pos - (position + start)) / (f64)(length - start - slider->m_origin);
-            slider->m_value = NORMALIZE(slider->m_min, slider->m_max, value);
-            m_minimap->m_value = slider->m_value;
-
-            slider->onValueChanged.notify();
-            update();
-        }
+    m_vertical_scrollbar->m_slider->onValueChanged.addEventListener([&]() {
+        m_minimap->m_value = m_vertical_scrollbar->m_slider->m_value;
     });
     onTextChanged.addEventListener([&]() {
         delete[] m_lexer.tokens.data;
