@@ -209,6 +209,8 @@ Minimap::Minimap() : Box(Align::Vertical) {
         i32 size = m_slider_button_size;
         m_value = (event.y - (rect.y + size / 2.0)) / (f64)(rect.h - size);
         m_value = NORMALIZE(m_min, m_max, m_value);
+        // Sync the minimap jump with the vertical scrollbar.
+        ((Scrollable*)parent)->m_vertical_scrollbar->m_slider->m_value = m_value;
     });
 }
 
@@ -267,6 +269,10 @@ bool Minimap::handleScrollEvent(ScrollEvent event) {
 
 
 CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mode::MultiLine, min_size) {
+    onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+        // Sync minimap position to the potential scroll from mouse selection.
+        m_minimap->m_value = m_vertical_scrollbar->m_slider->m_value;
+    });
     m_minimap = new Minimap();
     append(m_minimap);
     // Override the vertical scrollbar motion handler to sync its movement with the minimap.
