@@ -153,17 +153,50 @@
         bool peek(Token::Type type);
     };
 
+    struct MinimapButton : public Widget {
+        MinimapButton(Size min_size = Size(10, 10));
+        ~MinimapButton();
+        const char* name() override;
+        void draw(DrawingContext &dc, Rect rect, i32 state) override;
+        Size sizeHint(DrawingContext &dc) override;
+        MinimapButton* setMinSize(Size size);
+        Size minSize();
+        i32 isFocusable() override;
+    };
+
+    struct Minimap : public Box {
+        f64 m_min = 0.0;
+        f64 m_max = 1.0;
+        f64 m_value = 0.0;
+        f64 m_step = 0.1;
+        i32 m_origin = 0;
+
+        i32 m_slider_button_size = 0;
+        MinimapButton *m_slider_button = nullptr;
+        EventListener<> onValueChanged = EventListener<>();
+
+        std::shared_ptr<Texture> m_minimap_texture = nullptr;
+        u32 m_minimap_width = 120;
+
+        Minimap();
+        ~Minimap();
+        const char* name() override;
+        void draw(DrawingContext &dc, Rect rect, i32 state) override;
+        Size sizeHint(DrawingContext &dc) override;
+        bool handleScrollEvent(ScrollEvent event) override;
+    };
+
     struct CodeEdit : public TextEdit {
         Lexer m_lexer;
         bool m_overscroll = true;
-        std::shared_ptr<Texture> m_minimap_texture = nullptr;
-        u32 m_minimap_width = 120;
+        Minimap *m_minimap = nullptr;
 
         CodeEdit(String text = "", Size min_size = Size(100, 100));
         ~CodeEdit();
         virtual const char* name() override;
         virtual void draw(DrawingContext &dc, Rect rect, i32 state) override;
-        void drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size, i32 extra);
+        Point __automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size);
+        void __drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size, i32 extra);
         void __fillSingleLineColoredText(
             std::shared_ptr<Font> font,
             Slice<const char> text,
@@ -174,5 +207,6 @@
             Color selection_color
         );
         void __renderMinimap(Size size);
+        bool handleScrollEvent(ScrollEvent event) override;
     };
 #endif

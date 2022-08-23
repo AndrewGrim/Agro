@@ -131,12 +131,169 @@ bool Lexer::peek(Token::Type type) {
     return false;
 }
 
+MinimapButton::MinimapButton(Size min_size) : Widget() {
+    setMinSize(min_size);
+}
+
+MinimapButton::~MinimapButton() {}
+
+const char* MinimapButton::name() {
+    return "MinimapButton";
+}
+
+void MinimapButton::draw(DrawingContext &dc, Rect rect, i32 state) {
+    this->rect = rect;
+    Color color;
+    if (state & STATE_PRESSED) {
+        color = dc.accentPressedBackground(style());
+    } else if (state & STATE_HOVERED) {
+        color = dc.accentHoveredBackground(style());
+    } else {
+        color = dc.accentWidgetBackground(style());
+    }
+    dc.drawBorder(rect, style(), state);
+    Rect focus_rect = rect;
+    dc.fillRect(rect, color);
+    dc.drawKeyboardFocus(focus_rect, style(), state);
+}
+
+Size MinimapButton::sizeHint(DrawingContext &dc) {
+    return m_size;
+}
+
+MinimapButton* MinimapButton::setMinSize(Size size) {
+    m_size = size;
+    Application::get()->currentWindow()->dc->sizeHintBorder(m_size, style());
+    layout(LAYOUT_STYLE);
+    return this;
+}
+
+Size MinimapButton::minSize() {
+    return m_size;
+}
+
+i32 MinimapButton::isFocusable() {
+    return (i32)FocusType::Focusable;
+}
+
+Minimap::Minimap() : Box(Align::Vertical) {
+    m_slider_button = new MinimapButton();
+    append(m_slider_button, Fill::Both);
+    m_slider_button->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+        // The origin point is the position from where
+        // the value calculations will begin.
+        // It determines the start and end points for the value axis.
+        m_origin = m_slider_button->rect.y + m_slider_button->rect.h - event.y;
+    });
+    m_slider_button->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+        MinimapButton *self = m_slider_button;
+        if (self->isPressed()) {
+            Rect rect = this->rect;
+            i32 size = m_slider_button_size;
+
+            i32 event_pos = event.y;
+            i32 position = rect.y;
+            i32 length = rect.h;
+            i32 start = size - m_origin;
+            f64 value = (event_pos - (position + start)) / (f64)(length - start - m_origin);
+            m_value = NORMALIZE(m_min, m_max, value);
+            // Sync the minimap movement with the vertical scrollbar.
+            ((Scrollable*)parent)->m_vertical_scrollbar->m_slider->m_value = m_value;
+
+            onValueChanged.notify();
+            update();
+        }
+    });
+    onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+        Rect rect = this->rect;
+        i32 size = m_slider_button_size;
+        m_value = (event.y - (rect.y + size / 2.0)) / (f64)(rect.h - size);
+        m_value = NORMALIZE(m_min, m_max, m_value);
+    });
+}
+
+Minimap::~Minimap() {}
+
+const char* Minimap::name() {
+    return "Minimap";
+}
+
+void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
+    this->rect = rect;
+
+    // TODO possibly draw selection here as well??
+    auto coords = TextureCoordinates();
+    assert(m_minimap_texture.get() && "Minimap texture should not be null!");
+    dc.drawTexture(Point(rect.x, rect.y), Size(rect.w, rect.h), m_minimap_texture.get(), &coords, COLOR_WHITE);
+
+    // Get the size of the slider button.
+    i32 size;
+    Size sizehint = m_slider_button->sizeHint(dc);
+    if (!m_slider_button_size) {
+        // Button size was not set. Default.
+        if (m_align_policy == Align::Horizontal) {
+            size = sizehint.w;
+        } else {
+            size = sizehint.h;
+        }
+    } else {
+        // Button size was set externally, usually by a scrollable widget.
+        size = m_slider_button_size;
+    }
+
+    // Determine and draw the location of the slider button.
+    i32 start = size - m_origin;
+    rect.y += (rect.h - start - m_origin) * m_value;
+    m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size), m_slider_button->state());
+}
+
+Size Minimap::sizeHint(DrawingContext &dc) {
+    return Size(1, 1);
+}
+
+bool Minimap::handleScrollEvent(ScrollEvent event) {
+    // TODO need to sync this to vertical scrollbar
+    // and the other way as well
+    // i think it will be easiest to just override the default scrollbars
+    // but now is not the time for that
+    // TODO question is should we notify both onValueChanged handlers??
+    m_value = NORMALIZE(m_min, m_max, m_value + m_step * event.y);
+    // Sync the minimap scroll with the vertical scrollbar.
+    ((Scrollable*)parent)->m_vertical_scrollbar->m_slider->m_value = m_value;
+    onValueChanged.notify();
+    update();
+    return true;
+}
+
 
 CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mode::MultiLine, min_size) {
+    m_minimap = new Minimap();
+    append(m_minimap);
+    // Override the vertical scrollbar motion handler to sync its movement with the minimap.
+    m_vertical_scrollbar->m_slider->m_slider_button->onMouseMotion.listeners.pop_back();
+    m_vertical_scrollbar->m_slider->m_slider_button->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+        Slider *slider = m_vertical_scrollbar->m_slider;
+        SliderButton *self = slider->m_slider_button;
+        if (self->isPressed()) {
+            Rect rect = this->rect;
+            i32 size = slider->m_slider_button_size;
+
+            i32 event_pos = event.y;
+            i32 position = slider->rect.y;
+            i32 length = slider->rect.h;
+            i32 start = size - slider->m_origin;
+            f64 value = (event_pos - (position + start)) / (f64)(length - start - slider->m_origin);
+            slider->m_value = NORMALIZE(slider->m_min, slider->m_max, value);
+            m_minimap->m_value = slider->m_value;
+
+            slider->onValueChanged.notify();
+            update();
+        }
+    });
     onTextChanged.addEventListener([&]() {
         delete[] m_lexer.tokens.data;
         m_lexer.lex(this->text());
-        __renderMinimap(Size(m_minimap_width, inner_rect.h));
+        __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
     });
     onTextChanged.notify();
 }
@@ -163,9 +320,9 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
     u32 line_numbers_padding = 10;
-    rect.w -= line_numbers_width + line_numbers_padding + m_minimap_width;
+    rect.w -= line_numbers_width + line_numbers_padding + m_minimap->m_minimap_width;
 
-    Point pos = automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
+    Point pos = __automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     Rect post_padding = rect;
     inner_rect = rect;
 
@@ -277,30 +434,29 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
         }
-        auto coords = TextureCoordinates();
-        assert(m_minimap_texture.get() && "Minimap texture should not be null!");
-        if (inner_rect.h != m_minimap_texture->height) {
-            __renderMinimap(Size(m_minimap_width, inner_rect.h));
+        if (inner_rect.h != m_minimap->m_minimap_texture->height) {
+            __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
         }
         dc.fillRect(
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width, this->rect.y,
-                m_minimap_width + (post_padding.x - this->rect.x), this->rect.h
+                m_minimap->m_minimap_width + (post_padding.x - this->rect.x), this->rect.h
             ),
             dc.textBackground(style())
         );
-        dc.drawTexture(
-            Point(inner_rect.x + inner_rect.w + m_cursor_width, inner_rect.y),
-            Size(m_minimap_width, inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h),
-            m_minimap_texture.get(),
-            &coords,
-            COLOR_WHITE
+        m_minimap->draw(
+            dc,
+            Rect(
+                inner_rect.x + inner_rect.w + m_cursor_width, inner_rect.y,
+                m_minimap->m_minimap_width, inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h
+            ),
+            m_minimap->state()
         );
         dc.fillRect(
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width,
                 inner_rect.y + (m_selection.line_begin / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h)),
-                m_minimap_width,
+                m_minimap->m_minimap_width,
                 (m_selection.line_end - m_selection.line_begin) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1
             ),
             Color("#cccccc55")
@@ -353,7 +509,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         i32 y = inner_rect.y;
         y -= Y_SCROLL_OFFSET;
         dc.renderer->clip_rect.x += line_numbers_width + line_numbers_padding;
-        dc.renderer->clip_rect.w -= line_numbers_width + line_numbers_padding * 2 + m_minimap_width + (post_padding.x - this->rect.x);
+        dc.renderer->clip_rect.w -= line_numbers_width + line_numbers_padding * 2 + m_minimap->m_minimap_width + (post_padding.x - this->rect.x);
         dc.fillRect(
             Rect(
                 x_scroll_offset + m_selection.x_end,
@@ -364,7 +520,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             dc.textForeground(style()) // TODO should be a separate color setting
         );
         dc.renderer->clip_rect.x -= line_numbers_width + line_numbers_padding;
-        dc.renderer->clip_rect.w += line_numbers_width + line_numbers_padding * 2 + m_minimap_width + (post_padding.x - this->rect.x);
+        dc.renderer->clip_rect.w += line_numbers_width + line_numbers_padding * 2 + m_minimap->m_minimap_width + (post_padding.x - this->rect.x);
     }
 
     {
@@ -373,14 +529,64 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         Size padding = Size();
         dc.sizeHintPadding(padding, style());
         Rect scrollbars = Rect(post_padding.x - paddingLeft(), post_padding.y - paddingTop(), post_padding.w + padding.w, post_padding.h + padding.h);
-        drawScrollBars(dc, scrollbars, m_virtual_size, line_numbers_width + line_numbers_padding + m_minimap_width + m_cursor_width);
+        __drawScrollBars(dc, scrollbars, m_virtual_size, line_numbers_width + line_numbers_padding + m_minimap->m_minimap_width + m_cursor_width);
     }
     dc.setClip(focus_rect); // No need to keep the last clip since we are done using it anyway.
     dc.drawKeyboardFocus(focus_rect, style(), state);
     dc.setClip(previous_clip);
 }
 
-void CodeEdit::drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size, i32 extra) {
+Point CodeEdit::__automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size) {
+    i32 content_x = rect.x;
+    i32 content_y = rect.y;
+    bool vert = false;
+    if (rect.h < virtual_size.h) {
+        vert = true;
+        if (!m_vertical_scrollbar->isVisible()) {
+            m_vertical_scrollbar->show();
+        }
+        rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
+    }
+    if (rect.w < virtual_size.w) {
+        if (!m_horizontal_scrollbar->isVisible()) {
+            m_horizontal_scrollbar->show();
+        }
+        rect.h -= m_horizontal_scrollbar->sizeHint(dc).h;
+        if (rect.h < virtual_size.h) {
+            if (!m_vertical_scrollbar->isVisible()) {
+                m_vertical_scrollbar->show();
+            }
+            if (!vert) {
+                rect.w -= m_vertical_scrollbar->sizeHint(dc).w;
+            }
+        }
+    } else {
+        if (m_horizontal_scrollbar->isVisible()) {
+            m_horizontal_scrollbar->hide();
+        }
+    }
+    if (!(rect.h < virtual_size.h)) {
+        if (m_vertical_scrollbar->isVisible()) {
+            m_vertical_scrollbar->hide();
+        }
+    }
+    if (m_vertical_scrollbar->isVisible()) {
+        m_vertical_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (f64)(virtual_size.h - rect.h);
+    }
+    if (m_horizontal_scrollbar->isVisible()) {
+        content_x -= m_horizontal_scrollbar->m_slider->m_value * (virtual_size.w - rect.w);
+        m_horizontal_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (f64)(virtual_size.w - rect.w);
+    }
+    {
+        content_y -= m_minimap->m_value * (virtual_size.h - rect.h);
+        // TODO we may not want to use rect.h here
+        m_minimap->m_step = Application::get()->scroll_amount / (f64)(virtual_size.h - rect.h);
+    }
+
+    return Point(content_x, content_y);
+}
+
+void CodeEdit::__drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virtual_size, i32 extra) {
     rect.w += extra;
     if (m_vertical_scrollbar->isVisible()) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
@@ -640,6 +846,21 @@ void CodeEdit::__renderMinimap(Size size) {
         }
         line_index += m_buffer.size() / (f32)size.h;
     }
-    m_minimap_texture = std::make_shared<Texture>(texture, size.w, size.h, (i32)sizeof(Color));
+    m_minimap->m_minimap_texture = std::make_shared<Texture>(texture, size.w, size.h, (i32)sizeof(Color));
     delete[] texture;
+}
+
+bool CodeEdit::handleScrollEvent(ScrollEvent event) {
+    SDL_Keymod mod = SDL_GetModState();
+    if (mod & Mod::Shift) {
+        if (m_horizontal_scrollbar->isVisible()) {
+            return m_horizontal_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    } else {
+        if (m_vertical_scrollbar->isVisible()) {
+            m_minimap->handleScrollEvent(event);
+            return m_vertical_scrollbar->m_slider->handleScrollEvent(event);
+        }
+    }
+    return false;
 }
