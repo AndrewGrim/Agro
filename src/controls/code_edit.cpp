@@ -293,7 +293,8 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, dc.textBackground(style()));
     dc.padding(rect, style());
 
-    if (m_overscroll) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
+    m_virtual_size.h = (m_buffer.size() * TEXT_HEIGHT);
+    if (m_overscroll && m_virtual_size.h > rect.h) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
 
     i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
     u32 line_numbers_padding = 10;
