@@ -145,11 +145,11 @@ void MinimapButton::draw(DrawingContext &dc, Rect rect, i32 state) {
     this->rect = rect;
     Color color;
     if (state & STATE_PRESSED) {
-        color = dc.accentPressedBackground(style());
+        color = Color("#888888aa");
     } else if (state & STATE_HOVERED) {
-        color = dc.accentHoveredBackground(style());
+        color = Color("#88888888");
     } else {
-        color = dc.accentWidgetBackground(style());
+        color = Color("#88888855");
     }
     dc.drawBorder(rect, style(), state);
     Rect focus_rect = rect;
