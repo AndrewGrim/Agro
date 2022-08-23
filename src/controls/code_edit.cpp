@@ -414,6 +414,14 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
         if (inner_rect.h != m_minimap->m_minimap_texture->height) {
             __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
         }
+        {
+            i32 slider_size = m_virtual_size.h / inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h;
+            slider_size = (rect.h / TEXT_HEIGHT) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1;
+            if (slider_size < 5) {
+                slider_size = 5;
+            }
+            m_minimap->m_slider_button_size = slider_size;
+        }
         dc.fillRect(
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width, this->rect.y,
@@ -566,8 +574,8 @@ void CodeEdit::__drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
     if (m_vertical_scrollbar->isVisible()) {
         Size size = m_vertical_scrollbar->sizeHint(dc);
         i32 slider_size = rect.h * ((rect.h - size.h / 2.0) / virtual_size.h);
-        if (slider_size < 10) {
-            slider_size = 10;
+        if (slider_size < 5) {
+            slider_size = 5;
         }
         m_vertical_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_vertical_scrollbar->draw(
@@ -584,8 +592,8 @@ void CodeEdit::__drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
     if (m_horizontal_scrollbar->isVisible()) {
         Size size = m_horizontal_scrollbar->sizeHint(dc);
         i32 slider_size = rect.w * ((rect.w - extra - size.w / 2.0) / virtual_size.w);
-        if (slider_size < 10) {
-            slider_size = 10;
+        if (slider_size < 5) {
+            slider_size = 5;
         }
         m_horizontal_scrollbar->m_slider->m_slider_button_size = slider_size;
         m_horizontal_scrollbar->draw(
@@ -608,11 +616,6 @@ void CodeEdit::__drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
             dc.widgetBackground(m_vertical_scrollbar->style())
         );
     }
-    i32 slider_size = virtual_size.h / m_minimap->rect.h;
-    if (slider_size < 10) {
-        slider_size = 10;
-    }
-    m_minimap->m_slider_button_size = slider_size;
 }
 
 Token* binarySearch(u64 target, Slice<Token> tokens) {
