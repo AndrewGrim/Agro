@@ -577,11 +577,9 @@ Point CodeEdit::__automaticallyAddOrRemoveScrollBars(DrawingContext &dc, Rect &r
         content_x -= m_horizontal_scrollbar->m_slider->m_value * (virtual_size.w - rect.w);
         m_horizontal_scrollbar->m_slider->m_step = Application::get()->scroll_amount / (f64)(virtual_size.w - rect.w);
     }
-    {
-        content_y -= m_minimap->m_value * (virtual_size.h - rect.h);
-        // TODO we may not want to use rect.h here
-        m_minimap->m_step = Application::get()->scroll_amount / (f64)(virtual_size.h - rect.h);
-    }
+    content_y -= m_minimap->m_value * (virtual_size.h - rect.h);
+    // TODO we may not want to use rect.h here
+    m_minimap->m_step = Application::get()->scroll_amount / (f64)(virtual_size.h - rect.h);
 
     return Point(content_x, content_y);
 }
@@ -633,6 +631,11 @@ void CodeEdit::__drawScrollBars(DrawingContext &dc, Rect &rect, const Size &virt
             dc.widgetBackground(m_vertical_scrollbar->style())
         );
     }
+    i32 slider_size = virtual_size.h / m_minimap->rect.h;
+    if (slider_size < 10) {
+        slider_size = 10;
+    }
+    m_minimap->m_slider_button_size = slider_size;
 }
 
 Token* binarySearch(u64 target, Slice<Token> tokens) {
