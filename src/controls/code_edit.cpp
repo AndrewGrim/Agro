@@ -243,7 +243,7 @@ void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     // Determine and draw the location of the slider button.
     i32 start = size - m_origin;
-    rect.y += (rect.h - start - m_origin) * m_value;
+    rect.y += rect.h * m_value;
     m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size), m_slider_button->state());
 }
 
@@ -293,7 +293,6 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, dc.textBackground(style()));
     dc.padding(rect, style());
 
-    m_virtual_size.h = (m_buffer.size() * TEXT_HEIGHT);
     if (m_overscroll && m_virtual_size.h > rect.h) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
 
     i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
@@ -416,8 +415,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
         }
         {
-            i32 slider_size = m_virtual_size.h / inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h;
-            slider_size = (rect.h / TEXT_HEIGHT) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1;
+            i32 slider_size = (inner_rect.h / TEXT_HEIGHT) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1;
             if (slider_size < 5) {
                 slider_size = 5;
             }
