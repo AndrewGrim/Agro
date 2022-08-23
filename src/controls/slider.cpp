@@ -88,7 +88,6 @@ Slider::Slider(Align alignment, f64 value) : Box(alignment), m_value{value} {
             i32 start = size - m_origin;
             f64 value = (event_pos - (position + start)) / (f64)(length - start - m_origin);
             m_value = NORMALIZE(m_min, m_max, value);
-
             onValueChanged.notify();
             update();
         }
@@ -103,6 +102,8 @@ Slider::Slider(Align alignment, f64 value) : Box(alignment), m_value{value} {
             m_value = (event.y - (rect.y + size / 2.0)) / (f64)(rect.h - size);
         }
         m_value = NORMALIZE(m_min, m_max, m_value);
+        onValueChanged.notify();
+        update();
     });
 }
 

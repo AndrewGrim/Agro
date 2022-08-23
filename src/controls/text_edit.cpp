@@ -136,6 +136,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     if (event.xrel < 0) {
                         m_horizontal_scrollbar->m_slider->m_value += event.xrel / (f64)(m_virtual_size.w - inner_rect.w);
                         m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+                        m_horizontal_scrollbar->m_slider->onValueChanged.notify();
                     }
                     can_remove_callback = false;
                 } else if (event.x > inner_rect.x + inner_rect.w && m_horizontal_scrollbar->m_slider->m_value < 1.0) {
@@ -146,6 +147,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                     if (event.xrel > 0) {
                         m_horizontal_scrollbar->m_slider->m_value += event.xrel / (f64)(m_virtual_size.w - inner_rect.w);
                         m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+                        m_horizontal_scrollbar->m_slider->onValueChanged.notify();
                     }
                     can_remove_callback = false;
                 }
@@ -159,6 +161,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         if (event.yrel < 0) {
                             m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
                             m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+                            m_vertical_scrollbar->m_slider->onValueChanged.notify();
                         }
                         can_remove_callback = false;
                     } else if (event.y > inner_rect.y + inner_rect.h && m_vertical_scrollbar->m_slider->m_value < 1.0) {
@@ -169,6 +172,7 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
                         if (event.yrel > 0) {
                             m_vertical_scrollbar->m_slider->m_value += event.yrel / (f64)(m_virtual_size.h - inner_rect.h);
                             m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+                            m_vertical_scrollbar->m_slider->onValueChanged.notify();
                         }
                         can_remove_callback = false;
                     }
@@ -589,18 +593,26 @@ void TextEdit::_updateView(DrawingContext &dc) {
     if (next_x_pos < viewport_start_x) {
         m_horizontal_scrollbar->m_slider->m_value = (next_x_pos) / (f64)(m_virtual_size.w - inner_rect.w);
         m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+        m_horizontal_scrollbar->m_slider->onValueChanged.notify();
+        update();
     } else if (next_x_pos > viewport_start_x + inner_rect.w) {
         m_horizontal_scrollbar->m_slider->m_value = (next_x_pos - inner_rect.w) / (f64)(m_virtual_size.w - inner_rect.w);
         m_horizontal_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_horizontal_scrollbar->m_slider->m_value);
+        m_horizontal_scrollbar->m_slider->onValueChanged.notify();
+        update();
     }
 
     if (m_mode == Mode::MultiLine) {
         if (next_y_pos < viewport_start_y) {
             m_vertical_scrollbar->m_slider->m_value = next_y_pos / (f64)(m_virtual_size.h - inner_rect.h);
             m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+            m_vertical_scrollbar->m_slider->onValueChanged.notify();
+            update();
         } else if (next_y_pos + TEXT_HEIGHT > viewport_start_y + inner_rect.h) {
             m_vertical_scrollbar->m_slider->m_value = (next_y_pos + TEXT_HEIGHT - inner_rect.h) / (f64)(m_virtual_size.h - inner_rect.h);
             m_vertical_scrollbar->m_slider->m_value = NORMALIZE(0.0, 1.0, m_vertical_scrollbar->m_slider->m_value);
+            m_vertical_scrollbar->m_slider->onValueChanged.notify();
+            update();
         }
     }
 }
