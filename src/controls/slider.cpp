@@ -54,7 +54,6 @@ i32 SliderButton::isFocusable() {
 Slider::Slider(Align alignment, f64 value) : Box(alignment), m_value{value} {
     m_slider_button = new SliderButton();
     append(m_slider_button, Fill::Both);
-    m_slider_button->parent = this;
 
     m_slider_button->onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
         // The origin point is the position from where
