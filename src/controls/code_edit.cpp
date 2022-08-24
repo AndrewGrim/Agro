@@ -704,9 +704,9 @@ void CodeEdit::__fillSingleLineColoredText(
                 ) {
                     _color = Color(0xe4, 0x45, 0x33);
                 } else if (current_token->type == Token::Type::MultiLineComment) {
-                    _color = Color(0x92, 0x83, 0x72);
+                    _color = Color(0x92, 0x83, 0x72, 0x88);
                 } else if (current_token->type == Token::Type::SingleLineComment) {
-                    _color = Color(0x92, 0x83, 0x72);
+                    _color = Color(0x92, 0x83, 0x72, 0x88);
                 } else if (current_token->type == Token::Type::String) {
                     _color = Color(0xb8, 0xbb, 0x26);
                 } else if (current_token->type == Token::Type::Character) {
@@ -784,9 +784,9 @@ void CodeEdit::__renderMinimap(Size size) {
                     ) {
                         color = Color(0xe4, 0x45, 0x33);
                     } else if (current_token->type == Token::Type::MultiLineComment) {
-                        color = Color(0x92, 0x83, 0x72);
+                        color = Color(0x92, 0x83, 0x72, 0x88);
                     } else if (current_token->type == Token::Type::SingleLineComment) {
-                        color = Color(0x92, 0x83, 0x72);
+                        color = Color(0x92, 0x83, 0x72, 0x88);
                     } else if (current_token->type == Token::Type::String) {
                         color = Color(0xb8, 0xbb, 0x26);
                     } else if (current_token->type == Token::Type::Character) {
