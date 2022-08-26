@@ -505,7 +505,7 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
 }
 
 String TextEdit::text() {
-    u64 length = 0;
+    u64 length = 15; // Extra 15 bytes for 128bit simd
     for (u64 i = 0; i < m_buffer.size(); i++) {
         const String &line = m_buffer[i];
         if (i == m_buffer.size() - 1) {
@@ -527,7 +527,7 @@ String TextEdit::text() {
             s.data()[offset - 1] = '\n';
         }
     }
-    s.data()[s.size()] = '\0';
+    memset(s.data() + s.size(), '\0', 16);
     return s;
 }
 
