@@ -527,6 +527,7 @@ String TextEdit::text() {
             s.data()[offset - 1] = '\n';
         }
     }
+    s._isSmall() ? s._string._small._size -= 15 : s._string._heap._size -= 15;
     memset(s.data() + s.size(), '\0', 16);
     return s;
 }
