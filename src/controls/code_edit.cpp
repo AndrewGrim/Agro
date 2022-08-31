@@ -1,28 +1,5 @@
-#include <immintrin.h>
-
-#ifdef _MSC_VER
-    #include <intrin.h>
-
-    static inline u32 __builtin_ctz(u32 n) {
-        u32 value;
-        _BitScanForward(&value, n);
-        return value;
-    }
-
-    static inline u16 __builtin_popcount(u16 n) {
-        return __popcnt16(n);
-    }
-
-    static inline u32 __builtin_popcount(u32 n) {
-        return __popcnt(n);
-    }
-
-    static inline u64 __builtin_popcount(u64 n) {
-        return __popcnt64(n);
-    }
-#endif
-
 #include "code_edit.hpp"
+#include "../core/intrinsics.hpp"
 
 #define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
 #define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
