@@ -124,6 +124,9 @@ const u8 is_number_start[256] = {
 
 #if SIMD_WIDTH > 0
     const simd::Vector<u8, SIMD_WIDTH> FORWARD_SLASH_MASK('/');
+    const simd::Vector<u8, SIMD_WIDTH> BACKWARD_SLASH_MASK('\\');
+    const simd::Vector<u8, SIMD_WIDTH> LINE_FEED_MASK('\n');
+    const simd::Vector<u8, SIMD_WIDTH> DOUBLE_QUOTE_MASK('"');
 #endif
 
 Lexer::Lexer() {}
@@ -216,20 +219,44 @@ void Lexer::lex(Slice<const char> source) {
         } else if (next_c == '"') {
             tokens.data[tokens.length++] = Token(Token::Type::String, pos.index);
             pos.next();
-            while (pos.index < source.length) {
-                if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
-                    tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                    pos.advance(2);
-                } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
-                    pos.next();
-                    break;
-                } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
-                    pos.next();
-                    break;
-                } else {
+            #if SIMD_WIDTH > 0
+                while (pos.index < source.length) {
+                    const simd::Vector<u8, SIMD_WIDTH> input(source.data + pos.index);
+                    const auto result = input == BACKWARD_SLASH_MASK | input == LINE_FEED_MASK | input == DOUBLE_QUOTE_MASK;
+                    if (result) {
+                        pos.advance(__builtin_ctz(result));
+                        if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                            tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                            pos.next();
+                        } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
+                            tokens.data[tokens.length++] = Token(Token::Type::StringEnd, pos.index);
+                            pos.next();
+                            break;
+                        } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                            tokens.data[tokens.length++] = Token(Token::Type::LF, pos.index);
+                            pos.next();
+                            break;
+                        }
+                        pos.next();
+                    } else {
+                        pos.advance(SIMD_WIDTH);
+                    }
+                }
+            #else
+                while (pos.index < source.length) {
+                    if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                        tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                        pos.next();
+                    } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
+                        pos.next();
+                        break;
+                    } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                        pos.next();
+                        break;
+                    }
                     pos.next();
                 }
-            }
+            #endif
         } else if (next_c == '\'') {
             tokens.data[tokens.length++] = Token(Token::Type::Character, pos.index);
             pos.next();
