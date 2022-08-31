@@ -1,4 +1,5 @@
 #include "string.hpp"
+#include "intrinsics.hpp"
 
 namespace utf8 {
     u8 length(const char *_first_byte) {
@@ -344,6 +345,24 @@ Option<u64> String::find(const String &query) const {
         NO_MATCH:;
     }
     return Option<u64>();
+}
+
+u64 String::count(u8 c) const {
+    u64 i = 0;
+    u64 count = 0;
+    u8 *ptr = (u8*)data();
+    #if SIMD_WIDTH > 0
+        const simd::Vector<u8, SIMD_WIDTH> mask(c);
+        while (i + SIMD_WIDTH < size()) {
+            count += __builtin_popcount(simd::Vector<u8, SIMD_WIDTH>(ptr + i) == mask);
+            i += SIMD_WIDTH;
+        }
+    #endif
+    while (i < size()) {
+        if (ptr[i] == c) { count++; }
+        i++;
+    }
+    return count;
 }
 
 String toString(int value) {

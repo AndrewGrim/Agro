@@ -120,6 +120,7 @@
             return s;
         }
         Option<u64> find(const String &query) const;
+        u64 count(u8 c) const;
     };
 
     String toString(int value);
