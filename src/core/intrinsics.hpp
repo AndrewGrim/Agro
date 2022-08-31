@@ -7,8 +7,9 @@
         #include <intrin.h>
 
         static inline u32 __builtin_ctz(u32 n) {
+            assert(sizeof(u32) == sizeof(unsigned long) && "These should have the same size!");
             u32 value;
-            _BitScanForward(&value, n);
+            _BitScanForward((unsigned long*)&value, n);
             return value;
         }
 
