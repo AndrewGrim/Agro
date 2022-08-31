@@ -6,6 +6,9 @@ project(Agro)
 option(BUILD_ALL_TESTS "Build all test binaries" OFF)
 option(BUILD_ALL_EXAMPLES "Build all example binaries" OFF)
 
+option(AVX2 "Use AVX2 32 byte wide instructions" OFF)
+option(SSE2 "Use SSE2 16 byte wide instructions" OFF)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -34,6 +37,11 @@ file(GLOB sources
 	"${PROJECT_SOURCE_DIR}/src/renderer/*.h"
 )
 add_library(${PROJECT_NAME} ${sources})
+if (AVX2)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE "AVX2")
+elseif (SSE2)
+	target_compile_definitions(${PROJECT_NAME} PRIVATE "SSE2")
+endif ()
 target_include_directories(${PROJECT_NAME} PUBLIC
 	SDL2/include
 	freetype/include
