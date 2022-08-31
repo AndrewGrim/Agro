@@ -1,6 +1,7 @@
 #include "text_edit.hpp"
 #include "../renderer/renderer.hpp"
 #include "../application.hpp"
+#include "../core/intrinsics.hpp"
 
 #define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
 #define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
@@ -505,7 +506,7 @@ Size TextEdit::sizeHint(DrawingContext &dc) {
 }
 
 String TextEdit::text() {
-    u64 length = 15; // Extra 15 bytes for 128bit simd
+    u64 length = SIMD_WIDTH;
     for (u64 i = 0; i < m_buffer.size(); i++) {
         const String &line = m_buffer[i];
         if (i == m_buffer.size() - 1) {
@@ -527,8 +528,8 @@ String TextEdit::text() {
             s.data()[offset - 1] = '\n';
         }
     }
-    s._isSmall() ? s._string._small._size -= 15 : s._string._heap._size -= 15;
-    memset(s.data() + s.size(), '\0', 16);
+    s._isSmall() ? s._string._small._size -= SIMD_WIDTH : s._string._heap._size -= SIMD_WIDTH;
+    memset(s.data() + s.size(), '\0', SIMD_WIDTH + 1);
     return s;
 }
 

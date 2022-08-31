@@ -122,7 +122,9 @@ const u8 is_number_start[256] = {
     0, 0, 0, 0, 0, 0
 };
 
-const __m128i multiline_comment_mask = _mm_set1_epi8('/');
+#if SIMD_WIDTH > 0
+    const simd::Vector<u8, SIMD_WIDTH> FORWARD_SLASH_MASK('/');
+#endif
 
 Lexer::Lexer() {}
 
@@ -152,21 +154,32 @@ void Lexer::lex(Slice<const char> source) {
                 }
             } else if (peek(Token::Type::Asterisk)) {
                 tokens.data[tokens.length++] = Token(Token::Type::MultiLineComment, pos.index);
-                pos.advance(3);
-                while (pos.index < source.length) {
-                    const __m128i input = _mm_loadu_si128((__m128i*)(source.data + pos.index));
-                    const u16 result = _mm_movemask_epi8(_mm_cmpeq_epi8(input, multiline_comment_mask));
-                    if (result) {
-                        pos.advance(__builtin_ctz(result));
-                        if ((Token::Type)source.data[pos.index - 1] == Token::Type::Asterisk) {
+                #if SIMD_WIDTH > 0
+                    pos.advance(3);
+                    while (pos.index < source.length) {
+                        const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
+                        const auto result = input == FORWARD_SLASH_MASK;
+                        if (result) {
+                            pos.advance(__builtin_ctz(result));
+                            if ((Token::Type)source.data[pos.index - 1] == Token::Type::Asterisk) {
+                                pos.next();
+                                break;
+                            }
                             pos.next();
+                        } else {
+                            pos.advance(16);
+                        }
+                    }
+                #else
+                    pos.advance(2);
+                    while (pos.index < source.length) {
+                        if ((Token::Type)source.data[pos.index] == Token::Type::Asterisk && peek(Token::Type::ForwardSlash)) {
+                            pos.advance(2);
                             break;
                         }
                         pos.next();
-                    } else {
-                        pos.advance(16);
                     }
-                }
+                #endif
             } else {
                 tokens.data[tokens.length++] = Token(Token::Type::ForwardSlash, pos.index);
                 pos.next();
