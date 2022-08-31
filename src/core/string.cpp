@@ -351,14 +351,15 @@ u64 String::count(u8 c) const {
     u64 i = 0;
     u64 count = 0;
     u8 *ptr = (u8*)data();
+    u64 length = size();
     #if SIMD_WIDTH > 0
         const simd::Vector<u8, SIMD_WIDTH> mask(c);
-        while (i + SIMD_WIDTH < size()) {
+        while (i + SIMD_WIDTH < length) {
             count += __builtin_popcount(simd::Vector<u8, SIMD_WIDTH>(ptr + i) == mask);
             i += SIMD_WIDTH;
         }
     #endif
-    while (i < size()) {
+    while (i < length) {
         if (ptr[i] == c) { count++; }
         i++;
     }
