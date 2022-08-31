@@ -3,10 +3,22 @@
 #ifdef _MSC_VER
     #include <intrin.h>
 
-    static inline int __builtin_ctz(unsigned x) {
-        unsigned long ret;
-        _BitScanForward(&ret, x);
-        return (int)ret;
+    static inline u32 __builtin_ctz(u32 n) {
+        u32 value;
+        _BitScanForward(&value, n);
+        return value;
+    }
+
+    static inline u16 __builtin_popcount(u16 n) {
+        return __popcnt16(n);
+    }
+
+    static inline u32 __builtin_popcount(u32 n) {
+        return __popcnt(n);
+    }
+
+    static inline u64 __builtin_popcount(u64 n) {
+        return __popcnt64(n);
     }
 #endif
 
