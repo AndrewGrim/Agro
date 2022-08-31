@@ -17,7 +17,7 @@
 #define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
 #define IS_NOT_BASE_X_SCROLL ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) > 0.0)
 
-const unsigned char is_identifier[256] = {
+const u8 is_identifier[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -27,7 +27,7 @@ const unsigned char is_identifier[256] = {
     0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 1, 0, 1, 1, 1,
+    1, 0, 0, 0, 0, 1, 0, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
@@ -46,7 +46,7 @@ const unsigned char is_identifier[256] = {
     0, 0, 0, 0, 0, 0
 };
 
-const unsigned char is_identifier_start[256] = {
+const u8 is_identifier_start[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -56,7 +56,7 @@ const unsigned char is_identifier_start[256] = {
     0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    0, 0, 0, 0, 0, 1, 0, 1, 1, 1,
+    1, 0, 0, 0, 0, 1, 0, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
@@ -75,20 +75,20 @@ const unsigned char is_identifier_start[256] = {
     0, 0, 0, 0, 0, 0
 };
 
-const unsigned char is_alpha_numeric[256] = {
+const u8 is_number[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    0, 0, 0, 0, 0, 0, 1, 0, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
     0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 0, 0, 0, 0, 0, 1, 0, 0, 0,
+    1, 0, 0, 0, 0, 1, 0, 0, 1, 0,
     0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 1, 0, 0, 0, 0, 0, 1, 0,
+    0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -104,7 +104,7 @@ const unsigned char is_alpha_numeric[256] = {
     0, 0, 0, 0, 0, 0
 };
 
-const unsigned char is_digit[256] = {
+const u8 is_number_start[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -231,7 +231,7 @@ void Lexer::lex(Slice<const char> source) {
                 }
                 pos.next();
             }
-        } else if (is_digit[next_c]) {
+        } else if (is_number_start[next_c]) {
             tokens.data[tokens.length++] = Token(Token::Type::Number, pos.index);
             pos.next();
             while (pos.index < source.length) {
