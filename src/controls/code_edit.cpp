@@ -192,15 +192,23 @@ void Lexer::lex(Slice<const char> source) {
             pos.next();
             while (pos.index < source.length) {
                 if (!is_identifier[source.data[pos.index]]) {
-                    Slice<const char> identifier = Slice<const char>(source.data + identifier_start, pos.index - identifier_start);
-                    auto entry = keywords.find(identifier);
-                    if (entry) {
-                        tokens.data[tokens.length++] = Token(entry.value, identifier_start);
-                    } else {
+                    if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
                         if (source.data[pos.index] == '(') {
                             tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
                         } else {
                             tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                        }
+                    } else {
+                        Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
+                        auto entry = keywords.find(identifier);
+                        if (entry && entry == identifier) {
+                            tokens.data[tokens.length++] = Token(entry.token, identifier_start);
+                        } else {
+                            if (source.data[pos.index] == '(') {
+                            tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                            } else {
+                                tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                            }
                         }
                     }
                     break;

@@ -93,8 +93,103 @@
         Token(Type type, u32 index) : type{type}, index{index} {}
     };
 
+    #define MAX_KEYWORD_LENGTH 14
+
+    struct Keyword {
+        u8 data[MAX_KEYWORD_LENGTH] = {0};
+        Token::Type token = Token::Type::NUL;
+
+        Keyword() {}
+
+        Keyword(const char *text, Token::Type token) : token{token} {
+            memcpy(data, text, strlen(text));
+        }
+
+        Keyword(const u8 *text, u32 length) {
+            memcpy(data, text, length);
+        }
+
+        operator bool() {
+            return (u16)token;
+        }
+
+        friend bool operator==(const Keyword &lhs, const Keyword &rhs) {
+            // Compare keywords as two u64s but shift off the last 16bits that belong to the token.
+            return ((u64*)&lhs.data)[0] == ((u64*)&rhs.data)[0] and
+                   ((u64*)&lhs.data)[1] << 16 == ((u64*)&rhs.data)[1] << 16;
+        }
+    };
+
+    template <> struct Hash<Keyword> {
+        u32 operator()(Keyword &key) const {
+            u32 hash = 2166136261;
+            hash ^= key.data[0];
+            hash *= 16777619;
+            hash ^= key.data[1];
+            hash *= 16777619;
+            hash ^= key.data[2];
+            hash *= 16777619;
+            hash ^= key.data[3];
+            hash *= 16777619;
+            hash ^= key.data[4];
+            hash *= 16777619;
+            hash ^= key.data[5];
+            hash *= 16777619;
+            hash ^= key.data[6];
+            hash *= 16777619;
+            hash ^= key.data[7];
+            hash *= 16777619;
+            hash ^= key.data[8];
+            hash *= 16777619;
+            hash ^= key.data[9];
+            hash *= 16777619;
+            hash ^= key.data[10];
+            hash *= 16777619;
+            hash ^= key.data[11];
+            hash *= 16777619;
+            hash ^= key.data[12];
+            hash *= 16777619;
+            hash ^= key.data[13];
+            hash *= 16777619;
+            return hash;
+        }
+    };
+
+    #define KEYWORD_MAP_SIZE 256
+
+    struct KeywordMap {
+        u64 length = 0;
+        u64 capacity = KEYWORD_MAP_SIZE;
+        Keyword *entries = new Keyword[KEYWORD_MAP_SIZE];
+
+        KeywordMap() {}
+
+        KeywordMap(std::initializer_list<Keyword> list) {
+            for (Keyword key : list) {
+                insert(key);
+            }
+        }
+
+        ~KeywordMap() {
+            delete[] entries;
+        }
+
+
+        Keyword& find(Keyword &key) {
+            return entries[Hash<Keyword>()(key) & (capacity - 1)];
+        }
+
+        bool insert(Keyword key) {
+            Keyword &entry = find(key);
+            assert(!entry && "There should be no collisions between keywords!");
+            length++;
+            entry = key;
+            return entry;
+        }
+    };
+
     struct Lexer {
-        HashMap<Slice<const char>, Token::Type> keywords = {
+        KeywordMap keywords = {
             {"auto", Token::Type::Auto},
             {"break", Token::Type::Break},
             {"case", Token::Type::Case},
