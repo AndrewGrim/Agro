@@ -222,7 +222,9 @@ void Lexer::lex(Slice<const char> source) {
             #if SIMD_WIDTH > 0
                 while (pos.index < source.length) {
                     const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
-                    const auto result = input == BACKWARD_SLASH_MASK | input == LINE_FEED_MASK | input == DOUBLE_QUOTE_MASK;
+                    const auto result = (input == BACKWARD_SLASH_MASK) |
+                                        (input == LINE_FEED_MASK)      |
+                                        (input == DOUBLE_QUOTE_MASK);
                     if (result) {
                         pos.advance(__builtin_ctz(result));
                         if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
