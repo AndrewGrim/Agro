@@ -221,7 +221,7 @@ void Lexer::lex(Slice<const char> source) {
             pos.next();
             #if SIMD_WIDTH > 0
                 while (pos.index < source.length) {
-                    const simd::Vector<u8, SIMD_WIDTH> input(source.data + pos.index);
+                    const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
                     const auto result = input == BACKWARD_SLASH_MASK | input == LINE_FEED_MASK | input == DOUBLE_QUOTE_MASK;
                     if (result) {
                         pos.advance(__builtin_ctz(result));
@@ -229,7 +229,6 @@ void Lexer::lex(Slice<const char> source) {
                             tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
                             pos.next();
                         } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
-                            tokens.data[tokens.length++] = Token(Token::Type::StringEnd, pos.index);
                             pos.next();
                             break;
                         } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
