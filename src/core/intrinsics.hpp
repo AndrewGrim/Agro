@@ -46,7 +46,13 @@
             void load(const u8 *data) { _data = _mm_loadu_si128((const __m128i*)data); }
             u16 mask() const { return _mm_movemask_epi8(_data); }
             Vector equal(const Vector &rhs) const { return Vector(_mm_cmpeq_epi8(_data, rhs._data)); }
-            friend u16 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
+            Vector notEqual(const Vector &rhs) const { return Vector(_mm_andnot_si128(_mm_cmpeq_epi8(_data, rhs._data), _mm_set1_epi8(-1))); }
+            Vector lessThan(const Vector &rhs) const { return Vector(_mm_cmplt_epi8(_data, rhs._data)); }
+            Vector greaterThan(const Vector &rhs) const { return Vector(_mm_cmpgt_epi8(_data, rhs._data)); }
+            friend u32 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
+            friend u32 operator!=(const Vector &lhs, const Vector &rhs) { return ~lhs.equal(rhs).mask(); }
+            friend u32 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
+            friend u32 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
         };
 
         template <> struct Vector<u8, 32> {
@@ -57,7 +63,13 @@
             void load(const u8 *data) { _data = _mm256_loadu_si256((const __m256i*)data); }
             u32 mask() const { return _mm256_movemask_epi8(_data); }
             Vector equal(const Vector &rhs) const { return Vector(_mm256_cmpeq_epi8(_data, rhs._data)); }
+            Vector notEqual(const Vector &rhs) const { return Vector(_mm256_andnot_si256(_mm256_cmpeq_epi8(_data, rhs._data), _mm256_set1_epi8(-1))); }
+            Vector lessThan(const Vector &rhs) const { return Vector(_mm256_cmpgt_epi8(rhs._data, _data)); }
+            Vector greaterThan(const Vector &rhs) const { return Vector(_mm256_cmpgt_epi8(_data, rhs._data)); }
             friend u32 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
+            friend u32 operator!=(const Vector &lhs, const Vector &rhs) { return ~lhs.equal(rhs).mask(); }
+            friend u32 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
+            friend u32 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
         };
     }
 #endif
