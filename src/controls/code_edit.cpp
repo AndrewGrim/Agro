@@ -127,6 +127,14 @@ const u8 is_number_start[256] = {
     const simd::Vector<u8, SIMD_WIDTH> BACKWARD_SLASH_MASK('\\');
     const simd::Vector<u8, SIMD_WIDTH> LINE_FEED_MASK('\n');
     const simd::Vector<u8, SIMD_WIDTH> DOUBLE_QUOTE_MASK('"');
+
+    const simd::Vector<u8, SIMD_WIDTH> LOWER_THAN_VALID_MASK(48);
+    const simd::Vector<u8, SIMD_WIDTH> HIGHER_THAN_VALID_MASK(122);
+    const simd::Vector<u8, SIMD_WIDTH> HIGHER_THAN_DIGIT_ASCII_MASK(57);
+    const simd::Vector<u8, SIMD_WIDTH> LOWER_THAN_UPPER_ASCII_MASK(65);
+    const simd::Vector<u8, SIMD_WIDTH> HIGHER_THAN_UPPER_ASCII_MASK(90);
+    const simd::Vector<u8, SIMD_WIDTH> LOWER_THAN_LOWER_ASCII_MASK(97);
+    const simd::Vector<u8, SIMD_WIDTH> UNDERSCORE_ASCII_MASK(95);
 #endif
 
 Lexer::Lexer() {}
@@ -190,31 +198,68 @@ void Lexer::lex(Slice<const char> source) {
         } else if (is_identifier_start[next_c]) {
             u32 identifier_start = pos.index;
             pos.next();
-            while (pos.index < source.length) {
-                if (!is_identifier[source.data[pos.index]]) {
-                    if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
-                        if (source.data[pos.index] == '(') {
-                            tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
-                        } else {
-                            tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
-                        }
-                    } else {
-                        Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
-                        auto entry = keywords.find(identifier);
-                        if (entry && entry == identifier) {
-                            tokens.data[tokens.length++] = Token(entry.token, identifier_start);
-                        } else {
+            #if SIMD_WIDTH > 0
+                while (pos.index < source.length) {
+                    const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
+                    // TODO i think we may need to account for whitespace
+                    auto result = input < LOWER_THAN_VALID_MASK;
+                        result |= input > HIGHER_THAN_VALID_MASK;
+                        result |= input.greaterThan(HIGHER_THAN_DIGIT_ASCII_MASK) == input.lessThan(LOWER_THAN_UPPER_ASCII_MASK);
+                        result |= input.greaterThan(HIGHER_THAN_UPPER_ASCII_MASK) == input.lessThan(LOWER_THAN_LOWER_ASCII_MASK);
+                        result ^= input == UNDERSCORE_ASCII_MASK;
+                    if (result) {
+                        pos.advance(__builtin_ctz(result));
+                        if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
                             if (source.data[pos.index] == '(') {
-                            tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
                             } else {
                                 tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
                             }
+                        } else {
+                            Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
+                            auto entry = keywords.find(identifier);
+                            if (entry && entry == identifier) {
+                                tokens.data[tokens.length++] = Token(entry.token, identifier_start);
+                            } else {
+                                if (source.data[pos.index] == '(') {
+                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                } else {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                                }
+                            }
                         }
+                        break;
+                    } else {
+                        pos.advance(SIMD_WIDTH);
                     }
-                    break;
                 }
-                pos.next();
-            }
+            #else
+                while (pos.index < source.length) {
+                    if (!is_identifier[source.data[pos.index]]) {
+                        if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
+                            if (source.data[pos.index] == '(') {
+                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                            } else {
+                                tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                            }
+                        } else {
+                            Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
+                            auto entry = keywords.find(identifier);
+                            if (entry && entry == identifier) {
+                                tokens.data[tokens.length++] = Token(entry.token, identifier_start);
+                            } else {
+                                if (source.data[pos.index] == '(') {
+                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                } else {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    pos.next();
+                }
+            #endif
         } else if (is_number_start[next_c]) {
             tokens.data[tokens.length++] = Token(Token::Type::Number, pos.index);
             pos.next();
