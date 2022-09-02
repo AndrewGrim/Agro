@@ -262,5 +262,10 @@ int main() {
             assert(!iter.prev());
         }
     }
+    {
+        assert(String("....").count('.') != 5);
+        assert(String("....").count('.') == 4);
+        assert(String("................................").count('.') == 32);
+    }
     return 0;
 }
