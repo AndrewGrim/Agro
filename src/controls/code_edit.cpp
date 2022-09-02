@@ -447,7 +447,13 @@ void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
     // TODO possibly draw selection here as well??
     auto coords = TextureCoordinates();
     assert(m_minimap_texture.get() && "Minimap texture should not be null!");
-    dc.drawTexture(Point(rect.x, rect.y), Size(rect.w, rect.h), m_minimap_texture.get(), &coords, COLOR_WHITE);
+    dc.drawTexture(
+        Point(rect.x, rect.y),
+        Size(rect.w, rect.h - m_slider_button_size < m_slider_button_size ? m_slider_button_size : rect.h - m_slider_button_size),
+        m_minimap_texture.get(),
+        &coords,
+        COLOR_WHITE
+    );
 
     // Get the size of the slider button.
     i32 size;
@@ -466,7 +472,7 @@ void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
 
     // Determine and draw the location of the slider button.
     i32 start = size - m_origin;
-    rect.y += rect.h * m_value;
+    rect.y += (rect.h - start - m_origin) * m_value;
     m_slider_button->draw(dc, Rect(rect.x, rect.y, rect.w, size), m_slider_button->state());
 }
 
@@ -493,7 +499,7 @@ CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mo
     onTextChanged.addEventListener([&]() {
         delete[] m_lexer.tokens.data;
         m_lexer.lex(this->text());
-        __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
+        __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h - m_minimap->m_slider_button_size));
     });
     onTextChanged.notify();
 }
@@ -516,6 +522,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.fillRect(rect, dc.textBackground(style()));
     dc.padding(rect, style());
 
+    // TODO we may need to account for those 2 lines elsewhere when we are calculating position and size for minimap selection, slider size etc.
     if (m_overscroll && m_virtual_size.h > rect.h) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
 
     i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
@@ -635,7 +642,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             if (text_region.y > rect.y + rect.h) { break; }
         }
         if (inner_rect.h != m_minimap->m_minimap_texture->height) {
-            __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
+            __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h - m_minimap->m_slider_button_size));
         }
         {
             i32 slider_size = (inner_rect.h / TEXT_HEIGHT) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1;
@@ -644,6 +651,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             }
             m_minimap->m_slider_button_size = slider_size;
         }
+        // Background for minimap.
         dc.fillRect(
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width, this->rect.y,
@@ -651,20 +659,23 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             ),
             dc.textBackground(style())
         );
+        i32 minimap_height = inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h;
+        minimap_height = m_minimap->m_slider_button_size > minimap_height ? m_minimap->m_slider_button_size : minimap_height;
         m_minimap->draw(
             dc,
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width, inner_rect.y,
-                m_minimap->m_minimap_width, inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h
+                m_minimap->m_minimap_width, minimap_height
             ),
             m_minimap->state()
         );
+        // Minimap selection
         dc.fillRect(
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width,
-                inner_rect.y + (m_selection.line_begin / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h)),
+                inner_rect.y + (m_selection.line_begin / (f32)m_buffer.size() * (m_minimap->rect.h - m_minimap->m_slider_button_size)),
                 m_minimap->m_minimap_width,
-                (m_selection.line_end - m_selection.line_begin) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1
+                (m_selection.line_end - m_selection.line_begin) / (f32)m_buffer.size() * (m_minimap->rect.h - m_minimap->m_slider_button_size) + 1
             ),
             Color("#cccccc55")
         );
