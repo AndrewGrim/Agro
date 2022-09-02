@@ -330,7 +330,6 @@ Slice<const char> String::slice() const {
     return Slice<const char>(data(), size());
 }
 
-// TODO this was a port from an older program, surely continue would be the same as goto in this case?
 Option<u64> String::find(const String &query) const {
     u8 first = query.data()[0];
     for (u64 i = 0; i < this->size(); i++) {
@@ -364,6 +363,36 @@ u64 String::count(u8 c) const {
         i++;
     }
     return count;
+}
+
+auto setSize = [](u64 new_size, String &self) {
+    self._isSmall() ? self._string._small._size = new_size : self._string._heap._size = new_size;
+};
+
+String String::toUtf16Le() const {
+    String result = String(size());
+    setSize(0, result);
+    auto iter = utf8Begin();
+    u64 index = 0;
+    while ((iter = iter.next())) {
+        if (iter.codepoint < 0x10000) {
+            u16 c = cast(u16, iter.codepoint);
+            c = endian() == Endian::Big ? byteSwap(c) : c;
+            result.insert(index, (const char*)&c, sizeof(c));
+            setSize(sizeof(c), result);
+        } else {
+            u16 high = cast(u16, (iter.codepoint - 0x10000) >> 10) + 0xD800;
+            u16 low = cast(u16, iter.codepoint & 0x3FF) + 0xDC00;
+            u16 out[2];
+            out[0] = endian() == Endian::Big ? byteSwap(high) : high;
+            out[1] = endian() == Endian::Big ? byteSwap(low) : low;
+            result.insert(index, (const char*)&out, sizeof(out));
+            setSize(sizeof(out), result);
+        }
+        index += iter.length;
+    }
+    result.data()[result.size()] = '\0';
+    return result;
 }
 
 String toString(int value) {

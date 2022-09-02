@@ -146,55 +146,55 @@ int main() {
 
         s = "a";
         assert(utf8::length(s.data()) == 1);
-        assert((u8)s.data()[0] == 97);
-        assert((u8)s.data()[1] == '\0');
+        assert(s[0] == 97);
+        assert(s[1] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 97);
 
         s = "ð";
         assert(utf8::length(s.data()) == 2);
-        assert((u8)s.data()[0] == 195);
-        assert((u8)s.data()[1] == 176);
-        assert((u8)s.data()[2] == '\0');
+        assert(s[0] == 195);
+        assert(s[1] == 176);
+        assert(s[2] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 240);
 
         s = "⋒";
         assert(utf8::length(s.data()) == 3);
-        assert((u8)s.data()[0] == 226);
-        assert((u8)s.data()[1] == 139);
-        assert((u8)s.data()[2] == 146);
-        assert((u8)s.data()[3] == '\0');
+        assert(s[0] == 226);
+        assert(s[1] == 139);
+        assert(s[2] == 146);
+        assert(s[3] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 8914);
 
         s = "😁";
         assert(utf8::length(s.data()) == 4);
-        assert((u8)s.data()[0] == 240);
-        assert((u8)s.data()[1] == 159);
-        assert((u8)s.data()[2] == 152);
-        assert((u8)s.data()[3] == 129);
-        assert((u8)s.data()[4] == '\0');
+        assert(s[0] == 240);
+        assert(s[1] == 159);
+        assert(s[2] == 152);
+        assert(s[3] == 129);
+        assert(s[4] == '\0');
         assert(utf8::decode(s.data(), utf8::length(s.data())) == 128513);
 
         s = "Óreiða";
-        assert(utf8::length(&s.data()[0]) == 2); // 'Ó'
-        assert(utf8::length(&s.data()[1]) == 0); // second byte of 'Ó'
-        assert(utf8::length(&s.data()[2]) == 1); // 'r'
-        assert(utf8::length(&s.data()[3]) == 1); // 'e'
-        assert(utf8::length(&s.data()[4]) == 1); // 'i'
-        assert(utf8::length(&s.data()[5]) == 2); // 'ð'
-        assert(utf8::length(&s.data()[6]) == 0); // second byte of 'ð'
-        assert(utf8::length(&s.data()[7]) == 1); // 'a'
-        assert(utf8::length(&s.data()[8]) == 1); // null terminator
+        assert(utf8::length(s.data() + 0) == 2); // 'Ó'
+        assert(utf8::length(s.data() + 1) == 0); // second byte of 'Ó'
+        assert(utf8::length(s.data() + 2) == 1); // 'r'
+        assert(utf8::length(s.data() + 3) == 1); // 'e'
+        assert(utf8::length(s.data() + 4) == 1); // 'i'
+        assert(utf8::length(s.data() + 5) == 2); // 'ð'
+        assert(utf8::length(s.data() + 6) == 0); // second byte of 'ð'
+        assert(utf8::length(s.data() + 7) == 1); // 'a'
+        assert(utf8::length(s.data() + 8) == 1); // null terminator
 
         s = "lol 😂";
-        assert(utf8::length(&s.data()[0]) == 1); // 'l'
-        assert(utf8::length(&s.data()[1]) == 1); // 'o'
-        assert(utf8::length(&s.data()[2]) == 1); // 'l'
-        assert(utf8::length(&s.data()[3]) == 1); // ' '
-        assert(utf8::length(&s.data()[4]) == 4); // '😂'
-        assert(utf8::length(&s.data()[5]) == 0); // second byte of '😂'
-        assert(utf8::length(&s.data()[6]) == 0); // third byte of '😂'
-        assert(utf8::length(&s.data()[7]) == 0); // fourth byte of '😂'
-        assert(utf8::length(&s.data()[8]) == 1); // null terminator
+        assert(utf8::length(s.data() + 0) == 1); // 'l'
+        assert(utf8::length(s.data() + 1) == 1); // 'o'
+        assert(utf8::length(s.data() + 2) == 1); // 'l'
+        assert(utf8::length(s.data() + 3) == 1); // ' '
+        assert(utf8::length(s.data() + 4) == 4); // '😂'
+        assert(utf8::length(s.data() + 5) == 0); // second byte of '😂'
+        assert(utf8::length(s.data() + 6) == 0); // third byte of '😂'
+        assert(utf8::length(s.data() + 7) == 0); // fourth byte of '😂'
+        assert(utf8::length(s.data() + 8) == 1); // null terminator
     }
     {
         String s1 = String("lol 😂");
@@ -266,6 +266,29 @@ int main() {
         assert(String("....").count('.') != 5);
         assert(String("....").count('.') == 4);
         assert(String("................................").count('.') == 32);
+    }
+    {
+        assert(0x1337 == byteSwap<u16>(0x3713));
+        assert(0x3713 == byteSwap<u16>(0x1337));
+        assert(0x12345678 == byteSwap<u32>(0x78563412));
+        assert(0x78563412 == byteSwap<u32>(0x12345678));
+
+        assert(0x61 == String("a").data()[0]);
+        assert(0x61 == String("a").toUtf16Le().data()[0]);
+
+        String utf8_fox = String("🦊");
+        assert(0xf0 == utf8_fox[0]);
+        assert(0x9f == utf8_fox[1]);
+        assert(0xa6 == utf8_fox[2]);
+        assert(0x8a == utf8_fox[3]);
+
+        String utf16le_fox = utf8_fox.toUtf16Le();
+        assert(0x3e == utf16le_fox[0]);
+        assert(0xd8 == utf16le_fox[1]);
+        assert(0x8a == utf16le_fox[2]);
+        assert(0xdd == utf16le_fox[3]);
+
+        assert(utf8_fox.size() == utf16le_fox.size());
     }
     return 0;
 }

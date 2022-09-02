@@ -9,6 +9,33 @@
     #include "../slice.hpp"
     #include "../option.hpp"
 
+    #define cast(T, V) static_cast<T>(V)
+
+    enum class Endian {
+        Little,
+        Big,
+    };
+
+    inline Endian endian() {
+        i32 n = 1;
+        if (*(char*)&n == 1) { return Endian::Little; }
+        else { return Endian::Big; }
+    }
+
+    // Note: Be careful with this as default number literals are i32
+    // so if you try to assign the result to some with less bits
+    // the result will get truncated!
+    // Rather explicitly specify the type like: byteSwap<u16>(0x1337);
+    template <typename T> T byteSwap(T number){
+        u8 result[sizeof(T)];
+        i32 i = sizeof(T) - 1;
+        i32 r = 0;
+        for (; r < sizeof(T); i--, r++) {
+            result[r] = ((u8*)&number)[i];
+        }
+        return *(T*)result;
+    }
+
     namespace utf8 {
         static const u32 TWO_BYTES    = 0b00011111;
         static const u32 THREE_BYTES  = 0b00001111;
@@ -121,6 +148,7 @@
         }
         Option<u64> find(const String &query) const;
         u64 count(u8 c) const;
+        String toUtf16Le() const;
     };
 
     String toString(int value);
