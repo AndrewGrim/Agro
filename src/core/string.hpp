@@ -26,7 +26,7 @@
     // so if you try to assign the result to some with less bits
     // the result will get truncated!
     // Rather explicitly specify the type like: byteSwap<u16>(0x1337);
-    template <typename T> T byteSwap(T number){
+    template <typename T> T byteSwap(T number) {
         u8 result[sizeof(T)];
         i32 i = sizeof(T) - 1;
         i32 r = 0;
