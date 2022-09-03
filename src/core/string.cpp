@@ -370,7 +370,10 @@ auto setSize = [](u64 new_size, String &self) {
 };
 
 String String::toUtf16Le() const {
-    String result = String(size());
+    // Assume that we need twice the space for wide string
+    // to prevent needlessly growing the buffer and an extra + 1
+    // to have two null bytes at the end.
+    String result = String(size() * 2 + 1);
     setSize(0, result);
     auto iter = utf8Begin();
     u64 index = 0;
@@ -379,7 +382,7 @@ String String::toUtf16Le() const {
             u16 c = cast(u16, iter.codepoint);
             c = endian() == Endian::Big ? byteSwap(c) : c;
             result.insert(index, (const char*)&c, sizeof(c));
-            setSize(sizeof(c), result);
+            index += sizeof(c);
         } else {
             u16 high = cast(u16, (iter.codepoint - 0x10000) >> 10) + 0xD800;
             u16 low = cast(u16, iter.codepoint & 0x3FF) + 0xDC00;
@@ -387,11 +390,12 @@ String String::toUtf16Le() const {
             out[0] = endian() == Endian::Big ? byteSwap(high) : high;
             out[1] = endian() == Endian::Big ? byteSwap(low) : low;
             result.insert(index, (const char*)&out, sizeof(out));
-            setSize(sizeof(out), result);
+            index += sizeof(out);
         }
-        index += iter.length;
+        setSize(index, result);
     }
     result.data()[result.size()] = '\0';
+    result.data()[result.size() + 1] = '\0';
     return result;
 }
 
