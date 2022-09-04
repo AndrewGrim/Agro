@@ -289,6 +289,9 @@ int main() {
         assert(0xdd == utf16le_fox[3]);
 
         assert(utf8_fox.size() == utf16le_fox.size());
+
+        String utf8_fox2 = utf16le_fox.toUtf8();
+        assert(utf8_fox == utf8_fox2);
     }
     return 0;
 }

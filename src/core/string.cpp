@@ -11,6 +11,15 @@ namespace utf8 {
         return 0; // Invalid first byte.
     }
 
+    u8 length(u32 codepoint) {
+        if (codepoint < 0x80) { return 1; }
+        if (codepoint < 0x800) { return 2; }
+        if (codepoint < 0x10000) { return 3; }
+        if (codepoint < 0x110000) { return 4; }
+        assert(false && "codepoint too large");
+        return 0;
+    }
+
     u32 decode(const char *first_byte, u8 length) {
         u32 codepoint = first_byte[0];
         switch (length) {
@@ -42,6 +51,36 @@ namespace utf8 {
         }
     }
 
+    u8 encode(u32 codepoint, char *data) {
+        u8 len = length(codepoint);
+        switch (len) {
+            case 1: {
+                data[0] = cast(u8, codepoint);
+                break;
+            }
+            case 2: {
+                data[0] = cast(u8, 0b11000000 | (codepoint >> 6));
+                data[1] = cast(u8, 0b10000000 | (codepoint & 0b111111));
+                break;
+            }
+            case 3: {
+                data[0] = cast(u8, 0b11100000 | (codepoint >> 12));
+                data[1] = cast(u8, 0b10000000 | ((codepoint >> 6) & 0b111111));
+                data[2] = cast(u8, 0b10000000 | (codepoint & 0b111111));
+                break;
+            }
+            case 4: {
+                data[0] = cast(u8, 0b11110000 | (codepoint >> 18));
+                data[1] = cast(u8, 0b10000000 | ((codepoint >> 12) & 0b111111));
+                data[2] = cast(u8, 0b10000000 | ((codepoint >> 6) & 0b111111));
+                data[3] = cast(u8, 0b10000000 | (codepoint & 0b111111));
+                break;
+            }
+            default: assert(false && "codepoint too large and len is zero when encoding");
+        }
+        return len;
+    }
+
     // Initialise iterator at data address.
     Iterator::Iterator(const char *data) : begin{data}, data{data} {}
 
@@ -70,7 +109,50 @@ namespace utf8 {
     Iterator::operator bool() {
         return codepoint;
     }
+}
 
+namespace utf16 {
+    u8 length(const char *_first_byte) {
+        u32 codepoint = endian() == Endian::Big ? byteSwap<u16>(*(u16*)_first_byte) : *(u16*)_first_byte;
+        if (!codepoint) { return 0; }
+        if (codepoint & ~cast(u32, 0x03ff) == 0xd800) {
+            return 4;
+        }
+        return 2;
+    }
+
+    // TODO length from codepoint
+    // TODO encode
+    // TODO decode
+
+    Iterator::Iterator(const char *data) : begin{data}, data{data} {}
+
+    Iterator::Iterator(const char *data, u64 size) : begin{data}, data{data + size} {}
+
+    Iterator Iterator::next() {
+        u32 c0 = endian() == Endian::Big ? byteSwap<u16>(*(u16*)data) : *(u16*)data;
+        if (!c0) { codepoint = 0; return *this; }
+        data += 2;
+        if ((c0 & ~0x03ff) == 0xd800) {
+            u32 c1 = endian() == Endian::Big ? byteSwap<u16>(*(u16*)data) : *(u16*)data;
+            data += 2;
+            length = 4;
+            codepoint = 0x10000 + (((c0 & 0x03ff) << 10) | (c1 & 0x03ff));
+        } else {
+            length = 2;
+            codepoint = c0;
+        }
+        return *this;
+    }
+
+    // TODO implement prev
+    Iterator Iterator::prev() {
+        return *this;
+    }
+
+    Iterator::operator bool() {
+        return codepoint;
+    }
 }
 
 String::String() { _setContent(0, nullptr); }
@@ -380,15 +462,15 @@ String String::toUtf16Le() const {
     while ((iter = iter.next())) {
         if (iter.codepoint < 0x10000) {
             u16 c = cast(u16, iter.codepoint);
-            c = endian() == Endian::Big ? byteSwap(c) : c;
+            c = endian() == Endian::Big ? byteSwap<u16>(c) : c;
             result.insert(index, (const char*)&c, sizeof(c));
             index += sizeof(c);
         } else {
             u16 high = cast(u16, (iter.codepoint - 0x10000) >> 10) + 0xD800;
             u16 low = cast(u16, iter.codepoint & 0x3FF) + 0xDC00;
             u16 out[2];
-            out[0] = endian() == Endian::Big ? byteSwap(high) : high;
-            out[1] = endian() == Endian::Big ? byteSwap(low) : low;
+            out[0] = endian() == Endian::Big ? byteSwap<u16>(high) : high;
+            out[1] = endian() == Endian::Big ? byteSwap<u16>(low) : low;
             result.insert(index, (const char*)&out, sizeof(out));
             index += sizeof(out);
         }
@@ -396,6 +478,23 @@ String String::toUtf16Le() const {
     }
     result.data()[result.size()] = '\0';
     result.data()[result.size() + 1] = '\0';
+    return result;
+}
+
+String String::toUtf8() const {
+    // Assume its all ascii for inital size.
+    String result = String(size() / 2);
+    setSize(0, result);
+    auto iter = utf16::Iterator(data());
+    u64 index = 0;
+    while ((iter = iter.next())) {
+        u8 data[4];
+        u8 len = utf8::encode(iter.codepoint, (char*)data);
+        result.insert(index, (const char*)data, len);
+        index += len;
+        setSize(index, result);
+    }
+    result.data()[result.size()] = '\0';
     return result;
 }
 

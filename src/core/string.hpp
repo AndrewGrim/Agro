@@ -44,7 +44,11 @@
 
         u8 length(const char *_first_byte);
 
+        u8 length(u32 codepoint);
+
         u32 decode(const char *first_byte, u8 length);
+
+        u8 encode(u32 codepoint, char *data);
 
         // Note: That neither constructor guarantees a valid starting point.
         // It is up to the callee to construct the Iterator using a valid sequence.
@@ -62,6 +66,23 @@
             // Initialise iterator at data address with size offset.
             // This way you can start iterating from the end and use prev()
             // to iterate in reverse without having to iterate forward first.
+            Iterator(const char *data, u64 size);
+            Iterator next();
+            Iterator prev();
+            operator bool();
+        };
+    }
+
+    namespace utf16 {
+        u8 length(const char *_first_byte);
+
+        struct Iterator {
+            const char *begin = nullptr;
+            const char *data = nullptr;
+            u8 length = 0;
+            u32 codepoint = 0;
+
+            Iterator(const char *data);
             Iterator(const char *data, u64 size);
             Iterator next();
             Iterator prev();
@@ -149,6 +170,7 @@
         Option<u64> find(const String &query) const;
         u64 count(u8 c) const;
         String toUtf16Le() const;
+        String toUtf8() const;
     };
 
     String toString(int value);
