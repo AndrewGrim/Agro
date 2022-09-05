@@ -161,6 +161,12 @@ String::String(const char *text) { _setContent(strlen(text), text); }
 
 String::String(const char *text, u64 length) { _setContent(length, text); }
 
+String::String(const wchar_t *text) {
+    const wchar_t *_text = text;
+    while (*(u16*)_text++);
+    _setContent((_text - text) * 2 + 1, (const char*)text);
+}
+
 String::String(u64 starting_size) { _setContent(starting_size, nullptr); }
 
 String::String(const String &string) {

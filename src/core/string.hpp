@@ -3,6 +3,7 @@
 
     #include <stdio.h>
     #include <string.h>
+    #include <wctype.h>
     #include <assert.h>
 
     #include "../common/number_types.h"
@@ -118,6 +119,7 @@
         String();
         String(const char *text);
         String(const char *text, u64 length);
+        String(const wchar_t *text);
         String(u64 starting_size);
         String(const String &string);
         String(String &&string);
