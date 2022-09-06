@@ -268,6 +268,8 @@ void String::_setContent(u64 new_size, const char *text) {
     if (new_size > SMALL_STRING_BUFFER) {
         _string._heap._data = new u8[new_size + 1];  // +1 to account for null terminator.
         assert(_string._heap._data && "Failed memory allocation for String!");
+        // Set the first byte to null to ensure its valid utf8.
+        _string._heap._data[0] = '\0';
         if (text) {
             memcpy(_string._heap._data, text, new_size);
         }
@@ -276,6 +278,8 @@ void String::_setContent(u64 new_size, const char *text) {
         _string._heap._capacity = new_size;
         _string._small._is_heap = true;
     } else {
+        // Set the first byte to null to ensure its valid utf8.
+        _string._small._data[0] = '\0';
         if (text) {
             memcpy(_string._small._data, text, new_size);
         }
@@ -379,7 +383,7 @@ void String::insert(u64 index, Slice<const char> text) {
 void String::insert(u64 index, const char *text, u64 length) {
     // TODO change to result
     assert(index <= size());
-    assert(utf8::length(data() + index));
+    assert(utf8::length(data()) && "trying to insert in a middle of a utf8 codepoint!");
     u64 new_size = size() + length;
     if (new_size <= capacity()) {
         memcpy(data() + index + length, data() + index, size() - index);
