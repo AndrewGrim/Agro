@@ -1242,6 +1242,11 @@
                 i32 x = pos.x + (node->depth * m_indent);
                 i32 y = pos.y + (node->max_cell_height / 2);
 
+                if (node->parent) {
+                    // Higher sibling or no sibling
+                    drawTreeLineFromParentToLowestChildRecursivelyAscending(dc, pos, node, column_header);
+                }
+
                 if (node->children.size()) {
                     // Draw a little line connecting the parent to its children.
                     // We do this so that the node status icon doesn't get drawn over.
@@ -1275,46 +1280,6 @@
                                     ),
                                     dc.borderBackground(style())
                                 );
-                            }
-                        // Higher sibling or no sibling
-                        } else {
-                            TreeNode<T> *sibling = nullptr;
-                            u64 distance = 0;
-                            if (node->parent->children.size() > 1 && node->parent_index > 0) {
-                                sibling = node->parent->children[node->parent_index - 1];
-                                distance = node->bs_data.position - sibling->bs_data.position;
-                            } else {
-                                sibling = node->parent;
-                            }
-
-                            // Sibling off screen
-                            // NOTE: The reason for node->bs_data.length here is that
-                            // pos.y is the top of the viewport not the beginning of the start node.
-                            // So if pos.y is halfway through the start node then just the distance will not take
-                            // us all the way to the beginning of the sibling and to keep it safe we use the
-                            // entire height of the node rather than just the the different between pos.y and node->bs_data.position.
-                            if (pos.y - (i32)(distance + node->bs_data.length) <= rect.y + column_header) {
-                                // When the higher sibling is off screen
-                                // recursively go up the tree to root and draw a line
-                                // between the parent and its last child.
-                                // This is needed when not a single node directly related to the line
-                                // is visible on screen but the line spans more than the screen.
-                                auto _parent = node->parent;
-                                while (_parent->parent) {
-                                    _parent = _parent->parent;
-                                    // We know here that the parent will have at least one child because
-                                    // we are getting here from within the hierarchy.
-                                    auto _node = _parent->children[_parent->children.size() - 1];
-                                    dc.fillRect(
-                                    Rect(
-                                            pos.x + (_node->depth * m_indent) - (m_indent * 1.5) - (m_treeline_size / 2),
-                                            pos.y - (node->bs_data.position - _parent->bs_data.position),
-                                            m_treeline_size,
-                                            _node->bs_data.position - _parent->bs_data.position
-                                        ),
-                                        dc.borderBackground(style())
-                                    );
-                                }
                             }
                         }
 
@@ -1381,6 +1346,45 @@
                     ),
                     dc.iconForeground(style())
                 );
+            }
+
+            void drawTreeLineFromParentToLowestChildRecursivelyAscending(DrawingContext &dc, Point pos, TreeNode<T> *node, i32 column_header) {
+                TreeNode<T> *sibling = node->parent;
+                u64 distance = 0;
+                if (node->parent->children.size() > 1 && node->parent_index > 0) {
+                    sibling = node->parent->children[node->parent_index - 1];
+                    distance = node->bs_data.position - sibling->bs_data.position;
+                }
+
+                // Sibling off screen
+                // NOTE: The reason for node->bs_data.length here is that
+                // pos.y is the top of the viewport not the beginning of the start node.
+                // So if pos.y is halfway through the start node then just the distance will not take
+                // us all the way to the beginning of the sibling and to keep it safe we use the
+                // entire height of the node rather than just the the different between pos.y and node->bs_data.position.
+                if (pos.y - (i32)(distance + node->bs_data.length) <= rect.y + column_header) {
+                    // When the higher sibling is off screen
+                    // recursively go up the tree to root and draw a line
+                    // between the parent and its last child.
+                    // This is needed when not a single node directly related to the line
+                    // is visible on screen but the line spans more than the screen.
+                    auto _parent = node->parent;
+                    while (_parent->parent) {
+                        _parent = _parent->parent;
+                        // We know here that the parent will have at least one child because
+                        // we are getting here from within the hierarchy.
+                        auto _node = _parent->children[_parent->children.size() - 1];
+                        dc.fillRect(
+                        Rect(
+                                pos.x + (_node->depth * m_indent) - (m_indent * 1.5) - (m_treeline_size / 2),
+                                pos.y - (node->bs_data.position - _parent->bs_data.position),
+                                m_treeline_size,
+                                _node->bs_data.position - _parent->bs_data.position
+                            ),
+                            dc.borderBackground(style())
+                        );
+                    }
+                }
             }
 
             Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override {
