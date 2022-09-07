@@ -108,6 +108,7 @@
         }
     #else
         #include <dirent.h>
+        #include <sys/stat.h>
 
         struct Dir {
             struct Iterator {
@@ -171,5 +172,14 @@
 
             Iterator iter() { return Iterator(handle); }
         };
+
+        namespace File {
+            Option<u64> getSize(String path) {
+                struct stat data;
+                if (stat(path.data(), &data)) { return Option<u64>(); }
+                if (S_ISDIR(data.st_mode)) { return Option<u64>(); }
+                return Option<u64>(data.st_size);
+            }
+        }
     #endif
 #endif
