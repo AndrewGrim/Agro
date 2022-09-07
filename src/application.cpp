@@ -71,6 +71,8 @@ Application::Application(const char *title, Size size) {
         {"radio_button_checked", std::make_shared<Texture>(radio_button_checked_png, radio_button_checked_png_length)},
         {"radio_button_background", std::make_shared<Texture>(radio_button_background_png, radio_button_background_png_length)},
         {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
+        {"directory", std::make_shared<Texture>(directory_png, directory_png_length)},
+        {"file", std::make_shared<Texture>(file_png, file_png_length)},
     });
     m_cursors = new Cursors();
     current_window = win;

@@ -15,6 +15,12 @@ extern const unsigned int close_thin_png_length;
 extern const unsigned char color_picker_gradient_png[];
 extern const unsigned int color_picker_gradient_png_length;
 
+extern const unsigned char directory_png[];
+extern const unsigned int directory_png_length;
+
+extern const unsigned char file_png[];
+extern const unsigned int file_png_length;
+
 extern const unsigned char radio_button_background_png[];
 extern const unsigned int radio_button_background_png_length;
 
