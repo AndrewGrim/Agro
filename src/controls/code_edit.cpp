@@ -407,6 +407,7 @@ Minimap::Minimap() : Box(Align::Vertical) {
         m_origin = m_slider_button->rect.y + m_slider_button->rect.h - event.y;
     });
     m_slider_button->onMouseMotion.addEventListener([&](Widget *widget, MouseEvent event) {
+        if (!((Scrollable*)parent)->m_vertical_scrollbar->isVisible()) { return; }
         MinimapButton *self = m_slider_button;
         if (self->isPressed()) {
             Rect rect = this->rect;
@@ -426,6 +427,7 @@ Minimap::Minimap() : Box(Align::Vertical) {
         }
     });
     onMouseDown.addEventListener([&](Widget *widget, MouseEvent event) {
+        if (!((Scrollable*)parent)->m_vertical_scrollbar->isVisible()) { return; }
         Rect rect = this->rect;
         i32 size = m_slider_button_size;
         m_value = (event.y - (rect.y + size / 2.0)) / (f64)(rect.h - size);
@@ -481,6 +483,7 @@ Size Minimap::sizeHint(DrawingContext &dc) {
 }
 
 bool Minimap::handleScrollEvent(ScrollEvent event) {
+    if (!((Scrollable*)parent)->m_vertical_scrollbar->isVisible()) { return true; }
     m_value = NORMALIZE(m_min, m_max, m_value + m_step * event.y);
     // Sync the minimap scroll with the vertical scrollbar.
     ((Scrollable*)parent)->m_vertical_scrollbar->m_slider->m_value = m_value;
