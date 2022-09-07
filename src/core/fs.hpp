@@ -98,9 +98,7 @@
                     (LPCWSTR)path.toUtf16Le().data(),
                     (LPWIN32_FIND_DATAW)&data
                 );
-                if (handle == INVALID_HANDLE_VALUE) {
-                    return Option<u64>();
-                }
+                if (handle == INVALID_HANDLE_VALUE) { return Option<u64>(); }
                 LARGE_INTEGER filesize;
                 filesize.LowPart = data.nFileSizeLow;
                 filesize.HighPart = data.nFileSizeHigh;
