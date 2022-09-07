@@ -89,6 +89,25 @@
                 return Iterator(handle, (LPWIN32_FIND_DATAW)&data);
             }
         };
+
+        namespace File {
+            Option<u64> getSize(String path) {
+                WIN32_FIND_DATAW data;
+                HANDLE handle = INVALID_HANDLE_VALUE;
+                handle = FindFirstFileW(
+                    (LPCWSTR)path.toUtf16Le().data(),
+                    (LPWIN32_FIND_DATAW)&data
+                );
+                if (handle == INVALID_HANDLE_VALUE) {
+                    return Option<u64>();
+                }
+                LARGE_INTEGER filesize;
+                filesize.LowPart = data.nFileSizeLow;
+                filesize.HighPart = data.nFileSizeHigh;
+                FindClose(handle);
+                return Option<u64>(filesize.QuadPart);
+            }
+        }
     #else
         #include <dirent.h>
 
