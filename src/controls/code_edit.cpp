@@ -449,7 +449,6 @@ void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
     // TODO possibly draw selection here as well??
     auto coords = TextureCoordinates();
     assert(m_minimap_texture.get() && "Minimap texture should not be null!");
-    i32 height = ((CodeEdit*)parent)->m_buffer.size() < rect.h ? ((CodeEdit*)parent)->m_buffer.size() : rect.h;
     i32 height = (i32)((CodeEdit*)parent)->m_buffer.size() < rect.h ? ((CodeEdit*)parent)->m_buffer.size() : rect.h;
     height = height > m_slider_button_size ? height - m_slider_button_size : height;
     dc.drawTexture(
