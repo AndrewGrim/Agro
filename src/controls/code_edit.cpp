@@ -449,9 +449,11 @@ void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
     // TODO possibly draw selection here as well??
     auto coords = TextureCoordinates();
     assert(m_minimap_texture.get() && "Minimap texture should not be null!");
+    i32 height = ((CodeEdit*)parent)->m_buffer.size() < rect.h ? ((CodeEdit*)parent)->m_buffer.size() : rect.h;
+    height = height > m_slider_button_size ? height - m_slider_button_size : height;
     dc.drawTexture(
         Point(rect.x, rect.y),
-        Size(rect.w, rect.h - m_slider_button_size < m_slider_button_size ? m_slider_button_size : rect.h - m_slider_button_size),
+        Size(rect.w, height),
         m_minimap_texture.get(),
         &coords,
         COLOR_WHITE
@@ -526,6 +528,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     dc.padding(rect, style());
 
     // TODO we may need to account for those 2 lines elsewhere when we are calculating position and size for minimap selection, slider size etc.
+    // im not sure this is exactly what we want
     if (m_overscroll && m_virtual_size.h > rect.h) { m_virtual_size.h = ((m_buffer.size() - 2) * TEXT_HEIGHT) + rect.h; }
 
     i32 line_numbers_width = dc.measureText(font(), toString(m_buffer.size() + 1), m_tab_width).w; // +1 because line numbers are 1 based not 0
