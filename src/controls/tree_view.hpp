@@ -96,6 +96,32 @@
                 }
             }
 
+            TreeNode<T>* insert(TreeNode<T> *parent_node, u64 index, TreeNode<T> *node) {
+                if (!parent_node) {
+                    node->parent = nullptr;
+                    node->depth = 1;
+                    roots.insert(roots.begin() + index, node);
+                    node->parent_index = index;
+
+                    for (u64 i = index + 1; i < roots.size(); i++) {
+                        roots[i]->parent_index = i;
+                    }
+
+                    return node;
+                } else {
+                    parent_node->children.insert(parent_node->children.begin() + index, node);
+                    node->parent_index = index;
+                    node->parent = parent_node;
+                    node->depth = node->parent->depth + 1;
+
+                    for (u64 i = index + 1; i < parent_node->children.size(); i++) {
+                        parent_node->children[i]->parent_index = i;
+                    }
+
+                    return node;
+                }
+            }
+
             void clear() {
                 for (TreeNode<T> *root : roots) {
                     delete root;
