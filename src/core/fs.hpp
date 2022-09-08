@@ -186,7 +186,7 @@
             }
 
             Option<String> load(String path) {
-                FILE *file = fopen(path, "rb");
+                FILE *file = fopen(path.data(), "rb");
                 if (!file) { return Option<String>(); }
                 Option<u64> size = File::getSize(path);
                 if (!size) { return Option<String>(); }
