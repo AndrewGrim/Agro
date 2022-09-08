@@ -31,8 +31,8 @@
     // Rather explicitly specify the type like: byteSwap<u16>(0x1337);
     template <typename T> T byteSwap(T number) {
         u8 result[sizeof(T)];
-        i32 i = sizeof(T) - 1;
-        i32 r = 0;
+        u32 i = sizeof(T) - 1;
+        u32 r = 0;
         for (; r < sizeof(T); i--, r++) {
             result[r] = ((u8*)&number)[i];
         }
