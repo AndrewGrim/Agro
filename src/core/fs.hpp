@@ -97,6 +97,18 @@
                 if (data.st_mode & _S_IFDIR) { return Option<u64>(); }
                 return Option<u64>(data.st_size);
             }
+
+            Option<String> load(String path) {
+                FILE *file = _wfopen((const wchar_t*)path.toUtf16Le().data(), L"rb");
+                if (!file) { return Option<String>(); }
+                Option<u64> size = File::getSize(path);
+                if (!size) { return Option<String>(); }
+                String s = String(size.value);
+                fread(s.data(), sizeof(u8), size.value, file);
+                s.data()[s.size()] = '\0';
+                if (!utf8::validate(s)) { return Option<String>("<NOT VALID UTF-8>"); }
+                return Option<String>(s);
+            }
         }
     #else
         #include <dirent.h>
@@ -171,6 +183,18 @@
                 if (stat(path.data(), &data)) { return Option<u64>(); }
                 if (S_ISDIR(data.st_mode)) { return Option<u64>(); }
                 return Option<u64>(data.st_size);
+            }
+
+            Option<String> load(String path) {
+                FILE *file = fopen(path, "rb");
+                if (!file) { return Option<String>(); }
+                Option<u64> size = File::getSize(path);
+                if (!size) { return Option<String>(); }
+                String s = String(size.value);
+                fread(s.data(), sizeof(u8), size.value, file);
+                s.data()[s.size()] = '\0';
+                if (!utf8::validate(s)) { return Option<String>("<NOT VALID UTF-8>"); }
+                return Option<String>(s);
             }
         }
     #endif
