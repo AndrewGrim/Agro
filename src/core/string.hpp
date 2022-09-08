@@ -10,6 +10,8 @@
     #include "../slice.hpp"
     #include "../option.hpp"
 
+    struct String;
+
     #define cast(T, V) static_cast<T>(V)
 
     enum class Endian {
@@ -50,6 +52,8 @@
         u32 decode(const char *first_byte, u8 length);
 
         u8 encode(u32 codepoint, char *data);
+
+        bool validate(const String &text);
 
         // Note: That neither constructor guarantees a valid starting point.
         // It is up to the callee to construct the Iterator using a valid sequence.

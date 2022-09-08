@@ -81,6 +81,15 @@ namespace utf8 {
         return len;
     }
 
+    bool validate(const String &text) {
+        for (u64 i = 0; i < text.size();) {
+            u8 len = utf8::length(text.data() + i);
+            if (!len) { return false; }
+            i += len;
+        }
+        return true;
+    }
+
     // Initialise iterator at data address.
     Iterator::Iterator(const char *data) : begin{data}, data{data} {}
 
