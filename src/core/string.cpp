@@ -124,7 +124,7 @@ namespace utf16 {
     u8 length(const char *_first_byte) {
         u32 codepoint = endian() == Endian::Big ? byteSwap<u16>(*(u16*)_first_byte) : *(u16*)_first_byte;
         if (!codepoint) { return 0; }
-        if (codepoint & ~cast(u32, 0x03ff) == 0xd800) {
+        if ((codepoint & ~0x03ff) == 0xd800) {
             return 4;
         }
         return 2;
