@@ -47,7 +47,6 @@ int main(int argc, char **argv) {
         };
         app->mainWindow()->resize(1400, 1000);
         app->mainWindow()->center();
-        // TODO splitter needs to have work done to support scaling properly
         auto split = new Splitter(Align::Horizontal);
         split->setSplit(0.25);
         app->mainWindow()->append(split, Fill::Both);

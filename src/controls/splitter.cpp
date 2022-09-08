@@ -254,3 +254,13 @@ Widget* Splitter::handleFocusEvent(FocusEvent event, State *state, FocusPropagat
     }
     return nullptr;
 }
+
+void Splitter::forEachDrawable(std::function<void(Drawable *drawable)> action) {
+    action(this);
+    if (m_first) {
+        m_first->forEachDrawable(action);
+    }
+    if (m_second) {
+        m_second->forEachDrawable(action);
+    }
+}

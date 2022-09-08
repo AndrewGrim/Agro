@@ -13,6 +13,7 @@ class Splitter : public Widget {
         virtual bool isLayout() override;
         virtual i32 isFocusable() override;
         virtual Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
+        void forEachDrawable(std::function<void(Drawable *drawable)> action) override;
 
         Widget* append(Widget *widget, Fill fill_policy, u32 proportion) override;
         void top(Widget *widget);
