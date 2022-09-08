@@ -92,18 +92,10 @@
 
         namespace File {
             Option<u64> getSize(String path) {
-                WIN32_FIND_DATAW data;
-                HANDLE handle = INVALID_HANDLE_VALUE;
-                handle = FindFirstFileW(
-                    (LPCWSTR)path.toUtf16Le().data(),
-                    (LPWIN32_FIND_DATAW)&data
-                );
-                if (handle == INVALID_HANDLE_VALUE) { return Option<u64>(); }
-                LARGE_INTEGER filesize;
-                filesize.LowPart = data.nFileSizeLow;
-                filesize.HighPart = data.nFileSizeHigh;
-                FindClose(handle);
-                return Option<u64>(filesize.QuadPart);
+                struct _stat data;
+                if (_wstat((wchar_t*)path.toUtf16Le().data(), &data)) { return Option<u64>(); }
+                if (data.st_mode & _S_IFDIR) { return Option<u64>(); }
+                return Option<u64>(data.st_size);
             }
         }
     #else
