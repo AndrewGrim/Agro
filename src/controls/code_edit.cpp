@@ -504,7 +504,7 @@ CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mo
     onTextChanged.addEventListener([&]() {
         delete[] m_lexer.tokens.data;
         m_lexer.lex(this->text());
-        __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h - m_minimap->m_slider_button_size));
+        m_update_minimap = true;
     });
     onTextChanged.notify();
 }
@@ -518,6 +518,8 @@ const char* CodeEdit::name() {
 }
 
 void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
+    i32 last_irh = inner_rect.h;
+
     dc.margin(rect, style());
     this->rect = rect;
     Rect previous_clip = dc.clip();
@@ -538,6 +540,7 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
     Point pos = __automaticallyAddOrRemoveScrollBars(dc, rect, m_virtual_size);
     Rect post_padding = rect;
     inner_rect = rect;
+    if (last_irh != inner_rect.h) { m_update_minimap = true; }
 
     inner_rect.x += line_numbers_width + line_numbers_padding;
     pos.x += line_numbers_width + line_numbers_padding;
@@ -647,15 +650,16 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             text_region.y += TEXT_HEIGHT;
             if (text_region.y > rect.y + rect.h) { break; }
         }
-        if (inner_rect.h != m_minimap->m_minimap_texture->height) {
-            __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h - m_minimap->m_slider_button_size));
-        }
         {
             i32 slider_size = (inner_rect.h / TEXT_HEIGHT) / (f32)m_buffer.size() * (f32)(inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h) + 1;
             if (slider_size < 5) {
                 slider_size = 5;
             }
             m_minimap->m_slider_button_size = slider_size;
+        }
+        if (m_update_minimap) {
+            __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
+            m_update_minimap = false;
         }
         // Background for minimap.
         dc.fillRect(

@@ -284,6 +284,7 @@
     struct CodeEdit : public TextEdit {
         Lexer m_lexer;
         bool m_overscroll = true;
+        bool m_update_minimap = true;
         Minimap *m_minimap = nullptr;
 
         CodeEdit(String text = "", Size min_size = Size(100, 100));
