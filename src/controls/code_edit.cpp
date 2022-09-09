@@ -944,8 +944,8 @@ void CodeEdit::__fillSingleLineColoredText(
             if (!current_token) { _color = color; }
             else {
                 if (
-                    (u32)current_token->type > (u32)Token::Type::Identifier &&
-                    (u32)current_token->type <= (u32)Token::Type::ThreadLocal
+                    (u16)current_token->type > (u16)Token::Type::Identifier &&
+                    (u16)current_token->type <= (u16)Token::Type::ThreadLocal
                 ) {
                     _color = Color(0xe4, 0x45, 0x33);
                 } else if (current_token->type == Token::Type::MultiLineComment) {
@@ -966,7 +966,7 @@ void CodeEdit::__fillSingleLineColoredText(
                     _color = Color(0xcb, 0x82, 0x96);
                 } else if (current_token->type == Token::Type::Function) {
                     _color = Color(0xd0, 0x76, 0x17);
-                } else if ((u32)current_token->type < (u32)Token::Type::String) {
+                } else if ((u16)current_token->type < (u16)Token::Type::String) {
                     _color = Color(0x92, 0x83, 0x72);
                 } else {
                     assert(false && "Unimplemented Token::Type when syntax highlighting!");
@@ -1022,8 +1022,8 @@ void CodeEdit::__renderMinimap(Size size) {
                 if (!current_token) { color = Application::get()->currentWindow()->dc->textForeground(style()); }
                 else {
                     if (
-                        (u32)current_token->type > (u32)Token::Type::Identifier &&
-                        (u32)current_token->type <= (u32)Token::Type::ThreadLocal
+                        (u16)current_token->type > (u16)Token::Type::Identifier &&
+                        (u16)current_token->type <= (u16)Token::Type::ThreadLocal
                     ) {
                         color = Color(0xe4, 0x45, 0x33);
                     } else if (current_token->type == Token::Type::MultiLineComment) {
@@ -1044,7 +1044,7 @@ void CodeEdit::__renderMinimap(Size size) {
                         color = Color(0xcb, 0x82, 0x96);
                     } else if (current_token->type == Token::Type::Function) {
                         color = Color(0xd0, 0x76, 0x17);
-                    } else if ((u32)current_token->type < (u32)Token::Type::String) {
+                    } else if ((u16)current_token->type < (u16)Token::Type::String) {
                         color = Color(0x92, 0x83, 0x72);
                     } else {
                         assert(false && "Unimplemented Token::Type when syntax highlighting in minimap!");

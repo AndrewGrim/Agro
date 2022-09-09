@@ -20,7 +20,7 @@
     };
 
     struct Token {
-        enum class Type : u32 {
+        enum class Type : u16 {
             NUL = 0, SOH, STX, ETX, EOT, ENQ, ACK, BEL, BS, TAB, LF, VT, FF, CR, SO, SI, DLE, DC1, DC2, DC3, DC4, NAK, SYN, ETB, CAN, EM, SUB, ESC, FS, GS, RS, US,
             Space, ExclamationMark, DoubleQuotes, Pound, DollarSign, Modulo, Ampersand, SingleQuote, OpenParenthesis, CloseParenthesis, Asterisk, Plus, Comma, Minus,
             Dot, ForwardSlash, Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Colon, SemiColon, LessThan, Equals, GreaterThan, QuestionMark,
