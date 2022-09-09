@@ -1215,12 +1215,20 @@
                             );
                             cell_x += node->depth * m_indent;
                         }
+                        i32 h_grid_line = 0;
+                        if (m_grid_lines == GridLines::Horizontal || m_grid_lines == GridLines::Both) {
+                            h_grid_line = m_grid_line_width;
+                        }
+                        i32 v_grid_line = 0;
+                        if (m_grid_lines == GridLines::Vertical || m_grid_lines == GridLines::Both) {
+                            v_grid_line = m_grid_line_width;
+                        }
                         if (drawable->isWidget()) {
                             // Draw the cell background using appropriate state for cells with widgets in them.
                             EmptyCell().draw(
                                 dc,
                                 Rect(
-                                    cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
+                                    cell_x, pos.y, col_width > s.w ? col_width - h_grid_line : s.w - h_grid_line, node->max_cell_height - v_grid_line
                                 ),
                                 state
                             );
@@ -1229,7 +1237,7 @@
                         drawable->draw(
                             dc,
                             Rect(
-                                cell_x, pos.y, col_width > s.w ? col_width - m_grid_line_width : s.w - m_grid_line_width, node->max_cell_height - m_grid_line_width
+                                cell_x, pos.y, col_width > s.w ? col_width - h_grid_line : s.w - h_grid_line, node->max_cell_height - v_grid_line
                             ),
                             state
                         );
