@@ -449,10 +449,9 @@ void Minimap::draw(DrawingContext &dc, Rect rect, i32 state) {
     // TODO possibly draw selection here as well??
     auto coords = TextureCoordinates();
     assert(m_minimap_texture.get() && "Minimap texture should not be null!");
-    i32 height = ((CodeEdit*)parent)->m_vertical_scrollbar->isVisible() ? rect.h - m_slider_button_size : rect.h;
     dc.drawTexture(
         Point(rect.x, rect.y),
-        Size(rect.w, height),
+        Size(rect.w, rect.h - m_slider_button_size),
         m_minimap_texture.get(),
         &coords,
         COLOR_WHITE
@@ -659,7 +658,10 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             m_minimap->m_slider_button_size = slider_size;
         }
         if (m_update_minimap) {
-            __renderMinimap(Size(m_minimap->m_minimap_width, inner_rect.h));
+            // In the event that the texture will be taller than the line count
+            // set the texture size to which ever is smaller.
+            i32 height = (i32)m_buffer.size() + m_minimap->m_slider_button_size > inner_rect.h  ? inner_rect.h - m_minimap->m_slider_button_size : m_buffer.size();
+            __renderMinimap(Size(m_minimap->m_minimap_width, height));
             m_update_minimap = false;
         }
         // Background for minimap.
@@ -670,12 +672,11 @@ void CodeEdit::draw(DrawingContext &dc, Rect rect, i32 state) {
             ),
             dc.textBackground(style())
         );
-        i32 minimap_height = inner_rect.h > (i32)m_buffer.size() ? m_buffer.size() : inner_rect.h;
         m_minimap->draw(
             dc,
             Rect(
                 inner_rect.x + inner_rect.w + m_cursor_width, inner_rect.y,
-                m_minimap->m_minimap_width, minimap_height
+                m_minimap->m_minimap_width, m_minimap->m_minimap_texture->height + m_minimap->m_slider_button_size
             ),
             m_minimap->state()
         );
@@ -997,10 +998,7 @@ void CodeEdit::__fillSingleLineColoredText(
 }
 
 void CodeEdit::__renderMinimap(Size size) {
-    // In the event that the texture will be taller than the line count
-    // set the texture size to which ever is smaller.
-    size.h = size.h > (i32)m_buffer.size() ? m_buffer.size() : size.h;
-    if (m_vertical_scrollbar->isVisible()) { size.h -= m_minimap->m_slider_button_size; }
+    assert(size.h > 0);
     assert(sizeof(Color) == 4 && "Color size should be 4 bytes or 32bits!");
     u8 *texture = new u8[size.h * size.w * sizeof(Color)];
     memset(texture, 0x00, size.h * size.w * sizeof(Color));
