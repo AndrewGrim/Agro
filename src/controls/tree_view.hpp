@@ -1243,7 +1243,9 @@
                     dc.setClip(Rect(rect.x, rect.y + column_header, rect.w, rect.h - column_header).clipTo(tv_clip));
                     dc.fillRect(Rect(rect.x, pos.y + node->max_cell_height - m_grid_line_width, m_current_header_width, m_grid_line_width), dc.textDisabled(style()));
                 }
-                drawTreeLine(dc, pos, rect, tv_clip, column_header, node);
+                if (!m_table) {
+                    drawTreeLine(dc, pos, rect, tv_clip, column_header, node);
+                }
                 pos.y += node->max_cell_height;
             }
 
