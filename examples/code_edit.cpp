@@ -11,13 +11,12 @@ struct Hidden {
     Hidden(Dir::Iterator::Entry::Type type) : type{type} {}
 };
 
-// TODO would be nice if they were sorted alphabetically
 void recurseDir(Tree<Hidden> *model, TreeNode<Hidden> *parent_node, String path) {
     Dir dir(path);
     auto iter = dir.iter();
     while ((iter = iter.next())) {
         if (iter.entry.type == Dir::Iterator::Entry::Type::Directory) {
-            TreeNode<Hidden> *new_node = model->insert(parent_node, 0, new TreeNode<Hidden>(
+            TreeNode<Hidden> *new_node = model->append(parent_node, new TreeNode<Hidden>(
                 {
                     new ImageTextCellRenderer(new Image(Application::get()->icons["directory"]), iter.entry.name)
                 },
@@ -50,20 +49,35 @@ int main(int argc, char **argv) {
         auto split = new Splitter(Align::Horizontal);
         split->setSplit(0.25);
         app->mainWindow()->append(split, Fill::Both);
-        // TODO rendering bug: screenshot on desktop, but it seems that after turning off the grid lines
-        // there is a little bit that was normally clipped and covered by the grid lines and now the underlying color is shown
         TreeView<Hidden> *tv = nullptr;
         CodeEdit *edit = nullptr;
         {
             tv = new TreeView<Hidden>();
                 tv->setGridLines(GridLines::None);
                 tv->hideColumnHeaders();
-                auto col = new Column<Hidden>("Name", nullptr, HorizontalAlignment::Center);
+                auto col = new Column<Hidden>(
+                    "Name",
+                    nullptr,
+                    HorizontalAlignment::Center,
+                    [](TreeNode<Hidden> *lhs, TreeNode<Hidden> *rhs) {
+                        if ((i32)lhs->hidden->type == (i32)rhs->hidden->type) {
+                            auto l = (ImageTextCellRenderer*)lhs->columns[0];
+                            auto r = (ImageTextCellRenderer*)rhs->columns[0];
+                            return memcmp(
+                                ("" + l->text).toLower().data(),
+                                ("" + r->text).toLower().data(),
+                                l->text.size() < r->text.size() ? l->text.size() : r->text.size()
+                            ) < 0;
+                        }
+                        return (i32)lhs->hidden->type > (i32)rhs->hidden->type;
+                    }
+                );
                 col->setExpand(true);
                 tv->append(col);
                 Tree<Hidden> *model = new Tree<Hidden>();
                 recurseDir(model, nullptr, ".");
                 tv->setModel(model);
+                col->sort(Sort::Ascending);
                 tv->collapseAll();
                 tv->onNodeSelected.addEventListener([&](TreeView<Hidden> *tv, TreeNode<Hidden> *node) {
                     if (node->hidden->type == Dir::Iterator::Entry::Type::Directory) { return; }

@@ -296,8 +296,25 @@
                         assert(m_model && "Model cannot be null when sorting! Only sort once youve set the model.");
                         if (isSorted() == Sort::Ascending) {
                             std::sort(m_model->roots.rbegin(), m_model->roots.rend(), sort_fn);
+                            m_model->forEachNode(m_model->roots, [&](TreeNode<T> *node) {
+                                if (!node->children.size()) { return Traversal::Next; }
+                                std::sort(node->children.rbegin(), node->children.rend(), sort_fn);
+                                // TODO we could think about moving this to calculateVirtualSize
+                                for (u64 i = 0; i < node->children.size(); i++) {
+                                    node->children[i]->parent_index = i;
+                                }
+                                return Traversal::Continue;
+                            });
                         } else {
                             std::sort(m_model->roots.begin(), m_model->roots.end(), sort_fn);
+                            m_model->forEachNode(m_model->roots, [&](TreeNode<T> *node) {
+                                if (!node->children.size()) { return Traversal::Next; }
+                                std::sort(node->children.begin(), node->children.end(), sort_fn);
+                                for (u64 i = 0; i < node->children.size(); i++) {
+                                    node->children[i]->parent_index = i;
+                                }
+                                return Traversal::Continue;
+                            });
                         }
                         ((TreeView<T>*)parent)->m_virtual_size_changed = true;
                         ((TreeView<T>*)parent)->sizeHint(*Application::get()->currentWindow()->dc);
