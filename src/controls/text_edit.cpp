@@ -4,7 +4,7 @@
 #include "../core/intrinsics.hpp"
 
 #define NORMALIZE(min, max, value) (value < min ? min : value > max ? max : value)
-#define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing + font()->maxHeight() - font()->max_bearing))
+#define TEXT_HEIGHT ((i32)((font()->maxHeight()) + m_line_spacing))
 #define X_SCROLL_OFFSET ((m_horizontal_scrollbar->isVisible() ? m_horizontal_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.w - inner_rect.w))
 #define Y_SCROLL_OFFSET ((m_vertical_scrollbar->isVisible() ? m_vertical_scrollbar->m_slider->m_value : 0.0) * (m_virtual_size.h - inner_rect.h))
 #define DC (*(Application::get()->currentWindow()->dc))

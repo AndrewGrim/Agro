@@ -29,7 +29,7 @@ Font::~Font() {
 }
 
 u32 Font::maxHeight() {
-    return atlas_height;
+    return atlas_height + (atlas_height - max_bearing);
 }
 
 Font::Character Font::get(u32 codepoint) {
