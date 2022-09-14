@@ -1052,11 +1052,9 @@ bool TextEdit::deleteSelection(bool skip) {
 
     if (!m_selection.hasSelection()) { return false; }
 
-    Selection backup = m_selection; // This is needed because call to selection() can swap.
     if (!skip) {
-        m_history.append(HistoryItem(HistoryItem::Action::Delete, selection(), backup));
+        m_history.append(HistoryItem(HistoryItem::Action::Delete, selection(), m_selection));
     }
-    m_selection = backup;
 
     if (m_selection.line_begin != m_selection.line_end) {
         // Multiline selection
