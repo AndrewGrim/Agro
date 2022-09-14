@@ -280,7 +280,7 @@ void Lexer::lex(Slice<const char> source) {
                     }
                 #else
                     while (pos.index < source.length) {
-                        if (!is_identifier[source.data[pos.index]]) {
+                        if (!is_identifier[(u8)source.data[pos.index]]) {
                             if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
                                 if (source.data[pos.index] == '(') {
                                     tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
