@@ -137,6 +137,45 @@ const u8 is_number_start[256] = {
     const simd::Vector<u8, SIMD_WIDTH> UNDERSCORE_ASCII_MASK(95);
 #endif
 
+enum {
+    STATE_ANY,
+    STATE_FORWARD_SLASH,
+    STATE_IDENTIFIER,
+    STATE_NUMBER,
+    STATE_STRING_LITERAL,
+    STATE_CHARACTER_LITERAL,
+    STATE_PREPROCESSOR
+};
+
+const u8 state[256] = {
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_STRING_LITERAL, STATE_PREPROCESSOR, STATE_ANY, STATE_ANY, STATE_ANY, STATE_CHARACTER_LITERAL,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_FORWARD_SLASH, STATE_NUMBER, STATE_NUMBER,
+    STATE_NUMBER, STATE_NUMBER, STATE_NUMBER, STATE_NUMBER, STATE_NUMBER, STATE_NUMBER, STATE_NUMBER, STATE_NUMBER, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER,
+    STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER,
+    STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER,
+    STATE_IDENTIFIER, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_IDENTIFIER, STATE_ANY, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER,
+    STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER,
+    STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER,
+    STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_IDENTIFIER, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY,
+    STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY, STATE_ANY
+};
+
 Lexer::Lexer() {}
 
 // TODO just gotta fix escapes
@@ -150,136 +189,164 @@ void Lexer::lex(Slice<const char> source) {
     tokens = Slice<Token>(new Token[source.length], 0);
 
     while (pos.index < source.length) {
-        u8 next_c = source.data[pos.index];
-        Token::Type token = (Token::Type)next_c;
-        if (next_c == '/') {
-            if (peek(Token::Type::ForwardSlash)) {
-                tokens.data[tokens.length++] = Token(Token::Type::SingleLineComment, pos.index);
-                pos.advance(2);
-                while (pos.index < source.length) {
-                    if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
-                        pos.next();
-                        break;
-                    }
-                    pos.next();
-                }
-            } else if (peek(Token::Type::Asterisk)) {
-                tokens.data[tokens.length++] = Token(Token::Type::MultiLineComment, pos.index);
-                #if SIMD_WIDTH > 0
-                    pos.advance(3);
+        switch (state[(u8)source.data[pos.index]]) {
+            case STATE_ANY: {
+                tokens.data[tokens.length++] = Token((Token::Type)source.data[pos.index], pos.index);
+                pos.next();
+            }
+            break;
+            case STATE_FORWARD_SLASH: {
+                if (peek(Token::Type::ForwardSlash)) {
+                    tokens.data[tokens.length++] = Token(Token::Type::SingleLineComment, pos.index);
+                    pos.advance(2);
                     while (pos.index < source.length) {
-                        const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
-                        const auto result = input == FORWARD_SLASH_MASK;
-                        if (result) {
-                            pos.advance(__builtin_ctz(result));
-                            if ((Token::Type)source.data[pos.index - 1] == Token::Type::Asterisk) {
+                        if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                            pos.next();
+                            break;
+                        }
+                        pos.next();
+                    }
+                } else if (peek(Token::Type::Asterisk)) {
+                    tokens.data[tokens.length++] = Token(Token::Type::MultiLineComment, pos.index);
+                    #if SIMD_WIDTH > 0
+                        pos.advance(3);
+                        while (pos.index < source.length) {
+                            const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
+                            const auto result = input == FORWARD_SLASH_MASK;
+                            if (result) {
+                                pos.advance(__builtin_ctz(result));
+                                if ((Token::Type)source.data[pos.index - 1] == Token::Type::Asterisk) {
+                                    pos.next();
+                                    break;
+                                }
                                 pos.next();
+                            } else {
+                                pos.advance(16);
+                            }
+                        }
+                    #else
+                        pos.advance(2);
+                        while (pos.index < source.length) {
+                            if ((Token::Type)source.data[pos.index] == Token::Type::Asterisk && peek(Token::Type::ForwardSlash)) {
+                                pos.advance(2);
                                 break;
                             }
                             pos.next();
+                        }
+                    #endif
+                } else {
+                    tokens.data[tokens.length++] = Token(Token::Type::ForwardSlash, pos.index);
+                    pos.next();
+                }
+            }
+            break;
+            case STATE_IDENTIFIER: {
+                u32 identifier_start = pos.index;
+                pos.next();
+                #if SIMD_WIDTH > 0
+                    while (pos.index < source.length) {
+                        const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
+                        // TODO i think we may need to account for whitespace
+                        auto result = input < LOWER_THAN_VALID_MASK;
+                            result |= input > HIGHER_THAN_VALID_MASK;
+                            result |= input.greaterThan(HIGHER_THAN_DIGIT_ASCII_MASK) == input.lessThan(LOWER_THAN_UPPER_ASCII_MASK);
+                            result |= input.greaterThan(HIGHER_THAN_UPPER_ASCII_MASK) == input.lessThan(LOWER_THAN_LOWER_ASCII_MASK);
+                            result ^= input == UNDERSCORE_ASCII_MASK;
+                        if (result) {
+                            pos.advance(__builtin_ctz(result));
+                            if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
+                                if (source.data[pos.index] == '(') {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                } else {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                                }
+                            } else {
+                                Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
+                                auto entry = keywords.find(identifier);
+                                if (entry && entry == identifier) {
+                                    tokens.data[tokens.length++] = Token(entry.token, identifier_start);
+                                } else {
+                                    if (source.data[pos.index] == '(') {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                    } else {
+                                        tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                                    }
+                                }
+                            }
+                            break;
                         } else {
-                            pos.advance(16);
+                            pos.advance(SIMD_WIDTH);
                         }
                     }
                 #else
-                    pos.advance(2);
                     while (pos.index < source.length) {
-                        if ((Token::Type)source.data[pos.index] == Token::Type::Asterisk && peek(Token::Type::ForwardSlash)) {
-                            pos.advance(2);
+                        if (!is_identifier[source.data[pos.index]]) {
+                            if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
+                                if (source.data[pos.index] == '(') {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                } else {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                                }
+                            } else {
+                                Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
+                                auto entry = keywords.find(identifier);
+                                if (entry && entry == identifier) {
+                                    tokens.data[tokens.length++] = Token(entry.token, identifier_start);
+                                } else {
+                                    if (source.data[pos.index] == '(') {
+                                    tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
+                                    } else {
+                                        tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
+                                    }
+                                }
+                            }
                             break;
                         }
                         pos.next();
                     }
                 #endif
-            } else {
-                tokens.data[tokens.length++] = Token(Token::Type::ForwardSlash, pos.index);
-                pos.next();
             }
-        } else if (is_identifier_start[next_c]) {
-            u32 identifier_start = pos.index;
-            pos.next();
-            #if SIMD_WIDTH > 0
+            break;
+            case STATE_NUMBER: {
+                tokens.data[tokens.length++] = Token(Token::Type::Number, pos.index);
+                pos.next();
                 while (pos.index < source.length) {
-                    const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
-                    // TODO i think we may need to account for whitespace
-                    auto result = input < LOWER_THAN_VALID_MASK;
-                        result |= input > HIGHER_THAN_VALID_MASK;
-                        result |= input.greaterThan(HIGHER_THAN_DIGIT_ASCII_MASK) == input.lessThan(LOWER_THAN_UPPER_ASCII_MASK);
-                        result |= input.greaterThan(HIGHER_THAN_UPPER_ASCII_MASK) == input.lessThan(LOWER_THAN_LOWER_ASCII_MASK);
-                        result ^= input == UNDERSCORE_ASCII_MASK;
-                    if (result) {
-                        pos.advance(__builtin_ctz(result));
-                        if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
-                            if (source.data[pos.index] == '(') {
-                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
-                            } else {
-                                tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
-                            }
-                        } else {
-                            Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
-                            auto entry = keywords.find(identifier);
-                            if (entry && entry == identifier) {
-                                tokens.data[tokens.length++] = Token(entry.token, identifier_start);
-                            } else {
-                                if (source.data[pos.index] == '(') {
-                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
-                                } else {
-                                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
-                                }
-                            }
-                        }
-                        break;
-                    } else {
-                        pos.advance(SIMD_WIDTH);
-                    }
-                }
-            #else
-                while (pos.index < source.length) {
-                    if (!is_identifier[source.data[pos.index]]) {
-                        if (pos.index - identifier_start > MAX_KEYWORD_LENGTH) {
-                            if (source.data[pos.index] == '(') {
-                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
-                            } else {
-                                tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
-                            }
-                        } else {
-                            Keyword identifier = Keyword((u8*)source.data + identifier_start, pos.index - identifier_start);
-                            auto entry = keywords.find(identifier);
-                            if (entry && entry == identifier) {
-                                tokens.data[tokens.length++] = Token(entry.token, identifier_start);
-                            } else {
-                                if (source.data[pos.index] == '(') {
-                                tokens.data[tokens.length++] = Token(Token::Type::Function, identifier_start);
-                                } else {
-                                    tokens.data[tokens.length++] = Token(Token::Type::Identifier, identifier_start);
-                                }
-                            }
-                        }
+                    if (!is_number[(u8)source.data[pos.index]]) {
                         break;
                     }
                     pos.next();
                 }
-            #endif
-        } else if (is_number_start[next_c]) {
-            tokens.data[tokens.length++] = Token(Token::Type::Number, pos.index);
-            pos.next();
-            while (pos.index < source.length) {
-                if (!is_number[(u8)source.data[pos.index]]) {
-                    break;
-                }
-                pos.next();
             }
-        } else if (next_c == '"') {
-            tokens.data[tokens.length++] = Token(Token::Type::String, pos.index);
-            pos.next();
-            #if SIMD_WIDTH > 0
-                while (pos.index < source.length) {
-                    const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
-                    const auto result = (input == BACKWARD_SLASH_MASK) |
-                                        (input == LINE_FEED_MASK)      |
-                                        (input == DOUBLE_QUOTE_MASK);
-                    if (result) {
-                        pos.advance(__builtin_ctz(result));
+            break;
+            case STATE_STRING_LITERAL: {
+                tokens.data[tokens.length++] = Token(Token::Type::String, pos.index);
+                pos.next();
+                #if SIMD_WIDTH > 0
+                    while (pos.index < source.length) {
+                        const simd::Vector<u8, SIMD_WIDTH> input((u8*)source.data + pos.index);
+                        const auto result = (input == BACKWARD_SLASH_MASK) |
+                                            (input == LINE_FEED_MASK)      |
+                                            (input == DOUBLE_QUOTE_MASK);
+                        if (result) {
+                            pos.advance(__builtin_ctz(result));
+                            if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                                tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                                pos.next();
+                            } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
+                                pos.next();
+                                break;
+                            } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                                tokens.data[tokens.length++] = Token(Token::Type::LF, pos.index);
+                                pos.next();
+                                break;
+                            }
+                            pos.next();
+                        } else {
+                            pos.advance(SIMD_WIDTH);
+                        }
+                    }
+                #else
+                    while (pos.index < source.length) {
                         if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
                             tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
                             pos.next();
@@ -287,64 +354,49 @@ void Lexer::lex(Slice<const char> source) {
                             pos.next();
                             break;
                         } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
-                            tokens.data[tokens.length++] = Token(Token::Type::LF, pos.index);
                             pos.next();
                             break;
                         }
                         pos.next();
-                    } else {
-                        pos.advance(SIMD_WIDTH);
                     }
-                }
-            #else
+                #endif
+            }
+            break;
+            case STATE_CHARACTER_LITERAL: {
+                tokens.data[tokens.length++] = Token(Token::Type::Character, pos.index);
+                pos.next();
                 while (pos.index < source.length) {
                     if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
                         tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                        pos.next();
-                    } else if ((Token::Type)source.data[pos.index] == Token::Type::DoubleQuotes) {
+                        pos.advance(2);
+                    } else if ((Token::Type)source.data[pos.index] == Token::Type::SingleQuote) {
                         pos.next();
                         break;
                     } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
                         pos.next();
                         break;
+                    } else {
+                        pos.next();
                     }
-                    pos.next();
-                }
-            #endif
-        } else if (next_c == '\'') {
-            tokens.data[tokens.length++] = Token(Token::Type::Character, pos.index);
-            pos.next();
-            while (pos.index < source.length) {
-                if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
-                    tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                    pos.advance(2);
-                } else if ((Token::Type)source.data[pos.index] == Token::Type::SingleQuote) {
-                    pos.next();
-                    break;
-                } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
-                    pos.next();
-                    break;
-                } else {
-                    pos.next();
                 }
             }
-        } else if (next_c == '#') {
-            tokens.data[tokens.length++] = Token(Token::Type::PreProcessorStatement, pos.index);
-            pos.next();
-            while (pos.index < source.length) {
-                if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
-                    tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
-                    pos.advance(2);
-                } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
-                    pos.next();
-                    break;
-                } else {
-                    pos.next();
+            break;
+            case STATE_PREPROCESSOR: {
+                tokens.data[tokens.length++] = Token(Token::Type::PreProcessorStatement, pos.index);
+                pos.next();
+                while (pos.index < source.length) {
+                    if ((Token::Type)source.data[pos.index] == Token::Type::BackwardSlash) {
+                        tokens.data[tokens.length++] = Token(Token::Type::Escaped, pos.index);
+                        pos.advance(2);
+                    } else if ((Token::Type)source.data[pos.index] == Token::Type::LF) {
+                        pos.next();
+                        break;
+                    } else {
+                        pos.next();
+                    }
                 }
             }
-        } else {
-            tokens.data[tokens.length++] = Token(token, pos.index);
-            pos.next();
+            break;
         }
     }
 }
