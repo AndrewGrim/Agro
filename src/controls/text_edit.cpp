@@ -539,21 +539,21 @@ TextEdit* TextEdit::setText(String text) {
     u64 index = 0;
     u64 last_line_index = 0;
     if (m_mode == Mode::SingleLine) {
-        m_buffer.push_back(String(text.data()));
-        m_buffer_length.push_back(0);
+        m_buffer.append(String(text.data()));
+        m_buffer_length.append(0);
     } else {
         for (char c : text) {
             // TODO ideally we would account for \r as well
             // and ideally we would strip both out of singleline buffer
             if (c == '\n') {
-                m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
-                m_buffer_length.push_back(0);
+                m_buffer.append(String(text.data() + last_line_index, index - last_line_index));
+                m_buffer_length.append(0);
                 last_line_index = index + 1;
             }
             index++;
         }
-        m_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
-        m_buffer_length.push_back(0);
+        m_buffer.append(String(text.data() + last_line_index, index - last_line_index));
+        m_buffer_length.append(0);
     }
 
     m_text_changed = true;
@@ -878,9 +878,9 @@ TextEdit* TextEdit::moveCursorEnd() {
 
 TextEdit* TextEdit::clear() {
     m_buffer.clear();
-    m_buffer.push_back(String());
+    m_buffer.append(String());
     m_buffer_length.clear();
-    m_buffer_length.push_back(0);
+    m_buffer_length.append(0);
     m_text_changed = true;
     m_selection.line_end = 0;
     m_selection.x_end = 0;
@@ -900,16 +900,16 @@ TextEdit* TextEdit::setPlaceholderText(String text) {
     u64 index = 0;
     u64 last_line_index = 0;
     if (m_mode == Mode::SingleLine) {
-        m_placeholder_buffer.push_back(String(text.data()));
+        m_placeholder_buffer.append(String(text.data()));
     } else {
         for (char c : text) {
             if (c == '\n') {
-                m_placeholder_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+                m_placeholder_buffer.append(String(text.data() + last_line_index, index - last_line_index));
                 last_line_index = index;
             }
             index++;
         }
-        m_placeholder_buffer.push_back(String(text.data() + last_line_index, index - last_line_index));
+        m_placeholder_buffer.append(String(text.data() + last_line_index, index - last_line_index));
     }
 
     return this;
@@ -1002,8 +1002,8 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
                 previous_line += line.data();
                 previous_line_length += line_length;
                 if ((i32)previous_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = previous_line_length + m_cursor_width; }
-                m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
-                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                m_buffer.erase(m_selection.line_end + 1);
+                m_buffer_length.erase(m_selection.line_end + 1);
                 m_virtual_size.h -= TEXT_HEIGHT;
                 if (!skip) {
                     m_history.append(HistoryItem(HistoryItem::Action::Backspace, "\n", m_selection));
@@ -1029,8 +1029,8 @@ bool TextEdit::deleteOne(bool is_backspace, bool skip) {
                 line += m_buffer[m_selection.line_end + 1].data();
                 line_length += m_buffer_length[m_selection.line_end + 1];
                 if ((i32)line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = line_length + m_cursor_width; }
-                m_buffer.erase(m_buffer.begin() + m_selection.line_end + 1);
-                m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end + 1);
+                m_buffer.erase(m_selection.line_end + 1);
+                m_buffer_length.erase(m_selection.line_end + 1);
                 m_virtual_size.h -= TEXT_HEIGHT;
                 if (!skip) {
                     m_history.append(HistoryItem(HistoryItem::Action::Delete, "\n", m_selection));
@@ -1075,11 +1075,11 @@ bool TextEdit::deleteSelection(bool skip) {
         }
 
         if (lines_to_delete == 1) {
-            m_buffer.erase(m_buffer.begin() + m_selection.line_end);
-            m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_end);
+            m_buffer.erase(m_selection.line_end);
+            m_buffer_length.erase(m_selection.line_end);
         } else if (lines_to_delete > 1) {
-            m_buffer.erase(m_buffer.begin() + m_selection.line_begin + 1, m_buffer.begin() + m_selection.line_end + 1);
-            m_buffer_length.erase(m_buffer_length.begin() + m_selection.line_begin + 1, m_buffer_length.begin() + m_selection.line_end + 1);
+            m_buffer.erase(m_selection.line_begin + 1, m_selection.line_end + 1);
+            m_buffer_length.erase(m_selection.line_begin + 1, m_selection.line_end + 1);
         }
         m_virtual_size.h -= TEXT_HEIGHT * lines_to_delete;
         if ((i32)first_line_length + m_cursor_width > m_virtual_size.w) { m_virtual_size.w = first_line_length + m_cursor_width; }
@@ -1163,17 +1163,17 @@ void TextEdit::insert(const char *text, bool skip) {
                     Slice<const char> remainder_text = Slice<const char>(line.data() + m_selection.end + length, line.size() - (m_selection.end + length));
                     if (remainder_text.length) {
                         i32 remainder_width = dc.measureText(font(), remainder_text, m_tab_width).w;
-                        m_buffer.emplace(m_buffer.begin() + m_selection.line_end + 1, remainder_text.data, remainder_text.length);
-                        m_buffer_length.insert(m_buffer_length.begin() + m_selection.line_end + 1, remainder_width);
+                        m_buffer.emplace(m_selection.line_end + 1, remainder_text.data, remainder_text.length);
+                        m_buffer_length.insert(m_selection.line_end + 1, remainder_width);
                         line.erase(m_selection.end + length, remainder_text.length);
                         line_length -= remainder_width;
                     } else {
-                        m_buffer.insert(m_buffer.begin() + m_selection.line_end + 1, String());
-                        m_buffer_length.insert(m_buffer_length.begin() + m_selection.line_end + 1, 0);
+                        m_buffer.insert(m_selection.line_end + 1, String());
+                        m_buffer_length.insert(m_selection.line_end + 1, 0);
                     }
                 } else {
-                    m_buffer.emplace(m_buffer.begin() + m_selection.line_end, text + last_line_index, length);
-                    m_buffer_length.insert(m_buffer_length.begin() + m_selection.line_end, text_size);
+                    m_buffer.emplace(m_selection.line_end, text + last_line_index, length);
+                    m_buffer_length.insert(m_selection.line_end, text_size);
                 }
                 m_selection.line_end++;
                 m_virtual_size.h += TEXT_HEIGHT;

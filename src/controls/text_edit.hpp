@@ -3,6 +3,7 @@
 
     #include "scrollable.hpp"
     #include "../core/string.hpp"
+    #include "../core/array_list.hpp"
     #include "../timer.hpp"
 
     struct TextEdit : public Scrollable {
@@ -126,9 +127,9 @@
         Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
         bool handleLayoutEvent(LayoutEvent event) override;
 
-        std::vector<String> m_buffer;
-        std::vector<u64> m_buffer_length;
-        std::vector<String> m_placeholder_buffer;
+        ArrayList<String> m_buffer;
+        ArrayList<u64> m_buffer_length;
+        ArrayList<String> m_placeholder_buffer;
         Size m_virtual_size = Size();
         i32 m_cursor_width = 2;
         i32 m_tab_width = 4;
