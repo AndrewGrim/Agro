@@ -1160,7 +1160,7 @@ void CodeEdit::__renderMinimap(Size size) {
             }
         }
         texture_line++;
-        for (u64 __line = line_index; __line < (u64)line_index + m_buffer.size() / size.h; __line++) {
+        for (u64 __line = line_index; __line < (u64)line_index + m_buffer.size() / size.h and __line < m_buffer.size(); __line++) {
             byte_offset += m_buffer[__line].size() + 1; // +1 for newline
         }
         line_index += m_buffer.size() / (f32)size.h;
