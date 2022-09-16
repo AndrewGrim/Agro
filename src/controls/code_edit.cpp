@@ -559,48 +559,6 @@ CodeEdit::CodeEdit(String text, Size min_size) : TextEdit(text, "", TextEdit::Mo
         m_update_minimap = true;
     });
     onTextChanged.notify();
-    // TODO WIP
-    bind(SDLK_UP, Mod::Shift|Mod::Ctrl, [&]() {
-        // TODO how is this going to interact with history??
-        // do we have to create a special event? most likely
-        auto sel = m_selection;
-        swapSelection();
-        if (m_selection.line_begin == 0) {
-            m_selection = sel;
-            return;
-        }
-        usize count = m_selection.line_end - m_selection.line_begin + 1;
-        usize begin = m_selection.line_begin;
-        m_buffer.shiftLeft(begin, count);
-        m_buffer_length.shiftLeft(begin, count);
-        m_selection.line_begin -= 1;
-        m_selection.line_end -= 1;
-        // TODO he have to update the selection the new values and if it did swap account for that as well
-        // m_selection = sel;
-        onTextChanged.notify();
-        update();
-    });
-    // TODO WIP
-    bind(SDLK_DOWN, Mod::Shift|Mod::Ctrl, [&]() {
-        // TODO how is this going to interact with history??
-        // do we have to create a special event? most likely
-        auto sel = m_selection;
-        swapSelection();
-        if (m_selection.line_begin == m_buffer.size() - 1) {
-            m_selection = sel;
-            return;
-        }
-        usize count = m_selection.line_end - m_selection.line_begin + 1;
-        usize begin = m_selection.line_begin;
-        m_buffer.shiftRight(begin, count);
-        m_buffer_length.shiftRight(begin, count);
-        m_selection.line_begin += 1;
-        m_selection.line_end += 1;
-        // TODO he have to update the selection the new values and if it did swap account for that as well
-        // m_selection = sel;
-        onTextChanged.notify();
-        update();
-    });
 }
 
 CodeEdit::~CodeEdit() {

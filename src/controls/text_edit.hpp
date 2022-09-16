@@ -34,6 +34,8 @@
                 Delete,
                 Backspace,
                 Insert,
+                ShiftLeft,
+                ShiftRight
             };
 
             Action action;
@@ -126,6 +128,8 @@
         String selection();
         Widget* handleFocusEvent(FocusEvent event, State *state, FocusPropagationData data) override;
         bool handleLayoutEvent(LayoutEvent event) override;
+        void moveSelectedLinesUp(bool skip = false);
+        void moveSelectedLinesDown(bool skip = false);
 
         ArrayList<String> m_buffer;
         ArrayList<u64> m_buffer_length;

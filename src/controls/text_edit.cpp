@@ -284,6 +284,12 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     bind(SDLK_RETURN, Mod::None, [&]() {
         insert("\n");
     });
+    bind(SDLK_UP, Mod::Shift|Mod::Ctrl, [&]() {
+        moveSelectedLinesUp();
+    });
+    bind(SDLK_DOWN, Mod::Shift|Mod::Ctrl, [&]() {
+        moveSelectedLinesDown();
+    });
 }
 
 TextEdit::~TextEdit() {
@@ -1274,7 +1280,21 @@ bool TextEdit::undo() {
                 m_selection = item.selection;
                 break;
             }
-            default: assert(false && "Not a valid HistoryItem!");
+            case HistoryItem::Action::ShiftLeft: {
+                m_selection = item.selection;
+                m_selection.line_begin -= 1;
+                m_selection.line_end -= 1;
+                moveSelectedLinesDown(true);
+                break;
+            }
+            case HistoryItem::Action::ShiftRight: {
+                m_selection = item.selection;
+                m_selection.line_begin += 1;
+                m_selection.line_end += 1;
+                moveSelectedLinesUp(true);
+                break;
+            }
+            default: assert(false && "Unimplemented HistoryItem!");
         }
         if (!m_history.index) {
             m_history.undo_end = true;
@@ -1300,7 +1320,17 @@ bool TextEdit::redo() {
                 m_selection = item.selection;
                 insert(item.text.data(), true);
                 break;
-            default: assert(false && "Not a valid HistoryItem!");
+            case HistoryItem::Action::ShiftLeft: {
+                m_selection = item.selection;
+                moveSelectedLinesUp(true);
+                break;
+            }
+            case HistoryItem::Action::ShiftRight: {
+                m_selection = item.selection;
+                moveSelectedLinesDown(true);
+                break;
+            }
+            default: assert(false && "Unimplemented HistoryItem!");
         }
         if (!m_history.index) {
             m_history.undo_end = false;
@@ -1446,4 +1476,60 @@ bool TextEdit::handleLayoutEvent(LayoutEvent event) {
         m_size_changed = true;
     }
     return false;
+}
+
+void TextEdit::moveSelectedLinesUp(bool skip) {
+    auto sel = m_selection;
+    swapSelection();
+
+    if (m_selection.line_begin == 0) {
+        m_selection = sel;
+        return;
+    }
+
+    if (!skip) {
+        // Note: We don't store text in History because it doesn't change as such and
+        // we can undo and redo using the appropriate shift later on.
+        m_history.append(HistoryItem(HistoryItem::Action::ShiftLeft, "", sel));
+    }
+
+    usize count = m_selection.line_end - m_selection.line_begin + 1;
+    usize begin = m_selection.line_begin;
+    m_buffer.shiftLeft(begin, count);
+    m_buffer_length.shiftLeft(begin, count);
+
+    m_selection = sel;
+    m_selection.line_begin -= 1;
+    m_selection.line_end -= 1;
+
+    onTextChanged.notify();
+    update();
+}
+
+void TextEdit::moveSelectedLinesDown(bool skip) {
+    auto sel = m_selection;
+    swapSelection();
+
+    if (m_selection.line_begin == m_buffer.size() - 1) {
+        m_selection = sel;
+        return;
+    }
+
+    if (!skip) {
+        // Note: We don't store text in History because it doesn't change as such and
+        // we can undo and redo using the appropriate shift later on.
+        m_history.append(HistoryItem(HistoryItem::Action::ShiftRight, "", sel));
+    }
+
+    usize count = m_selection.line_end - m_selection.line_begin + 1;
+    usize begin = m_selection.line_begin;
+    m_buffer.shiftRight(begin, count);
+    m_buffer_length.shiftRight(begin, count);
+
+    m_selection = sel;
+    m_selection.line_begin += 1;
+    m_selection.line_end += 1;
+
+    onTextChanged.notify();
+    update();
 }
