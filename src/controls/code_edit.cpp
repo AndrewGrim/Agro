@@ -182,7 +182,7 @@ Lexer::Lexer() {}
 // they continue on until the next token
 //
 // Note: The source slice provided by TextEdit::text() returns a
-// a String with an extra 15 null bytes for easier SIMD acceleration.
+// a String with extra SIMD_WIDTH bytes for easier SIMD acceleration.
 void Lexer::lex(Slice<const char> source) {
     pos = Offset();
     this->source = source;
