@@ -59,6 +59,7 @@ Application::Application(const char *title, Size size) {
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
     SDL_SetEventFilter(forcePaintWhileResizing, this);
     Window *win = new Window(title, size, Point(), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN);
+    u8 empty_png[5] = {0};
     icons.insert({
         {"close", std::make_shared<Texture>(close_png, close_png_length)},
         {"close_thin", std::make_shared<Texture>(close_thin_png, close_thin_png_length)},
@@ -73,6 +74,7 @@ Application::Application(const char *title, Size size) {
         {"color_picker_gradient", std::make_shared<Texture>(color_picker_gradient_png, color_picker_gradient_png_length)},
         {"directory", std::make_shared<Texture>(directory_png, directory_png_length)},
         {"file", std::make_shared<Texture>(file_png, file_png_length)},
+        {"empty", std::make_shared<Texture>(empty_png, 1, 1, 4)},
     });
     m_cursors = new Cursors();
     current_window = win;
