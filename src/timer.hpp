@@ -10,6 +10,7 @@
 
     u32 timerCallbackWrapper(u32 interval, void *real_callback);
 
+    // Note: Don't use this API directly use Application::addTimer() instead!
     struct Timer {
         SDL_TimerID id = -1;
         std::shared_ptr<std::function<u32(u32 interval)>> real_callback;
