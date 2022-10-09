@@ -713,6 +713,12 @@
                 if (m_mode == Mode::Scroll) {
                     drawScrollBars(dc, rect, virtual_size);
                 }
+                if (Application::get()->drag.state == DragEvent::State::Dragging and state & STATE_HOVERED) {
+                    // TODO ideally we would show visually where exactly the drop happens
+                    Color c = dc.hoveredBackground(style());
+                    c.a = 0xaa;
+                    dc.fillRect(this->rect, c);
+                }
                 dc.drawKeyboardFocus(this->rect, style(), state);
             }
 
@@ -1472,6 +1478,10 @@
                     }
                     return Traversal::Continue;
                 });
+            }
+
+            void handleDragEvent(DragEvent event) override {
+                onDragDropped.notify(this, event);
             }
     };
 #endif
