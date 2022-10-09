@@ -217,13 +217,13 @@ void Application::run() {
                 }
                 case SDL_USEREVENT:
                     switch (event.user.code) {
-                        case LAYOUT_FONT:
+                        case AGRO_LAYOUT_FONT:
                             for (Window *window : m_windows) {
                                 window->layout(LAYOUT_FONT);
                                 window->show();
                             }
                             break;
-                        case LAYOUT_SCALE:
+                        case AGRO_LAYOUT_SCALE:
                             for (Window *window : m_windows) {
                                 window->update();
                             }
