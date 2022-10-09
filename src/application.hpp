@@ -61,6 +61,7 @@
         void removeTimer(Timer timer);
         static void pulse(LayoutEvent layout_event = LAYOUT_NONE);
         static void event(AgroEvent e);
+        static void callOnMainThread(std::function<void()> callback);
 
         Application(const char *title, Size size);
         ~Application();

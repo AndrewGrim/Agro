@@ -228,6 +228,12 @@ void Application::run() {
                                 window->update();
                             }
                             break;
+                        case AGRO_USER_CALLBACK: {
+                            auto callback = cast(std::function<void()>*, event.user.data1);
+                            (*callback)();
+                            delete callback;
+                            break;
+                        }
                         default:; // Right now the only other event is LAYOUT_NONE which we don't need to explicitly handle.
                     }
                     break;
@@ -308,6 +314,18 @@ void Application::event(AgroEvent e) {
     userevent.type = SDL_USEREVENT;
     userevent.code = e;
     userevent.data1 = NULL;
+    userevent.data2 = NULL;
+    event.type = SDL_USEREVENT;
+    event.user = userevent;
+    SDL_PushEvent(&event);
+}
+
+void Application::callOnMainThread(std::function<void()> callback) {
+    SDL_Event event;
+    SDL_UserEvent userevent;
+    userevent.type = SDL_USEREVENT;
+    userevent.code = AGRO_USER_CALLBACK;
+    userevent.data1 = cast(void*, new std::function<void()>(callback));
     userevent.data2 = NULL;
     event.type = SDL_USEREVENT;
     event.user = userevent;
