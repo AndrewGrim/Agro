@@ -4,6 +4,8 @@
     #include <assert.h>
     #include <string.h>
     #include <type_traits>
+    #include <stdlib.h>
+    #include <new>
 
     #include "../common/number_types.h"
 
@@ -20,12 +22,41 @@
         usize __capacity = 0;
 
         ArrayList(usize capacity = 8) : __capacity{capacity} {
-            __data = (T*)malloc(__capacity * sizeof(T));
+            __data = new T[__capacity];
+        }
+
+        ArrayList(const ArrayList &arr) {
+            memcpy(this, &arr, sizeof(ArrayList<T>));
+            __data = new T[__capacity];
+            for (usize i = 0; i < __size; i++) {
+                __data[i] = arr.__data[i];
+            }
+        }
+
+        ArrayList(ArrayList &&arr) {
+            memcpy(this, &arr, sizeof(ArrayList<T>));
+            arr.__data = nullptr;
+        }
+
+        ArrayList& operator=(const ArrayList &arr) {
+            this->~ArrayList();
+            memcpy(this, &arr, sizeof(ArrayList<T>));
+            __data = new T[__capacity];
+            for (usize i = 0; i < __size; i++) {
+                __data[i] = arr.__data[i];
+            }
+            return *this;
+        }
+
+        ArrayList& operator=(ArrayList &&arr) {
+            this->~ArrayList();
+            memcpy(this, &arr, sizeof(ArrayList<T>));
+            arr.__data = nullptr;
+            return *this;
         }
 
         ~ArrayList() {
-            __destructElements();
-            free(__data);
+            delete[] __data;
         }
 
         void append(T element) {
@@ -36,7 +67,7 @@
         T erase(usize index) {
             assert(index < __size and "Removing element out of bounds!");
             T element = __data[index];
-            __data[index].~T();
+            __data[index] = T();
             __move(__data + index, __data + (index + 1), __size - (index + 1));
             __size--;
             return element;
@@ -48,13 +79,13 @@
             assert(begin + count <= __size);
             assert(begin < __size and end <= __size and end > begin and "Removing element out of bounds!");
             for (usize i = begin; i < end; i++) {
-                __data[i].~T();
+                __data[i] = T();
             }
             // TODO i feel like we should be able to optimise out those temporary allocations
-            T *temp = (T*)malloc((__size - end) * sizeof(T));
+            T *temp = new T[__size - end];
             __move(temp, __data + end, __size - end);
             __move(__data + begin, temp, __size - end);
-            free(temp);
+            delete[] temp;
             __size -= count;
         }
 
@@ -67,10 +98,10 @@
             assert(index <= __size and "Inserting element out of bounds!");
             __resize(__size + 1);
             // TODO i feel like we should be able to optimise out those temporary allocations
-            T *temp = (T*)malloc((__size - index) * sizeof(T));
+            T *temp = new T[__size - index];
             __move(temp, __data + index, __size - index);
             __move(__data + (index + 1), temp, __size - index);
-            free(temp);
+            delete[] temp;
             new(__data + index) T(element);
             __size++;
         }
@@ -79,10 +110,10 @@
             assert(index <= __size and "Inserting element out of bounds!");
             __resize(__size + 1);
             // TODO i feel like we should be able to optimise out those temporary allocations
-            T *temp = (T*)malloc((__size - index) * sizeof(T));
+            T *temp = new T[__size - index];
             __move(temp, __data + index, __size - index);
             __move(__data + (index + 1), temp, __size - index);
-            free(temp);
+            delete[] temp;
             new(__data + index) T(args...);
             __size++;
         }
@@ -96,21 +127,21 @@
             assert(from);
             assert(count);
             assert(from < __size and count < __size and from + count <= __size);
-            T *temp = (T*)malloc(count * sizeof(T));
+            T *temp = new T[count];
             __move(temp, __data + from, count);
             __move(__data + from + count - 1, __data + from - 1, 1);
             __move(__data + from - 1, temp, count);
-            free(temp);
+            delete[] temp;
         }
 
         void shiftRight(usize from, usize count) {
             assert(count);
             assert(from + 1 < __size and count < __size and from + count + 1 <= __size);
-            T *temp = (T*)malloc(count * sizeof(T));
+            T *temp = new T[count];
             __move(temp, __data + from, count);
             __move(__data + from, __data + from + count, 1);
             __move(__data + from + 1, temp, count);
-            free(temp);
+            delete[] temp;
         }
 
         T* data() const {
@@ -138,16 +169,16 @@
             // then the user is responsible for freeing
             // what the pointers point to.
             for (usize i = 0; i < __size; i++) {
-                __data[i].~T();
+                __data[i] = T();
             }
         }
 
         void __resize(usize length) {
             if (length >= __capacity) {
                 __capacity *= 2;
-                T *temp = (T*)malloc(__capacity * sizeof(T));
-                __move(temp, __data, __size);
-                free(__data);
+                T *temp = new T[__capacity];
+                __copy(temp, __data, __size);
+                delete[] __data;
                 __data = temp;
             }
         }
@@ -155,7 +186,13 @@
         void __move(T *to, T *from, usize count) {
             for (usize i = 0; i < count; i++) {
                 new (to + i) T(from[i]);
-                from[i].~T();
+                from[i] = T();
+            }
+        }
+
+        void __copy(T *to, T *from, usize count) {
+            for (usize i = 0; i < count; i++) {
+                new (to + i) T(from[i]);
             }
         }
     };
