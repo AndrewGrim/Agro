@@ -517,6 +517,21 @@ String String::toUtf8() const {
     return result;
 }
 
+ArrayList<String> String::split(u8 c) {
+    ArrayList<String> array;
+    usize begin = 0;
+    usize i = 0;
+    for (u8 byte : *this) {
+        if (byte == c) {
+            array.append(this->substring(begin, i));
+            begin = i + 1;
+        }
+        i++;
+    }
+    if (begin != size()) { array.append(this->substring(begin, i)); }
+    return array;
+}
+
 String toString(int value) {
     i64 buffer_size = sizeof(value) * 4;
     String s = String(buffer_size - 1);

@@ -9,6 +9,7 @@
     #include "../common/number_types.h"
     #include "../slice.hpp"
     #include "../option.hpp"
+    #include "array_list.hpp"
 
     struct String;
 
@@ -177,6 +178,7 @@
         u64 count(u8 c) const;
         String toUtf16Le() const;
         String toUtf8() const;
+        ArrayList<String> split(u8 c);
     };
 
     String toString(int value);
