@@ -60,6 +60,7 @@
         Timer addTimer(u32 after, std::function<u32(u32 interval)> callback);
         void removeTimer(Timer timer);
         static void pulse(LayoutEvent layout_event = LAYOUT_NONE);
+        static void event(AgroEvent e);
 
         Application(const char *title, Size size);
         ~Application();

@@ -299,10 +299,14 @@ void Application::removeTimer(Timer timer) {
 }
 
 void Application::pulse(LayoutEvent layout_event) {
+    Application::event((AgroEvent)layout_event);
+}
+
+void Application::event(AgroEvent e) {
     SDL_Event event;
     SDL_UserEvent userevent;
     userevent.type = SDL_USEREVENT;
-    userevent.code = layout_event;
+    userevent.code = e;
     userevent.data1 = NULL;
     userevent.data2 = NULL;
     event.type = SDL_USEREVENT;
