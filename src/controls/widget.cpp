@@ -185,22 +185,31 @@ void Widget::handleMouseEvent(Window *window, State *state, MouseEvent event) {
             state->pressed = nullptr;
             break;
         case MouseEvent::Type::Motion:
-            window->setTooltip(this);
-            if (!state->pressed) {
+            if (Application::get()->drag.state == DragEvent::State::Dragging) {
                 if (state->hovered) {
                     if (this != state->hovered) {
                         state->hovered->onMouseLeft.notify(this, event);
                     }
                 }
                 state->hovered = this;
-                onMouseEntered.notify(this, event);
-                onMouseMotion.notify(this, event);
             } else {
-                if (state->pressed == this) { state->hovered = this; }
-                else { state->hovered = nullptr; }
-                state->pressed->onMouseMotion.notify(this, event);
+                window->setTooltip(this);
+                if (!state->pressed) {
+                    if (state->hovered) {
+                        if (this != state->hovered) {
+                            state->hovered->onMouseLeft.notify(this, event);
+                        }
+                    }
+                    state->hovered = this;
+                    onMouseEntered.notify(this, event);
+                    onMouseMotion.notify(this, event);
+                } else {
+                    if (state->pressed == this) { state->hovered = this; }
+                    else { state->hovered = nullptr; }
+                    state->pressed->onMouseMotion.notify(this, event);
+                }
+                break;
             }
-            break;
     }
     update();
 }
@@ -215,6 +224,10 @@ bool Widget::handleScrollEvent(ScrollEvent event) {
     // this widget doesnt handle scroll events.
     // Otherwise return true.
     return false;
+}
+
+void Widget::handleDragEvent(DragEvent event) {
+    // Up to the widget to implement!
 }
 
 Widget* Widget::setSoftFocus(FocusEvent event, State *state) {

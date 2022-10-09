@@ -234,6 +234,25 @@ void Window::draw() {
         drawTooltip();
         tooltip_did_draw = true;
     }
+    if (Application::get()->drag.state == DragEvent::State::Dragging) {
+        i32 x, y;
+        // TODO we probably want to use global because mouse state is for focused window
+        // SDL_GetGlobalMouseState(&x, &y);
+        SDL_GetMouseState(&x, &y);
+        Drawable *preview = Application::get()->drag.preview;
+        Size size = preview->sizeHint(*dc);
+        Rect preview_rect = Rect(x, y, size.w, size.h);
+        dc->setClip(preview_rect);
+        if (preview->isWidget()) {
+            Rect rect = ((Widget*)preview)->rect;
+            Rect inner_rect = ((Widget*)preview)->inner_rect;
+            preview->draw(*dc, preview_rect, STATE_DEFAULT);
+            ((Widget*)preview)->rect = rect;
+            ((Widget*)preview)->inner_rect = inner_rect;
+        } else {
+            preview->draw(*dc, preview_rect, STATE_DEFAULT);
+        }
+    }
     dc->render();
 }
 

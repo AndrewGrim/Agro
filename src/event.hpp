@@ -4,6 +4,7 @@
     #include <SDL.h>
 
     #include "common/number_types.h"
+    #include "core/string.hpp"
 
     enum {
         AGRO_PULSE = 0,
@@ -106,5 +107,25 @@
         Activate, // Active = STATE_HARD_FOCUSED
         Forward, // Tab, Forward = STATE_SOFT_FOCUSED
         Reverse // Shift+Tab, Reverse = STATE_SOFT_FOCUSED
+    };
+
+    class Widget;
+    struct Drawable;
+
+    struct DragEvent {
+        enum State {
+            Default,
+            PotentialStart,
+            Dragging,
+        };
+
+        State state;
+        Widget *origin;
+        Drawable *preview;
+        String content;
+
+        DragEvent() : state{State::Default}, origin{nullptr}, preview{nullptr}, content{} {}
+        DragEvent(Widget *origin, Drawable *preview, String content) :
+             state{State::PotentialStart}, origin{origin}, preview{preview}, content{content} {}
     };
 #endif

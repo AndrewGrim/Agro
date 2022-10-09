@@ -180,12 +180,28 @@ void Application::run() {
                     break;
                 }
                 case SDL_MOUSEBUTTONUP: {
+                    if (drag.state == DragEvent::State::PotentialStart) {
+                        drag = DragEvent();
+                    }
                     Window *event_window = findEventWindow(m_windows, event.button.windowID);
-                    if (event_window) { event_window->handleSDLEvent(event); }
+                    if (event_window) {
+                        event_window->handleSDLEvent(event);
+                        if (drag.state == DragEvent::State::Dragging) {
+                            // TODO we should be able to get this working atm, the issue is simply
+                            // that we capture the mouse, so perhaps when dragging we can
+                            // release that restriction
+                            assert(event_window->m_state->hovered && "drag crash between windows");
+                            event_window->m_state->hovered->handleDragEvent(drag);
+                            drag = DragEvent();
+                        }
+                    }
                     else { info("Couldn't find Window for event 'SDL_MOUSEBUTTONUP', perhaps it was deleted?"); }
                     break;
                 }
                 case SDL_MOUSEMOTION: {
+                    if (drag.state == DragEvent::State::PotentialStart) {
+                        drag.state = DragEvent::State::Dragging;
+                    }
                     Window *event_window = findEventWindow(m_windows, event.motion.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
                     else { info("Couldn't find Window for event 'SDL_MOUSEMOTION', perhaps it was deleted?"); }
@@ -330,4 +346,8 @@ void Application::callOnMainThread(std::function<void()> callback) {
     event.type = SDL_USEREVENT;
     event.user = userevent;
     SDL_PushEvent(&event);
+}
+
+void Application::startDrag(Widget *origin, Drawable *preview, String content) {
+    drag = DragEvent(origin, preview, content);
 }

@@ -140,6 +140,8 @@
             EventListener<Widget*, FocusEvent> onFocusLost = EventListener<Widget*, FocusEvent>();
             EventListener<Widget*, FocusEvent> onFocusGained = EventListener<Widget*, FocusEvent>();
 
+            EventListener<Widget*, DragEvent> onDragDropped = EventListener<Widget*, DragEvent>();
+
             /// The constructor is empty.
             Widget();
 
@@ -239,6 +241,8 @@
             virtual void handleTextEvent(DrawingContext &dc, const char *text);
 
             virtual bool handleScrollEvent(ScrollEvent event);
+
+            virtual void handleDragEvent(DragEvent event);
 
             Widget* setSoftFocus(FocusEvent event, State *state);
             void setHardFocus(State *state);

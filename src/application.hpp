@@ -41,6 +41,8 @@
     };
 
     struct Application {
+        DragEvent drag;
+
         u32 scale = 100;
         u32 default_scale_font_size = 14;
 
@@ -62,6 +64,7 @@
         static void pulse(LayoutEvent layout_event = LAYOUT_NONE);
         static void event(AgroEvent e);
         static void callOnMainThread(std::function<void()> callback);
+        void startDrag(Widget *origin, Drawable *preview, String content);
 
         Application(const char *title, Size size);
         ~Application();
