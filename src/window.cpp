@@ -414,9 +414,9 @@ Window::ContextEventResult Window::propagateMouseEvent(MouseEvent event) {
                 return ContextEventResult{ ContextEvent::True, last };
             }
         }
-        last = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
+        last = m_main_widget->propagateMouseEvent(this, m_state, event);
     } else {
-        last = m_main_widget->propagateMouseEvent(this, m_state, MouseEvent(event));
+        last = m_main_widget->propagateMouseEvent(this, m_state, event);
     }
     return ContextEventResult{ ContextEvent::False, last };
 }
