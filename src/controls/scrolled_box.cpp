@@ -328,8 +328,7 @@ Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEven
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
             (event.y >= child.value->rect.y && event.y <= child.value->rect.y + child.value->rect.h))) {
             if (child.value->isLayout()) {
-                child.value->propagateMouseEvent(window, state, event);
-                return child.value;
+                return child.value->propagateMouseEvent(window, state, event);
             }
             child.value->handleMouseEvent(window, state, event);
             return child.value;
@@ -341,8 +340,7 @@ Widget* ScrolledBox::propagateMouseEvent(Window *window, State *state, MouseEven
             ((event.x >= child.value->rect.x && event.x <= child.value->rect.x + child.value->rect.w) &&
             (event.y >= child.value->rect.y && event.y <= child.value->rect.y + child.value->rect.h))) {
             if (child.value->isLayout()) {
-                child.value->propagateMouseEvent(window, state, event);
-                return child.value;
+                return child.value->propagateMouseEvent(window, state, event);
             }
             child.value->handleMouseEvent(window, state, event);
             return child.value;
