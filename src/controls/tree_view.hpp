@@ -919,15 +919,8 @@
             }
 
             void select(u64 index) {
-                u64 i = 0;
-                m_model->forEachNode(m_model->roots, [&](TreeNode<T> *node) -> Traversal {
-                    if (i == index) {
-                        select(node);
-                        return Traversal::Break;
-                    }
-                    i++;
-                    return Traversal::Continue;
-                });
+                // TODO should we do something about null here?
+                select(m_model->roots->get(index));
             }
 
             void deselect() {
