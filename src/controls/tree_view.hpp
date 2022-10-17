@@ -78,26 +78,30 @@
                 }
             }
 
-            TreeNode<T>* append(TreeNode<T> *parent_node, TreeNode<T> *node) {
-                if (!parent_node) {
+            TreeNode<T>* append(TreeNode<T> *parent, TreeNode<T> *node) {
+                if (!parent) {
                     node->parent = nullptr;
-                    node->depth = 1;
                     roots.push_back(node);
                     node->parent_index = roots.size() - 1;
 
+                    _updateDepth(parent, node);
+                    _updateBSData();
+
                     return node;
                 } else {
-                    parent_node->children.push_back(node);
-                    node->parent_index = parent_node->children.size() - 1;
-                    node->parent = parent_node;
-                    node->depth = node->parent->depth + 1;
+                    parent->children.push_back(node);
+                    node->parent_index = parent->children.size() - 1;
+                    node->parent = parent;
+
+                    _updateDepth(parent, node);
+                    _updateBSData();
 
                     return node;
                 }
             }
 
-            TreeNode<T>* insert(TreeNode<T> *parent_node, u64 index, TreeNode<T> *node) {
-                if (!parent_node) {
+            TreeNode<T>* insert(TreeNode<T> *parent, u64 index, TreeNode<T> *node) {
+                if (!parent) {
                     node->parent = nullptr;
                     node->depth = 1;
                     roots.insert(roots.begin() + index, node);
@@ -107,19 +111,78 @@
                         roots[i]->parent_index = i;
                     }
 
+                    _updateDepth(parent, node);
+                    _updateBSData();
+
                     return node;
                 } else {
-                    parent_node->children.insert(parent_node->children.begin() + index, node);
+                    parent->children.insert(parent->children.begin() + index, node);
                     node->parent_index = index;
-                    node->parent = parent_node;
-                    node->depth = node->parent->depth + 1;
+                    node->parent = parent;
 
-                    for (u64 i = index + 1; i < parent_node->children.size(); i++) {
-                        parent_node->children[i]->parent_index = i;
+                    for (u64 i = index + 1; i < parent->children.size(); i++) {
+                        parent->children[i]->parent_index = i;
                     }
+
+                    _updateDepth(parent, node);
+                    _updateBSData();
 
                     return node;
                 }
+            }
+
+            void _updateDepth(TreeNode<T> *parent, TreeNode<T> *node) {
+                i32 depth = -1;
+                if (!parent) {
+                    if (node->depth != 1) {
+                        node->depth = 1;
+                        depth = 1;
+                    } else { return; }
+                } else {
+                    if (node->depth != parent->depth + 1) {
+                        node->depth = parent->depth + 1;
+                        depth = node->depth;
+                    } else { return; }
+                }
+                forEachNode(node->children, [&](TreeNode<T> *_node) -> Traversal {
+                    if (_node->parent_index == 0) {
+                        depth++;
+                        _node->depth = depth;
+                    } else if (_node->parent_index == cast(i32, _node->parent->children.size() - 1)) {
+                        _node->depth = depth;
+                        depth--;
+                    } else {
+                        _node->depth = depth;
+                    }
+                    return Traversal::Continue;
+                });
+            }
+
+            TreeNode<T>* remove(u64 index) {
+                return remove(get(index));
+            }
+
+            // TODO we could think about finally bringing in Box<T> here and return that instead
+            // and have an overload for insert / append which takes in a box, unboxes it and calls the regular version
+            TreeNode<T>* remove(TreeNode<T> *node) {
+                if (!node) { return nullptr; }
+                if (node->parent) {
+                    node->parent->children.erase(node->parent->children.begin() + node->parent_index);
+                    for (i32 i = node->parent_index; i < cast(i32, node->parent->children.size()); i++) {
+                        TreeNode<T> *n = node->parent->children[i];
+                        n->parent_index--;
+                    }
+                    node->parent = nullptr;
+                    node->parent_index = -1;
+                } else {
+                    roots.erase(roots.begin() + node->parent_index);
+                    for (i32 i = node->parent_index; i < cast(i32, roots.size()); i++) {
+                        TreeNode<T> *n = roots[i];
+                        n->parent_index--;
+                    }
+                }
+                _updateBSData();
+                return node;
             }
 
             void clear() {
@@ -159,10 +222,62 @@
                     }
                 }
             }
-            // TreeNode find(compare function);
-            // Goes down the tree using row (skips non visible nodes)
-            // TreeNode get(u64 row);
-            // TreeNode ascend(TreeNode leaf, std::function<void(TreeNode node)> callback = nullptr);
+
+            TreeNode<T>* get(u64 index) {
+                u64 i = 0;
+                TreeNode<T> *result = nullptr;
+                forEachNode(roots, [&](TreeNode<T> *node) -> Traversal {
+                    if (i == index) {
+                        result = node;
+                        return Traversal::Break;
+                    }
+                    i++;
+                    return Traversal::Continue;
+                });
+                return result;
+            }
+
+            TreeNode<T>* set(u64 index, TreeNode<T> *node) {
+                return set(get(index), node);
+            }
+
+            TreeNode<T>* set(TreeNode<T> *replace, TreeNode<T> *node) {
+                std::vector<TreeNode<T>*> &depth_nodes = node->parent ? node->parent->children : roots;
+                depth_nodes[replace->parent_index] = node;
+                _updateDepth(replace->parent, node);
+                _updateBSData();
+                replace->parent = nullptr;
+                replace->parent_index = -1;
+                return replace;
+            }
+
+            // TODO ideally this could notify the treeview widget that virtual size has changed
+            // this isnt always true, often times only position would be adjusted but in the case of remove
+            // the height of the tree changes as well, even if only temporarily
+            // TODO also it could be more granual, we could pass in a node
+            // and based on that we could ascend up to roots keeping the parent index around
+            // and only update from there
+            u64 _updateBSData() {
+                u64 position = 0;
+                forEachNode(roots, [&](TreeNode<T> *node) -> Traversal {
+                    node->bs_data.position = position;
+                    position += node->bs_data.length;
+                    return Traversal::Continue;
+                });
+                return position;
+            }
+
+            TreeNode<T>* find(std::function<bool(TreeNode<T>*)> predicate) {
+                TreeNode<T> *result = nullptr;
+                forEachNode(roots, [&](TreeNode<T> *node) -> Traversal {
+                    if (predicate(node)) {
+                        result = node;
+                        return Traversal::Break;
+                    }
+                    return Traversal::Continue;
+                });
+                return result;
+            }
     };
 
     template <typename T> class TreeView;
