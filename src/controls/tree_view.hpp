@@ -590,6 +590,14 @@
                 this->onMouseLeft.addEventListener([&](Widget *widget, MouseEvent event) {
                     this->m_hovered = nullptr;
                 });
+                // TODO this should jump to the next index based node which may not be on the same depth
+                // ex:
+                // * 1--
+                //     |--- 2
+                //     |--- 3
+                //     |--- 4
+                // * 5 --...
+                // if we are on node 5 pressing up should go to 4 not 1!
                 bind(SDLK_UP, Mod::None, [&]() {
                     if (m_focused) {
                         // TODO make sure to scroll the node into view
