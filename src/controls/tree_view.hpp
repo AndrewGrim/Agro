@@ -238,20 +238,6 @@
                 return result;
             }
 
-            TreeNode<T>* set(u64 index, TreeNode<T> *node) {
-                return set(get(index), node);
-            }
-
-            TreeNode<T>* set(TreeNode<T> *replace, TreeNode<T> *node) {
-                std::vector<TreeNode<T>*> &depth_nodes = node->parent ? node->parent->children : roots;
-                depth_nodes[replace->parent_index] = node;
-                _updateDepth(replace->parent, node);
-                _updateBSData();
-                replace->parent = nullptr;
-                replace->parent_index = -1;
-                return replace;
-            }
-
             // TODO ideally this could notify the treeview widget that virtual size has changed
             // this isnt always true, often times only position would be adjusted but in the case of remove
             // the height of the tree changes as well, even if only temporarily
