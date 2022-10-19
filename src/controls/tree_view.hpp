@@ -182,6 +182,7 @@
                     }
                 }
                 _updateBSData();
+                _updateDepth(node->parent, node);
                 return node;
             }
 
