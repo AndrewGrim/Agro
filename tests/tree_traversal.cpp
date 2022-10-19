@@ -13,8 +13,56 @@ int main(int argc, char **argv) {
                 }
             }
         };
+        app->mainWindow()->center();
         auto tv = new TreeView<u8>();
-        tv->append(new Column<u8>("col 1"));
+        auto col = new Column<u8>("col 1");
+        col->setExpand(true);
+        tv->onNodeSelected.addEventListener([&](TreeView<u8> *widget, TreeNode<u8> *node) {
+            app->startDrag(widget, node->columns[0], cast(TextCellRenderer*, node->columns[0])->text, node);
+        });
+        tv->onDragDropped.addEventListener([&](Widget *widget, DragEvent event) {
+            if (event.data == tv->drop_action.node) {
+                tv->deselect();
+                return;
+            }
+
+            bool parent_to_child = false;
+            tv->m_model->forEachNode(cast(TreeNode<u8>*, event.data)->children, [&](TreeNode<u8> *node) -> Traversal {
+                if (node == tv->drop_action.node) { parent_to_child = true; return Traversal::Break; }
+                return Traversal::Continue;
+            });
+            if (parent_to_child) {
+                tv->deselect();
+                return;
+            }
+
+            auto m = tv->m_model;
+            m->remove(cast(TreeNode<u8>*, event.data));
+            switch (tv->drop_action.type) {
+                case TreeView<u8>::DropAction::Type::Root: {
+                    m->insert(nullptr, m->roots.size(), cast(TreeNode<u8>*, event.data));
+                    break;
+                }
+                case TreeView<u8>::DropAction::Type::Child: {
+                    m->insert(tv->drop_action.node, tv->drop_action.node->children.size(), cast(TreeNode<u8>*, event.data));
+                    break;
+                }
+                case TreeView<u8>::DropAction::Type::Above: {
+                    m->insert(tv->drop_action.node->parent, tv->drop_action.node->parent_index, cast(TreeNode<u8>*, event.data));
+                    break;
+                }
+                case TreeView<u8>::DropAction::Type::Below: {
+                    m->insert(tv->drop_action.node->parent, tv->drop_action.node->parent_index + 1, cast(TreeNode<u8>*, event.data));
+                    break;
+                }
+            }
+            tv->deselect();
+
+            // TODO workaround for model not updating when being changed
+            tv->m_model = nullptr;
+            tv->setModel(m);
+        });
+        tv->append(col);
             auto model = new Tree<u8>();
                 auto one = model->append(nullptr, new TreeNode<u8>({new TextCellRenderer("1")}, nullptr));
                 model->append(one, new TreeNode<u8>({new TextCellRenderer("2")}, nullptr));
