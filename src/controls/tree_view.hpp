@@ -543,6 +543,18 @@
 
     template <typename T> class TreeView : public Scrollable {
         public:
+            struct DropAction {
+                enum class Type {
+                    Root,
+                    Child,
+                    Above,
+                    Below,
+                };
+
+                TreeNode<T> *node = nullptr;
+                Type type = Type::Root;
+            };
+
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeHovered = EventListener<TreeView<T>*, TreeNode<T>*>();
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeSelected = EventListener<TreeView<T>*, TreeNode<T>*>();
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeDeselected = EventListener<TreeView<T>*, TreeNode<T>*>();
@@ -752,6 +764,14 @@
                     column_header = m_children_size.h;
                     pos.y += column_header;
                 }
+
+                i32 mx, my;
+                SDL_GetMouseState(&mx, &my);
+                i32 moffset = my - pos.y;
+                i32 drop_y = -1;
+                i32 drop_h = -1;
+                i32 drop_offset = 0;
+
                 Rect drawing_rect = rect;
                 if (m_mode == Mode::Unroll) {
                     drawing_rect = Rect(0, 0, Application::get()->currentWindow()->size.w, Application::get()->currentWindow()->size.h);
@@ -771,6 +791,26 @@
 
                     bool finished = false;
                     while (node) {
+                        // TODO deduplicate with the block below, but ideally we change tree implementation to start with a root node not roots, and possibly even change to binary tree
+                        // and we could limit those options based on some variable, something that says i only want above and below drops, or only child drops etc at least for drawing
+                        // cause you could obviously ignore those enums in the callback
+                        if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
+                            if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
+                                drop_y = node->bs_data.position + node->bs_data.length;
+                                drop_h = node->bs_data.length / 4;
+                                drop_offset = node->bs_data.length / 4;
+                                drop_action = DropAction{node, DropAction::Type::Below};
+                            } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
+                                drop_y = node->bs_data.position;
+                                drop_h = node->bs_data.length / 4;
+                                drop_action = DropAction{node, DropAction::Type::Above};
+                            } else {
+                                drop_y = node->bs_data.position + node->bs_data.length / 4;
+                                drop_h = node->bs_data.length / 2;
+                                drop_action = DropAction{node, DropAction::Type::Child};
+                            }
+                            drop_y += column_header;
+                        }
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
@@ -784,6 +824,23 @@
                             }
 
                             m_model->forEachNode(node->children, [&](TreeNode<T> *node) -> Traversal {
+                                if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
+                                    if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
+                                        drop_y = node->bs_data.position + node->bs_data.length;
+                                        drop_h = node->bs_data.length / 4;
+                                        drop_offset = node->bs_data.length / 4;
+                                        drop_action = DropAction{node, DropAction::Type::Below};
+                                    } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
+                                        drop_y = node->bs_data.position;
+                                        drop_h = node->bs_data.length / 4;
+                                        drop_action = DropAction{node, DropAction::Type::Above};
+                                    } else {
+                                        drop_y = node->bs_data.position + node->bs_data.length / 4;
+                                        drop_h = node->bs_data.length / 2;
+                                        drop_action = DropAction{node, DropAction::Type::Child};
+                                    }
+                                    drop_y += column_header;
+                                }
                                 if (node->depth <= collapsed_depth) {
                                     collapsed = false;
                                     collapsed_depth = -1;
@@ -824,10 +881,21 @@
                     drawScrollBars(dc, rect, virtual_size);
                 }
                 if (Application::get()->drag.state == DragEvent::State::Dragging and state & STATE_HOVERED) {
-                    // TODO ideally we would show visually where exactly the drop happens
                     Color c = dc.hoveredBackground(style());
                     c.a = 0xaa;
                     dc.fillRect(this->rect, c);
+                    if (drop_y != -1) {
+                        Color cc = dc.accentWidgetBackground(style());
+                        cc.a = 0x55;
+                        dc.fillRect(Rect(rect.x, drop_y - drop_offset, rect.w, drop_h), cc);
+                        dc.fillRect(Rect(rect.x, drop_y, rect.w, 2), dc.accentWidgetBackground(style()));
+                        if (drop_action.type == DropAction::Type::Child) {
+                            dc.fillRect(Rect(rect.x, drop_y + drop_h - 2, rect.w, 2), dc.accentWidgetBackground(style()));
+                        }
+                    } else {
+                        drop_action.node = nullptr;
+                        drop_action.type = DropAction::Type::Root;
+                    }
                 }
                 dc.drawKeyboardFocus(this->rect, style(), state);
             }
@@ -1182,6 +1250,7 @@
             Image *m_collapsed = (new Image(Application::get()->icons["up_arrow"]))->clockwise90();
             Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically();
             i32 m_expandable_columns = 0;
+            DropAction drop_action;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
