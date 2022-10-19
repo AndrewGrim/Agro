@@ -348,6 +348,6 @@ void Application::callOnMainThread(std::function<void()> callback) {
     SDL_PushEvent(&event);
 }
 
-void Application::startDrag(Widget *origin, Drawable *preview, String content) {
-    drag = DragEvent(origin, preview, content);
+void Application::startDrag(Widget *origin, Drawable *preview, String content, void *data) {
+    drag = DragEvent(origin, preview, content, data);
 }

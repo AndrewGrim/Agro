@@ -64,7 +64,7 @@
         static void pulse(LayoutEvent layout_event = LAYOUT_NONE);
         static void event(AgroEvent e);
         static void callOnMainThread(std::function<void()> callback);
-        void startDrag(Widget *origin, Drawable *preview, String content);
+        void startDrag(Widget *origin, Drawable *preview, String content, void *data = nullptr);
 
         Application(const char *title, Size size);
         ~Application();

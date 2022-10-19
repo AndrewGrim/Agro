@@ -123,9 +123,10 @@
         Widget *origin;
         Drawable *preview;
         String content;
+        void *data;
 
-        DragEvent() : state{State::Default}, origin{nullptr}, preview{nullptr}, content{} {}
-        DragEvent(Widget *origin, Drawable *preview, String content) :
-             state{State::PotentialStart}, origin{origin}, preview{preview}, content{content} {}
+        DragEvent() : state{State::Default}, origin{nullptr}, preview{nullptr}, content{}, data{nullptr} {}
+        DragEvent(Widget *origin, Drawable *preview, String content, void *data = nullptr) :
+             state{State::PotentialStart}, origin{origin}, preview{preview}, content{content}, data{data} {}
     };
 #endif
