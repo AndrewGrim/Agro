@@ -791,26 +791,7 @@
 
                     bool finished = false;
                     while (node) {
-                        // TODO deduplicate with the block below, but ideally we change tree implementation to start with a root node not roots, and possibly even change to binary tree
-                        // and we could limit those options based on some variable, something that says i only want above and below drops, or only child drops etc at least for drawing
-                        // cause you could obviously ignore those enums in the callback
-                        if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
-                            if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
-                                drop_y = node->bs_data.position + node->bs_data.length;
-                                drop_h = node->bs_data.length / 4;
-                                drop_offset = node->bs_data.length / 4;
-                                drop_action = DropAction{node, DropAction::Type::Below};
-                            } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
-                                drop_y = node->bs_data.position;
-                                drop_h = node->bs_data.length / 4;
-                                drop_action = DropAction{node, DropAction::Type::Above};
-                            } else {
-                                drop_y = node->bs_data.position + node->bs_data.length / 4;
-                                drop_h = node->bs_data.length / 2;
-                                drop_action = DropAction{node, DropAction::Type::Child};
-                            }
-                            drop_y += column_header;
-                        }
+                        setupDropData(moffset, drop_y, drop_h, drop_offset, node, column_header);
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
@@ -824,23 +805,7 @@
                             }
 
                             m_model->forEachNode(node->children, [&](TreeNode<T> *node) -> Traversal {
-                                if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
-                                    if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
-                                        drop_y = node->bs_data.position + node->bs_data.length;
-                                        drop_h = node->bs_data.length / 4;
-                                        drop_offset = node->bs_data.length / 4;
-                                        drop_action = DropAction{node, DropAction::Type::Below};
-                                    } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
-                                        drop_y = node->bs_data.position;
-                                        drop_h = node->bs_data.length / 4;
-                                        drop_action = DropAction{node, DropAction::Type::Above};
-                                    } else {
-                                        drop_y = node->bs_data.position + node->bs_data.length / 4;
-                                        drop_h = node->bs_data.length / 2;
-                                        drop_action = DropAction{node, DropAction::Type::Child};
-                                    }
-                                    drop_y += column_header;
-                                }
+                                setupDropData(moffset, drop_y, drop_h, drop_offset, node, column_header);
                                 if (node->depth <= collapsed_depth) {
                                     collapsed = false;
                                     collapsed_depth = -1;
@@ -1654,6 +1619,26 @@
 
             void handleDragEvent(DragEvent event) override {
                 onDragDropped.notify(this, event);
+            }
+
+            void setupDropData(i32 &moffset, i32 &drop_y, i32 &drop_h, i32 &drop_offset, TreeNode<T> *node, i32 column_header) {
+                if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
+                    if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
+                        drop_y = node->bs_data.position + node->bs_data.length;
+                        drop_h = node->bs_data.length / 4;
+                        drop_offset = node->bs_data.length / 4;
+                        drop_action = DropAction{node, DropAction::Type::Below};
+                    } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
+                        drop_y = node->bs_data.position;
+                        drop_h = node->bs_data.length / 4;
+                        drop_action = DropAction{node, DropAction::Type::Above};
+                    } else {
+                        drop_y = node->bs_data.position + node->bs_data.length / 4;
+                        drop_h = node->bs_data.length / 2;
+                        drop_action = DropAction{node, DropAction::Type::Child};
+                    }
+                    drop_y += column_header;
+                }
             }
     };
 #endif
