@@ -17,6 +17,9 @@ int main(int argc, char **argv) {
         auto tv = new TreeView<u8>();
         auto col = new Column<u8>("col 1");
         col->setExpand(true);
+        // Note: you can use this to specify which drop should be drawn.
+        // The default is 0b1111 with all enabled: Root, Child, Above, Below.
+        // tv->drop_allow = 0b0011;
         tv->onNodeSelected.addEventListener([&](TreeView<u8> *widget, TreeNode<u8> *node) {
             app->startDrag(widget, node->columns[0], cast(TextCellRenderer*, node->columns[0])->text, node);
         });
