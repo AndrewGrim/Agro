@@ -959,7 +959,7 @@
 
             void select(u64 index) {
                 // TODO should we do something about null here?
-                select(m_model->roots->get(index));
+                select(m_model->get(index));
             }
 
             void deselect() {
