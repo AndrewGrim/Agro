@@ -791,7 +791,7 @@
 
                     bool finished = false;
                     while (node) {
-                        setupDropData(moffset, drop_y, drop_h, drop_offset, node, column_header);
+                        setupDropData(moffset, drop_y, drop_h, drop_offset, node, column_header, y_scroll_offset);
                         if (node->depth <= collapsed_depth) {
                             collapsed = false;
                             collapsed_depth = -1;
@@ -805,7 +805,7 @@
                             }
 
                             m_model->forEachNode(node->children, [&](TreeNode<T> *node) -> Traversal {
-                                setupDropData(moffset, drop_y, drop_h, drop_offset, node, column_header);
+                                setupDropData(moffset, drop_y, drop_h, drop_offset, node, column_header, y_scroll_offset);
                                 if (node->depth <= collapsed_depth) {
                                     collapsed = false;
                                     collapsed_depth = -1;
@@ -1633,44 +1633,45 @@
                 onDragDropped.notify(this, event);
             }
 
-            void setupDropData(i32 &moffset, i32 &drop_y, i32 &drop_h, i32 &drop_offset, TreeNode<T> *node, i32 column_header) {
+            void setupDropData(i32 &moffset, i32 &drop_y, i32 &drop_h, i32 &drop_offset, TreeNode<T> *node, i32 column_header, i32 y_scroll_offset) {
                 if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
                     if (drop_allow == 0b1100 or drop_allow == 0b1101) {
                         if (moffset > cast(i32, node->bs_data.position + (node->bs_data.length / 2))) {
-                            drop_y = node->bs_data.position + node->bs_data.length;
+                            drop_y = node->bs_data.position - y_scroll_offset + node->bs_data.length;
                             drop_h = node->bs_data.length / 4;
                             drop_offset = node->bs_data.length / 4;
                             drop_action = DropAction{node, DropAction::Type::Below};
                         } else {
-                            drop_y = node->bs_data.position;
+                            drop_y = node->bs_data.position - y_scroll_offset;
                             drop_h = node->bs_data.length / 4;
                             drop_offset = 0;
                             drop_action = DropAction{node, DropAction::Type::Above};
                         }
                     } else if (drop_allow == 0b0011 or drop_allow == 0b0010) {
-                        drop_y = node->bs_data.position;
+                        drop_y = node->bs_data.position - y_scroll_offset;
                         drop_h = node->bs_data.length;
                         drop_offset = 0;
                         drop_action = DropAction{node, DropAction::Type::Child};
                     } else {
                         if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
-                            drop_y = node->bs_data.position + node->bs_data.length;
+                            drop_y = node->bs_data.position - y_scroll_offset + node->bs_data.length;
                             drop_h = node->bs_data.length / 4;
                             drop_offset = node->bs_data.length / 4;
                             drop_action = DropAction{node, DropAction::Type::Below};
                         } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
-                            drop_y = node->bs_data.position;
+                            drop_y = node->bs_data.position - y_scroll_offset;
                             drop_h = node->bs_data.length / 4;
                             drop_offset = 0;
                             drop_action = DropAction{node, DropAction::Type::Above};
                         } else {
-                            drop_y = node->bs_data.position + node->bs_data.length / 4;
+                            drop_y = node->bs_data.position - y_scroll_offset + node->bs_data.length / 4;
                             drop_h = node->bs_data.length / 2;
                             drop_offset = 0;
                             drop_action = DropAction{node, DropAction::Type::Child};
                         }
                     }
                     drop_y += column_header;
+                    drop_y += this->rect.y;
                 }
             }
     };
