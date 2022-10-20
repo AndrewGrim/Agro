@@ -545,10 +545,10 @@
         public:
             struct DropAction {
                 enum class Type {
-                    Root,
-                    Child,
-                    Above,
-                    Below,
+                    Root  = 0b0001,
+                    Child = 0b0010,
+                    Above = 0b0100,
+                    Below = 0b1000,
                 };
 
                 TreeNode<T> *node = nullptr;
@@ -846,20 +846,31 @@
                     drawScrollBars(dc, rect, virtual_size);
                 }
                 if (Application::get()->drag.state == DragEvent::State::Dragging and state & STATE_HOVERED) {
-                    Color c = dc.hoveredBackground(style());
-                    c.a = 0xaa;
-                    dc.fillRect(this->rect, c);
-                    if (drop_y != -1) {
+                    if (drop_allow) {
+                        Color c = dc.hoveredBackground(style());
+                        c.a = 0xaa;
                         Color cc = dc.accentWidgetBackground(style());
                         cc.a = 0x55;
-                        dc.fillRect(Rect(rect.x, drop_y - drop_offset, rect.w, drop_h), cc);
-                        dc.fillRect(Rect(rect.x, drop_y, rect.w, 2), dc.accentWidgetBackground(style()));
-                        if (drop_action.type == DropAction::Type::Child) {
-                            dc.fillRect(Rect(rect.x, drop_y + drop_h - 2, rect.w, 2), dc.accentWidgetBackground(style()));
+                        dc.fillRect(this->rect, c);
+                        if (drop_y != -1) {
+                            if (drop_action.type == DropAction::Type::Above and drop_allow & cast(i32, DropAction::Type::Above)) {
+                                dc.fillRect(Rect(rect.x, drop_y - drop_offset, rect.w, drop_h), cc);
+                                dc.fillRect(Rect(rect.x, drop_y, rect.w, 2), dc.accentWidgetBackground(style()));
+                            } else if (drop_action.type == DropAction::Type::Below and drop_allow & cast(i32, DropAction::Type::Below)) {
+                                dc.fillRect(Rect(rect.x, drop_y - drop_offset, rect.w, drop_h), cc);
+                                dc.fillRect(Rect(rect.x, drop_y, rect.w, 2), dc.accentWidgetBackground(style()));
+                            } else if (drop_action.type == DropAction::Type::Child and drop_allow & cast(i32, DropAction::Type::Child)) {
+                                dc.fillRect(Rect(rect.x, drop_y - drop_offset, rect.w, drop_h), cc);
+                                dc.fillRect(Rect(rect.x, drop_y, rect.w, 2), dc.accentWidgetBackground(style()));
+                                dc.fillRect(Rect(rect.x, drop_y + drop_h - 2, rect.w, 2), dc.accentWidgetBackground(style()));
+                            }
+                        } else {
+                            if (drop_allow & cast(i32, DropAction::Type::Root)) {
+                                dc.fillRect(this->rect, cc);
+                            }
+                            drop_action.node = nullptr;
+                            drop_action.type = DropAction::Type::Root;
                         }
-                    } else {
-                        drop_action.node = nullptr;
-                        drop_action.type = DropAction::Type::Root;
                     }
                 }
                 dc.drawKeyboardFocus(this->rect, style(), state);
@@ -1216,6 +1227,7 @@
             Image *m_expanded = (new Image(Application::get()->icons["up_arrow"]))->flipVertically();
             i32 m_expandable_columns = 0;
             DropAction drop_action;
+            i32 drop_allow = 0b1111;
 
             void collapseOrExpandRecursively(TreeNode<T> *node, bool is_collapsed) {
                 if (node) {
@@ -1623,19 +1635,40 @@
 
             void setupDropData(i32 &moffset, i32 &drop_y, i32 &drop_h, i32 &drop_offset, TreeNode<T> *node, i32 column_header) {
                 if (moffset >= cast(i32, node->bs_data.position) and moffset <= cast(i32, node->bs_data.position + node->bs_data.length)) {
-                    if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
-                        drop_y = node->bs_data.position + node->bs_data.length;
-                        drop_h = node->bs_data.length / 4;
-                        drop_offset = node->bs_data.length / 4;
-                        drop_action = DropAction{node, DropAction::Type::Below};
-                    } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
+                    if (drop_allow == 0b1100 or drop_allow == 0b1101) {
+                        if (moffset > cast(i32, node->bs_data.position + (node->bs_data.length / 2))) {
+                            drop_y = node->bs_data.position + node->bs_data.length;
+                            drop_h = node->bs_data.length / 4;
+                            drop_offset = node->bs_data.length / 4;
+                            drop_action = DropAction{node, DropAction::Type::Below};
+                        } else {
+                            drop_y = node->bs_data.position;
+                            drop_h = node->bs_data.length / 4;
+                            drop_offset = 0;
+                            drop_action = DropAction{node, DropAction::Type::Above};
+                        }
+                    } else if (drop_allow == 0b0011 or drop_allow == 0b0010) {
                         drop_y = node->bs_data.position;
-                        drop_h = node->bs_data.length / 4;
-                        drop_action = DropAction{node, DropAction::Type::Above};
-                    } else {
-                        drop_y = node->bs_data.position + node->bs_data.length / 4;
-                        drop_h = node->bs_data.length / 2;
+                        drop_h = node->bs_data.length;
+                        drop_offset = 0;
                         drop_action = DropAction{node, DropAction::Type::Child};
+                    } else {
+                        if (moffset > cast(i32, node->bs_data.position + ((node->bs_data.length / 4) * 3))) {
+                            drop_y = node->bs_data.position + node->bs_data.length;
+                            drop_h = node->bs_data.length / 4;
+                            drop_offset = node->bs_data.length / 4;
+                            drop_action = DropAction{node, DropAction::Type::Below};
+                        } else if (moffset < cast(i32, node->bs_data.position + (node->bs_data.length / 4))) {
+                            drop_y = node->bs_data.position;
+                            drop_h = node->bs_data.length / 4;
+                            drop_offset = 0;
+                            drop_action = DropAction{node, DropAction::Type::Above};
+                        } else {
+                            drop_y = node->bs_data.position + node->bs_data.length / 4;
+                            drop_h = node->bs_data.length / 2;
+                            drop_offset = 0;
+                            drop_action = DropAction{node, DropAction::Type::Child};
+                        }
                     }
                     drop_y += column_header;
                 }
