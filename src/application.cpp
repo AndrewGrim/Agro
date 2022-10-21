@@ -223,6 +223,9 @@ void Application::run() {
                     Window *event_window = findEventWindow(m_windows, event.key.windowID);
                     if (event_window) { event_window->handleSDLEvent(event); }
                     else { info("Couldn't find Window for event 'SDL_KEYDOWN', perhaps it was deleted?"); }
+                    if (drag.state == DragEvent::State::PotentialStart) {
+                        drag = DragEvent();
+                    }
                     break;
                 }
                 case SDL_TEXTINPUT: {
