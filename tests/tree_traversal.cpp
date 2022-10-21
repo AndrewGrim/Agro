@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
         });
         tv->onDragDropped.addEventListener([&](Widget *widget, DragEvent event) {
             if (event.data == tv->drop_action.node) {
-                tv->deselect();
+                tv->deselectAll();
                 return;
             }
 
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
                 return Traversal::Continue;
             });
             if (parent_to_child) {
-                tv->deselect();
+                tv->deselectAll();
                 return;
             }
 
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
                     break;
                 }
             }
-            tv->deselect();
+            tv->deselectAll();
 
             // TODO workaround for model not updating when being changed
             tv->m_model = nullptr;
