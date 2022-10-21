@@ -8,6 +8,7 @@
     #include "spacer.hpp"
     #include "../application.hpp"
     #include "cell_renderer.hpp"
+    #include "../core/array_list.hpp"
 
     /// Meant to represent a single row within the TreeView Widget.
     /// Note that a TreeNode can have children and so its not exactly
@@ -595,7 +596,11 @@
                                 collapse(m_event_node);
                             }
                         } else {
-                            select(m_event_node);
+                            if (isCtrlPressed()) {
+                                multiselect(m_event_node);
+                            } else {
+                                select(m_event_node);
+                            }
                         }
                     }
                 });
@@ -610,8 +615,9 @@
                 //     |--- 4
                 // * 5 --...
                 // if we are on node 5 pressing up should go to 4 not 1!
+                // but isnt the manual descend doing that?? im confused... maybe it was an issue with the file explorer
                 bind(SDLK_UP, Mod::None, [&]() {
-                    if (m_focused) {
+                    if (m_cursor) {
                         // TODO make sure to scroll the node into view
                         auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
                             if (node->parent_index == 0 && node->depth != 1) {
@@ -629,18 +635,18 @@
                             }
                             return nullptr; // TODO change to maybe wrap around
                         };
-                        TreeNode<T> *result = focusNextNode(m_focused);
+                        TreeNode<T> *result = focusNextNode(m_cursor);
                         if (result) {
                             select(result);
                         }
                     } else {
                         assert(m_model && m_model->roots.size() && "Trying to focus node when model doesnt exist or is empty!");
-                        m_focused = m_model->roots[0];
+                        m_cursor = m_model->roots[0];
                     }
                     update();
                 });
                 bind(SDLK_DOWN, Mod::None, [&]() {
-                    if (m_focused) {
+                    if (m_cursor) {
                         // TODO make sure to scroll the node into view
                         auto focusNextNode = [&](TreeNode<T> *node) -> TreeNode<T>* {
                             if (node->children.size() && !node->is_collapsed) {
@@ -657,24 +663,24 @@
                             }
                             return nullptr; // TODO change to maybe wrap around
                         };
-                        TreeNode<T> *result = focusNextNode(m_focused);
+                        TreeNode<T> *result = focusNextNode(m_cursor);
                         if (result) {
                             select(result);
                         }
                     } else {
                         assert(m_model && m_model->roots.size() && "Trying to focus node when model doesnt exist or is empty!");
-                        m_focused = m_model->roots[0];
+                        m_cursor = m_model->roots[0];
                     }
                     update();
                 });
                 bind(SDLK_LEFT, Mod::None, [&]() {
-                    if (m_focused && m_focused->children.size()) {
-                        collapse(m_focused);
+                    if (m_cursor && m_cursor->children.size()) {
+                        collapse(m_cursor);
                     }
                 });
                 bind(SDLK_RIGHT, Mod::None, [&]() {
-                    if (m_focused && m_focused->children.size()) {
-                        expand(m_focused);
+                    if (m_cursor && m_cursor->children.size()) {
+                        expand(m_cursor);
                     }
                 });
                 m_column_style = Style();
@@ -886,7 +892,8 @@
                 m_virtual_size_changed = true;
                 m_auto_size_columns = true;
                 m_hovered = nullptr;
-                m_focused = nullptr;
+                m_cursor = nullptr;
+                m_focused.clear();
                 m_event_node = nullptr;
                 m_tree_collapser = nullptr;
                 if (m_last_sort) {
@@ -905,7 +912,8 @@
                     m_model->clear();
                     m_virtual_size_changed = true;
                     m_hovered = nullptr;
-                    m_focused = nullptr;
+                    m_cursor = nullptr;
+                    m_focused.clear();
                     m_event_node = nullptr;
                     m_tree_collapser = nullptr;
                     if (m_last_sort) {
@@ -931,7 +939,7 @@
             }
 
             /// Can return null.
-            TreeNode<T>* selected() {
+            ArrayList<TreeNode<T>*> selected() {
                 return m_focused;
             }
 
@@ -947,14 +955,20 @@
             }
 
             void select(TreeNode<T> *node) {
-                if (m_focused != node) {
-                    deselect();
-                    m_focused = node;
+                if (!m_focused.contains(node)) {
+                    deselectAll();
+                    m_focused.append(node);
+                    m_cursor = node;
                     onNodeSelected.notify(this, node);
-                    update();
                 } else {
-                    deselect();
+                    m_focused.erase(m_focused.find(node).unwrap());
+                    deselectAll();
+                    m_focused.append(node);
+                    m_cursor = node;
+                    // No onNodeSelected notify needed here since
+                    // the node does not lose selection.
                 }
+                update();
             }
 
             void select(u64 index) {
@@ -962,12 +976,46 @@
                 select(m_model->get(index));
             }
 
-            void deselect() {
-                if (m_focused) {
-                    onNodeDeselected.notify(this, m_focused);
-                    m_focused = nullptr;
+            void multiselect(TreeNode<T> *node) {
+                Option<usize> index = m_focused.find(node);
+                if (index) {
+                    m_focused.erase(index.value);
+                    onNodeDeselected.notify(this, node);
+                } else {
+                    m_focused.append(node);
+                    m_cursor = node;
+                    onNodeSelected.notify(this, node);
+                }
+                update();
+            }
+
+            void multiselect(u64 index) {
+                // TODO should we do something about null here?
+                multiselect(m_model->get(index));
+            }
+
+            void deselectAll() {
+                if (!m_focused.isEmpty()) {
+                    notifyOnDeselected();
+                    m_focused.clear();
                     update();
                 }
+            }
+
+            void deselect(TreeNode<T> *node) {
+                Option<usize> index = m_focused.find(node);
+                if (index) {
+                    onNodeDeselected.notify(this, node);
+                    m_focused.erase(index.value);
+                    update();
+                }
+            }
+
+            void notifyOnDeselected() {
+                for (TreeNode<T> *node : m_focused) {
+                    onNodeDeselected.notify(this, node);
+                }
+                update();
             }
 
             void collapse(TreeNode<T> *node) {
@@ -1208,7 +1256,8 @@
             Mode m_mode = Mode::Scroll;
             u8 m_indent = 24;
             TreeNode<T> *m_hovered = nullptr;
-            TreeNode<T> *m_focused = nullptr;
+            TreeNode<T> *m_cursor = nullptr;
+            ArrayList<TreeNode<T>*> m_focused;
             TreeNode<T> *m_event_node = nullptr; // node to be handled in mouse events
             TreeNode<T> *m_tree_collapser = nullptr; // the tree collapse/expand icon node if any (for highlighting)
             GridLines m_grid_lines = GridLines::Both;
@@ -1376,7 +1425,7 @@
                         dc.setClip(cell_clip.clipTo(tv_clip));
                         i32 cell_x = cell_start;
                         i32 state = STATE_DEFAULT;
-                        if (m_focused == node) { state |= STATE_HARD_FOCUSED; }
+                        if (m_focused.contains(node)) { state |= STATE_HARD_FOCUSED; }
                         if (m_hovered == node) { state |= STATE_HOVERED; }
                         if (!m_table && !i) {
                             // Draw the cell background using appropriate state in treeline gutter when drawing treelines.
@@ -1406,13 +1455,17 @@
                             );
                             state = ((Widget*)drawable)->state();
                         }
+                        Rect draw_rect = Rect(cell_x, pos.y, col_width > s.w ? col_width - h_grid_line : s.w - h_grid_line, node->max_cell_height - v_grid_line);
                         drawable->draw(
                             dc,
-                            Rect(
-                                cell_x, pos.y, col_width > s.w ? col_width - h_grid_line : s.w - h_grid_line, node->max_cell_height - v_grid_line
-                            ),
+                            draw_rect,
                             state
                         );
+                        if (m_cursor == node) {
+                            draw_rect.x = pos.x;
+                            draw_rect.w = drawing_rect.w - h_grid_line;
+                            dc.drawDashedRect(draw_rect, dc.textForeground(style()));
+                        }
                     }
                     cell_start += col_width;
                     if (cell_start > drawing_rect.x + drawing_rect.w) {
@@ -1673,6 +1726,14 @@
                     drop_y += column_header;
                     drop_y += this->rect.y;
                 }
+            }
+
+            bool isCtrlPressed() {
+                SDL_Keymod mod = SDL_GetModState();
+                if (mod & Mod::Ctrl) {
+                    return true;
+                }
+                return false;
             }
     };
 #endif
