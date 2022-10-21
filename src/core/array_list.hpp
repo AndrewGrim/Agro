@@ -8,6 +8,7 @@
     #include <new>
 
     #include "../common/number_types.h"
+    #include "../option.hpp"
 
     template <typename T> struct ArrayList {
         static_assert(
@@ -142,6 +143,24 @@
             __move(__data + from, __data + from + count, 1);
             __move(__data + from + 1, temp, count);
             delete[] temp;
+        }
+
+        bool isEmpty() {
+            return __size == 0;
+        }
+
+        bool contains(T query) {
+            for (usize i = 0; i < __size; i++) {
+                if (__data[i] == query) { return true; }
+            }
+            return false;
+        }
+
+        Option<usize> find(T query) {
+            for (usize i = 0; i < __size; i++) {
+                if (__data[i] == query) { return Option<usize>(i); }
+            }
+            return Option<usize>();
         }
 
         T* data() const {
