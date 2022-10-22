@@ -187,14 +187,14 @@ void Application::run() {
                     if (event_window) {
                         event_window->handleSDLEvent(event);
                         if (drag.state == DragEvent::State::Dragging) {
-                            if (MouseEvent(event.button).button != MouseEvent::Button::Left) {
+                            if (MouseEvent(event.button).button == MouseEvent::Button::Left) {
                                 // TODO we should be able to get this working atm, the issue is simply
                                 // that we capture the mouse, so perhaps when dragging we can
                                 // release that restriction
                                 assert(event_window->m_state->hovered && "drag crash between windows");
                                 event_window->m_state->hovered->handleDragEvent(drag);
-                                drag = DragEvent();
                             }
+                            drag = DragEvent();
                         }
                     }
                     else { info("Couldn't find Window for event 'SDL_MOUSEBUTTONUP', perhaps it was deleted?"); }
