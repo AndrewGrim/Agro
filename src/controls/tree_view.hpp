@@ -996,6 +996,16 @@
                 multiselect(m_model->get(index));
             }
 
+            void forceMultiselect(TreeNode<T> *node) {
+                Option<usize> index = m_focused.find(node);
+                if (!index) {
+                    m_focused.append(node);
+                    m_cursor = node;
+                    onNodeSelected.notify(this, node);
+                    update();
+                }
+            }
+
             void deselectAll() {
                 if (!m_focused.isEmpty()) {
                     notifyOnDeselected();
