@@ -597,9 +597,33 @@
                             }
                         } else {
                             if (isCtrlPressed()) {
-                                multiselect(m_event_node);
+                                if (isShiftPressed() and !m_focused.isEmpty()) {
+                                    // TODO this should be able to go both ways not just down
+                                    m_model->forEachNode((m_focused[0]->parent ? m_focused[0]->parent->children : m_model->roots), [&](TreeNode<T> *n) -> Traversal {
+                                        if (n == m_event_node) {
+                                            forceMultiselect(n);
+                                            return Traversal::Break;
+                                        }
+                                        forceMultiselect(n);
+                                        return Traversal::Continue;
+                                    });
+                                } else {
+                                    multiselect(m_event_node);
+                                }
                             } else {
-                                select(m_event_node);
+                                if (isShiftPressed() and !m_focused.isEmpty()) {
+                                    // TODO this should be able to go both ways not just down
+                                    m_model->forEachNode((m_focused[0]->parent ? m_focused[0]->parent->children : m_model->roots), [&](TreeNode<T> *n) -> Traversal {
+                                        if (n == m_event_node) {
+                                            forceMultiselect(n);
+                                            return Traversal::Break;
+                                        }
+                                        forceMultiselect(n);
+                                        return Traversal::Continue;
+                                    });
+                                } else {
+                                    select(m_event_node);
+                                }
                             }
                         }
                     }
