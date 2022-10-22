@@ -965,8 +965,10 @@
                     deselectAll();
                     m_focused.append(node);
                     m_cursor = node;
-                    // No onNodeSelected notify needed here since
-                    // the node does not lose selection.
+                    onNodeSelected.notify(this, node);
+                    // TODO if we deselct then we cant drag all the nodes unless
+                    // we do multiselect with control and only drag the last node
+                    // i think we need to have something that detects a drag
                 }
                 update();
             }
