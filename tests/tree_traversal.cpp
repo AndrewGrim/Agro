@@ -21,41 +21,66 @@ int main(int argc, char **argv) {
         // The default is 0b1111 with all enabled: Root, Child, Above, Below.
         // tv->drop_allow = 0b0011;
         tv->onNodeSelected.addEventListener([&](TreeView<u8> *widget, TreeNode<u8> *node) {
-            app->startDrag(widget, node->columns[0], cast(TextCellRenderer*, node->columns[0])->text, node);
+            app->startDrag(widget, node->columns[0], cast(TextCellRenderer*, node->columns[0])->text, &tv->m_focused);
         });
         tv->onDragDropped.addEventListener([&](Widget *widget, DragEvent event) {
-            if (event.data == tv->drop_action.node) {
+            // TODO nemo doesnt allow for dropping any of the selected nodes on themselvs, reasonable
+            // but atm we would draw them as if we allowed drops (something to think about and tweak)
+            // perhaps we want something like ondraghovered where we call into client code
+            // for actually showing the drops and it would be much easier then for them to reject
+            // or accept specific stuff
+
+            // TODO but what if we separately select child node of a parent thats already select and drop it on a different node
+            // what nemo seems to do is to just treat them as one, which makes sense, we just need to detect that
+            // some sort of processing step that deduplicates children that already have a parent selected
+
+            ArrayList<TreeNode<u8>*> &selection = *cast(ArrayList<TreeNode<u8>*>*, event.data);
+            if (selection.contains(tv->drop_action.node)) {
                 tv->deselectAll();
                 return;
             }
 
             bool parent_to_child = false;
-            tv->m_model->forEachNode(cast(TreeNode<u8>*, event.data)->children, [&](TreeNode<u8> *node) -> Traversal {
-                if (node == tv->drop_action.node) { parent_to_child = true; return Traversal::Break; }
-                return Traversal::Continue;
-            });
-            if (parent_to_child) {
-                tv->deselectAll();
-                return;
+            for (TreeNode<u8> *n : selection) {
+                tv->m_model->forEachNode(cast(TreeNode<u8>*, n)->children, [&](TreeNode<u8> *node) -> Traversal {
+                    if (node == tv->drop_action.node) { parent_to_child = true; return Traversal::Break; }
+                    return Traversal::Continue;
+                });
+                if (parent_to_child) {
+                    tv->deselectAll();
+                    return;
+                }
             }
 
             auto m = tv->m_model;
-            m->remove(cast(TreeNode<u8>*, event.data));
+            for (TreeNode<u8> *n : selection) {
+                m->remove(cast(TreeNode<u8>*, n));
+            }
             switch (tv->drop_action.type) {
                 case TreeView<u8>::DropAction::Type::Root: {
-                    m->insert(nullptr, m->roots.size(), cast(TreeNode<u8>*, event.data));
+                    for (TreeNode<u8> *n : selection) {
+                        m->insert(nullptr, m->roots.size(), cast(TreeNode<u8>*, n));
+                    }
                     break;
                 }
                 case TreeView<u8>::DropAction::Type::Child: {
-                    m->insert(tv->drop_action.node, tv->drop_action.node->children.size(), cast(TreeNode<u8>*, event.data));
+                    for (TreeNode<u8> *n : selection) {
+                        m->insert(tv->drop_action.node, tv->drop_action.node->children.size(), cast(TreeNode<u8>*, n));
+                    }
                     break;
                 }
                 case TreeView<u8>::DropAction::Type::Above: {
-                    m->insert(tv->drop_action.node->parent, tv->drop_action.node->parent_index, cast(TreeNode<u8>*, event.data));
+                    usize i = 0;
+                    for (TreeNode<u8> *n : selection) {
+                        m->insert(tv->drop_action.node->parent, tv->drop_action.node->parent_index + i++, cast(TreeNode<u8>*, n));
+                    }
                     break;
                 }
                 case TreeView<u8>::DropAction::Type::Below: {
-                    m->insert(tv->drop_action.node->parent, tv->drop_action.node->parent_index + 1, cast(TreeNode<u8>*, event.data));
+                    usize i = 0;
+                    for (TreeNode<u8> *n : selection) {
+                        m->insert(tv->drop_action.node->parent, tv->drop_action.node->parent_index + i++ + 1, cast(TreeNode<u8>*, n));
+                    }
                     break;
                 }
             }
