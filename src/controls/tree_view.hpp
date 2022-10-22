@@ -1737,5 +1737,13 @@
                 }
                 return false;
             }
+
+            bool isShiftPressed() {
+                SDL_Keymod mod = SDL_GetModState();
+                if (mod & Mod::Shift) {
+                    return true;
+                }
+                return false;
+            }
     };
 #endif
