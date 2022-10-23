@@ -557,6 +557,7 @@
             };
 
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeHovered = EventListener<TreeView<T>*, TreeNode<T>*>();
+            EventListener<TreeView<T>*, TreeNode<T>*> onNodeActivated = EventListener<TreeView<T>*, TreeNode<T>*>();
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeSelected = EventListener<TreeView<T>*, TreeNode<T>*>();
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeDeselected = EventListener<TreeView<T>*, TreeNode<T>*>();
             EventListener<TreeView<T>*, TreeNode<T>*> onNodeCollapsed = EventListener<TreeView<T>*, TreeNode<T>*>();
@@ -596,20 +597,8 @@
                                 collapse(m_event_node);
                             }
                         } else {
-                            if (isCtrlPressed()) {
-                                if (isShiftPressed() and !m_focused.isEmpty()) {
-                                    // TODO this should be able to go both ways not just down
-                                    m_model->forEachNode((m_focused[0]->parent ? m_focused[0]->parent->children : m_model->roots), [&](TreeNode<T> *n) -> Traversal {
-                                        if (n == m_event_node) {
-                                            forceMultiselect(n);
-                                            return Traversal::Break;
-                                        }
-                                        forceMultiselect(n);
-                                        return Traversal::Continue;
-                                    });
-                                } else {
-                                    multiselect(m_event_node);
-                                }
+                            if (event.click == MouseEvent::Click::Double) {
+                                onNodeActivated.notify(this, m_event_node);
                             } else {
                                 if (isShiftPressed() and !m_focused.isEmpty()) {
                                     // TODO this should be able to go both ways not just down
