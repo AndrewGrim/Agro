@@ -221,7 +221,7 @@ void Lexer::lex(Slice<const char> source) {
                                 }
                                 pos.next();
                             } else {
-                                pos.advance(16);
+                                pos.advance(SIMD_WIDTH);
                             }
                         }
                     #else
