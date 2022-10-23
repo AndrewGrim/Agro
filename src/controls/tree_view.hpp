@@ -600,18 +600,68 @@
                             if (event.click == MouseEvent::Click::Double) {
                                 onNodeActivated.notify(this, m_event_node);
                             } else {
-                                if (isShiftPressed() and !m_focused.isEmpty()) {
-                                    // TODO this should be able to go both ways not just down
-                                    m_model->forEachNode((m_focused[0]->parent ? m_focused[0]->parent->children : m_model->roots), [&](TreeNode<T> *n) -> Traversal {
-                                        if (n == m_event_node) {
-                                            forceMultiselect(n);
-                                            return Traversal::Break;
+                                if (isCtrlPressed()) {
+                                    if (isShiftPressed() and !m_focused.isEmpty()) {
+                                        void *begin = nullptr;
+                                        void *end = nullptr;
+                                        void *focused = m_focused[0];
+                                        if (focused == m_event_node) {
+                                            forceMultiselect(m_event_node);
+                                            return;
                                         }
-                                        forceMultiselect(n);
-                                        return Traversal::Continue;
-                                    });
+                                        m_model->forEachNode(m_model->roots, [&](TreeNode<T> *n) -> Traversal {
+                                            if (!begin) {
+                                                if (n == m_event_node) {
+                                                    begin = m_event_node;
+                                                    end = focused;
+                                                    forceMultiselect(n);
+                                                } else if (n == focused) {
+                                                    begin = focused;
+                                                    end = m_event_node;
+                                                    forceMultiselect(n);
+                                                }
+                                            } else {
+                                                forceMultiselect(n);
+                                                if (n == end) {
+                                                    return Traversal::Break;
+                                                }
+                                            }
+                                            return Traversal::Continue;
+                                        });
+                                    } else {
+                                        multiselect(m_event_node);
+                                    }
                                 } else {
-                                    select(m_event_node);
+                                    if (isShiftPressed() and !m_focused.isEmpty()) {
+                                        void *begin = nullptr;
+                                        void *end = nullptr;
+                                        void *focused = m_focused[0];
+                                        if (focused == m_event_node) {
+                                            forceMultiselect(m_event_node);
+                                            return;
+                                        }
+                                        m_model->forEachNode(m_model->roots, [&](TreeNode<T> *n) -> Traversal {
+                                            if (!begin) {
+                                                if (n == m_event_node) {
+                                                    begin = m_event_node;
+                                                    end = focused;
+                                                    forceMultiselect(n);
+                                                } else if (n == focused) {
+                                                    begin = focused;
+                                                    end = m_event_node;
+                                                    forceMultiselect(n);
+                                                }
+                                            } else {
+                                                forceMultiselect(n);
+                                                if (n == end) {
+                                                    return Traversal::Break;
+                                                }
+                                            }
+                                            return Traversal::Continue;
+                                        });
+                                    } else {
+                                        select(m_event_node);
+                                    }
                                 }
                             }
                         }
