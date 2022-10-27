@@ -169,7 +169,7 @@
             }
         }
 
-        Entry& find(K key) {
+        Entry& find(const K &key) {
             if (!entries) {
                 capacity = HASH_MAP_DEFAULT_CAPACITY;
                 entries = new Entry[HASH_MAP_DEFAULT_CAPACITY];
@@ -192,13 +192,13 @@
             }
         }
 
-        V& operator[](K key) {
+        V& operator[](const K &key) {
             Entry &entry = find(key);
             assert(entry);
             return entry.value;
         }
 
-        bool remove(K key) {
+        bool remove(const K &key) {
             if (!entries) { return false; }
             Entry &entry = find(key);
             if (entry.flags & Entry::NULL_KEY) { return false; }
