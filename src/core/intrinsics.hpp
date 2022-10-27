@@ -49,10 +49,11 @@
             Vector notEqual(const Vector &rhs) const { return Vector(_mm_andnot_si128(_mm_cmpeq_epi8(_data, rhs._data), _mm_set1_epi8(-1))); }
             Vector lessThan(const Vector &rhs) const { return Vector(_mm_cmplt_epi8(_data, rhs._data)); }
             Vector greaterThan(const Vector &rhs) const { return Vector(_mm_cmpgt_epi8(_data, rhs._data)); }
-            friend u32 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
+            friend u16 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
             // Note: We are using ~mask rather than directly notEqual because of extra instructions.
-            friend u32 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
-            friend u32 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
+            friend u16 operator!=(const Vector &lhs, const Vector &rhs) { return ~lhs.equal(rhs).mask(); }
+            friend u16 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
+            friend u16 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
         };
 
         template <> struct Vector<u8, 32> {
