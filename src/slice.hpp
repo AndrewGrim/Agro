@@ -18,11 +18,11 @@ template <typename T> struct Slice {
     ~Slice() {}
 
     Slice<T> operator()(u64 begin) {
-        return Slice{data + begin, length - begin};
+        return Slice(data + begin, length - begin);
     }
 
     Slice<T> operator()(u64 begin, u64 end) {
-        return Slice{data + begin, end - begin};
+        return Slice(data + begin, end - begin);
     }
 };
 
