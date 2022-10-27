@@ -247,6 +247,9 @@ TextEdit::TextEdit(String text, String placeholder, Mode mode, Size min_size) : 
     bind(SDLK_DELETE, Mod::None, [&]{
         if (!deleteSelection()) { deleteOne(); }
     });
+    bind(SDLK_KP_PERIOD, Mod::None, [&]{
+        if (!deleteSelection()) { deleteOne(); }
+    });
     auto jump_left = [&]{
         jumpWordLeft();
     };
