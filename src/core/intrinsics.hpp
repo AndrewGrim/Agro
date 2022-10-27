@@ -32,11 +32,65 @@
     #elif defined SSE2
         #define SIMD_WIDTH 16
     #else
-        #define SIMD_WIDTH 0
+        // Fallback to non-intrinsic code so we dont need a separate non-simd code path.
+        #define SIMD_WIDTH 8
     #endif
 
     namespace simd {
         template <typename T, u8 size> struct Vector {};
+
+        template <> struct Vector<u8, 8> {
+            u8 _data[8];
+
+            Vector(u8 data) { memset(_data, data, 8); }
+            Vector(const u8 *data) { load(data); }
+            void load(const u8 *data) { memcpy(_data, data, 8); }
+
+            u8 mask() const {
+                u8 m = 0;
+                for (u8 i = 0; i < 8; i++) {
+                    m = (m >> 1) + (_data[i] & 0b1000'0000);
+                }
+                return m;
+            }
+
+            Vector equal(const Vector &rhs) const {
+                Vector result((u8)0);
+                for (u8 i = 0; i < 8; i++) {
+                    result._data[i] = (*this)._data[i] == rhs._data[i] ? 255 : 0;
+                }
+                return result;
+            }
+
+            Vector notEqual(const Vector &rhs) const {
+                Vector result((u8)0);
+                for (u8 i = 0; i < 8; i++) {
+                    result._data[i] = (*this)._data[i] != rhs._data[i] ? 255 : 0;
+                }
+                return result;
+            }
+
+            Vector lessThan(const Vector &rhs) const {
+                Vector result((u8)0);
+                for (u8 i = 0; i < 8; i++) {
+                    result._data[i] = (*this)._data[i] < rhs._data[i] ? 255 : 0;
+                }
+                return result;
+            }
+
+            Vector greaterThan(const Vector &rhs) const {
+                Vector result((u8)0);
+                for (u8 i = 0; i < 8; i++) {
+                    result._data[i] = (*this)._data[i] > rhs._data[i] ? 255 : 0;
+                }
+                return result;
+            }
+
+            friend u8 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
+            friend u8 operator!=(const Vector &lhs, const Vector &rhs) { return lhs.notEqual(rhs).mask(); }
+            friend u8 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
+            friend u8 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
+        };
 
         template <> struct Vector<u8, 16> {
             __m128i _data;
