@@ -50,7 +50,7 @@
             Vector lessThan(const Vector &rhs) const { return Vector(_mm_cmplt_epi8(_data, rhs._data)); }
             Vector greaterThan(const Vector &rhs) const { return Vector(_mm_cmpgt_epi8(_data, rhs._data)); }
             friend u32 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
-            friend u32 operator!=(const Vector &lhs, const Vector &rhs) { return ~lhs.equal(rhs).mask(); }
+            // Note: We are using ~mask rather than directly notEqual because of extra instructions.
             friend u32 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
             friend u32 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
         };
@@ -67,6 +67,7 @@
             Vector lessThan(const Vector &rhs) const { return Vector(_mm256_cmpgt_epi8(rhs._data, _data)); }
             Vector greaterThan(const Vector &rhs) const { return Vector(_mm256_cmpgt_epi8(_data, rhs._data)); }
             friend u32 operator==(const Vector &lhs, const Vector &rhs) { return lhs.equal(rhs).mask(); }
+            // Note: We are using ~mask rather than directly notEqual because of extra instructions.
             friend u32 operator!=(const Vector &lhs, const Vector &rhs) { return ~lhs.equal(rhs).mask(); }
             friend u32 operator<(const Vector &lhs, const Vector &rhs) { return lhs.lessThan(rhs).mask(); }
             friend u32 operator>(const Vector &lhs, const Vector &rhs) { return lhs.greaterThan(rhs).mask(); }
