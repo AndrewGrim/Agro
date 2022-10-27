@@ -222,7 +222,7 @@ String& String::operator=(String &&string) {
     return *this;
 }
 
-u8& String::operator[](u64 index) {
+u8& String::operator[](u64 index) const {
     return ((u8*)data())[index];
 }
 
