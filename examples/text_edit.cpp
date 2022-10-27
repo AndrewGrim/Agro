@@ -38,8 +38,8 @@ int main(int argc, char **argv) {
                 for (String m : monster_names) {
                     String monster = String(m).toLower();
 
-                    if (!search_phrase.size() || monster.find(search_phrase)) {
-                        results_view->append(new Label(String(m.data())));
+                    if (monster.find(search_phrase)) {
+                        results_view->append(new Label(m));
                     }
                 }
             });
