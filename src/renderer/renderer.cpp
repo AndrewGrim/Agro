@@ -159,6 +159,7 @@ void Renderer::reset() {
     index = 0;
     quad_count = 0;
     current_texture_slot = AGRO_OPENGL_RESERVED_TEXTURE_SLOTS;
+    last_font = nullptr;
 }
 
 void Renderer::check() {
@@ -482,7 +483,6 @@ void Renderer::render() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vertex) * index, vertices);
     glDrawElements(GL_TRIANGLES, QUAD_INDEX_COUNT * quad_count, GL_UNSIGNED_INT, 0);
-    // TODO later on we could introduce rounded corners and circles by sampling pixels in the fragment shader??
     reset();
 }
 
