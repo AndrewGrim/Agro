@@ -431,6 +431,18 @@ Slice<const char> String::slice() const {
     return Slice<const char>(data(), size());
 }
 
+Slice<const char> String::operator()() const {
+    return Slice<const char>(data(), size());
+}
+
+Slice<const char> String::operator()(u64 begin) const {
+    return Slice<const char>(data() + begin, size() - begin);
+}
+
+Slice<const char> String::operator()(u64 begin, u64 end) const {
+    return Slice<const char>(data() + begin, end - begin);
+}
+
 Option<u64> String::find(const String &query) const {
     u8 first = query.data()[0];
     for (u64 i = 0; i < this->size(); i++) {

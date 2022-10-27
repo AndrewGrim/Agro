@@ -166,6 +166,9 @@
         void erase(u64 index, u64 count);
         void clear();
         Slice<const char> slice() const;
+        Slice<const char> operator()() const;
+        Slice<const char> operator()(u64 begin) const;
+        Slice<const char> operator()(u64 begin, u64 end) const;
         template<typename ...Args> static String format(const char *format_string, Args... args) {
             i64 buffer_size = snprintf(NULL, 0, format_string, args...);
             // String takes just buffer_size because it will automatically account for null terminator.
