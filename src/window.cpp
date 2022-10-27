@@ -280,7 +280,10 @@ Widget* Window::append(Widget *widget, Fill fill_policy, u32 proportion) {
 }
 
 void Window::update() {
-    m_needs_update = true;
+    if (!m_needs_update) {
+        m_needs_update = true;
+        Application::pulse();
+    }
 }
 
 void Window::removeFromState(Widget *widget) {
