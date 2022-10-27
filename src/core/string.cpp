@@ -444,18 +444,69 @@ Slice<const char> String::operator()(u64 begin, u64 end) const {
 }
 
 Option<u64> String::find(const String &query) const {
-    u8 first = query.data()[0];
-    for (u64 i = 0; i < this->size(); i++) {
-        if (this->data()[i] == first) {
-            for (u64 j = 1; j < query.size(); j++) {
-                if (this->data()[i + j] != query.data()[j]) {
-                    goto NO_MATCH;
-                }
-            }
-            return Option<u64>(i);
+    return findFirst(query);
+}
+
+Option<u64> String::findFirst(const String &query) const {
+    u64 ssize = size();
+    u64 qsize = query.size();
+    if (qsize == 0) return Option<u64>(0);
+    if (qsize > ssize) return Option<u64>();
+
+    u64 skip_table[256];
+    {
+        for (u64 i = 0; i < 256; i++) {
+            skip_table[i] = qsize;
         }
-        NO_MATCH:;
+        for (u64 i = 0; i < qsize - 1; i++) {
+            skip_table[query[i]] = qsize - 1 - i;
+        }
     }
+
+    {
+        for (u64 i = 0; i <= ssize - qsize; i += skip_table[(*this)[i + qsize - 1]]) {
+            if ((*this)(i, i + qsize) == query()) {
+                return Option<u64>(i);
+            }
+        }
+    }
+
+    return Option<u64>();
+}
+
+Option<u64> String::findLast(const String &query) const {
+    u64 ssize = size();
+    u64 qsize = query.size();
+    if (qsize == 0) return Option<u64>(ssize);
+    if (qsize > ssize) return Option<u64>();
+
+    u64 skip_table[256];
+    {
+        for (u64 i = 0; i < 256; i++) {
+            skip_table[i] = qsize;
+        }
+        for (u64 i = qsize - 1; i > 0; i--) {
+            skip_table[query[i]] = i;
+        }
+    }
+
+    {
+        for (u64 i = ssize - qsize; i <= 0; i += skip_table[(*this)[i + qsize - 1]]) {
+            if ((*this)(i, i + qsize) == query()) {
+                return Option<u64>(i);
+            }
+        }
+        u64 i = ssize - qsize;
+        while (true) {
+            if ((*this)(i, i + qsize) == query()) {
+                return Option<u64>(i);
+            }
+            const u64 skip = skip_table[(*this)[i]];
+            if (skip > i) break;
+            i -= skip;
+        }
+    }
+
     return Option<u64>();
 }
 

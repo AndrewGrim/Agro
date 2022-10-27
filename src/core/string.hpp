@@ -178,6 +178,8 @@
             return s;
         }
         Option<u64> find(const String &query) const;
+        Option<u64> findFirst(const String &query) const;
+        Option<u64> findLast(const String &query) const;
         u64 count(u8 c) const;
         String toUtf16Le() const;
         String toUtf8() const;
