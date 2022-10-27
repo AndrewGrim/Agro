@@ -11,7 +11,7 @@
     };
 
     template <> struct Hash<i32> {
-        u32 operator()(i32 &key) const {
+        u32 operator()(const i32 &key) const {
             u32 hash = 2166136261;
             for (u8 i = 0; i < sizeof(i32); i++) {
                 hash ^= ((u8*)&key)[i];
@@ -22,7 +22,7 @@
     };
 
     template <> struct Hash<u32> {
-        u32 operator()(u32 &key) const {
+        u32 operator()(const u32 &key) const {
             u32 hash = 2166136261;
             for (u8 i = 0; i < sizeof(u32); i++) {
                 hash ^= ((u8*)&key)[i];
@@ -33,7 +33,7 @@
     };
 
     template <> struct Hash<String> {
-        u32 operator()(String &key) const {
+        u32 operator()(const String &key) const {
             u32 hash = 2166136261;
             for (u32 i = 0; i < key.size(); i++) {
                 hash ^= key[i];
@@ -44,7 +44,7 @@
     };
 
     template <> struct Hash<Slice<const char>> {
-        u32 operator()(Slice<const char> &key) const {
+        u32 operator()(const Slice<const char> &key) const {
             u32 hash = 2166136261;
             for (u32 i = 0; i < key.length; i++) {
                 hash ^= key.data[i];

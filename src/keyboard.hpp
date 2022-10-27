@@ -59,7 +59,7 @@
     };
 
     template <> struct Hash<KeyboardShortcut> {
-        u32 operator()(KeyboardShortcut &key) const {
+        u32 operator()(const KeyboardShortcut &key) const {
             u32 hash = 2166136261;
             for (u8 i = 0; i < sizeof(key.key); i++) {
                 hash ^= ((u8*)&key)[i];

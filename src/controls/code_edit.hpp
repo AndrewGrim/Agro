@@ -121,7 +121,7 @@
     };
 
     template <> struct Hash<Keyword> {
-        u32 operator()(Keyword &key) const {
+        u32 operator()(const Keyword &key) const {
             u32 hash = 2166136261;
             hash ^= key.data[0];
             hash *= 16777619;
