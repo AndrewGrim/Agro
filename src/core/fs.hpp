@@ -166,7 +166,7 @@
             }
 
             Result<fs::Error, String> load(String path) {
-                File file = fs::File::open(path, "rb");
+                Result<fs::Error, File> file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
@@ -178,7 +178,7 @@
             }
 
             Result<fs::Error, String> loadAsRawBytes(String path) {
-                File file = fs::File::open(path, "rb");
+                Result<fs::Error, File> file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
@@ -322,7 +322,7 @@
             }
 
             Result<fs::Error, String> load(String path) {
-                File file = fs::File::open(path, "rb");
+                Result<fs::Error, File> file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
@@ -334,7 +334,7 @@
             }
 
             Result<fs::Error, String> loadAsRawBytes(String path) {
-                File file = fs::File::open(path, "rb");
+                Result<fs::Error, File> file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
