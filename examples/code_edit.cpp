@@ -7,15 +7,15 @@
 #include "../src/controls/splitter.hpp"
 
 struct Hidden {
-    Dir::Iterator::Entry::Type type;
-    Hidden(Dir::Iterator::Entry::Type type) : type{type} {}
+    fs::Dir::Iterator::Entry::Type type;
+    Hidden(fs::Dir::Iterator::Entry::Type type) : type{type} {}
 };
 
 void recurseDir(Tree<Hidden> *model, TreeNode<Hidden> *parent_node, String path) {
-    Dir dir(path);
+    fs::Dir dir(path);
     auto iter = dir.iter();
     while ((iter = iter.next())) {
-        if (iter.entry.type == Dir::Iterator::Entry::Type::Directory) {
+        if (iter.entry.type == fs::Dir::Iterator::Entry::Type::Directory) {
             TreeNode<Hidden> *new_node = model->append(parent_node, new TreeNode<Hidden>(
                 {
                     new ImageTextCellRenderer(new Image(Application::get()->icons["directory"]), iter.entry.name)
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
                 col->sort(Sort::Ascending);
                 tv->collapseAll();
                 tv->onNodeSelected.addEventListener([&](TreeView<Hidden> *tv, TreeNode<Hidden> *node) {
-                    if (node->hidden->type == Dir::Iterator::Entry::Type::Directory) { return; }
+                    if (node->hidden->type == fs::Dir::Iterator::Entry::Type::Directory) { return; }
                     String path = ((ImageTextCellRenderer*)node->columns[0])->text;
                     auto current = node;
                     while (current->parent) {
@@ -88,15 +88,15 @@ int main(int argc, char **argv) {
                         path.insert(0, "/");
                         path.insert(0, ((ImageTextCellRenderer*)current->columns[0])->text);
                     }
-                    if (File::getSize(path)) {
-                        edit->setText(File::load(path).unwrap());
+                    if (fs::getSize(path)) {
+                        edit->setText(fs::load(path).unwrap());
                     }
                 });
             split->left(tv);
         }
         {
             std::shared_ptr<Font> mono = std::shared_ptr<Font>(new Font(Application::get(), "fonts/JetBrainsMono/JetBrainsMono-Regular.ttf", 14, Font::Type::Mono));
-            edit = new CodeEdit(File::load("src/core/string.cpp").unwrap(), Size(200, 200));
+            edit = new CodeEdit(fs::load("src/core/string.cpp").unwrap(), Size(200, 200));
             edit->setFont(mono);
             split->right(edit);
         }

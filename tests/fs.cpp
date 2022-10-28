@@ -3,7 +3,7 @@
 
 // TODO would be nice to be able to apply a custom filter
 void recurseDir(String path, u32 depth = 0) {
-    Dir dir(path);
+    fs::Dir dir(path);
     auto iter = dir.iter();
     while ((iter = iter.next())) {
         for (u32 i = 0; i < depth; i++) {
@@ -11,7 +11,7 @@ void recurseDir(String path, u32 depth = 0) {
         }
         printf("%d ", (int)iter.entry.type);
         printf("%s\n", iter.entry.name.data());
-        if (iter.entry.type == Dir::Iterator::Entry::Type::Directory) {
+        if (iter.entry.type == fs::Dir::Iterator::Entry::Type::Directory) {
             String child_path = String::format("%s/%s", dir.path.data(), iter.entry.name.data());
             recurseDir(child_path, depth + 4);
         }
