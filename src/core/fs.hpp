@@ -133,7 +133,7 @@
                     return fread(buffer, sizeof(T), count, _f);
                 }
 
-                template <typename T> usize write(void *buffer, usize count) {
+                template <typename T> usize write(const void *buffer, usize count) {
                     return fwrite(buffer, sizeof(T), count, _f);
                 }
 
@@ -289,7 +289,7 @@
                     return fread(buffer, sizeof(T), count, _f);
                 }
 
-                template <typename T> usize write(void *buffer, usize count) {
+                template <typename T> usize write(const void *buffer, usize count) {
                     return fwrite(buffer, sizeof(T), count, _f);
                 }
 
