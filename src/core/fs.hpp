@@ -167,26 +167,24 @@
             }
 
             Result<fs::Error, String> load(String path) {
-                FILE *file = _wfopen((const wchar_t*)path.toUtf16Le().data(), L"rb");
+                File file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
                 String s = String(size.value);
-                fread(s.data(), sizeof(u8), size.value, file);
-                fclose(file);
+                file.value.read<u8>(s.data(), size.value);
                 s.data()[s.size()] = '\0';
                 if (!utf8::validate(s)) { return Result<fs::Error, String>(fs::Error::InvalidUtf8); }
                 return Result<fs::Error, String>(std::move(s));
             }
 
             Result<fs::Error, String> loadAsRawBytes(String path) {
-                FILE *file = _wfopen((const wchar_t*)path.toUtf16Le().data(), L"rb");
+                File file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
                 String s = String(size.value);
-                fread(s.data(), sizeof(u8), size.value, file);
-                fclose(file);
+                file.value.read<u8>(s.data(), size.value);
                 s.data()[s.size()] = '\0';
                 return Result<fs::Error, String>(std::move(s));
             }
@@ -326,26 +324,24 @@
             }
 
             Result<fs::Error, String> load(String path) {
-                FILE *file = fopen(path.data(), "rb");
+                File file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
                 String s = String(size.value);
-                fread(s.data(), sizeof(u8), size.value, file);
-                fclose(file);
+                file.value.read<u8>(s.data(), size.value);
                 s.data()[s.size()] = '\0';
                 if (!utf8::validate(s)) { return Result<fs::Error, String>(fs::Error::InvalidUtf8); }
                 return Result<fs::Error, String>(std::move(s));
             }
 
             Result<fs::Error, String> loadAsRawBytes(String path) {
-                FILE *file = fopen(path.data(), "rb");
+                File file = fs::File::open(path, "rb");
                 if (!file) { return Result<fs::Error, String>(fs::Error::Open); }
                 Result<fs::Error, u64> size = fs::getSize(path);
                 if (!size) { return Result<fs::Error, String>(fs::Error::Open); }
                 String s = String(size.value);
-                fread(s.data(), sizeof(u8), size.value, file);
-                fclose(file);
+                file.value.read<u8>(s.data(), size.value);
                 s.data()[s.size()] = '\0';
                 return Result<fs::Error, String>(std::move(s));
             }
