@@ -115,7 +115,6 @@
                 */
                 File(String path, String mode) {
                     _f = _wfopen((wchar_t*)path.toUtf16Le().data(), (wchar_t*)mode.toUtf16Le().data());
-                    if (!_f) { fail("Failed to open file!", path + " : " + mode); }
                 }
 
                 File(const File &rhs) = delete;
@@ -272,7 +271,6 @@
                 */
                 File(String path, String mode) {
                     _f = fopen(path.data(), mode.data());
-                    if (!_f) { fail("Failed to open file!", path + " : " + mode); }
                 }
 
                 File(const File &rhs) = delete;
