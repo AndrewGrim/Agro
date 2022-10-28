@@ -126,7 +126,7 @@
                 }
 
                 ~File() {
-                    fclose(_f);
+                    if (_f) { fclose(_f) };
                 }
 
                 template <typename T> usize read(void *buffer, usize count) {
@@ -282,7 +282,7 @@
                 }
 
                 ~File() {
-                    fclose(_f);
+                    if (_f) { fclose(_f); }
                 }
 
                 template <typename T> usize read(void *buffer, usize count) {
