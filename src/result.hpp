@@ -1,34 +1,29 @@
 #ifndef RESULT_HPP
     #define RESULT_HPP
 
-    template <typename ERROR_T, typename VALUE_T> struct Result {
+    template <typename E, typename V> struct Result {
         enum class Type {
             Ok,
             Error
         };
 
         Type type;
+        E error;
+        V value;
 
-        union Value {
-            VALUE_T ok;
-            ERROR_T error;
-        };
-
-        Value value;
-
-        Result(VALUE_T value) {
+        Result(V &&value) {
             this->type = Type::Ok;
-            this->value.ok = value;
+            this->value = std::move(value);
         }
 
-        Result(ERROR_T error) {
+        Result(E error) {
             this->type = Type::Error;
-            this->value.error = error;
+            this->error = error;
         }
 
-        VALUE_T unwrap() {
+        V unwrap() {
             assert(this->type == Type::Ok);
-            return this->value.ok;
+            return this->value;
         }
 
         operator bool() {

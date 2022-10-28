@@ -150,5 +150,5 @@ Result<SpinBox::Error, f64> SpinBox::value() {
     if (value == 0.0 && non_zero_number) {
         return Result<SpinBox::Error, f64>(SpinBox::Error::InvalidArgument);
     }
-    return Result<SpinBox::Error, f64>(value);
+    return Result<SpinBox::Error, f64>(std::move(value));
 }
